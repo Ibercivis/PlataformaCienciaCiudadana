@@ -1,8 +1,14 @@
+import { useNavigation } from '@react-navigation/native';
+import { StackScreenProps } from '@react-navigation/stack';
 import React, {useEffect, useRef, useState} from 'react';
 import MapView, {Marker, Polyline, PROVIDER_GOOGLE} from 'react-native-maps';
 import {useLocation} from '../hooks/useLocation';
 import {LoadingScreen} from '../screens/LoadingScreen';
 import {Fab} from './Fab';
+
+
+// interface Props extends StackScreenProps<any, any>{};
+
 
 export const Map = () => {
   const {
@@ -18,6 +24,7 @@ export const Map = () => {
   const followView = useRef<boolean>(false);
 
   const [showPolyline, setShowPolyline] = useState<boolean>();
+  const navigation = useNavigation();
 
   useEffect(() => {
     folloowUserLocation();
@@ -101,6 +108,11 @@ export const Map = () => {
         iconName="brush-outline"
         onPress={() => setShowPolyline(!showPolyline)}
         style={{position: 'absolute', bottom: 80, right: 20}}
+      />
+      <Fab
+        iconName="arrow-back-outline"
+        onPress={() => navigation.navigate('HomeScreen' as never)}
+        style={{position: 'absolute', top: 40, left: 20}}
       />
     </>
   );

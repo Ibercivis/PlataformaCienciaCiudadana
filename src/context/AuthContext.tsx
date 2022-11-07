@@ -5,14 +5,14 @@ import { authReducer } from './authReducer';
 export interface AuthState {
   isLoggedIn: boolean;
   username?: string;
-  favoriteIcon?: string;
+  password?: string;
 }
 
 //estado inicial
 export const authInitialState: AuthState = {
   isLoggedIn: false,
   username: undefined,
-  favoriteIcon: undefined,
+  password: undefined,
 };
 
 //definir todo lo que el contexto va a pasarle a los hijos. Le dice a react como luce y que expone el context
@@ -20,8 +20,8 @@ export interface AuthContextProps {
   authState: AuthState;
   signIn: () => void;
   signOut: () => void;
-  changeFavoriteIcon: (iconName: string) => void;
-  changeUsername: (userName: string) => void;
+  setUsername: (userName: string) => void;
+  setPassword: (password: string) => void;
 }
 
 //crea el contexto
@@ -39,12 +39,12 @@ export const AuthProvider = ({children}: any) => {
         action({type: 'singOut'})
     }
 
-    const changeFavoriteIcon = (iconName: string) => {
-        action({type: 'changeFavIcon', payload: iconName});
+    const setUsername = (username: string) => {
+        action({type: 'setUsername', payload: username});
     }
 
-    const changeUsername = (userName: string) => {
-        action({type: 'changeUsername', payload: userName});
+    const setPassword = (password: string) => {
+        action({type: 'setPassword', payload: password});
     }
 
   return (
@@ -53,8 +53,8 @@ export const AuthProvider = ({children}: any) => {
         authState: authState,
         signIn: signIn,
         signOut,
-        changeFavoriteIcon,
-        changeUsername
+        setUsername,
+        setPassword
         
       }}>
       {children}

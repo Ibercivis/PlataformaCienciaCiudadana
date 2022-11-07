@@ -9,11 +9,11 @@ type AuthAction =
       type: 'singOut';
     }
   | {
-      type: 'changeFavIcon';
+      type: 'setUsername';
       payload: string;
     }
   | {
-      type: 'changeUsername';
+      type: 'setPassword';
       payload: string;
     };
 
@@ -27,24 +27,23 @@ export const authReducer = (
       return {
         ...state,
         isLoggedIn: true,
-        username: 'no-username-yet',
       };
     case 'singOut':
       return {
         ...state,
         isLoggedIn: false,
         username: undefined,
-        favoriteIcon: undefined,
+        password: undefined,
       };
-    case 'changeFavIcon':
-      return {
-        ...state,
-        favoriteIcon: action.payload,
-      };
-    case 'changeUsername':
+    case 'setUsername':
       return {
         ...state,
         username: action.payload,
+      };
+    case 'setPassword':
+      return {
+        ...state,
+        password: action.payload,
       };
     default:
       return state;

@@ -21,6 +21,16 @@ Modulos instalados y mini guía:
                 import 'react-native-gesture-handler';
 
     - @react-native-masked-view/masked-view
+    - @react-navigation/drawer
+    - react-native-gesture-handler react-native-reanimated
+        -- Requerimientos:
+            En el babel.config.js añadir:
+             plugins:[
+                'react-native-reanimated/plugin',
+             ],
+            
+            IMPORTANTE npm start -- --reset-cache 
+    
     - --save react-native-permissions
      -- Instrucciones IOS/android:
         https://www.npmjs.com/package/react-native-permissions
