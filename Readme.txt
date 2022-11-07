@@ -44,7 +44,7 @@ Modulos instalados y mini guía:
         -- Requerimientos Android:
             <meta-data
         android:name="com.google.android.geo.API_KEY"
-        android:value="(codigo de proporcionado por google)AIzaSyCHQdasBHe_S8_yBGz_3i9SIHMEqWbYYsI"/>
+        android:value="(codigo de proporcionado por google)"/>
     - @react-native-community/geolocation --save
         -- Requerimentos Android:
          Añadir en el manifest la siguiente linea con el permisio <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
