@@ -5,6 +5,8 @@ import {Location} from '../interfaces/appInterfaces';
 export const useLocation = () => {
   const [hasLocation, setHasLocation] = useState(false);
   const [routeLines, setRouteLines] = useState<Location[]>([]);
+
+  const [initialPositionArray, setInitialPositionArray] = useState<number[]>([]);
   const [initialPosition, setInitialPosition] = useState<Location>();
 
   const [userLocation, setUserLocation] = useState<Location>({
@@ -26,6 +28,7 @@ export const useLocation = () => {
     getCurrentLocation().then(location => {
       if(!isMounted.current) return;
       setInitialPosition(location);
+      setInitialPositionArray([ location.longitude,location.latitude]);
       setUserLocation(location);
       setRouteLines(routes =>[...routes, location]);
       setHasLocation(true);
@@ -83,5 +86,7 @@ export const useLocation = () => {
     userLocation,
     stopFollowUserLocation,
     routeLines,
+    initialPositionArray,
+    setInitialPositionArray
   };
 };

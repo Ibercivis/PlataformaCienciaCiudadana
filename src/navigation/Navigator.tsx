@@ -1,14 +1,10 @@
 import React, {useContext} from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
-import {MapScreen} from '../screens/MapScreen';
-import {PermissionsScreen} from '../screens/PermissionsScreen';
 import {PermissionsContext} from '../context/PermissionsContext';
-import {LoadingScreen} from '../screens/LoadingScreen';
-import {HomeScreen} from '../screens/HomeScreen';
 import {LoginScreen} from '../screens/LoginScreen';
 import {AuthContext} from '../context/AuthContext';
-import { NavigatorMap } from './NavigatorMap';
-import { DrawerNavigation } from './DrawerNavigation';
+import {DrawerNavigation} from './DrawerNavigation';
+import {RegisterScreen} from '../screens/RegisterScreen';
 
 const Stack = createStackNavigator();
 
@@ -18,8 +14,6 @@ export const Navigator = () => {
 
   //si no está logged, se le redirigirá hasta la pantalla de login
   const {authState} = useContext(AuthContext);
-
- 
 
   return (
     <Stack.Navigator
@@ -33,7 +27,11 @@ export const Navigator = () => {
         // <Stack.Screen name="HomeScreen" component={HomeScreen} />
         <Stack.Screen name="DrawerNavigation" component={DrawerNavigation} />
       ) : (
-        <Stack.Screen name="LoginScreen" component={LoginScreen} />
+        // <Stack.Screen name="DrawerPaperNavigation" component={DrawerPaperNavigation} />
+        <>
+          <Stack.Screen name="LoginScreen" component={LoginScreen} />
+          <Stack.Screen name="RegisterScreen" component={RegisterScreen} />
+        </>
       )}
 
       {/* {permissions.locationStatus === 'granted' ? (

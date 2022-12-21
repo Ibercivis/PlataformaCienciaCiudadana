@@ -7,16 +7,17 @@ interface Props {
   iconName: string;
   style?: StyleProp<ViewStyle>;
   onPress: () => void;
+  size?: number;
 }
 
-export const Fab = ({iconName, onPress, style = {}}: Props) => {
+export const Fab = ({iconName, onPress, style = {}, size = 50}: Props) => {
   return (
     <View style={{...(style as any)}}>
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={onPress}
-        style={styles.blackButton}>
-        <IconTemp name={iconName} size={30} color="white" />
+        style={{...styles.blackButton, height: size, width: size}}>
+        <IconTemp name={iconName} size={40} color="white" />
       </TouchableOpacity>
     </View>
   );
@@ -27,17 +28,18 @@ const styles = StyleSheet.create({
     zIndex: 9999,
     height: 50,
     width: 50,
+    paddingLeft: 2,
     backgroundColor: 'black',
     borderRadius: 50,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor:'#000',
-    shadowOffset:{
-        width: 0,
-        height: 3
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 3,
     },
     shadowOpacity: 0.25,
-    shadowRadius: 4.60,
-    elevation: 6
+    shadowRadius: 4.6,
+    elevation: 6,
   },
 });

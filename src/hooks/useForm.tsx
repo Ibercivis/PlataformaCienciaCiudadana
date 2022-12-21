@@ -11,10 +11,17 @@ export const useForm = <T extends Object> (initialState: T) => {
           [field]: value,
         });
       };
+
+      const clear = () =>{
+        setState(initialState)
+      } 
+
   return {
     ...state,
     form: state,
-    onChange
+    setState,
+    onChange,
+    clear
   }
 }
 

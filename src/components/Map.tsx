@@ -87,7 +87,7 @@ export const Map = () => {
             strokeWidth={3}
           />
         )}
-
+  {/* mapbox */}
         {/* <Marker
           image={require('../assets/custom-marker.png')}
           coordinate={{

@@ -64,3 +64,9 @@ Modulos instalados y mini guía:
 
     - Si se desea añadir un carousel: https://github.com/meliorence/react-native-snap-carousel
     - Si se desean añadir tabs/drawer https://reactnavigation.org/docs/bottom-tab-navigator/#props
+
+    - mapbox 
+        -- https://github.com/rnmapbox/maps#readme
+    - react-native-paper@5.0.0-rc.10 diseños
+    - react-native link react-native-image-picker
+        -- camara
