@@ -70,3 +70,14 @@ Modulos instalados y mini guía:
     - react-native-paper@5.0.0-rc.10 diseños
     - react-native link react-native-image-picker
         -- camara
+    
+    - -D react-native-flipper
+
+https://ibjects.medium.com/google-signin-tutorial-for-react-native-81a57fb67b18 WEB QUE EXPLICA SIGN IN ANDROID/IOS
+npm i @react-native-google-signin/google-signin
+LOGIN ANDROID: 
+
+    keystore - 5E:8F:16:06:2E:A3:CD:2C:4A:0D:54:78:76:BA:A6:F3:8C:AB:F6:25
+    android ID cliente 0Auth: 235777853257-k7u75rffibndst0j0s3h7cadpp2k5bd5.apps.googleusercontent.com
+    webClient ID 0Auth: 235777853257-rnbdsrqchtl76jq0givh1h6l7u47rs4k.apps.googleusercontent.com
+        - secret: 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

@@ -1,7 +1,7 @@
 import React from 'react';
 import {ActivityIndicator, StyleSheet, Text, View} from 'react-native';
 import {IconTemp} from '../components/IconTemp';
-import { globalStyles } from '../thyme/theme';
+import { globalStyles } from '../theme/theme';
 
 export const LoadingScreen = () => {
   return (

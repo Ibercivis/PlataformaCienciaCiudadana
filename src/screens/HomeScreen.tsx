@@ -1,13 +1,17 @@
 import React, {SetStateAction, useEffect, useState} from 'react';
 import {StackScreenProps} from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {globalStyles} from '../thyme/theme';
+import {globalStyles} from '../theme/theme';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {ScrollView,StyleSheet,Text,} from 'react-native';
+import {Dimensions, ScrollView,StyleSheet,Text,} from 'react-native';
 import {Project} from '../interfaces/appInterfaces';
 import {Searchbar,Button,Card,Title,Paragraph,AnimatedFAB,Portal,Modal,} from 'react-native-paper';
+import { FontSize } from '../theme/fonts';
 
 interface Props extends StackScreenProps<any, any> {}
+const window = Dimensions.get('window');
+
+const height = window.height > 720 ? 80 : 50;
 
 export const HomeScreen = ({navigation}: Props) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -44,7 +48,7 @@ export const HomeScreen = ({navigation}: Props) => {
 
   return (
     <>
-      <ScrollView style={{flex: 1,backgroundColor: 'transparent', marginVertical: 10,}}>
+      <ScrollView style={{flex: 1,backgroundColor: 'transparent', marginVertical: 10}}>
         <Searchbar
           style={{marginBottom: 10}}
           placeholder="Search"
@@ -65,6 +69,7 @@ export const HomeScreen = ({navigation}: Props) => {
               <Card.Title
                 title={item.projectName}
                 subtitle="creador"
+                titleStyle={{fontSize: FontSize.fontSize}}
                 left={() => (
                   <Icon
                     style={globalStyles.icons}
@@ -82,9 +87,8 @@ export const HomeScreen = ({navigation}: Props) => {
                 style={{padding: 2}}
                 source={{uri: 'https://picsum.photos/700'}}
               />
-              <Card.Actions>
-                <Button onPress={() => console.log('a1')}>Acción 1</Button>
-                <Button onPress={() => console.log('a2')}>Acción 2</Button>
+              <Card.Actions style={{alignSelf: 'center'}}>
+                <Button labelStyle={{fontSize: FontSize.fontSizeText, paddingTop: window.height > 720 ? 10: 0}} onPress={() => console.log('a1')}>Participar</Button>
               </Card.Actions>
             </Card>
           ))}

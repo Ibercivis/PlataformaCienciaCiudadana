@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import {UserTrackingMode} from '@rnmapbox/maps/javascript/components/Camera';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {globalStyles} from '../thyme/theme';
+import {globalStyles} from '../theme/theme';
 import {
   Button,
   Dialog,
@@ -24,7 +24,7 @@ import {
   Portal,
   TextInput,
 } from 'react-native-paper';
-import {Colors} from '../thyme/colors';
+import {Colors} from '../theme/colors';
 
 MapboxGL.setWellKnownTileServer('Mapbox');
 MapboxGL.setAccessToken(

@@ -8,13 +8,28 @@ export interface User {
   password: string;
 }
 
+export interface UserToken {
+  idToken: string;
+  serverAuthCode: string;
+  scopes: Array<string>; // on iOS this is empty array if no additional scopes are defined
+  user: UserInfo;
+}
+export interface UserInfo {
+  id: string;
+  email: string;
+  familyName: string;
+  givenName: string;
+  name: string; // full name
+  photo: string; // url
+}
+
 export interface Mark {
   id?: number;
   name: string;
   type: string;
   ask: string;
   description: string;
-  coordinates?: number [];
+  coordinates?: number[];
 }
 export interface Project {
   projectName: string;

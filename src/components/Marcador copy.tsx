@@ -22,12 +22,12 @@ import {
   TextInput,
   Title,
 } from 'react-native-paper';
-import {globalStyles} from '../thyme/theme';
+import {globalStyles} from '../theme/theme';
 import {useForm} from '../hooks/useForm';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {Mark} from '../interfaces/appInterfaces';
 import {StackParams} from '../navigation/ProjectNavigator';
-import {Colors} from '../thyme/colors';
+import {Colors} from '../theme/colors';
 
 interface Props extends StackScreenProps<StackParams, 'Marcador'> {}
 

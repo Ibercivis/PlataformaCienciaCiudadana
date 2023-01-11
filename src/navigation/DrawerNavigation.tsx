@@ -5,10 +5,10 @@ import {
 } from '@react-navigation/drawer';
 import {SettingsScreen} from '../screens/SettingsScreen';
 import {HomeScreen} from '../screens/HomeScreen';
-import React, {useContext} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {View, Image, TouchableOpacity, Text} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {globalStyles} from '../thyme/theme';
+import {globalStyles} from '../theme/theme';
 import {NavigatorMap} from './NavigatorMap';
 import {LoginScreen} from '../screens/LoginScreen';
 import {AuthContext} from '../context/AuthContext';
@@ -16,10 +16,15 @@ import {NavigatorMapBox} from './NavigatorMapBox';
 import {PaperScreen} from '../screens/PaperScreen';
 import {NewProjectScreen} from '../screens/NewProjectScreen';
 import {Marcador} from '../components/Marcador';
-import { MarcadorExample } from '../components/MarcadorExample';
-import { Mark, Project } from '../interfaces/appInterfaces';
-import { ProjectNavigator } from './ProjectNavigator';
-import { Colors } from '../thyme/colors';
+import {MarcadorExample} from '../components/MarcadorExample';
+import {Mark, Project} from '../interfaces/appInterfaces';
+import {ProjectNavigator} from './ProjectNavigator';
+import {Colors} from '../theme/colors';
+import {
+  GoogleSignin,
+  statusCodes,
+  User,
+} from '@react-native-google-signin/google-signin';
 
 export type StackParams = {
   // HomeScreen: {projects?: Project[]};
@@ -63,6 +68,42 @@ export const DrawerNavigation = () => {
 
 const MenuInterno = ({navigation}: DrawerContentComponentProps) => {
   const {signOut} = useContext(AuthContext);
+  const [userLogged, setUserLogged] = useState<User>(); //usuario logged
+
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId:
+        '235777853257-rnbdsrqchtl76jq0givh1h6l7u47rs4k.apps.googleusercontent.com',
+    });
+    getCurrentUser();
+  }, []);
+
+  const getCurrentUser = async () => {
+    const currentUser = await GoogleSignin.getCurrentUser();
+    if (currentUser) {
+      setUserLogged(currentUser);
+    }
+    console.log(currentUser?.user.givenName);
+  };
+
+  //TODO quitar cuando se reciban tokens y la base de datos esté bien
+  const signOutApp = async () => {
+    try {
+      const isSignedIn = await GoogleSignin.isSignedIn();
+      console.log(isSignedIn);
+      //si ha loggeado por google
+      if (isSignedIn) {
+        await GoogleSignin.signOut();
+      }
+      signOut();
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_REQUIRED) {
+        // user has not signed in yet
+      } else {
+        // some other error
+      }
+    }
+  };
 
   return (
     <DrawerContentScrollView style={{backgroundColor: 'white'}}>
@@ -73,6 +114,7 @@ const MenuInterno = ({navigation}: DrawerContentComponentProps) => {
           }}
           style={globalStyles.avatar}
         />
+        {userLogged && <Text>{userLogged!.user.givenName}</Text>}
       </View>
       <View style={globalStyles.drawerItems}>
         <TouchableOpacity
@@ -132,7 +174,7 @@ const MenuInterno = ({navigation}: DrawerContentComponentProps) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={{...globalStyles.menuButton, flexDirection: 'row'}}
-          onPress={() => signOut()}>
+          onPress={() => signOutApp()}>
           <Icon
             style={globalStyles.icons}
             name="log-out"

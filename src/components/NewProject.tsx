@@ -6,7 +6,8 @@ import {
   KeyboardAvoidingView,
   StyleSheet,
   Image,
-  TouchableOpacity,
+  Dimensions,
+  TextInput as RNTextInput
 } from 'react-native';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {
@@ -14,23 +15,30 @@ import {
   Button,
   Dialog,
   IconButton,
-  MD3Colors,
   Paragraph,
   Portal,
   TextInput,
 } from 'react-native-paper';
-import {globalStyles} from '../thyme/theme';
+import {globalStyles} from '../theme/theme';
 import {ScrollView} from 'react-native-gesture-handler';
 import {useForm} from '../hooks/useForm';
 import {Project, Mark} from '../interfaces/appInterfaces';
 import {Fab} from './Fab';
 import {StackParams} from '../navigation/ProjectNavigator';
+import {FontSize} from '../theme/fonts';
+import { Colors } from '../theme/colors';
+import { color } from 'react-native-reanimated';
+
+const window = Dimensions.get('window');
+const height = window.width > 500 ? 80 : 50;
+const iconSize = window.width > 500 ? 60 : 30;
+const iconSizeFab = window.width > 500 ? 50 : 20;
 
 interface Props extends StackScreenProps<StackParams, 'NewProjectScreen'> {}
 
 export const NewProject = ({navigation, route}: Props) => {
   const {marks} = route.params;
-  console.log(marks);
+  const projectNameRef = useRef<RNTextInput>(null);
   const [img, setImg] = useState('');
   const [tempUri, setTempUri] = useState<string>();
   const [project, setProject] = useState<Project>({
@@ -103,10 +111,14 @@ export const NewProject = ({navigation, route}: Props) => {
         marks,
         onBack: true,
       });
-    }else{
+    } else {
       showDialog();
     }
   };
+
+  const clearNameRef = () => {
+    projectNameRef.current!.clear();
+  }
 
   return (
     <>
@@ -116,35 +128,75 @@ export const NewProject = ({navigation, route}: Props) => {
           showsVerticalScrollIndicator={false}>
           <Text style={styles.title}>NUEVO PROYECTO</Text>
           <View>
-            <TextInput
-              style={{margin: 15}}
-              label="Nombre del proyecto"
-              autoCorrect={false}
-              autoCapitalize="none"
-              underlineColor="#B9E6FF"
-              activeOutlineColor="#5C95FF"
-              selectionColor="#2F3061"
-              textColor="#2F3061"
-              outlineColor="#5C95FF"
-              autoFocus={true}
-              dense={true}
-              onChangeText={value => onChange(value, 'projectName')}
-            />
-            <TextInput
-              style={{margin: 15}}
-              label="Descripción"
-              autoCorrect={false}
-              autoCapitalize="none"
-              underlineColor="#B9E6FF"
-              activeOutlineColor="#5C95FF"
-              selectionColor="#2F3061"
-              textColor="#2F3061"
-              outlineColor="#5C95FF"
-              multiline={true}
-              numberOfLines={4}
-              dense={true}
-              onChangeText={value => onChange(value, 'description')}
-            />
+            <View
+              style={{
+                flexDirection: 'row',
+                // width: window.width - 25,
+                alignSelf: 'center',
+                justifyContent: 'center',
+              }}>
+              <TextInput
+                ref={projectNameRef}
+                style={{
+                  ...styles.textInput,
+                }}
+                right={
+                  <TextInput.Icon
+                    size={iconSize}
+                    icon="close-circle"
+                    style={{paddingLeft: 15,}}
+                    onPress={() => projectNameRef.current!.clear()}
+                  />
+                }
+                placeholder="Nombre del proyecto"
+                mode="flat"
+                autoCorrect={false}
+                autoCapitalize="none"
+                onChangeText={value => onChange(value, 'projectName')}
+                underlineColor="#B9E6FF"
+                activeOutlineColor="#5C95FF"
+                selectionColor="#2F3061"
+                textColor="#2F3061"
+                outlineColor={Colors.lightorange}
+                autoFocus={false}
+                dense={false}
+              />
+            </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                // width: window.width - 25,
+                alignSelf: 'center',
+                justifyContent: 'center',
+              }}>
+              <TextInput
+                style={{
+                  ...styles.textInput,
+                }}
+                right={
+                  <TextInput.Icon
+                    size={iconSize}
+                    icon="close-circle"
+                    style={{paddingLeft: 15}}
+                    onPress={() => onChange('', 'description')}
+                  />
+                }
+                placeholder="Descripcion"
+                mode="flat"
+                autoCorrect={false}
+                autoCapitalize="none"
+                onChangeText={value => onChange(value, 'description')}
+                underlineColor="#B9E6FF"
+                activeOutlineColor="#5C95FF"
+                selectionColor="#2F3061"
+                textColor="#2F3061"
+                outlineColor="#5C95FF"
+                autoFocus={false}
+                dense={false}
+                multiline={true}
+                numberOfLines={10}
+              />
+            </View>
             <View style={styles.photoContainer}>
               <Text
                 style={{margin: 10, marginHorizontal: 20, color: '#2F3061'}}>
@@ -158,12 +210,6 @@ export const NewProject = ({navigation, route}: Props) => {
                     size={50}
                     onPress={() => galeria()}
                   />
-                  {/* <IconButton
-                      icon="camera"
-                      iconColor="#5F4B66"
-                      size={50}
-                      onPress={() => takePhoto()}
-                    /> */}
                 </View>
               )}
               {tempUri && (
@@ -223,18 +269,22 @@ export const NewProject = ({navigation, route}: Props) => {
           iconMode={'dynamic'}
           style={[styles.fabStyle]}
         /> */}
-        <Portal>
-          <Dialog visible={visible} onDismiss={hideDialog}>
-            <Dialog.Icon icon="alert" />
-            <Dialog.Title style={{alignSelf: 'center'}}>Error de creación</Dialog.Title>
-            <Dialog.Content>
-              <Paragraph>Es necesario establecer un nombre y una descripción válidos.</Paragraph>
-            </Dialog.Content>
-            <Dialog.Actions>
-              <Button onPress={hideDialog}>Cerrar</Button>
-            </Dialog.Actions>
-          </Dialog>
-        </Portal>
+      <Portal>
+        <Dialog visible={visible} onDismiss={hideDialog}>
+          <Dialog.Icon icon="alert" />
+          <Dialog.Title style={{alignSelf: 'center'}}>
+            Error de creación
+          </Dialog.Title>
+          <Dialog.Content>
+            <Paragraph>
+              Es necesario establecer un nombre y una descripción válidos.
+            </Paragraph>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={hideDialog}>Cerrar</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </>
   );
 };
@@ -246,13 +296,13 @@ const styles = StyleSheet.create({
   },
   title: {
     alignSelf: 'center',
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#2F3061',
-    borderBottomWidth: 1,
-    borderColor: '#2F3061',
+    // borderBottomWidth: 1,
+    // borderColor: '#2F3061',
     marginTop: 10,
-    marginBottom: 20
+    marginBottom: 20,
   },
   fabStyle: {
     bottom: 16,
@@ -288,6 +338,7 @@ const styles = StyleSheet.create({
     width: '90%',
     borderWidth: 1,
     borderRadius: 10,
+    borderColor: Colors.lightorange,
     justifyContent: 'center',
     backgroundColor: '#EADEDA',
   },
@@ -301,5 +352,18 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     marginBottom: 10,
     backgroundColor: 'transparent',
+  },
+
+  textInput: {
+    width: window.width > 500 ? window.width - 150 : window.width - 80,
+    // height: height,
+    justifyContent: 'center',
+    marginTop: 15,
+    paddingLeft: 25,
+    paddingBottom: 0,
+    borderWidth: 1,
+    backgroundColor: 'white',
+    borderColor: Colors.lightorange,
+    fontSize: FontSize.fontSizeText,
   },
 });

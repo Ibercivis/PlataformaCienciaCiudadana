@@ -1,6 +1,6 @@
 import React from 'react';
 import {View} from 'react-native';
-import { globalStyles } from '../thyme/theme';
+import { globalStyles } from '../theme/theme';
 import {
   Text,
   TextInput,

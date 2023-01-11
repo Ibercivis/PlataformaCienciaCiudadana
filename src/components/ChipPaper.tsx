@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {View, Text} from 'react-native';
 
 import { Chip, Divider} from 'react-native-paper';
-import {globalStyles} from '../thyme/theme';
+import {globalStyles} from '../theme/theme';
 
 export const ChipPaper = () => {
 

@@ -8,16 +8,17 @@ interface Props {
   style?: StyleProp<ViewStyle>;
   onPress: () => void;
   size?: number;
+  iconSize?: number;
 }
 
-export const Fab = ({iconName, onPress, style = {}, size = 50}: Props) => {
+export const Fab = ({iconName, onPress, style = {}, size = 50, iconSize = 40}: Props) => {
   return (
     <View style={{...(style as any)}}>
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={onPress}
-        style={{...styles.blackButton, height: size, width: size}}>
-        <IconTemp name={iconName} size={40} color="white" />
+        style={{...styles.blackButton, height: size, width: size, alignItems: 'center', paddingRight: 2}}>
+        <IconTemp name={iconName} size={iconSize} color="white" />
       </TouchableOpacity>
     </View>
   );

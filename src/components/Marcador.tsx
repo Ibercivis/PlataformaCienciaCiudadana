@@ -1,5 +1,5 @@
 import {StackScreenProps} from '@react-navigation/stack';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 
 import {Picker} from '@react-native-picker/picker';
 import {
@@ -10,6 +10,8 @@ import {
   ScrollView,
   Animated,
   Dimensions,
+  TextInput as RNTextInput,
+  Image,
 } from 'react-native';
 import {
   Button,
@@ -22,20 +24,27 @@ import {
   TextInput,
   Title,
 } from 'react-native-paper';
-import {globalStyles} from '../thyme/theme';
+import {globalStyles} from '../theme/theme';
 import {useForm} from '../hooks/useForm';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {Mark} from '../interfaces/appInterfaces';
 import {StackParams} from '../navigation/ProjectNavigator';
-import {Colors} from '../thyme/colors';
+import {Colors} from '../theme/colors';
+import {FontSize} from '../theme/fonts';
+import {Keyboard} from 'react-native';
 
 interface Props extends StackScreenProps<StackParams, 'Marcador'> {}
 
 const maxWidth = Dimensions.get('screen').width;
+const window = Dimensions.get('window');
+const height = window.width > 500 ? 80 : 50;
+const iconSize = window.width > 500 ? 60 : 30;
+const iconSizeFab = window.width > 500 ? 50 : 20;
 
 export const Marcador = ({route, navigation}: Props) => {
   const {projectName, description, photo, marks: markas, onBack} = route.params;
   const [marks, setMarks] = useState<Mark[]>([]);
+  const [markType, setMarkType] = useState('');
   const [selectedMark, setSelectedMark] = useState<Mark>({
     name: '',
     type: '',
@@ -44,7 +53,7 @@ export const Marcador = ({route, navigation}: Props) => {
   });
   const [selectedLanguage, setSelectedLanguage] = useState();
   const [isEdit, setIsEdit] = useState(false);
-
+  const projectNameRef = useRef<RNTextInput>(null);
   const {form, setState, onChange, clear} = useForm<Mark>({
     name: '',
     type: '',
@@ -74,14 +83,20 @@ export const Marcador = ({route, navigation}: Props) => {
 
   const hideDialog = () => setVisibleAlert(false);
 
-  const newMark = () => {
+  const newMark = (type: string) => {
+    setMarkType(type);
     setIsEdit(false);
+    setSelectedMark({ name: '',
+    type: '',
+    ask: '',
+    description: '',})
     clear();
     showModal();
   };
 
   const addAsk = () => {
     if (!isEdit) {
+      form.type = markType;
       setMarks([...marks, form]);
     } else {
       //primero se coge el que se va a editar del array y su posicion
@@ -124,12 +139,12 @@ export const Marcador = ({route, navigation}: Props) => {
   };
 
   const onSelectType = (value: string = '') => {
-    onChange(value, 'type')
-  }
+    onChange(value, 'type');
+  };
 
   const nextScreen = () => {
     if (marks.length > 0) {
-      console.log(marks)
+      console.log(marks);
       navigation.navigate('MarcadorExample', {
         projectName,
         description,
@@ -141,14 +156,20 @@ export const Marcador = ({route, navigation}: Props) => {
     }
   };
 
+  const onClearInput = async () => {
+    console.log('clear');
+    Keyboard.dismiss();
+    projectNameRef.current!.clear();
+  };
+
   return (
     <>
       <KeyboardAvoidingView style={{...globalStyles.globalMargin, flex: 1}}>
         <ScrollView
           style={styles.container}
           showsVerticalScrollIndicator={false}>
-          <Text style={styles.title}>MARCADORES</Text>
-          {marks.length > 0 &&
+          <Text style={styles.title}>MARCADOR</Text>
+          {marks.length > 0 ? (
             marks.map((item, index) => (
               <View
                 key={index}
@@ -159,35 +180,16 @@ export const Marcador = ({route, navigation}: Props) => {
                 <TouchableOpacity
                   style={styles.mark}
                   onPress={() => showMark(item)}>
-                  <Text style={styles.text}>Nombre:</Text>
-                  <Text style={{}}>{item.name}</Text>
                   <Text style={styles.text}>Pregunta:</Text>
                   <Text style={{}}>{item.ask}</Text>
                 </TouchableOpacity>
-                {/* <Card
-                  style={{
-                    marginVertical: 10,
-                    width: '80%',
-                    marginHorizontal: 10,
-                    flex:1,
-                    
-                  }}
-                  mode="elevated">
-                  <Card.Content style={{
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}>
-                    <Title>{item.name}</Title>
-                    <Paragraph>{item.ask}</Paragraph>
-                  </Card.Content>
-                </Card> */}
-                <View style={{alignItems: 'center', justifyContent: 'center'}}>
+                <View style={{alignItems: 'center', justifyContent: 'center', flexDirection: 'row',}}>
                   <IconButton
                     icon="delete"
                     iconColor="black"
                     size={25}
                     style={{
-                      marginRight: 20,
+                      // marginRight: 20,
                       alignSelf: 'center',
                       // justifyContent: 'flex-end', alignItems: 'flex-end'
                     }}
@@ -198,7 +200,6 @@ export const Marcador = ({route, navigation}: Props) => {
                     iconColor="black"
                     size={25}
                     style={{
-                      marginRight: 20,
                       alignSelf: 'center',
                       // justifyContent: 'flex-end', alignItems: 'flex-end'
                     }}
@@ -206,14 +207,39 @@ export const Marcador = ({route, navigation}: Props) => {
                   />
                 </View>
               </View>
-            ))}
-          <IconButton  icon="plus-circle-outline"
-            iconColor="black"
-            style={{alignSelf: 'center',  backgroundColor: 'transparent', width: 50, height: 50, marginTop: 20}}
-            size={50}
-            onPress={() => newMark()} />
+            ))
+          ) : (
+            <Text
+              style={{...styles.text, alignSelf: 'center', marginBottom: 20}}>
+              Seleccione el tipo{' '}
+            </Text>
+          )}
         </ScrollView>
-        
+        {/* <View style={{ ...styles.bottomViewButton}}>
+          <TouchableOpacity
+            activeOpacity={0.5}
+            onPress={() => newMark()}
+            style={{
+              justifyContent: 'center',
+              alignSelf: 'center',
+              backgroundColor: 'grey',
+              borderRadius: 50,
+              position: 'absolute',
+              bottom: 0,
+              // left: -100
+            }}>
+            <Image
+              source={require('../assets/icons/plus.png')}
+              style={{
+                width: 50,
+                height: 50,
+                borderRadius: 50,
+              }}
+            />
+          </TouchableOpacity>
+        </View> */}
+
+        {/* buttons screen */}
         <View style={styles.bottomViewButton}>
           <Button
             style={styles.button}
@@ -234,6 +260,79 @@ export const Marcador = ({route, navigation}: Props) => {
             Siguiente
           </Button>
         </View>
+
+        {/* add text */}
+        <View
+          style={{
+            position: 'absolute',
+            bottom: 210,
+            right: 0,
+            justifyContent: 'center',
+            alignSelf: 'center',
+            backgroundColor: 'grey',
+            borderRadius: 50,
+          }}>
+          <TouchableOpacity
+            activeOpacity={0.5}
+            onPress={() => newMark('string')}>
+            <Image
+              source={require('../assets/icons/text-type.png')}
+              style={{
+                width: 50,
+                height: 50,
+                borderRadius: 50,
+              }}
+            />
+          </TouchableOpacity>
+        </View>
+        {/* add number */}
+        <View
+          style={{
+            position: 'absolute',
+            bottom: 140,
+            right: 0,
+            justifyContent: 'center',
+            alignSelf: 'center',
+            backgroundColor: 'grey',
+            borderRadius: 50,
+          }}>
+          <TouchableOpacity
+            activeOpacity={0.5}
+            onPress={() => newMark('number')}>
+            <Image
+              source={require('../assets/icons/number-type.png')}
+              style={{
+                width: 50,
+                height: 50,
+                borderRadius: 50,
+              }}
+            />
+          </TouchableOpacity>
+        </View>
+        {/* add photo */}
+        <View
+          style={{
+            position: 'absolute',
+            bottom: 70,
+            right: 0,
+            justifyContent: 'center',
+            alignSelf: 'center',
+            backgroundColor: 'grey',
+            borderRadius: 50,
+          }}>
+          <TouchableOpacity
+            activeOpacity={0.5}
+            onPress={() => newMark('photo')}>
+            <Image
+              source={require('../assets/icons/photo-type.png')}
+              style={{
+                width: 50,
+                height: 50,
+                borderRadius: 50,
+              }}
+            />
+          </TouchableOpacity>
+        </View>
       </KeyboardAvoidingView>
 
       <Portal>
@@ -241,100 +340,96 @@ export const Marcador = ({route, navigation}: Props) => {
           visible={visible}
           onDismiss={hideModal}
           style={styles.modalStyle}>
-          <ScrollView
-            style={{paddingVertical: 20}}
-            showsVerticalScrollIndicator={false}>
-            <Text
-              style={{
-                alignSelf: 'center',
-                fontSize: 20,
-                fontWeight: 'bold',
-                color: '#2F3061',
-                borderColor: '#2F3061',
-                marginVertical: 20,
-              }}>
-              Nueva marca
-            </Text>
-            <TextInput
-              style={{
-                marginHorizontal: 15,
-                borderRadius: 1,
-                borderTopEndRadius: 10,
-                borderTopStartRadius: 10,
-                // marginTop: 20,
-              }}
-              label="Nombre del marcador"
-              autoCorrect={false}
-              autoCapitalize="none"
-              underlineColor="#B9E6FF"
-              activeOutlineColor="#5C95FF"
-              selectionColor="#2F3061"
-              textColor="#2F3061"
-              outlineColor="#5C95FF"
-              autoFocus={true}
-              dense={true}
-              value={form.name}
-              onChangeText={value => onChange(value, 'name')}
-            />
-            <TextInput
-              style={{
-                margin: 15,
-                borderRadius: 1,
-                borderTopEndRadius: 10,
-                borderTopStartRadius: 10,
-              }}
-              label="Pregunta"
-              autoCorrect={false}
-              autoCapitalize="none"
-              underlineColor="#B9E6FF"
-              activeOutlineColor="#5C95FF"
-              selectionColor="#2F3061"
-              textColor="#2F3061"
-              outlineColor="#5C95FF"
-              multiline={true}
-              numberOfLines={2}
-              dense={true}
-              value={form.ask}
-              onChangeText={value => onChange(value, 'ask')}
-            />
-            <Picker
-              selectedValue={form.type}
-              placeholder="Tipo de dato"
-              onValueChange={(itemValue, itemIndex) =>
-                onSelectType(itemValue)
-              }>
-              <Picker.Item label="Texto" value="string" />
-              <Picker.Item label="Número" value="number" />
-              <Picker.Item label="Fotografía" value="photo" />
-            </Picker>
-            <TextInput
-              style={{
-                margin: 15,
-                borderRadius: 1,
-                borderTopEndRadius: 10,
-                borderTopStartRadius: 10,
-              }}
-              label="Descripción"
-              autoCorrect={false}
-              autoCapitalize="none"
-              underlineColor="#B9E6FF"
-              activeOutlineColor="#5C95FF"
-              selectionColor="#2F3061"
-              textColor="#2F3061"
-              outlineColor="#5C95FF"
-              multiline={true}
-              numberOfLines={4}
-              dense={true}
-              value={form.description}
-              onChangeText={value => onChange(value, 'description')}
-            />
-          </ScrollView>
-          <Button style={styles.buttonModal} onPress={addAsk}>
-            Guardar
-          </Button>
-          <Button style={styles.buttonModal} onPress={hideModal}>
-            Cancelar
-          </Button>
+          <View>
+            <ScrollView
+              style={{paddingVertical: 20}}
+              showsVerticalScrollIndicator={false}>
+              <Text
+                style={{
+                  alignSelf: 'center',
+                  fontSize: 20,
+                  fontWeight: 'bold',
+                  color: '#2F3061',
+                  borderColor: '#2F3061',
+                  marginVertical: 20,
+                }}>
+                Nueva marca
+              </Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  // width: window.width - 25,
+                  alignSelf: 'center',
+                  justifyContent: 'center',
+                }}>
+                <TextInput
+                  ref={projectNameRef}
+                  style={{
+                    ...styles.textInput,
+                  }}
+                  placeholder="Pregunta"
+                  mode="flat"
+                  autoCorrect={false}
+                  autoCapitalize="none"
+                  onChangeText={value => onChange(value, 'ask')}
+                  underlineColor="#B9E6FF"
+                  activeOutlineColor="#5C95FF"
+                  selectionColor="#2F3061"
+                  textColor="#2F3061"
+                  outlineColor={Colors.lightorange}
+                  autoFocus={false}
+                  dense={false}
+                  defaultValue={selectedMark.ask}
+                />
+              </View>
+              {isEdit && (
+                <Picker
+                  selectedValue={form.type}
+                  placeholder="Tipo de dato"
+                  onValueChange={(itemValue, itemIndex) =>
+                    onSelectType(itemValue)
+                  }>
+                  <Picker.Item label="Texto" value="string" />
+                  <Picker.Item label="Número" value="number" />
+                  <Picker.Item label="Fotografía" value="photo" />
+                </Picker>
+              )}
+
+              <View
+                style={{
+                  flexDirection: 'row',
+                  // width: window.width - 25,
+                  alignSelf: 'center',
+                  justifyContent: 'center',
+                }}>
+                <TextInput
+                  ref={projectNameRef}
+                  style={{
+                    ...styles.textInput,
+                  }}
+                  placeholder="Descripción de la pregunta"
+                  mode="flat"
+                  autoCorrect={false}
+                  autoCapitalize="none"
+                  onChangeText={value => onChange(value, 'description')}
+                  underlineColor="#B9E6FF"
+                  activeOutlineColor="#5C95FF"
+                  selectionColor="#2F3061"
+                  textColor="#2F3061"
+                  outlineColor={Colors.lightorange}
+                  autoFocus={false}
+                  dense={false}
+                  defaultValue={selectedMark.description}
+                />
+              </View>
+            </ScrollView>
+            <Button style={styles.buttonModal} onPress={addAsk}>
+              Guardar
+            </Button>
+            <Button style={styles.buttonModal} onPress={hideModal}>
+              Cancelar
+            </Button>
+          </View>
         </Modal>
       </Portal>
 
@@ -395,6 +490,7 @@ const styles = StyleSheet.create({
   },
   buttonModal: {
     marginVertical: 5,
+    color: Colors.lightorange,
   },
   text: {
     fontSize: 15,
@@ -409,7 +505,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginVertical: 10,
     marginLeft: 10,
-    width: maxWidth - 110,
+    width: maxWidth - 150,
     backgroundColor: 'white',
     shadowColor: '#000',
     shadowOffset: {
@@ -420,5 +516,17 @@ const styles = StyleSheet.create({
     shadowRadius: 4.65,
 
     elevation: 7,
+  },
+  textInput: {
+    width: window.width > 500 ? window.width - 150 : window.width - 80,
+    // height: height,
+    justifyContent: 'center',
+    marginTop: 15,
+    paddingLeft: 25,
+    paddingBottom: 0,
+    borderWidth: 1,
+    backgroundColor: 'white',
+    borderColor: Colors.lightorange,
+    fontSize: FontSize.fontSizeText,
   },
 });

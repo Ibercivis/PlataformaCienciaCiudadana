@@ -5,6 +5,7 @@ import {LoginScreen} from '../screens/LoginScreen';
 import {AuthContext} from '../context/AuthContext';
 import {DrawerNavigation} from './DrawerNavigation';
 import {RegisterScreen} from '../screens/RegisterScreen';
+import { ForgotPassword } from '../screens/ForgotPassword';
 
 const Stack = createStackNavigator();
 
@@ -23,7 +24,7 @@ export const Navigator = () => {
           backgroundColor: 'white',
         },
       }}>
-      {authState.isLoggedIn ? (
+      {authState.isLoggedIn || authState.token ? (
         // <Stack.Screen name="HomeScreen" component={HomeScreen} />
         <Stack.Screen name="DrawerNavigation" component={DrawerNavigation} />
       ) : (
@@ -31,6 +32,7 @@ export const Navigator = () => {
         <>
           <Stack.Screen name="LoginScreen" component={LoginScreen} />
           <Stack.Screen name="RegisterScreen" component={RegisterScreen} />
+          <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
         </>
       )}
 

@@ -4,6 +4,7 @@ import {AuthState} from './AuthContext';
 type AuthAction =
   | {
       type: 'signIn';
+      payload?: {token: string};
     }
   | {
       type: 'singOut';
@@ -24,16 +25,25 @@ export const authReducer = (
 ): AuthState => {
   switch (action.type) {
     case 'signIn':
+      if(action.payload){
+        return {
+          ...state,
+          isLoggedIn: true,
+          token: action.payload.token
+        };
+      }else{
       return {
         ...state,
         isLoggedIn: true,
       };
+    }
     case 'singOut':
       return {
         ...state,
         isLoggedIn: false,
         username: undefined,
         password: undefined,
+        token: undefined
       };
     case 'setUsername':
       return {

@@ -10,7 +10,7 @@ import {
   Text,
   TextInput,
 } from 'react-native-paper';
-import {globalStyles} from '../thyme/theme';
+import {globalStyles} from '../theme/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Project} from '../interfaces/appInterfaces';
 import {
@@ -19,7 +19,7 @@ import {
   StackActions
 } from '@react-navigation/native';
 import { StackParams } from '../navigation/ProjectNavigator';
-import { Colors } from '../thyme/colors';
+import { Colors } from '../theme/colors';
 
 interface Props extends StackScreenProps<StackParams, 'MarcadorExample'> {}
 
@@ -185,7 +185,7 @@ export const MarcadorExample = ({route, navigation}: Props) => {
             Volver
           </Button>
           <Button
-            style={{...styles.button, left: 110}}
+            style={{...styles.button, right: 0}}
             icon="chevron-right"
             mode="elevated"
             contentStyle={{flexDirection: 'row-reverse'}}
@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   button: {
-    position: 'relative',
+    position: 'absolute',
     bottom: 0,
     width: 110,
   },
