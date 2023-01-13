@@ -86,10 +86,7 @@ export const Marcador = ({route, navigation}: Props) => {
   const newMark = (type: string) => {
     setMarkType(type);
     setIsEdit(false);
-    setSelectedMark({ name: '',
-    type: '',
-    ask: '',
-    description: '',})
+    setSelectedMark({name: '', type: '', ask: '', description: ''});
     clear();
     showModal();
   };
@@ -180,10 +177,50 @@ export const Marcador = ({route, navigation}: Props) => {
                 <TouchableOpacity
                   style={styles.mark}
                   onPress={() => showMark(item)}>
-                  <Text style={styles.text}>Pregunta:</Text>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                    }}>
+                    <Text style={styles.text}>Pregunta:</Text>
+                    {item.type == 'string' ? (
+                      <Image
+                        source={require('../assets/icons/text-type.png')}
+                        style={{
+                          width: 20,
+                          height: 20,
+                          borderRadius: 50,
+                        }}
+                      />
+                    ) : item.type == 'number' ? (
+                      <Image
+                        source={require('../assets/icons/number-type.png')}
+                        style={{
+                          width: 20,
+                          height: 20,
+                          borderRadius: 50,
+                        }}
+                      />
+                    ) : (
+                      <Image
+                        source={require('../assets/icons/photo-type.png')}
+                        style={{
+                          width: 20,
+                          height: 20,
+                          borderRadius: 50,
+                        }}
+                      />
+                    )}
+                  </View>
                   <Text style={{}}>{item.ask}</Text>
+                  {/* <Text style={{}}>{item.type}</Text> */}
                 </TouchableOpacity>
-                <View style={{alignItems: 'center', justifyContent: 'center', flexDirection: 'row',}}>
+                <View
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexDirection: 'row',
+                  }}>
                   <IconButton
                     icon="delete"
                     iconColor="black"
@@ -211,7 +248,7 @@ export const Marcador = ({route, navigation}: Props) => {
           ) : (
             <Text
               style={{...styles.text, alignSelf: 'center', marginBottom: 20}}>
-              Seleccione el tipo{' '}
+              Seleccione el tipo de respuesta del usuario
             </Text>
           )}
         </ScrollView>
@@ -262,16 +299,7 @@ export const Marcador = ({route, navigation}: Props) => {
         </View>
 
         {/* add text */}
-        <View
-          style={{
-            position: 'absolute',
-            bottom: 210,
-            right: 0,
-            justifyContent: 'center',
-            alignSelf: 'center',
-            backgroundColor: 'grey',
-            borderRadius: 50,
-          }}>
+        <View style={{...styles.floatButton, bottom: 210}}>
           <TouchableOpacity
             activeOpacity={0.5}
             onPress={() => newMark('string')}>
@@ -286,16 +314,7 @@ export const Marcador = ({route, navigation}: Props) => {
           </TouchableOpacity>
         </View>
         {/* add number */}
-        <View
-          style={{
-            position: 'absolute',
-            bottom: 140,
-            right: 0,
-            justifyContent: 'center',
-            alignSelf: 'center',
-            backgroundColor: 'grey',
-            borderRadius: 50,
-          }}>
+        <View style={{...styles.floatButton, bottom: 140}}>
           <TouchableOpacity
             activeOpacity={0.5}
             onPress={() => newMark('number')}>
@@ -310,16 +329,7 @@ export const Marcador = ({route, navigation}: Props) => {
           </TouchableOpacity>
         </View>
         {/* add photo */}
-        <View
-          style={{
-            position: 'absolute',
-            bottom: 70,
-            right: 0,
-            justifyContent: 'center',
-            alignSelf: 'center',
-            backgroundColor: 'grey',
-            borderRadius: 50,
-          }}>
+        <View style={{...styles.floatButton, bottom: 70}}>
           <TouchableOpacity
             activeOpacity={0.5}
             onPress={() => newMark('photo')}>
@@ -335,6 +345,7 @@ export const Marcador = ({route, navigation}: Props) => {
         </View>
       </KeyboardAvoidingView>
 
+      {/* modal add/edit */}
       <Portal>
         <Modal
           visible={visible}
@@ -347,7 +358,7 @@ export const Marcador = ({route, navigation}: Props) => {
               <Text
                 style={{
                   alignSelf: 'center',
-                  fontSize: 20,
+                  fontSize: 24,
                   fontWeight: 'bold',
                   color: '#2F3061',
                   borderColor: '#2F3061',
@@ -357,8 +368,7 @@ export const Marcador = ({route, navigation}: Props) => {
               </Text>
               <View
                 style={{
-                  flexDirection: 'row',
-                  // width: window.width - 25,
+                  flex: 1,
                   alignSelf: 'center',
                   justifyContent: 'center',
                 }}>
@@ -407,6 +417,9 @@ export const Marcador = ({route, navigation}: Props) => {
                   style={{
                     ...styles.textInput,
                   }}
+                  
+                  multiline
+                  numberOfLines={8}
                   placeholder="Descripción de la pregunta"
                   mode="flat"
                   autoCorrect={false}
@@ -433,6 +446,7 @@ export const Marcador = ({route, navigation}: Props) => {
         </Modal>
       </Portal>
 
+      {/* modal error */}
       <Portal>
         <Dialog visible={visibleAlert} onDismiss={hideDialog}>
           <Dialog.Icon icon="alert" />
@@ -440,7 +454,7 @@ export const Marcador = ({route, navigation}: Props) => {
             Error de creación
           </Dialog.Title>
           <Dialog.Content>
-            <Paragraph>Se requiere añadir al menos una marca</Paragraph>
+            <Paragraph>Se requiere añadir al menos una pregunta</Paragraph>
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={hideDialog}>Cerrar</Button>
@@ -484,7 +498,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     marginBottom: 15,
     marginHorizontal: 20,
-    // paddingTop: 20,
     padding: 20,
     borderRadius: 20,
   },
@@ -528,5 +541,23 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderColor: Colors.lightorange,
     fontSize: FontSize.fontSizeText,
+  },
+
+  floatButton: {
+    position: 'absolute',
+    right: 0,
+    justifyContent: 'center',
+    alignSelf: 'center',
+    backgroundColor: Colors.lightorange,
+    borderRadius: 50,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.29,
+    shadowRadius: 5.65,
+
+    elevation: 8,
   },
 });

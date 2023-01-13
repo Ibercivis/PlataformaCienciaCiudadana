@@ -11,6 +11,8 @@ import {
   View,
   TouchableOpacity,
   KeyboardAvoidingView,
+  Dimensions,
+  Image,
 } from 'react-native';
 import {UserTrackingMode} from '@rnmapbox/maps/javascript/components/Camera';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -25,6 +27,7 @@ import {
   TextInput,
 } from 'react-native-paper';
 import {Colors} from '../theme/colors';
+import {ImageButton} from './ImageButton';
 
 MapboxGL.setWellKnownTileServer('Mapbox');
 MapboxGL.setAccessToken(
@@ -34,6 +37,12 @@ MapboxGL.setConnected(true);
 const {MapView, Camera, PointAnnotation, MarkerView} = MapboxGL;
 
 type Position = number[];
+
+const window = Dimensions.get('window');
+const height = window.width > 500 ? 80 : 50;
+const heightBackground = window.height > 720 ? 600 : 400;
+const iconSize = window.width > 500 ? 70 : 50;
+const iconSizeFab = window.width > 500 ? 50 : 20;
 
 export const MapBox = () => {
   const navigation = useNavigation();
@@ -160,7 +169,20 @@ export const MapBox = () => {
                           size={35}
                           color={Colors.darkorange}
                         /> */}
-                        <IconButton
+                        <Button
+                          icon={({size, color}) => (
+                            <Image
+                              source={require('../assets/icons/mark.png')}
+                              style={{
+                                alignSelf: 'center',
+                                backgroundColor: 'transparent',
+                                width: 50,
+                                height: 50,
+                              }}
+                            />
+                          )}>
+                        </Button>
+                        {/* <IconButton
                           icon="map-marker"
                           iconColor="black"
                           style={{
@@ -170,7 +192,7 @@ export const MapBox = () => {
                             height: 50,
                           }}
                           size={50}
-                        />
+                        /> */}
                       </View>
                     </TouchableOpacity>
                   </MarkerView>
@@ -247,7 +269,7 @@ export const MapBox = () => {
           </Dialog.Actions>
         </Dialog>
       </KeyboardAvoidingView>
-      <Fab
+      {/* <Fab
         iconName="compass-outline"
         onPress={() => centerPosition()}
         style={{position: 'absolute', bottom: 20, right: 20}}
@@ -261,7 +283,56 @@ export const MapBox = () => {
         iconName="arrow-back-outline"
         onPress={() => navigation.navigate('HomeScreen' as never)}
         style={{position: 'absolute', top: 40, left: 20}}
-      />
+      /> */}
+
+      {/* buttons */}
+      <View
+        style={{...styles.button, position: 'absolute', bottom: 20, right: 20}}>
+        <TouchableOpacity activeOpacity={0.5} onPress={() => centerPosition()}>
+          <Image
+            source={require('../assets/icons/center-position.png')}
+            style={{
+              width: iconSize,
+              height: iconSize,
+              borderRadius: 50,
+            }}
+          />
+        </TouchableOpacity>
+      </View>
+      <View
+        style={{...styles.button, position: 'absolute', bottom: 80, right: 20}}>
+        <TouchableOpacity activeOpacity={0.5} onPress={() => addMarkPlus()}>
+          <Image
+            source={require('../assets/icons/add.png')}
+            style={{
+              width: iconSize,
+              height: iconSize,
+              borderRadius: 50,
+            }}
+          />
+        </TouchableOpacity>
+      </View>
+      <View
+        style={{
+          ...styles.button,
+          position: 'absolute',
+          top: 40,
+          left: 20,
+          transform: [{rotate: '180deg'}],
+        }}>
+        <TouchableOpacity
+          activeOpacity={0.5}
+          onPress={() => navigation.navigate('HomeScreen' as never)}>
+          <Image
+            source={require('../assets/icons/back.png')}
+            style={{
+              width: iconSize,
+              height: iconSize,
+              borderRadius: 50,
+            }}
+          />
+        </TouchableOpacity>
+      </View>
     </>
   );
 };
@@ -305,5 +376,15 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     borderColor: '#fff',
     borderWidth: 3,
+  },
+  button: {
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.29,
+    shadowRadius: 4.65,
+    elevation: 7,
   },
 });

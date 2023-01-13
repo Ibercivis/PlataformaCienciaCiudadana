@@ -7,18 +7,11 @@ import {
   ScrollView,
   Keyboard,
   TouchableWithoutFeedback,
-  Alert,
   Dimensions,
   ImageBackground,
+  Image,
 } from 'react-native';
-import {
-  Button,
-  Checkbox,
-  Divider,
-  IconButton,
-  Text,
-  TextInput,
-} from 'react-native-paper';
+import {Button, Checkbox, Divider, Text, TextInput} from 'react-native-paper';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {CustomAlert} from '../components/CustomAlert';
@@ -35,10 +28,12 @@ import {
 } from '@react-native-google-signin/google-signin';
 import {LoadingScreen} from './LoadingScreen';
 import {Fab} from '../components/Fab';
+import {ImageButton} from '../components/ImageButton';
 
 const window = Dimensions.get('window');
 const height = window.width > 500 ? 80 : 50;
-const iconSize = window.width > 500 ? 60 : 30;
+const heightBackground = window.height > 720 ? 600 : 400;
+const iconSize = window.width > 500 ? 70 : 40;
 const iconSizeFab = window.width > 500 ? 50 : 20;
 
 interface Props extends StackScreenProps<any, any> {}
@@ -53,8 +48,8 @@ export const LoginScreen = ({navigation}: Props) => {
   const {showAlert} = CustomAlert();
   const [isLoading, setIsLoading] = useState(false);
   const [checked, setChecked] = useState(false);
-  // console.log(window.width);
-  // console.log(window.height);
+  const [userError, setUserError] = useState(false);
+  const [passError, setPassError] = useState(false);
   console.log(authState.token);
 
   useEffect(() => {
@@ -82,6 +77,7 @@ export const LoginScreen = ({navigation}: Props) => {
           'Cancelar',
           'Aceptar',
         );
+        setPassError(true)
       }
     } else {
       showAlert(
@@ -90,6 +86,7 @@ export const LoginScreen = ({navigation}: Props) => {
         'Cancelar',
         'Aceptar',
       );
+      setUserError(true)
     }
   };
 
@@ -129,121 +126,12 @@ export const LoginScreen = ({navigation}: Props) => {
     return <LoadingScreen />;
   }
 
-  // return (
-  //   <View style={{flex: 1, backgroundColor: Colors.lightblue}}>
-  //     <ImageBackground
-  //       source={require('../assets/login-background.jpg')}
-  //       resizeMode="cover"
-  //       style={{flex: 1, alignSelf: 'stretch'}}>
-  //       <View
-  //         style={{
-  //           flex: 1,
-  //           backgroundColor: 'white',
-  //           width: '60%',
-  //           position: 'absolute',
-  //           transform: [{rotate: '90deg'}],
-  //         }}></View>
-  //       <KeyboardAvoidingView style={{...style.container, flex: 1}}>
-  //         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-  //           <View style={{marginBottom: 20}}>
-  //             <Text
-  //               style={{
-  //                 ...globalStyles.globalText,
-  //                 textAlign: 'center',
-  //                 fontSize: 40,
-  //                 fontWeight: 'bold',
-  //                 color: '#7D80DA',
-  //                 fontStyle: 'italic',
-  //                 borderColor: 'black',
-  //                 fontFamily: 'gamegirl-classic',
-  //                 textShadowColor: Colors.secondary,
-  //                 textShadowRadius: 5,
-  //               }}>
-  //               Inicio de sesión
-  //             </Text>
-  //             <TextInput
-  //               style={{marginTop: 15, paddingBottom: 5}}
-  //               placeholder="Nombre de usuario"
-  //               label="Nombre de usuario"
-  //               mode="flat"
-  //               autoCorrect={false}
-  //               autoCapitalize="none"
-  //               onChangeText={value => onChange(value, 'userName')}
-  //               underlineColor="#B9E6FF"
-  //               activeOutlineColor="#5C95FF"
-  //               selectionColor="#2F3061"
-  //               textColor="#2F3061"
-  //               outlineColor="#5C95FF"
-  //               autoFocus={true}
-  //               dense={true}
-  //             />
-  //             <TextInput
-  //               style={{marginTop: 15, paddingBottom: 5}}
-  //               label="Constraseña"
-  //               mode="flat"
-  //               textContentType={'password'}
-  //               secureTextEntry={true}
-  //               placeholder="Contraseña"
-  //               autoCorrect={false}
-  //               autoCapitalize="none"
-  //               onChangeText={value => onChange(value, 'password')}
-  //               underlineColor="#B9E6FF"
-  //               activeOutlineColor="#5C95FF"
-  //               selectionColor="#2F3061"
-  //               textColor="#2F3061"
-  //               outlineColor="#5C95FF"
-  //               dense={true}
-  //             />
-  //             {/* <TextInput
-  //             style={style.input}
-  //             placeholder="Nombre de usuario"
-  //             autoCorrect={false}
-  //             autoCapitalize="none"
-  //             onChangeText={value => onChange(value, 'userName')}
-  //           /> */}
-  //             {/* <TextInput
-
-  //             textContentType={'password'}
-  //             secureTextEntry={true}
-  //             style={style.input}
-  //             placeholder="Contraseña"
-  //             autoCorrect={false}
-  //             autoCapitalize="none"
-  //             onChangeText={value => onChange(value, 'password')}
-  //           /> */}
-  //           </View>
-  //         </TouchableWithoutFeedback>
-  //         <Button
-  //           style={{marginTop: 15}}
-  //           icon="send"
-  //           mode="contained"
-  //           buttonColor="#5C95FF"
-  //           onPress={() => loggin()}>
-  //           Iniciar sesion
-  //         </Button>
-  //         <GoogleSigninButton
-  //           style={{marginTop: 15, alignSelf: 'center'}}
-  //           size={GoogleSigninButton.Size.Wide}
-  //           color={GoogleSigninButton.Color.Dark}
-  //           onPress={() => logginGoogle()}
-  //         />
-  //         <View style={style.newUserContainer}>
-  //           <TouchableOpacity
-  //             onPress={() => navigation.replace('RegisterScreen')}
-  //             activeOpacity={0.6}>
-  //             <Text style={style.buttonText}>Nuevo usuario</Text>
-  //           </TouchableOpacity>
-  //         </View>
-  //       </KeyboardAvoidingView>
-  //     </ImageBackground>
-  //   </View>
-  // );
   return (
     <View style={{flex: 1, backgroundColor: 'transparent'}}>
       <ImageBackground
-        source={require('../assets/login-background.jpg')}
+        source={require('../assets/backgrounds/login-background.jpg')}
         resizeMode="cover"
-        style={{flex: 1, alignSelf: 'stretch'}}>
+        style={{flex: 1, alignSelf: 'stretch', height: heightBackground}}>
         <View style={{flex: 1}}>
           <View
             style={{
@@ -292,11 +180,25 @@ export const LoginScreen = ({navigation}: Props) => {
                       left={
                         <TextInput.Icon
                           size={iconSize}
-                          icon="account-circle"
-                          style={{paddingLeft: 15}}
+                          icon={({size, color}) => (
+                            <Image
+                              source={require('../assets/icons/user.png')}
+                              style={{
+                                width: window.width > 500 ? size - 10 : size,
+                                height: window.width > 500 ? size - 10 : size,
+                              }}
+                            />
+                          )}
+                          style={{
+                            paddingLeft: window.width > 500 ? 15 : 0,
+                            backgroundColor: 'transparent',
+                          }}
                         />
+                        // <TextInputIcon icon={require('../assets/icons/user.png')} />
                       }
                       placeholder="Nombre de usuario"
+                      allowFontScaling={true}
+                      underlineStyle={{borderRadius: 200, marginHorizontal: 5}}
                       mode="flat"
                       autoCorrect={false}
                       autoCapitalize="none"
@@ -305,9 +207,12 @@ export const LoginScreen = ({navigation}: Props) => {
                       activeOutlineColor="#5C95FF"
                       selectionColor="#2F3061"
                       textColor="#2F3061"
+                      placeholderTextColor={Colors.lightblue}
                       outlineColor="#5C95FF"
                       autoFocus={false}
                       dense={false}
+                      onPressIn={() => setUserError(false)}
+                      error={userError}
                     />
                   </View>
                   {/* password and icon */}
@@ -345,12 +250,25 @@ export const LoginScreen = ({navigation}: Props) => {
                       left={
                         <TextInput.Icon
                           size={iconSize}
-                          icon="lock"
-                          style={{paddingLeft: 15}}
+                          icon={({size, color}) => (
+                            <Image
+                              source={require('../assets/icons/password.png')}
+                              style={{
+                                width: window.width > 500 ? size - 10 : size,
+                                height: window.width > 500 ? size - 10 : size,
+                              }}
+                            />
+                          )}
+                          style={{
+                            paddingLeft: window.width > 500 ? 15 : 0,
+                            backgroundColor: 'transparent',
+                          }}
                         />
                       }
                       textContentType={'password'}
                       secureTextEntry={true}
+                      underlineStyle={{borderRadius: 200, marginHorizontal: 5}}
+                      allowFontScaling={true}
                       placeholder="Contraseña"
                       mode="flat"
                       autoCorrect={false}
@@ -360,9 +278,12 @@ export const LoginScreen = ({navigation}: Props) => {
                       activeOutlineColor="#5C95FF"
                       selectionColor="#2F3061"
                       textColor="#2F3061"
+                      placeholderTextColor={Colors.lightblue}
                       outlineColor="#5C95FF"
                       autoFocus={false}
                       dense={true}
+                      onPressIn={() => setPassError(false)}
+                      error={passError}
                     />
                   </View>
                 </View>
@@ -372,10 +293,11 @@ export const LoginScreen = ({navigation}: Props) => {
               <View
                 style={{
                   flexDirection: 'row',
-                  // width: window.width > 500 ? '75%' : window.width - 25,
+                  marginLeft:window.width > 500 ? 25 : 10,
+                  marginRight:window.width > 500 ? 35 : 20,
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  marginTop: window.width > 500 ? 40 : 10,
+                  marginTop: window.width > 500 ? 20 : 0,
                   marginBottom: 5,
                   paddingHorizontal: 10,
                 }}>
@@ -395,6 +317,7 @@ export const LoginScreen = ({navigation}: Props) => {
                       alignSelf: 'center',
                       justifyContent: 'center',
                       fontSize: FontSize.fontSizeText,
+                      fontWeight: 'bold',
                     }}>
                     Remember me
                   </Text>
@@ -433,7 +356,7 @@ export const LoginScreen = ({navigation}: Props) => {
                   style={{
                     flex: 1,
                   }}>
-                  <Button
+                  {/* <Button
                     style={{
                       // width: window.width > 500 ? '50%' : window.width -250,
                       height: window.height > 720 ? 70 : 40,
@@ -449,32 +372,62 @@ export const LoginScreen = ({navigation}: Props) => {
                     buttonColor={Colors.secondary}
                     onPress={() => navigation.replace('RegisterScreen')}>
                     Registro
-                  </Button>
+                  </Button> */}
+
+                  <ImageButton
+                    uri="login-background.jpg"
+                    text="Registro"
+                    style={{
+                      minWidth: 120,
+                      height: window.height > 720 ? 70 : 40,
+                      borderRadius: 40,
+                      justifyContent: 'center',
+                      marginRight: 20,
+                      marginBottom: 10,
+                      // alignSelf: 'center',
+                    }}
+                    // buttonColor="#5C95FF"
+                    onPress={() => navigation.replace('RegisterScreen')}
+                  />
                 </View>
 
-                <View
-                  style={{...style.verticalSlash, marginHorizontal: 20}}></View>
+                <View style={{...style.verticalSlash}}></View>
                 <View
                   style={{
                     flex: 1,
                     flexDirection: 'row',
-                    justifyContent: 'space-evenly',
+                    // justifyContent: 'space-evenly',
+                    alignItems: 'center',
                     marginLeft: 10,
                   }}>
-                  <Fab
-                    iconName="logo-google"
-                    onPress={() => logginGoogle()}
-                    style={{paddingRight: 0, marginHorizontal: 10}}
-                    size={iconSize}
-                    iconSize={iconSizeFab}
-                  />
-                  <Fab
-                    iconName="logo-facebook"
-                    onPress={() => loggin()}
-                    style={{paddingRight: 0}}
-                    size={iconSize}
-                    iconSize={iconSizeFab}
-                  />
+                  <View style={{paddingRight: 0, marginHorizontal: 10}}>
+                    <TouchableOpacity
+                      activeOpacity={0.5}
+                      onPress={() => logginGoogle()}>
+                      <Image
+                        source={require('../assets/icons/google.png')}
+                        style={{
+                          width: iconSize,
+                          height: iconSize,
+                          borderRadius: 50,
+                        }}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  <View style={{paddingRight: 0, marginHorizontal: 20}}>
+                    <TouchableOpacity
+                      activeOpacity={0.5}
+                      onPress={() => logginGoogle()}>
+                      <Image
+                        source={require('../assets/icons/facebook.png')}
+                        style={{
+                          width: iconSize,
+                          height: iconSize,
+                          borderRadius: 50,
+                        }}
+                      />
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
 
@@ -501,34 +454,33 @@ export const LoginScreen = ({navigation}: Props) => {
                 Iniciar sesion
               </Button>
             </View> */}
-            {/* sign in */}
-            <View style={{justifyContent: 'center', marginHorizontal: 20}}>
-              <Button
-                style={{
-                  // marginTop: 25,
-                  width: '70%',
-                  height: window.height > 720 ? 70 : 40,
-                  alignSelf: 'center',
-                  justifyContent: 'center',
-                  borderRadius: 30,
-                  backgroundColor: Colors.secondary,
-                  position: 'relative',
-                  marginTop: 30
-                }}
-                labelStyle={{
-                  fontSize: FontSize.fontSizeText + 4,
-                  paddingTop: window.height > 720 ? 16 : 0,
-                }}
-                icon="send"
-                mode="contained"
-                buttonColor="#5C95FF"
-                onPress={() => loggin()}>
-                Iniciar sesion
-              </Button>
-            </View>
+              {/* sign in */}
+              <View style={{justifyContent: 'center', marginHorizontal: 20}}>
+                <ImageButton
+                  uri="login-background.jpg"
+                  text="Iniciar sesion"
+                  style={{
+                    marginTop: '15%',
+                    // width: '70%',
+                    // height: window.height > 720 ? 70 : 40,
+                    // alignSelf: 'center',
+                    // justifyContent: 'center',
+                    // borderRadius: 30,
+                    // backgroundColor: Colors.secondary,
+                    // position: 'relative',
+                    // marginTop: 30,
+                  }}
+                  // labelStyle={{
+                  //   fontSize: FontSize.fontSizeText + 4,
+                  //   paddingTop: window.height > 720 ? 16 : 0,
+                  // }}
+                  // icon="send"
+                  // mode="contained"
+                  // buttonColor="#5C95FF"
+                  onPress={() => loggin()}
+                />
+              </View>
             </KeyboardAvoidingView>
-
-            
           </ScrollView>
         </View>
       </ImageBackground>
@@ -601,9 +553,12 @@ const style = StyleSheet.create({
     height: height,
     justifyContent: 'center',
     marginTop: 15,
-    paddingLeft: 25,
+    paddingLeft: window.width > 500 ? 35 : 15,
     paddingBottom: 0,
     borderWidth: 1,
+    borderRadius: 8,
+    borderTopStartRadius: 8,
+    borderTopEndRadius: 8,
     backgroundColor: 'white',
     borderColor: Colors.secondary,
     fontSize: FontSize.fontSizeText,
@@ -615,8 +570,7 @@ const style = StyleSheet.create({
     justifyContent: 'center',
     marginHorizontal: 20,
     marginBottom: 20,
-    alignSelf: 'center'
-    // backgroundColor: 'blue'
+    alignSelf: 'center',
   },
   verticalSlash: {
     height: '100%',

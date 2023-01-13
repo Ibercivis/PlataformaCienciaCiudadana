@@ -1,6 +1,12 @@
 import {StackScreenProps} from '@react-navigation/stack';
 import React, {useEffect, useState} from 'react';
-import {KeyboardAvoidingView, ScrollView, StyleSheet, View} from 'react-native';
+import {
+  Dimensions,
+  KeyboardAvoidingView,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import {
   Button,
   Dialog,
@@ -16,10 +22,14 @@ import {Project} from '../interfaces/appInterfaces';
 import {
   CommonActions,
   useNavigation,
-  StackActions
+  StackActions,
 } from '@react-navigation/native';
-import { StackParams } from '../navigation/ProjectNavigator';
-import { Colors } from '../theme/colors';
+import {StackParams} from '../navigation/ProjectNavigator';
+import {Colors} from '../theme/colors';
+import {FontSize} from '../theme/fonts';
+
+const maxWidth = Dimensions.get('screen').width;
+const window = Dimensions.get('window');
 
 interface Props extends StackScreenProps<StackParams, 'MarcadorExample'> {}
 
@@ -34,14 +44,18 @@ export const MarcadorExample = ({route, navigation}: Props) => {
     projectName: '',
     description: '',
     photo: '',
-    marks: []
+    marks: [],
   });
 
   useEffect(() => {
-    setNewProject({projectName:projectName, description: description, photo: photo, marks: marks});
-  }, [])
-  
-  
+    setNewProject({
+      projectName: projectName,
+      description: description,
+      photo: photo,
+      marks: marks,
+    });
+  }, []);
+
   const showDialog = (moreText: string) => {
     setShowMoreText(moreText);
     setVisible(true);
@@ -51,16 +65,15 @@ export const MarcadorExample = ({route, navigation}: Props) => {
   const hideDialogFinish = () => setVisibleFinish(false);
 
   const showFinishMessage = async () => {
-    
     await saveData();
     hideDialogFinish();
 
-    navigation.popToTop()
+    navigation.popToTop();
   };
 
-  const endProject = async () =>{
+  const endProject = async () => {
     // setProject([newProject]);
-    
+
     // se cargan los datos primero
     const data = await getData();
 
@@ -69,7 +82,6 @@ export const MarcadorExample = ({route, navigation}: Props) => {
       setProject(data);
       console.log(data);
     }
-
 
     // se guarda en base de datos
     if (project.length > 0) {
@@ -81,9 +93,8 @@ export const MarcadorExample = ({route, navigation}: Props) => {
       setProject([newProject]);
       console.log(project);
     }
-    setVisibleFinish(true)
-    
-  }
+    setVisibleFinish(true);
+  };
 
   const close = () => {
     navigation.dispatch(
@@ -97,7 +108,7 @@ export const MarcadorExample = ({route, navigation}: Props) => {
         ],
       }),
     );
-  }
+  };
 
   const getData = async () => {
     try {
@@ -126,19 +137,51 @@ export const MarcadorExample = ({route, navigation}: Props) => {
           <Text style={styles.title}>PRUEBA TU MARCADOR</Text>
           {marks.length > 0 &&
             marks.map((x, i) => (
-              <View  key={i}>
+              <View key={i}>
                 <Text
                   style={{
-                    margin: 15,
+                    marginHorizontal: 20,
+                    marginTop: 15,
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'center',
                     color: Colors.primary,
-                    fontSize: 18
+                    fontSize: 18,
                   }}>
                   {x.ask}
                 </Text>
-                <TextInput
+                <View
+                  style={{
+                    flex: 1,
+                    alignSelf: 'center',
+                    justifyContent: 'center',
+                    marginBottom: 15,
+                  }}>
+                  <TextInput
+                    style={{
+                      ...styles.textInput,
+                    }}
+                    right={
+                      <TextInput.Icon
+                        onPress={() => showDialog(x.description)}
+                        icon="information-variant"
+                      />
+                    }
+                    placeholder="Respuesta"
+                    mode="flat"
+                    autoCorrect={false}
+                    autoCapitalize="none"
+                    onChangeText={value => console.log(value)}
+                    underlineColor="#B9E6FF"
+                    activeOutlineColor="#5C95FF"
+                    selectionColor="#2F3061"
+                    textColor="#2F3061"
+                    outlineColor={Colors.lightorange}
+                    autoFocus={false}
+                    dense={false}
+                  />
+                </View>
+                {/* <TextInput
                   style={{
                     marginHorizontal: 15,
                     marginBottom: 10,
@@ -162,7 +205,7 @@ export const MarcadorExample = ({route, navigation}: Props) => {
                   autoFocus={true}
                   dense={false}
                   onChangeText={value => console.log(value)}
-                />
+                /> */}
               </View>
             ))}
         </ScrollView>
@@ -235,6 +278,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: '#2F3061',
     marginTop: 10,
+    marginBottom: 20
   },
   bottomViewButton: {
     flexDirection: 'row',
@@ -254,5 +298,17 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     padding: 20,
     borderRadius: 20,
+  },
+  textInput: {
+    width: window.width > 500 ? window.width - 150 : window.width - 80,
+    // height: height,
+    justifyContent: 'center',
+    marginTop: 15,
+    paddingLeft: 25,
+    paddingBottom: 0,
+    borderWidth: 1,
+    backgroundColor: 'white',
+    borderColor: Colors.lightorange,
+    fontSize: FontSize.fontSizeText,
   },
 });
