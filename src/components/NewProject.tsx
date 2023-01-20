@@ -7,7 +7,8 @@ import {
   StyleSheet,
   Image,
   Dimensions,
-  TextInput as RNTextInput
+  TextInput as RNTextInput,
+  TouchableOpacity,
 } from 'react-native';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {
@@ -26,13 +27,14 @@ import {Project, Mark} from '../interfaces/appInterfaces';
 import {Fab} from './Fab';
 import {StackParams} from '../navigation/ProjectNavigator';
 import {FontSize} from '../theme/fonts';
-import { Colors } from '../theme/colors';
-import { color } from 'react-native-reanimated';
+import {Colors} from '../theme/colors';
+import {color} from 'react-native-reanimated';
+import {Size} from '../theme/size';
 
 const window = Dimensions.get('window');
 const height = window.width > 500 ? 80 : 50;
 const iconSize = window.width > 500 ? 60 : 30;
-const iconSizeFab = window.width > 500 ? 50 : 20;
+const iconSizeFab = window.width > 500 ? 60 : 40;
 
 interface Props extends StackScreenProps<StackParams, 'NewProjectScreen'> {}
 
@@ -118,7 +120,7 @@ export const NewProject = ({navigation, route}: Props) => {
 
   const clearNameRef = () => {
     projectNameRef.current!.clear();
-  }
+  };
 
   return (
     <>
@@ -140,14 +142,14 @@ export const NewProject = ({navigation, route}: Props) => {
                 style={{
                   ...styles.textInput,
                 }}
-                right={
-                  <TextInput.Icon
-                    size={iconSize}
-                    icon="close-circle"
-                    style={{paddingLeft: 15,}}
-                    onPress={() => projectNameRef.current!.clear()}
-                  />
-                }
+                // right={
+                //   <TextInput.Icon
+                //     size={iconSize}
+                //     icon="close-circle"
+                //     style={{paddingLeft: 15,}}
+                //     onPress={() => projectNameRef.current!.clear()}
+                //   />
+                // }
                 placeholder="Nombre del proyecto"
                 mode="flat"
                 autoCorrect={false}
@@ -173,14 +175,14 @@ export const NewProject = ({navigation, route}: Props) => {
                 style={{
                   ...styles.textInput,
                 }}
-                right={
-                  <TextInput.Icon
-                    size={iconSize}
-                    icon="close-circle"
-                    style={{paddingLeft: 15}}
-                    onPress={() => onChange('', 'description')}
-                  />
-                }
+                // right={
+                //   <TextInput.Icon
+                //     size={iconSize}
+                //     icon="close-circle"
+                //     style={{paddingLeft: 15}}
+                //     onPress={() => onChange('', 'description')}
+                //   />
+                // }
                 placeholder="Descripcion"
                 mode="flat"
                 autoCorrect={false}
@@ -197,11 +199,26 @@ export const NewProject = ({navigation, route}: Props) => {
                 numberOfLines={10}
               />
             </View>
-            <View style={styles.photoContainer}>
+            <View
+              style={{
+                flexDirection: 'row',
+                // width: window.width - 25,
+                alignSelf: 'center',
+                justifyContent: 'center',
+              }}>
               <Text
-                style={{margin: 10, marginHorizontal: 20, color: '#2F3061'}}>
+                style={{
+                  marginHorizontal: 20,
+                  marginTop: 20,
+                  marginBottom: 10,
+                  color: '#2F3061',
+                  backgroundColor: ' red',
+                  fontSize: FontSize.fontSizeText
+                }}>
                 Imagen del proyecto
               </Text>
+            </View>
+            <View style={styles.photoContainer}>
               {!tempUri && (
                 <View style={styles.photo}>
                   <IconButton
@@ -246,16 +263,44 @@ export const NewProject = ({navigation, route}: Props) => {
             mode="elevated"
             contentStyle={{flexDirection: 'row-reverse'}}
             buttonColor="white"
+            labelStyle={{
+              fontSize: FontSize.fontSizeText,
+              justifyContent: 'center',
+              top: '2%',
+              paddingVertical: 5,
+            }}
             onPress={() => nextScreen()}>
             Siguiente
           </Button>
+          {/* <TouchableOpacity
+            style={{...styles.buttonNav}}
+            activeOpacity={0.5}
+            onPress={hideDialog}>
+            <View
+              style={{
+                justifyContent: 'center',
+                flexDirection: 'row',
+                alignItems: 'center',
+                margin: '5%',
+              }}>
+              <Text
+                style={{
+                  fontSize: FontSize.fontSizeText,
+                  justifyContent: 'center',
+                  color: 'black',
+                }}>
+                Siguiente
+              </Text>
+            </View>
+          </TouchableOpacity> */}
         </View>
       </KeyboardAvoidingView>
       <Fab
         iconName="arrow-back-outline"
         onPress={() => navigation.goBack()}
         style={{position: 'absolute', top: 20, left: 20}}
-        size={40}
+        size={iconSizeFab}
+        iconSize={iconSizeFab}
       />
       {/* <AnimatedFAB
           icon={'chevron-right'}
@@ -275,13 +320,40 @@ export const NewProject = ({navigation, route}: Props) => {
           <Dialog.Title style={{alignSelf: 'center'}}>
             Error de creación
           </Dialog.Title>
-          <Dialog.Content>
-            <Paragraph>
+          <Dialog.Content style={{top: '4%', paddingVertical: 10}}>
+            <Paragraph style={styles.modalText}>
               Es necesario establecer un nombre y una descripción válidos.
             </Paragraph>
           </Dialog.Content>
           <Dialog.Actions>
-            <Button onPress={hideDialog}>Cerrar</Button>
+            {/* <Button onPress={hideDialog} style={{
+                    height: 100,
+                    paddingVertical: 15,
+                    justifyContent: 'center',
+                    backgroundColor: 'blue'
+                  }}>
+                <Text
+                  style={{
+                    fontSize: FontSize.fontSizeText,
+                    paddingVertical: 15,
+                    justifyContent: 'center'
+                  }}>
+                  Cerrar
+                </Text>
+              </Button> */}
+            <TouchableOpacity activeOpacity={0.5} onPress={hideDialog}>
+              <View
+                style={{
+                  justifyContent: 'center',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  margin: '5%',
+                }}>
+                <Text style={{fontSize: FontSize.fontSizeText, color: 'black'}}>
+                  Cerrar
+                </Text>
+              </View>
+            </TouchableOpacity>
           </Dialog.Actions>
         </Dialog>
       </Portal>
@@ -296,7 +368,7 @@ const styles = StyleSheet.create({
   },
   title: {
     alignSelf: 'center',
-    fontSize: 24,
+    fontSize: FontSize.fontSizeText + 15,
     fontWeight: 'bold',
     color: '#2F3061',
     // borderBottomWidth: 1,
@@ -343,15 +415,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#EADEDA',
   },
   buttonNav: {
-    position: 'relative',
-    bottom: 0,
-    width: 110,
+    // textAlign: 'center',
+    // color: 'white',
+    // justifyContent: 'center',
+    // alignItems: 'center',
   },
   bottomViewButtonNav: {
     flexDirection: 'row-reverse',
-    marginHorizontal: 10,
+    marginHorizontal: 5,
     marginBottom: 10,
-    backgroundColor: 'transparent',
   },
 
   textInput: {
@@ -365,5 +437,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderColor: Colors.lightorange,
     fontSize: FontSize.fontSizeText,
+  },
+  modalText: {
+    fontSize: FontSize.fontSizeText,
+    textAlign: 'center',
+    paddingVertical: FontSize.fontSizeText,
+    flexShrink: 1,
   },
 });

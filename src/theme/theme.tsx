@@ -1,5 +1,7 @@
-import {StyleSheet} from 'react-native';
+import {Dimensions, StyleSheet} from 'react-native';
 import {Colors} from './colors'
+
+const window = Dimensions.get('window');
 
 export const globalStyles = StyleSheet.create({
   globalMargin: {

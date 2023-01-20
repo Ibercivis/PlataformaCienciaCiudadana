@@ -7,11 +7,10 @@ import {
   ScrollView,
   Keyboard,
   TouchableWithoutFeedback,
-  Dimensions,
   ImageBackground,
   Image,
 } from 'react-native';
-import {Button, Checkbox, Divider, Text, TextInput} from 'react-native-paper';
+import {Checkbox, Divider, Text, TextInput} from 'react-native-paper';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {CustomAlert} from '../components/CustomAlert';
@@ -24,17 +23,15 @@ import {FontSize} from '../theme/fonts';
 import {
   GoogleSignin,
   statusCodes,
-  GoogleSigninButton,
 } from '@react-native-google-signin/google-signin';
 import {LoadingScreen} from './LoadingScreen';
-import {Fab} from '../components/Fab';
 import {ImageButton} from '../components/ImageButton';
+import { Size } from '../theme/size';
 
-const window = Dimensions.get('window');
-const height = window.width > 500 ? 80 : 50;
-const heightBackground = window.height > 720 ? 600 : 400;
-const iconSize = window.width > 500 ? 70 : 40;
-const iconSizeFab = window.width > 500 ? 50 : 20;
+const height = Size.globalWidth > 500 ? 80 : 50;
+const heightBackground = Size.globalHeight > 720 ? 600 : 400;
+const iconSize = Size.globalWidth > 500 ? 70 : 40;
+const iconSizeFab = Size.globalWidth > 500 ? 50 : 20;
 
 interface Props extends StackScreenProps<any, any> {}
 
@@ -50,7 +47,7 @@ export const LoginScreen = ({navigation}: Props) => {
   const [checked, setChecked] = useState(false);
   const [userError, setUserError] = useState(false);
   const [passError, setPassError] = useState(false);
-  console.log(authState.token);
+  // console.log(authState.token);
 
   useEffect(() => {
     GoogleSignin.configure({
@@ -169,7 +166,7 @@ export const LoginScreen = ({navigation}: Props) => {
                   <View
                     style={{
                       flexDirection: 'row',
-                      width: window.width - 25,
+                      width: Size.globalWidth - 25,
                       alignSelf: 'center',
                       justifyContent: 'center',
                     }}>
@@ -184,13 +181,13 @@ export const LoginScreen = ({navigation}: Props) => {
                             <Image
                               source={require('../assets/icons/user.png')}
                               style={{
-                                width: window.width > 500 ? size - 10 : size,
-                                height: window.width > 500 ? size - 10 : size,
+                                width: Size.globalWidth > 500 ? size - 10 : size,
+                                height: Size.globalWidth > 500 ? size - 10 : size,
                               }}
                             />
                           )}
                           style={{
-                            paddingLeft: window.width > 500 ? 15 : 0,
+                            paddingLeft: Size.globalWidth > 500 ? 15 : 0,
                             backgroundColor: 'transparent',
                           }}
                         />
@@ -219,7 +216,7 @@ export const LoginScreen = ({navigation}: Props) => {
                   <View
                     style={{
                       flexDirection: 'row',
-                      width: window.width - 25,
+                      width: Size.globalWidth - 25,
                       alignSelf: 'center',
                       marginVertical: 15,
                       justifyContent: 'center',
@@ -254,13 +251,13 @@ export const LoginScreen = ({navigation}: Props) => {
                             <Image
                               source={require('../assets/icons/password.png')}
                               style={{
-                                width: window.width > 500 ? size - 10 : size,
-                                height: window.width > 500 ? size - 10 : size,
+                                width: Size.globalWidth > 500 ? size - 10 : size,
+                                height: Size.globalWidth > 500 ? size - 10 : size,
                               }}
                             />
                           )}
                           style={{
-                            paddingLeft: window.width > 500 ? 15 : 0,
+                            paddingLeft: Size.globalWidth > 500 ? 15 : 0,
                             backgroundColor: 'transparent',
                           }}
                         />
@@ -293,11 +290,11 @@ export const LoginScreen = ({navigation}: Props) => {
               <View
                 style={{
                   flexDirection: 'row',
-                  marginLeft:window.width > 500 ? 25 : 10,
-                  marginRight:window.width > 500 ? 35 : 20,
+                  marginLeft:Size.globalWidth > 500 ? 25 : 10,
+                  marginRight:Size.globalWidth > 500 ? 35 : 20,
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  marginTop: window.width > 500 ? 20 : 0,
+                  marginTop: Size.globalWidth > 500 ? 20 : 0,
                   marginBottom: 5,
                   paddingHorizontal: 10,
                 }}>
@@ -347,7 +344,7 @@ export const LoginScreen = ({navigation}: Props) => {
               {/* line divider */}
               <Divider
                 bold={true}
-                style={{marginVertical: window.height > 720 ? 40 : 10}}
+                style={{marginVertical: Size.globalHeight > 720 ? 40 : 10}}
               />
 
               {/* register and enter with google */}
@@ -379,7 +376,7 @@ export const LoginScreen = ({navigation}: Props) => {
                     text="Registro"
                     style={{
                       minWidth: 120,
-                      height: window.height > 720 ? 70 : 40,
+                      height: Size.globalHeight > 720 ? 70 : 40,
                       borderRadius: 40,
                       justifyContent: 'center',
                       marginRight: 20,
@@ -496,8 +493,8 @@ const style = StyleSheet.create({
     // justifyContent: 'center',
 
     backgroundColor: 'white',
-    width: window.width - 25,
-    height: window.height,
+    width: Size.globalWidth - 25,
+    height: Size.globalHeight,
     alignSelf: 'center',
     padding: 15,
     top: '25%',
@@ -549,11 +546,11 @@ const style = StyleSheet.create({
     justifyContent: 'center',
   },
   textInput: {
-    width: window.width > 500 ? window.width - 150 : window.width - 110,
+    width: Size.globalWidth > 500 ? Size.globalWidth - 150 : Size.globalWidth - 110,
     height: height,
     justifyContent: 'center',
     marginTop: 15,
-    paddingLeft: window.width > 500 ? 35 : 15,
+    paddingLeft: Size.globalWidth > 500 ? 35 : 15,
     paddingBottom: 0,
     borderWidth: 1,
     borderRadius: 8,

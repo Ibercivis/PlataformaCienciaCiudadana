@@ -110,7 +110,6 @@ export const MapBox = () => {
   const addMarkPlus = () => {
     const coords = initialPositionArray;
     setMarks([...marks, coords]);
-    console.log(marks);
   };
 
   const centerPosition = async () => {

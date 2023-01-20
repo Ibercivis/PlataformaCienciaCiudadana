@@ -138,18 +138,6 @@ export const MarcadorExample = ({route, navigation}: Props) => {
           {marks.length > 0 &&
             marks.map((x, i) => (
               <View key={i}>
-                <Text
-                  style={{
-                    marginHorizontal: 20,
-                    marginTop: 15,
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: Colors.primary,
-                    fontSize: 18,
-                  }}>
-                  {x.ask}
-                </Text>
                 <View
                   style={{
                     flex: 1,
@@ -157,6 +145,17 @@ export const MarcadorExample = ({route, navigation}: Props) => {
                     justifyContent: 'center',
                     marginBottom: 15,
                   }}>
+                  <Text
+                    style={{
+                      marginTop: 15,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: Colors.primary,
+                      fontSize: FontSize.fontSizeText,
+                    }}>
+                    {x.ask}
+                  </Text>
                   <TextInput
                     style={{
                       ...styles.textInput,
@@ -181,40 +180,22 @@ export const MarcadorExample = ({route, navigation}: Props) => {
                     dense={false}
                   />
                 </View>
-                {/* <TextInput
-                  style={{
-                    marginHorizontal: 15,
-                    marginBottom: 10,
-                    borderTopEndRadius: 20,
-                    // borderTopStartRadius: 20,
-                  }}
-                  right={
-                    <TextInput.Icon
-                      onPress={() => showDialog(x.description)}
-                      icon="information-variant"
-                    />
-                  }
-                  mode="flat"
-                  autoCorrect={false}
-                  autoCapitalize="none"
-                  underlineColor="#B9E6FF"
-                  activeOutlineColor="#5C95FF"
-                  selectionColor="#2F3061"
-                  textColor="#2F3061"
-                  outlineColor="#5C95FF"
-                  autoFocus={true}
-                  dense={false}
-                  onChangeText={value => console.log(value)}
-                /> */}
               </View>
             ))}
         </ScrollView>
+
+        {/* navegation buttons */}
         <View style={styles.bottomViewButton}>
           <Button
             style={styles.button}
             icon="chevron-left"
             mode="elevated"
-            // contentStyle={{flexDirection: 'row-reverse'}}
+            labelStyle={{
+              fontSize: FontSize.fontSizeText,
+              justifyContent: 'center',
+              top: '2%',
+              paddingVertical: 5,
+            }}
             buttonColor="white"
             onPress={() =>
               navigation.navigate('Marcador', {
@@ -228,15 +209,23 @@ export const MarcadorExample = ({route, navigation}: Props) => {
             Volver
           </Button>
           <Button
-            style={{...styles.button, right: 0}}
+            style={{...styles.button}}
             icon="chevron-right"
             mode="elevated"
             contentStyle={{flexDirection: 'row-reverse'}}
+            labelStyle={{
+              fontSize: FontSize.fontSizeText,
+              justifyContent: 'center',
+              top: '2%',
+              paddingVertical: 5,
+            }}
             buttonColor="white"
             onPress={() => endProject()}>
             Finalizar
           </Button>
         </View>
+
+        {/* show more info */}
         <Portal>
           <Dialog visible={visible} onDismiss={hideDialog}>
             <Dialog.Title>Más información</Dialog.Title>
@@ -248,14 +237,19 @@ export const MarcadorExample = ({route, navigation}: Props) => {
             </Dialog.Actions>
           </Dialog>
 
+          {/* finish modal */}
           <Dialog visible={visibleFinish} onDismiss={hideDialogFinish}>
-            <Dialog.Title>Finalizar</Dialog.Title>
+            <Dialog.Title style={{textAlign: 'center'}}>Finalizar</Dialog.Title>
             <Dialog.Content>
-              <Paragraph>¿ Desea guardar el proyecto ?</Paragraph>
+              <Paragraph style={styles.modalText}>¿ Desea guardar el proyecto ?</Paragraph>
             </Dialog.Content>
             <Dialog.Actions>
-              <Button onPress={hideDialogFinish}>Cerrar</Button>
-              <Button onPress={showFinishMessage}>Guardar</Button>
+              <Button labelStyle={styles.buttonModal} onPress={hideDialogFinish}>
+                Cerrar
+              </Button>
+              <Button labelStyle={styles.buttonModal} onPress={showFinishMessage}>
+                Guardar
+              </Button>
             </Dialog.Actions>
           </Dialog>
         </Portal>
@@ -272,23 +266,24 @@ const styles = StyleSheet.create({
   },
   title: {
     alignSelf: 'center',
-    fontSize: 20,
+    fontSize: FontSize.fontSizeText + 15,
     fontWeight: 'bold',
     color: '#2F3061',
-    borderBottomWidth: 1,
-    borderColor: '#2F3061',
+    // borderBottomWidth: 1,
+    // borderColor: '#2F3061',
     marginTop: 10,
-    marginBottom: 20
+    marginBottom: 20,
   },
   bottomViewButton: {
+    justifyContent: 'space-between',
     flexDirection: 'row',
     marginHorizontal: 10,
     marginVertical: 10,
   },
   button: {
-    position: 'absolute',
-    bottom: 0,
-    width: 110,
+    // position: 'absolute',
+    // bottom: 0,
+    // width: 110,
   },
   modalStyle: {
     justifyContent: 'center',
@@ -310,5 +305,17 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderColor: Colors.lightorange,
     fontSize: FontSize.fontSizeText,
+  },
+  buttonModal: {
+    marginVertical: 5,
+    color: Colors.lightorange,
+    fontSize: FontSize.fontSizeText,
+    paddingVertical: 10,
+  },
+  modalText: {
+    fontSize: FontSize.fontSizeText,
+    textAlign: 'center',
+    paddingVertical: FontSize.fontSizeText,
+    flexShrink: 1,
   },
 });

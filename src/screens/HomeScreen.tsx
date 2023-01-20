@@ -3,15 +3,35 @@ import {StackScreenProps} from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {globalStyles} from '../theme/theme';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {Dimensions, ScrollView,StyleSheet,Text,} from 'react-native';
+import {
+  Dimensions,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {Project} from '../interfaces/appInterfaces';
-import {Searchbar,Button,Card,Title,Paragraph,AnimatedFAB,Portal,Modal,} from 'react-native-paper';
-import { FontSize } from '../theme/fonts';
+import {
+  Searchbar,
+  Button,
+  Card,
+  Title,
+  Paragraph,
+  AnimatedFAB,
+  Portal,
+  Modal,
+  IconButton,
+  MD3Colors,
+} from 'react-native-paper';
+import {FontSize} from '../theme/fonts';
+import {Size} from '../theme/size';
 
 interface Props extends StackScreenProps<any, any> {}
-const window = Dimensions.get('window');
 
-const height = window.height > 720 ? 80 : 50;
+const height = Size.globalHeight > 720 ? 80 : 50;
+const iconSize = Size.globalWidth > 500 ? 70 : 40;
 
 export const HomeScreen = ({navigation}: Props) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -48,7 +68,8 @@ export const HomeScreen = ({navigation}: Props) => {
 
   return (
     <>
-      <ScrollView style={{flex: 1,backgroundColor: 'transparent', marginVertical: 10}}>
+      <ScrollView
+        style={{flex: 1, backgroundColor: 'transparent', marginVertical: 10}}>
         <Searchbar
           style={{marginBottom: 10}}
           placeholder="Search"
@@ -64,7 +85,7 @@ export const HomeScreen = ({navigation}: Props) => {
               onPress={() => {
                 setSelected(item);
                 showModal();
-                console.log(selected)
+                console.log(selected);
               }}>
               <Card.Title
                 title={item.projectName}
@@ -88,12 +109,19 @@ export const HomeScreen = ({navigation}: Props) => {
                 source={{uri: 'https://picsum.photos/700'}}
               />
               <Card.Actions style={{alignSelf: 'center'}}>
-                <Button labelStyle={{fontSize: FontSize.fontSizeText, paddingTop: window.height > 720 ? 10: 0}} onPress={() => console.log('a1')}>Participar</Button>
+                <Button
+                  labelStyle={{
+                    fontSize: FontSize.fontSizeText,
+                    paddingTop: Size.globalHeight > 720 ? 10 : 0,
+                  }}
+                  onPress={() => console.log('a1')}>
+                  Participar
+                </Button>
               </Card.Actions>
             </Card>
           ))}
       </ScrollView>
-      <AnimatedFAB
+      {/* <AnimatedFAB
         icon={'plus'}
         label={'Nuevo proyecto'}
         extended={isExtended}
@@ -102,7 +130,37 @@ export const HomeScreen = ({navigation}: Props) => {
         animateFrom={'right'}
         iconMode={'dynamic'}
         style={[styles.fabStyle]}
-      />
+      /> */}
+      <View style={styles.viewButtonModalAdd}>
+        <TouchableOpacity
+          activeOpacity={0.5}
+          onPress={() => navigation.navigate('NewProjectScreen', [])}>
+          <View
+            style={{
+              justifyContent: 'center',
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}>
+            <Image
+              source={require('../assets/icons/add.png')}
+              style={{
+                width: iconSize + 20,
+                height: iconSize + 20,
+                borderRadius: 50,
+              }}
+            />
+          </View>
+        </TouchableOpacity>
+      </View>
+
+      {/* <IconButton
+      style={{bottom: 16, right: 16, position: 'absolute', backgroundColor: 'grey'}}
+        icon="plus"
+        
+        iconColor={'black'}
+        size={iconSize}
+        onPress={() => navigation.navigate('NewProjectScreen', [])}
+      /> */}
 
       <Portal>
         <Modal
@@ -110,12 +168,12 @@ export const HomeScreen = ({navigation}: Props) => {
           onDismiss={hideModal}
           style={styles.modalStyle}>
           <ScrollView
-            style={{paddingVertical: 20,margin: 20, borderRadius: 30}}
+            style={{paddingVertical: 20, margin: 20, borderRadius: 30}}
             showsVerticalScrollIndicator={false}>
             <Text
               style={{
                 alignSelf: 'center',
-                fontSize: 20,
+                fontSize: FontSize.fontSizeText,
                 fontWeight: 'bold',
                 color: '#2F3061',
                 borderColor: '#2F3061',
@@ -157,5 +215,18 @@ const styles = StyleSheet.create({
   },
   buttonModal: {
     marginVertical: 5,
+  },
+  viewButtonModalAdd: {
+    bottom: 16,
+    right: 16,
+    position: 'absolute',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.29,
+    shadowRadius: 4.65,
+    elevation: 7,
   },
 });
