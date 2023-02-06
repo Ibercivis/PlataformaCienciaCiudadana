@@ -51,31 +51,6 @@ export const RegisterScreen = ({navigation}: Props) => {
   }, [errorMessage]);
 
   const onRegister = async () => {
-    // citmapApi
-    //   .post('/registration/', {
-    //     username: name,
-    //     email: email,
-    //     password1: password,
-    //     password2: password2,
-    //   })
-    //   .then(resp => {
-    //     console.log(resp);
-    //     navigation.replace('LoginScreen');
-    //   })
-    //   .catch(err => {
-    //     let textError = '';
-    //     const dataError = JSON.stringify(err.response.data, null);
-    //     const dataErrorObj = JSON.parse(dataError);
-    //     for (const x in dataErrorObj) {
-    //       textError += dataErrorObj[x] + '\n';
-    //     }
-    //     CustomAlert().showAlertOneButton(
-    //       'Error de creación',
-    //       textError,
-    //       'Confirmar',
-    //       removeError,
-    //     );
-    //   });
     Keyboard.dismiss();
     signUp({
       username: name,

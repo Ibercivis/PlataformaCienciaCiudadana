@@ -17,7 +17,8 @@ type AuthAction =
   | {type: 'addError'; payload: string}
   | {type: 'removeError'}
   | {type: 'notAuthenticated'}
-  | {type: 'recoveryPass'; payload: string};
+  | {type: 'recoveryPass'; payload: string}
+  | {type: 'changePass'; payload: string};
 
 //genera estado
 export const authReducer = (
@@ -76,6 +77,11 @@ export const authReducer = (
       };
 
     case 'recoveryPass':
+      return {
+        ...state,
+        message: action.payload,
+      };
+    case 'changePass':
       return {
         ...state,
         message: action.payload,

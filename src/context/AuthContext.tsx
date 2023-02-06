@@ -39,6 +39,7 @@ type AuthContextProps = {
   status: 'checking' | 'authenticated' | 'not-authenticated';
   removeError: () => void;
   recoveryPass: (email: string) => void;
+  changePass: (pass1: string, pass2: string) => void;
   // setUsername: (userName: string) => void;
   // setPassword: (password: string) => void;
 };
@@ -56,16 +57,14 @@ export const AuthProvider = ({children}: any) => {
 
   const checkToken = async () => {
     const token = await AsyncStorage.getItem('token');
+    console.log('CHECK TOKEN '+token);
     if (!token) return action({type: 'notAuthenticated'});
     const key = 'Token ' + token;
-    console.log('CHECK TOKEN');
-    console.log(token);
-    // const resp = await citmapApi.post('/authentication/login/', );
     let keyToken;
     try {
       const resp = await citmapApi.get('/authentication/user/', {
         headers: {
-          Authorization: key,
+          Authorization: token,
         },
       });
       keyToken = JSON.stringify(resp.config.headers.Authorization, null, 1);
@@ -76,11 +75,12 @@ export const AuthProvider = ({children}: any) => {
       return action({type: 'notAuthenticated'});
     }
 
-    await AsyncStorage.setItem('token', keyToken);
+    // await AsyncStorage.setItem('token', keyToken);
+    
     action({
       type: 'signIn',
       payload: {
-        token: keyToken,
+        token: token,
         // user: resp.data.usuario,
       },
     });
@@ -98,10 +98,9 @@ export const AuthProvider = ({children}: any) => {
           token: resp.data.key,
         },
       });
-      console.log('LOGIN');
-      console.log(resp.data.key);
       let key = 'Token ' + resp.data.key;
-      await AsyncStorage.setItem('token', resp.data.key);
+      //cuando se loggea, hay que cuardar el token como "Token (token)"
+      await AsyncStorage.setItem('token', key);
     } catch (err) {
       let textError = '';
       const dataError = JSON.stringify(err.response.data, null);
@@ -124,7 +123,6 @@ export const AuthProvider = ({children}: any) => {
         password1: data.password1,
         password2: data.password2,
       });
-      console.log(JSON.stringify(resp, null, 1))
       action({
         type: 'signUp',
         payload: {user: resp.data.user, token: resp.data.token},
@@ -158,14 +156,32 @@ export const AuthProvider = ({children}: any) => {
       const resp = await citmapApi.post('/authentication/password/reset/', {
         email: email
       });
-      console.log(JSON.stringify(resp.data.detail, null, 1));
       action({
         type: 'recoveryPass',
         payload: resp.data.detail,
       });
-      console.log('RECOVERY SUCCESFULL');
     } catch (err) {
-      console.log(JSON.stringify(err, null, 1))
+      action({
+        type: 'addError',
+        payload: err.message,
+      });
+    }
+  }
+  const changePass = async (pass1: string, pass2: string) => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      const resp = await citmapApi.post('/authentication/password/change/', {
+        new_password1: pass1, new_password2: pass2
+      },{
+        headers:{
+          'Authorization': token
+        }
+      });
+      action({
+        type: 'changePass',
+        payload: resp.data.detail,
+      });
+    } catch (err) {
       action({
         type: 'addError',
         payload: err.message,
@@ -181,7 +197,8 @@ export const AuthProvider = ({children}: any) => {
         signOut,
         signUp,
         removeError,
-        recoveryPass
+        recoveryPass,
+        changePass
       }}>
       {children}
     </AuthContext.Provider>

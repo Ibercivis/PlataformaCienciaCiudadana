@@ -76,15 +76,14 @@ export const MarcadorExample = ({route, navigation}: Props) => {
 
     // se cargan los datos primero
     const data = await getData();
-
+    console.log(data)
     //si hay datos guardados se seleccionan
-    if (data.length > 0) {
+    if (data) {
       setProject(data);
-      console.log(data);
     }
 
     // se guarda en base de datos
-    if (project.length > 0) {
+    if (project) {
       console.log('con data');
       setProject([...project, newProject]);
       console.log(project);
@@ -113,7 +112,7 @@ export const MarcadorExample = ({route, navigation}: Props) => {
   const getData = async () => {
     try {
       const jsonValue = await AsyncStorage.getItem('projects');
-      console.log(jsonValue);
+      // console.log(jsonValue);
       return jsonValue != null ? JSON.parse(jsonValue) : '';
     } catch (e) {
       // error reading value
@@ -170,7 +169,7 @@ export const MarcadorExample = ({route, navigation}: Props) => {
                     mode="flat"
                     autoCorrect={false}
                     autoCapitalize="none"
-                    onChangeText={value => console.log(value)}
+                    // onChangeText={value => console.log(value)}
                     underlineColor="#B9E6FF"
                     activeOutlineColor="#5C95FF"
                     selectionColor="#2F3061"

@@ -60,6 +60,7 @@ export const LoginScreen = ({navigation}: Props) => {
       errorMessage,
       'Ok',
       removeError,
+      () => console.log()
     );
   }, [errorMessage]);
 

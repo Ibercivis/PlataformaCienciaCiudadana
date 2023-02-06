@@ -27,6 +27,7 @@ import {
 } from 'react-native-paper';
 import {FontSize} from '../theme/fonts';
 import {Size} from '../theme/size';
+import { IconTemp } from '../components/IconTemp';
 
 interface Props extends StackScreenProps<any, any> {}
 
@@ -60,6 +61,7 @@ export const HomeScreen = ({navigation}: Props) => {
   const getData = async () => {
     try {
       const jsonValue = await AsyncStorage.getItem('projects');
+      console.log(jsonValue != null ? JSON.parse(jsonValue) : null)
       return jsonValue != null ? JSON.parse(jsonValue) : null;
     } catch (e) {
       // error reading value
@@ -141,14 +143,15 @@ export const HomeScreen = ({navigation}: Props) => {
               flexDirection: 'row',
               alignItems: 'center',
             }}>
-            <Image
+            {/* <Image
               source={require('../assets/icons/add.png')}
               style={{
                 width: iconSize + 20,
                 height: iconSize + 20,
                 borderRadius: 50,
               }}
-            />
+            /> */}
+            <IconTemp name='plus-circle' size={iconSize +20} />
           </View>
         </TouchableOpacity>
       </View>

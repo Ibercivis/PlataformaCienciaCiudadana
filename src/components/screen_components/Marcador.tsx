@@ -186,13 +186,15 @@ export const Marcador = ({route, navigation}: Props) => {
                       flexDirection: 'row',
                       justifyContent: 'space-between',
                     }}>
-                    <Text style={styles.text}>Pregunta:</Text>
+                    {/* <Text style={styles.text}>Pregunta:</Text> */}
+                    <Text style={{fontSize: FontSize.fontSizeText}}>{item.ask}</Text>
                     {item.type == 'string' ? (
                       <Image
                         source={require('../../assets/icons/text-type.png')}
                         style={{
-                          width: 20,
-                          height: 20,
+                          alignSelf: 'center',
+                          width: '7%',
+                          height: '80%',
                           borderRadius: 50,
                         }}
                       />
@@ -200,8 +202,9 @@ export const Marcador = ({route, navigation}: Props) => {
                       <Image
                         source={require('../../assets/icons/number-type.png')}
                         style={{
-                          width: 20,
-                          height: 20,
+                          alignSelf: 'center',
+                          width: '7%',
+                          height: '80%',
                           borderRadius: 50,
                         }}
                       />
@@ -209,14 +212,15 @@ export const Marcador = ({route, navigation}: Props) => {
                       <Image
                         source={require('../../assets/icons/photo-type.png')}
                         style={{
-                          width: 20,
-                          height: 20,
+                          alignSelf: 'center',
+                          width: '7%',
+                          height: '80%',
                           borderRadius: 50,
                         }}
                       />
                     )}
+                  
                   </View>
-                  <Text style={{fontSize: FontSize.fontSizeText}}>{item.ask}</Text>
                   {/* <Text style={{}}>{item.type}</Text> */}
                 </TouchableOpacity>
                 <View
@@ -256,29 +260,6 @@ export const Marcador = ({route, navigation}: Props) => {
             </Text>
           )}
         </ScrollView>
-        {/* <View style={{ ...styles.bottomViewButton}}>
-          <TouchableOpacity
-            activeOpacity={0.5}
-            onPress={() => newMark()}
-            style={{
-              justifyContent: 'center',
-              alignSelf: 'center',
-              backgroundColor: 'grey',
-              borderRadius: 50,
-              position: 'absolute',
-              bottom: 0,
-              // left: -100
-            }}>
-            <Image
-              source={require('../assets/icons/plus.png')}
-              style={{
-                width: 50,
-                height: 50,
-                borderRadius: 50,
-              }}
-            />
-          </TouchableOpacity>
-        </View> */}
 
         {/* buttons screen */}
         <View style={styles.bottomViewButton}>

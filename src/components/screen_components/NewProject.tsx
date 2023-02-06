@@ -270,7 +270,7 @@ export const NewProject = ({navigation, route}: Props) => {
         </View>
       </KeyboardAvoidingView>
       <Fab
-        iconName="arrow-back-outline"
+        iconName="arrow-left"
         onPress={() => navigation.goBack()}
         style={{position: 'absolute', top: 20, left: 20}}
         size={iconSizeFab}

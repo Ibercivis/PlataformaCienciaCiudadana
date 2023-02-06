@@ -1,6 +1,6 @@
 {
   "ES": {
-    "global":[
+    "global": [
       {
         "next_button": "Siguiente",
         "back_button": "Volver",
@@ -24,16 +24,16 @@
     "register_screen": [
       {
         "title": "Registrar",
-        "user_name_input" : "Nombre de usuario",
-        "email_input" : "Email",
-        "password1_input" : "Contraseña",
-        "password2_input" : "Repetir contraseña"
+        "user_name_input": "Nombre de usuario",
+        "email_input": "Email",
+        "password1_input": "Contraseña",
+        "password2_input": "Repetir contraseña"
       }
     ],
     "home_screen": [],
     "new_project_screen": [
       {
-        "title": "NUEVO PROYECTO", 
+        "title": "NUEVO PROYECTO",
         "project_name_input": "Nombre del proyecto",
         "description_input": "Descripción",
         "image_title": "Imagen del proyecto",
@@ -45,6 +45,15 @@
         ]
       }
     ],
-    "map_box_screen": []
+    "map_box_screen": [],
+    "settings_screen": [],
+    "change_password_screen": [
+      {
+        "title": "Cambiar contraseña",
+        "new_pass_1": "Nueva contraseña",
+        "new_pass_2": "Repetir contraseña",
+        "modal_message": "Contraseña cambiada"
+      }
+    ]
   }
 }

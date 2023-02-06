@@ -77,10 +77,15 @@ Modulos instalados y mini guía:
     - https://github.com/heyman333/react-native-responsive-fontSize para los tamaños del texto
 
 https://ibjects.medium.com/google-signin-tutorial-for-react-native-81a57fb67b18 WEB QUE EXPLICA SIGN IN ANDROID/IOS
-npm i @react-native-google-signin/google-signin
+- npm i @react-native-google-signin/google-signin
 LOGIN ANDROID: 
 
     keystore - 5E:8F:16:06:2E:A3:CD:2C:4A:0D:54:78:76:BA:A6:F3:8C:AB:F6:25
     android ID cliente 0Auth: 235777853257-k7u75rffibndst0j0s3h7cadpp2k5bd5.apps.googleusercontent.com
     webClient ID 0Auth: 235777853257-rnbdsrqchtl76jq0givh1h6l7u47rs4k.apps.googleusercontent.com
         - secret: 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
+
+INSTRUCCIONES PARA ARRANCAR LA APP 
+- npm i
+- Instalar android studio (xcode para correr en ios) y configurar dispositivos en API 30
+- npx react-native run-android/ios (uno de los dos)

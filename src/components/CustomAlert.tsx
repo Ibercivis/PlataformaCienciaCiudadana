@@ -16,10 +16,11 @@ export const CustomAlert = () => {
           {
             cancelable: true
           },
+          
         );
       };
 
-      const showAlertOneButton = (title: string, body:string, okText: string, onPress: () => void) => {
+      const showAlertOneButton = (title: string, body:string, okText: string, onPress: () => void, onDismiss: () => void) => {
         Alert.alert(
           title,
           body,
@@ -27,7 +28,8 @@ export const CustomAlert = () => {
             {text: okText, onPress: onPress},
           ],
           {
-            cancelable: true
+            cancelable: true,
+            onDismiss: onDismiss
           },
         );
       };

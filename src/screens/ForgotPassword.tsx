@@ -1,18 +1,16 @@
 import {StackScreenProps} from '@react-navigation/stack';
 import React, {useContext, useEffect} from 'react';
 import {
-  Alert,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
   View,
   Text,
-  TouchableOpacity,
   Dimensions,
   TouchableWithoutFeedback,
   StyleSheet,
 } from 'react-native';
-import {Button, Divider, IconButton, TextInput} from 'react-native-paper';
+import {IconButton} from 'react-native-paper';
 import { CustomAlert } from '../components/CustomAlert';
 import {CustomButton} from '../components/CustomButton';
 import {InputField} from '../components/InputField';
@@ -20,7 +18,6 @@ import { AuthContext } from '../context/AuthContext';
 import {useForm} from '../hooks/useForm';
 import {Colors} from '../theme/colors';
 import {FontSize} from '../theme/fonts';
-import {globalStyles} from '../theme/theme';
 
 const window = Dimensions.get('window');
 const iconSize = window.width > 500 ? 60 : 45;
@@ -50,7 +47,8 @@ export const ForgotPassword = ({navigation}: Props) => {
     if (errorMessage.length === 0) return;
     CustomAlert().showAlertOneButton(
       'Error al recuperar la contraseña',
-      errorMessage,
+      // errorMessage,
+      "Enter a valid email address.",
       'Ok',
       removeError,
     );
