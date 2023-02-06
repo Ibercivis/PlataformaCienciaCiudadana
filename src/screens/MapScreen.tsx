@@ -1,6 +1,6 @@
 import React from 'react';
 import {Text, View} from 'react-native';
-import {Map} from '../components/Map';
+import {Map} from '../components/screen_components/Map';
 
 export const MapScreen = () => {
 

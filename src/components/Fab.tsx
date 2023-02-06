@@ -1,6 +1,5 @@
 import React from 'react';
-import {StyleProp, View, ViewStyle, StyleSheet} from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import {StyleProp, View, ViewStyle, StyleSheet, TouchableOpacity} from 'react-native';
 import {IconTemp} from './IconTemp';
 
 interface Props {

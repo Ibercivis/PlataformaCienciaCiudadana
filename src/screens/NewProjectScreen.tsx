@@ -1,6 +1,6 @@
 import {StackScreenProps} from '@react-navigation/stack';
 import React from 'react';
-import { NewProject } from '../components/NewProject';
+import { NewProject } from '../components/screen_components/NewProject';
 import { StackParams } from '../navigation/ProjectNavigator';
 
 

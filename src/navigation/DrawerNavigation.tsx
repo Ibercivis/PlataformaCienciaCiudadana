@@ -14,10 +14,6 @@ import {LoginScreen} from '../screens/LoginScreen';
 import {AuthContext} from '../context/AuthContext';
 import {NavigatorMapBox} from './NavigatorMapBox';
 import {PaperScreen} from '../screens/PaperScreen';
-import {NewProjectScreen} from '../screens/NewProjectScreen';
-import {Marcador} from '../components/Marcador';
-import {MarcadorExample} from '../components/MarcadorExample';
-import {Mark, Project} from '../interfaces/appInterfaces';
 import {ProjectNavigator} from './ProjectNavigator';
 import {Colors} from '../theme/colors';
 import {

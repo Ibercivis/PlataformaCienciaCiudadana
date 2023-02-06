@@ -24,13 +24,13 @@ import {
   TextInput,
   Title,
 } from 'react-native-paper';
-import {globalStyles} from '../theme/theme';
-import {useForm} from '../hooks/useForm';
+import {globalStyles} from '../../theme/theme';
+import {useForm} from '../../hooks/useForm';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import {Mark} from '../interfaces/appInterfaces';
-import {StackParams} from '../navigation/ProjectNavigator';
-import {Colors} from '../theme/colors';
-import {FontSize} from '../theme/fonts';
+import {Mark} from '../../interfaces/appInterfaces';
+import {StackParams} from '../../navigation/ProjectNavigator';
+import {Colors} from '../../theme/colors';
+import {fonts, FontSize} from '../../theme/fonts';
 import {Keyboard} from 'react-native';
 
 interface Props extends StackScreenProps<StackParams, 'Marcador'> {}
@@ -169,7 +169,7 @@ export const Marcador = ({route, navigation}: Props) => {
         <ScrollView
           style={styles.container}
           showsVerticalScrollIndicator={false}>
-          <Text style={styles.title}>MARCADOR</Text>
+          <Text style={fonts.title}>MARCADOR</Text>
           {marks.length > 0 ? (
             marks.map((item, index) => (
               <View
@@ -189,7 +189,7 @@ export const Marcador = ({route, navigation}: Props) => {
                     <Text style={styles.text}>Pregunta:</Text>
                     {item.type == 'string' ? (
                       <Image
-                        source={require('../assets/icons/text-type.png')}
+                        source={require('../../assets/icons/text-type.png')}
                         style={{
                           width: 20,
                           height: 20,
@@ -198,7 +198,7 @@ export const Marcador = ({route, navigation}: Props) => {
                       />
                     ) : item.type == 'number' ? (
                       <Image
-                        source={require('../assets/icons/number-type.png')}
+                        source={require('../../assets/icons/number-type.png')}
                         style={{
                           width: 20,
                           height: 20,
@@ -207,7 +207,7 @@ export const Marcador = ({route, navigation}: Props) => {
                       />
                     ) : (
                       <Image
-                        source={require('../assets/icons/photo-type.png')}
+                        source={require('../../assets/icons/photo-type.png')}
                         style={{
                           width: 20,
                           height: 20,
@@ -327,7 +327,7 @@ export const Marcador = ({route, navigation}: Props) => {
               activeOpacity={0.5}
               onPress={() => newMark('string')}>
               <Image
-                source={require('../assets/icons/text-type.png')}
+                source={require('../../assets/icons/text-type.png')}
                 style={{
                   width: iconSize,
                   height: iconSize,
@@ -342,7 +342,7 @@ export const Marcador = ({route, navigation}: Props) => {
               activeOpacity={0.5}
               onPress={() => newMark('number')}>
               <Image
-                source={require('../assets/icons/number-type.png')}
+                source={require('../../assets/icons/number-type.png')}
                 style={{
                   width: iconSize,
                   height: iconSize,
@@ -357,7 +357,7 @@ export const Marcador = ({route, navigation}: Props) => {
               activeOpacity={0.5}
               onPress={() => newMark('photo')}>
               <Image
-                source={require('../assets/icons/photo-type.png')}
+                source={require('../../assets/icons/photo-type.png')}
                 style={{
                   width: iconSize,
                   height: iconSize,

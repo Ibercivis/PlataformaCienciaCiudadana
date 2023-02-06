@@ -1,22 +1,23 @@
 import React from 'react';
+import {User} from '../interfaces/appInterfaces';
 import {AuthState} from './AuthContext';
 
 type AuthAction =
   | {
       type: 'signIn';
-      payload?: {token: string};
+      payload: {token: string};
+    }
+  | {
+      type: 'signUp';
+      payload: {token: string; user: User};
     }
   | {
       type: 'singOut';
     }
-  | {
-      type: 'setUsername';
-      payload: string;
-    }
-  | {
-      type: 'setPassword';
-      payload: string;
-    };
+  | {type: 'addError'; payload: string}
+  | {type: 'removeError'}
+  | {type: 'notAuthenticated'}
+  | {type: 'recoveryPass'; payload: string};
 
 //genera estado
 export const authReducer = (
@@ -24,36 +25,60 @@ export const authReducer = (
   action: AuthAction,
 ): AuthState => {
   switch (action.type) {
-    case 'signIn':
-      if(action.payload){
-        return {
-          ...state,
-          isLoggedIn: true,
-          token: action.payload.token
-        };
-      }else{
+    case 'signUp':
       return {
         ...state,
-        isLoggedIn: true,
+        errorMessage: '',
+        status: 'authenticated',
+        token: action.payload.token,
+        user: action.payload.user,
       };
-    }
+
+    case 'signIn':
+      return {
+        ...state,
+        errorMessage: '',
+        status: 'authenticated',
+        token: action.payload.token,
+        // user: action.payload.user,
+      };
+
     case 'singOut':
       return {
         ...state,
-        isLoggedIn: false,
-        username: undefined,
-        password: undefined,
-        token: undefined
+        status: 'not-authenticated',
+        token: null,
+        user: null,
       };
-    case 'setUsername':
+
+    case 'addError':
       return {
         ...state,
-        username: action.payload,
+        user: null,
+        status: 'not-authenticated',
+        token: null,
+        errorMessage: action.payload,
       };
-    case 'setPassword':
+
+    case 'removeError':
       return {
         ...state,
-        password: action.payload,
+        errorMessage: '',
+        message: '',
+      };
+
+    case 'notAuthenticated':
+      return {
+        ...state,
+        status: 'not-authenticated',
+        token: null,
+        user: null,
+      };
+
+    case 'recoveryPass':
+      return {
+        ...state,
+        message: action.payload,
       };
     default:
       return state;

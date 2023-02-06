@@ -1,0 +1,50 @@
+{
+  "ES": {
+    "global":[
+      {
+        "next_button": "Siguiente",
+        "back_button": "Volver",
+        "close_button": "Cerrar",
+        "save_button": "Guardar",
+        "cancel_button": "Cancelar"
+      }
+    ],
+    "login_screen": [
+      {
+        "title": "Login",
+        "mail_input": "Correo",
+        "password_input": "Contraseña",
+        "recovery_password": "Recuperar contraseña",
+        "or_login": "O logear con...",
+        "new_in_app": "¿Nuevo en la App?",
+        "register": "Resgístrate",
+        "login_button": "Entrar"
+      }
+    ],
+    "register_screen": [
+      {
+        "title": "Registrar",
+        "user_name_input" : "Nombre de usuario",
+        "email_input" : "Email",
+        "password1_input" : "Contraseña",
+        "password2_input" : "Repetir contraseña"
+      }
+    ],
+    "home_screen": [],
+    "new_project_screen": [
+      {
+        "title": "NUEVO PROYECTO", 
+        "project_name_input": "Nombre del proyecto",
+        "description_input": "Descripción",
+        "image_title": "Imagen del proyecto",
+        "dialog": [
+          {
+            "title": "Error de creación",
+            "body": "Es necesario establecer un nombre y una descripción válidos."
+          }
+        ]
+      }
+    ],
+    "map_box_screen": []
+  }
+}

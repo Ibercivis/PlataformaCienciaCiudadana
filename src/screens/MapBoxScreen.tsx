@@ -1,7 +1,6 @@
 import React from 'react';
 import {Text, View} from 'react-native';
-import {Map} from '../components/Map';
-import { MapBox } from '../components/MapBox';
+import { MapBox } from '../components/screen_components/MapBox';
 
 export const MapBoxScreen = () => {
 

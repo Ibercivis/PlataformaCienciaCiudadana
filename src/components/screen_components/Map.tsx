@@ -2,9 +2,9 @@ import { useNavigation } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
 import React, {useEffect, useRef, useState} from 'react';
 import MapView, {Marker, Polyline, PROVIDER_GOOGLE} from 'react-native-maps';
-import {useLocation} from '../hooks/useLocation';
-import {LoadingScreen} from '../screens/LoadingScreen';
-import {Fab} from './Fab';
+import {useLocation} from '../../hooks/useLocation';
+import {LoadingScreen} from '../../screens/LoadingScreen';
+import {Fab} from './../Fab';
 
 
 // interface Props extends StackScreenProps<any, any>{};

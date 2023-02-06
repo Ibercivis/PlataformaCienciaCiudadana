@@ -1,5 +1,5 @@
 import {StackScreenProps} from '@react-navigation/stack';
-import React, {useEffect} from 'react';
+import React, {useContext, useEffect} from 'react';
 import {
   Alert,
   Keyboard,
@@ -17,6 +17,7 @@ import {useForm} from '../hooks/useForm';
 import {Colors} from '../theme/colors';
 import {FontSize} from '../theme/fonts';
 import {globalStyles} from '../theme/theme';
+import { AuthContext } from '../context/AuthContext';
 
 const window = Dimensions.get('window');
 const iconSize = window.width > 500 ? 60 : 45;
@@ -26,9 +27,14 @@ const height = window.width > 500 ? 80 : 50;
 interface Props extends StackScreenProps<any, any> {}
 
 export const ChangePasswordScreen = ({navigation}: Props) => {
+  const {} = useContext(AuthContext)
   const {email, onChange} = useForm({
     email: '',
   });
+
+  const sendEmail = () => {
+
+  }
 
   return (
     <View style={{flex: 1, backgroundColor: 'white'}}>

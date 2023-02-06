@@ -1,8 +1,8 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useEffect, useRef, useState} from 'react';
-import {useLocation} from '../hooks/useLocation';
-import {LoadingScreen} from '../screens/LoadingScreen';
-import {Fab} from './Fab';
+import {useLocation} from '../../hooks/useLocation';
+import {LoadingScreen} from '../../screens/LoadingScreen';
+import {Fab} from './../Fab';
 // import MapboxGL from '@react-native-mapbox-gl/maps';
 import MapboxGL from '@rnmapbox/maps';
 import {
@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import {UserTrackingMode} from '@rnmapbox/maps/javascript/components/Camera';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {globalStyles} from '../theme/theme';
+import {globalStyles} from '../../theme/theme';
 import {
   Button,
   Dialog,
@@ -26,8 +26,8 @@ import {
   Portal,
   TextInput,
 } from 'react-native-paper';
-import {Colors} from '../theme/colors';
-import {ImageButton} from './ImageButton';
+import {Colors} from '../../theme/colors';
+import {ImageButton} from './../ImageButton';
 
 MapboxGL.setWellKnownTileServer('Mapbox');
 MapboxGL.setAccessToken(
@@ -171,7 +171,7 @@ export const MapBox = () => {
                         <Button
                           icon={({size, color}) => (
                             <Image
-                              source={require('../assets/icons/mark.png')}
+                              source={require('../../assets/icons/mark.png')}
                               style={{
                                 alignSelf: 'center',
                                 backgroundColor: 'transparent',
@@ -289,7 +289,7 @@ export const MapBox = () => {
         style={{...styles.button, position: 'absolute', bottom: 20, right: 20}}>
         <TouchableOpacity activeOpacity={0.5} onPress={() => centerPosition()}>
           <Image
-            source={require('../assets/icons/center-position.png')}
+            source={require('../../assets/icons/center-position.png')}
             style={{
               width: iconSize,
               height: iconSize,
@@ -302,7 +302,7 @@ export const MapBox = () => {
         style={{...styles.button, position: 'absolute', bottom: 80, right: 20}}>
         <TouchableOpacity activeOpacity={0.5} onPress={() => addMarkPlus()}>
           <Image
-            source={require('../assets/icons/add.png')}
+            source={require('../../assets/icons/add.png')}
             style={{
               width: iconSize,
               height: iconSize,
@@ -323,7 +323,7 @@ export const MapBox = () => {
           activeOpacity={0.5}
           onPress={() => navigation.navigate('HomeScreen' as never)}>
           <Image
-            source={require('../assets/icons/back.png')}
+            source={require('../../assets/icons/back.png')}
             style={{
               width: iconSize,
               height: iconSize,

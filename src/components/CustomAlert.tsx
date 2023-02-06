@@ -1,7 +1,7 @@
 import { Alert } from 'react-native';
 
 export const CustomAlert = () => {
-    const showAlert = (title: string, body:string, cancelText: string, okText: string) => {
+    const showAlert = (title: string, body:string, cancelText: string, okText: string, onPress: () => void) => {
         Alert.alert(
           title,
           body,
@@ -11,7 +11,20 @@ export const CustomAlert = () => {
               onPress: () => console.log('Cancel Pressed'),
               style: 'cancel',
             },
-            {text: okText, onPress: () => console.log('OK Pressed')},
+            {text: okText, onPress: onPress},
+          ],
+          {
+            cancelable: true
+          },
+        );
+      };
+
+      const showAlertOneButton = (title: string, body:string, okText: string, onPress: () => void) => {
+        Alert.alert(
+          title,
+          body,
+          [
+            {text: okText, onPress: onPress},
           ],
           {
             cancelable: true
@@ -20,6 +33,7 @@ export const CustomAlert = () => {
       };
 
       return {
-        showAlert
+        showAlert,
+        showAlertOneButton
       }
 }

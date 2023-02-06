@@ -4,8 +4,29 @@ export interface Location {
 }
 
 export interface User {
-  userName: string;
+  pk: number,
+  username: string;
+  email: string,
+  first_name:string,
+  last_name: string,
+  password?: string;
+}
+
+export interface LoginData {
+  correo: string;
   password: string;
+}
+
+export interface LoginResponse {
+  user: User;
+  token: string;
+}
+
+export interface RegisterData {
+  username: string;
+  email: string;
+  password1: string;
+  password2: string;
 }
 
 export interface UserToken {

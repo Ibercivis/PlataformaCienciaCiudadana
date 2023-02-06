@@ -3,21 +3,16 @@ import React, {useContext, useEffect, useState} from 'react';
 import {
   View,
   StyleSheet,
-  KeyboardAvoidingView,
-  ScrollView,
-  Keyboard,
-  TouchableWithoutFeedback,
-  ImageBackground,
   Image,
+  SafeAreaView,
 } from 'react-native';
-import {Checkbox, Divider, Text, TextInput} from 'react-native-paper';
+import {Text} from 'react-native-paper';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {CustomAlert} from '../components/CustomAlert';
 import {AuthContext} from '../context/AuthContext';
 import {UserList} from '../data/usersTemp';
 import {useForm} from '../hooks/useForm';
-import {globalStyles} from '../theme/theme';
 import {Colors} from '../theme/colors';
 import {FontSize} from '../theme/fonts';
 import {
@@ -25,19 +20,21 @@ import {
   statusCodes,
 } from '@react-native-google-signin/google-signin';
 import {LoadingScreen} from './LoadingScreen';
-import {ImageButton} from '../components/ImageButton';
-import { Size } from '../theme/size';
+import {Size} from '../theme/size';
+import {CustomButton} from '../components/CustomButton';
+import {InputField} from '../components/InputField';
+import translate from '../theme/es.json';
+import citmapApi from '../api/citmapApi';
+import { Keyboard } from 'react-native';
 
 const height = Size.globalWidth > 500 ? 80 : 50;
-const heightBackground = Size.globalHeight > 720 ? 600 : 400;
 const iconSize = Size.globalWidth > 500 ? 70 : 40;
-const iconSizeFab = Size.globalWidth > 500 ? 50 : 20;
 
 interface Props extends StackScreenProps<any, any> {}
 
 export const LoginScreen = ({navigation}: Props) => {
   const {top} = useSafeAreaInsets();
-  const {signIn, setUsername, setPassword, authState} = useContext(AuthContext);
+  const {signIn, signOut, signUp, errorMessage, removeError} = useContext(AuthContext);
   const {onChange, form} = useForm({
     userName: '',
     password: '',
@@ -56,36 +53,21 @@ export const LoginScreen = ({navigation}: Props) => {
     });
   }, []);
 
+  useEffect(() => {
+    if (errorMessage.length === 0) return;
+    CustomAlert().showAlertOneButton(
+      'Error de inicio de sesion',
+      errorMessage,
+      'Ok',
+      removeError,
+    );
+  }, [errorMessage]);
+
   //aquí se comprobaría si existe el usuario y en caso de que sí, se le permitiría pasar
   const loggin = () => {
-    const user = UserList.find(x => x.userName === form.userName);
-    if (user) {
-      const pass = UserList.find(x => x.password === form.password);
-      if (pass) {
-        setUsername(form.userName);
-        setPassword(form.password);
-        if (checked) {
-          signIn('true');
-        } else signIn();
-      } else {
-        showAlert(
-          'Error contraseña',
-          'Constraseña incorrecta, intentelo de nuevo',
-          'Cancelar',
-          'Aceptar',
-        );
-        setPassError(true)
-      }
-    } else {
-      showAlert(
-        'Error inicio sesion',
-        'Usuario incorrecto o no existe',
-        'Cancelar',
-        'Aceptar',
-      );
-      setUserError(true)
-    }
-  };
+    Keyboard.dismiss();
+    signIn({correo: form.userName, password: form.password})
+  }
 
   //TODO mover todo esto a un contexto para que se pueda controlar el logout desde cualquier lado
   const logginGoogle = async () => {
@@ -93,10 +75,8 @@ export const LoginScreen = ({navigation}: Props) => {
       setIsLoading(true);
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
-      setUsername(userInfo.user.email);
-      setPassword('');
       setIsLoading(false);
-      signIn();
+      // signIn();
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         // user cancelled the login flow
@@ -123,365 +103,489 @@ export const LoginScreen = ({navigation}: Props) => {
     return <LoadingScreen />;
   }
 
+
   return (
-    <View style={{flex: 1, backgroundColor: 'transparent'}}>
-      <ImageBackground
-        source={require('../assets/backgrounds/login-background.jpg')}
-        resizeMode="cover"
-        style={{flex: 1, alignSelf: 'stretch', height: heightBackground}}>
-        <View style={{flex: 1}}>
-          <View
+    // <View style={{flex: 1, backgroundColor: 'transparent'}}>
+    //   <ImageBackground
+    //     source={require('../assets/backgrounds/login-background.jpg')}
+    //     resizeMode="cover"
+    //     style={{flex: 1, alignSelf: 'stretch', height: heightBackground}}>
+    //     <View style={{flex: 1}}>
+    //       <View
+    //         style={{
+    //           position: 'absolute',
+    //           backgroundColor: 'grey',
+    //           // width: 200,
+    //           // height: 200,
+    //           justifyContent: 'center',
+    //           alignSelf: 'center',
+    //           marginTop: 30,
+    //         }}>
+    //         <Text>CITMAP</Text>
+    //       </View>
+    //       <ScrollView disableScrollViewPanResponder={true} style={{flex: 1}}>
+    //         <KeyboardAvoidingView
+    //           style={{
+    //             ...style.container,
+    //           }}
+    //           focusable={false}>
+    //           {/* data container */}
+    //           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    //             <View style={{marginBottom: 20}}>
+    //               {/* title */}
+    //               <Text
+    //                 style={{
+    //                   ...globalStyles.globalText,
+    //                   textAlign: 'center',
+    //                   fontSize: FontSize.fontSizeTextTitle,
+    //                   fontWeight: 'bold',
+    //                   color: '#042f66',
+    //                 }}>
+    //                 Inicio de sesión
+    //               </Text>
+    //               {/* user name and icon */}
+    //               <View
+    //                 style={{
+    //                   flexDirection: 'row',
+    //                   width: Size.globalWidth - 25,
+    //                   alignSelf: 'center',
+    //                   justifyContent: 'center',
+    //                 }}>
+    //                 <TextInput
+    //                   style={{
+    //                     ...style.textInput,
+    //                   }}
+    //                   left={
+    //                     <TextInput.Icon
+    //                       size={iconSize}
+    //                       icon={({size, color}) => (
+    //                         <Image
+    //                           source={require('../assets/icons/user.png')}
+    //                           style={{
+    //                             width: Size.globalWidth > 500 ? size - 10 : size,
+    //                             height: Size.globalWidth > 500 ? size - 10 : size,
+    //                           }}
+    //                         />
+    //                       )}
+    //                       style={{
+    //                         paddingLeft: Size.globalWidth > 500 ? 15 : 0,
+    //                         backgroundColor: 'transparent',
+    //                       }}
+    //                     />
+    //                     // <TextInputIcon icon={require('../assets/icons/user.png')} />
+    //                   }
+    //                   placeholder="Nombre de usuario"
+    //                   allowFontScaling={true}
+    //                   underlineStyle={{borderRadius: 200, marginHorizontal: 5}}
+    //                   mode="flat"
+    //                   autoCorrect={false}
+    //                   autoCapitalize="none"
+    //                   onChangeText={value => onChange(value, 'userName')}
+    //                   underlineColor="#B9E6FF"
+    //                   activeOutlineColor="#5C95FF"
+    //                   selectionColor="#2F3061"
+    //                   textColor="#2F3061"
+    //                   placeholderTextColor={Colors.lightblue}
+    //                   outlineColor="#5C95FF"
+    //                   autoFocus={false}
+    //                   dense={false}
+    //                   onPressIn={() => setUserError(false)}
+    //                   error={userError}
+    //                 />
+    //               </View>
+    //               {/* password and icon */}
+    //               <View
+    //                 style={{
+    //                   flexDirection: 'row',
+    //                   width: Size.globalWidth - 25,
+    //                   alignSelf: 'center',
+    //                   marginVertical: 15,
+    //                   justifyContent: 'center',
+    //                 }}>
+    //                 {/* <View
+    //               style={{
+    //                 width: iconSize,
+    //                 alignItems: 'center',
+    //                 justifyContent: 'center',
+    //                 marginTop: 15,
+    //                 marginHorizontal: 10,
+    //                 paddingBottom: 5,
+    //               }}>
+    //               <IconButton
+    //                 icon="lock"
+    //                 iconColor={'#5C95FF'}
+    //                 size={iconSize}
+    //                 style={{
+    //                   width: iconSize,
+    //                   height: iconSize,
+    //                   alignSelf: 'center',
+    //                   top: 4,
+    //                 }}
+    //               />
+    //             </View> */}
+    //                 <TextInput
+    //                   style={{...style.textInput}}
+    //                   left={
+    //                     <TextInput.Icon
+    //                       size={iconSize}
+    //                       icon={({size, color}) => (
+    //                         <Image
+    //                           source={require('../assets/icons/password.png')}
+    //                           style={{
+    //                             width: Size.globalWidth > 500 ? size - 10 : size,
+    //                             height: Size.globalWidth > 500 ? size - 10 : size,
+    //                           }}
+    //                         />
+    //                       )}
+    //                       style={{
+    //                         paddingLeft: Size.globalWidth > 500 ? 15 : 0,
+    //                         backgroundColor: 'transparent',
+    //                       }}
+    //                     />
+    //                   }
+    //                   textContentType={'password'}
+    //                   secureTextEntry={true}
+    //                   underlineStyle={{borderRadius: 200, marginHorizontal: 5}}
+    //                   allowFontScaling={true}
+    //                   placeholder="Contraseña"
+    //                   mode="flat"
+    //                   autoCorrect={false}
+    //                   autoCapitalize="none"
+    //                   onChangeText={value => onChange(value, 'password')}
+    //                   underlineColor="#B9E6FF"
+    //                   activeOutlineColor="#5C95FF"
+    //                   selectionColor="#2F3061"
+    //                   textColor="#2F3061"
+    //                   placeholderTextColor={Colors.lightblue}
+    //                   outlineColor="#5C95FF"
+    //                   autoFocus={false}
+    //                   dense={true}
+    //                   onPressIn={() => setPassError(false)}
+    //                   error={passError}
+    //                 />
+    //               </View>
+    //             </View>
+    //           </TouchableWithoutFeedback>
+
+    //           {/* remember me and forgot password  */}
+    //           <View
+    //             style={{
+    //               flexDirection: 'row',
+    //               marginLeft:Size.globalWidth > 500 ? 25 : 10,
+    //               marginRight:Size.globalWidth > 500 ? 35 : 20,
+    //               justifyContent: 'space-between',
+    //               alignItems: 'center',
+    //               marginTop: Size.globalWidth > 500 ? 20 : 0,
+    //               marginBottom: 5,
+    //               paddingHorizontal: 10,
+    //             }}>
+    //             <View
+    //               style={{
+    //                 flexDirection: 'row',
+    //                 justifyContent: 'flex-start',
+    //               }}>
+    //               <Checkbox
+    //                 status={checked ? 'checked' : 'unchecked'}
+    //                 onPress={() => {
+    //                   setChecked(!checked);
+    //                 }}
+    //               />
+    //               <Text
+    //                 style={{
+    //                   alignSelf: 'center',
+    //                   justifyContent: 'center',
+    //                   fontSize: FontSize.fontSizeTextMin,
+    //                   fontWeight: 'bold',
+    //                 }}>
+    //                 Remember me
+    //               </Text>
+    //             </View>
+    //             <View
+    //               style={{
+    //                 // right: window.width > 500 ? -300 : -20,
+    //                 flexDirection: 'row',
+    //                 justifyContent: 'flex-end',
+    //               }}>
+    //               <TouchableOpacity
+    //                 style={{alignSelf: 'flex-end', justifyContent: 'flex-end'}}
+    //                 onPress={() => navigation.replace('ForgotPassword')}
+    //                 activeOpacity={0.6}>
+    //                 <Text
+    //                   style={{
+    //                     color: '#F3A712',
+    //                     fontWeight: 'bold',
+    //                     fontSize: FontSize.fontSizeTextMin,
+    //                   }}>
+    //                   He olvidado la contraseña
+    //                 </Text>
+    //               </TouchableOpacity>
+    //             </View>
+    //           </View>
+
+    //           {/* line divider */}
+    //           <Divider
+    //             bold={true}
+    //             style={{marginVertical: Size.globalHeight > 720 ? 40 : 10}}
+    //           />
+
+    //           {/* register and enter with google */}
+    //           <View style={style.orContainer}>
+    //             <View
+    //               style={{
+    //                 flex: 1,
+    //               }}>
+    //               {/* <Button
+    //                 style={{
+    //                   // width: window.width > 500 ? '50%' : window.width -250,
+    //                   height: window.height > 720 ? 70 : 40,
+    //                   borderRadius: 40,
+    //                   justifyContent: 'center',
+    //                   marginRight: 20,
+    //                 }}
+    //                 labelStyle={{
+    //                   fontSize: FontSize.fontSizeText,
+    //                   paddingTop: window.height > 720 ? 10 : 0,
+    //                 }}
+    //                 mode="contained"
+    //                 buttonColor={Colors.secondary}
+    //                 onPress={() => navigation.replace('RegisterScreen')}>
+    //                 Registro
+    //               </Button> */}
+
+    //               <ImageButton
+    //                 uri="login-background.jpg"
+    //                 text="Registro"
+    //                 style={{
+    //                   minWidth: 120,
+    //                   height: '8%',
+    //                   borderRadius: 40,
+    //                   justifyContent: 'center',
+    //                   marginRight: 20,
+    //                   marginBottom: 10,
+    //                   // alignSelf: 'center',
+    //                 }}
+    //                 // buttonColor="#5C95FF"
+    //                 onPress={() => navigation.replace('RegisterScreen')}
+    //               />
+    //             </View>
+
+    //             <View style={{...style.verticalSlash}}></View>
+    //             <View
+    //               style={{
+    //                 flex: 1,
+    //                 flexDirection: 'row',
+    //                 // justifyContent: 'space-evenly',
+    //                 alignItems: 'center',
+    //                 marginLeft: 10,
+    //               }}>
+    //               <View style={{paddingRight: 0, marginHorizontal: 10}}>
+    //                 <TouchableOpacity
+    //                   activeOpacity={0.5}
+    //                   onPress={() => logginGoogle()}>
+    //                   <Image
+    //                     source={require('../assets/icons/google.png')}
+    //                     style={{
+    //                       width: iconSize,
+    //                       height: iconSize,
+    //                       borderRadius: 50,
+    //                     }}
+    //                   />
+    //                 </TouchableOpacity>
+    //               </View>
+    //               <View style={{paddingRight: 0, marginHorizontal: 20}}>
+    //                 <TouchableOpacity
+    //                   activeOpacity={0.5}
+    //                   onPress={() => logginGoogle()}>
+    //                   <Image
+    //                     source={require('../assets/icons/facebook.png')}
+    //                     style={{
+    //                       width: iconSize,
+    //                       height: iconSize,
+    //                       borderRadius: 50,
+    //                     }}
+    //                   />
+    //                 </TouchableOpacity>
+    //               </View>
+    //             </View>
+    //           </View>
+
+    //           {/* sign in button  */}
+    //           {/* <View style={{justifyContent: 'center', marginTop: 20}}>
+    //           <Button
+    //             style={{
+    //               // marginTop: 25,
+    //               width: '50%',
+    //               height: window.height > 720 ? 70 : 40,
+    //               alignSelf: 'center',
+    //               justifyContent: 'center',
+    //               borderRadius: 30,
+    //               backgroundColor: Colors.secondary,
+    //             }}
+    //             labelStyle={{
+    //               fontSize: FontSize.fontSizeText + 4,
+    //               paddingTop: window.height > 720 ? 16 : 0,
+    //             }}
+    //             icon="send"
+    //             mode="contained"
+    //             buttonColor="#5C95FF"
+    //             onPress={() => loggin()}>
+    //             Iniciar sesion
+    //           </Button>
+    //         </View> */}
+    //           {/* sign in */}
+    //           <View style={{justifyContent: 'center', marginHorizontal: 20}}>
+    //             <ImageButton
+    //               uri="login-background.jpg"
+    //               text="Iniciar sesion"
+    //               style={{
+    //                 marginTop: '15%',
+    //                 // width: '70%',
+    //                 // height: window.height > 720 ? 70 : 40,
+    //                 // alignSelf: 'center',
+    //                 // justifyContent: 'center',
+    //                 // borderRadius: 30,
+    //                 // backgroundColor: Colors.secondary,
+    //                 // position: 'relative',
+    //                 // marginTop: 30,
+    //               }}
+    //               // labelStyle={{
+    //               //   fontSize: FontSize.fontSizeText + 4,
+    //               //   paddingTop: window.height > 720 ? 16 : 0,
+    //               // }}
+    //               // icon="send"
+    //               // mode="contained"
+    //               // buttonColor="#5C95FF"
+    //               onPress={() => loggin()}
+    //             />
+    //           </View>
+    //         </KeyboardAvoidingView>
+    //       </ScrollView>
+    //     </View>
+    //   </ImageBackground>
+    // </View>
+    <SafeAreaView style={{flex: 1, justifyContent: 'center'}}>
+      <View style={{paddingHorizontal: '8%'}}>
+        <View style={{alignItems: 'center'}}>
+          <Image
+            source={require('../assets/backgrounds/login-background.jpg')}
             style={{
-              position: 'absolute',
-              backgroundColor: 'grey',
-              // width: 200,
-              // height: 200,
-              justifyContent: 'center',
-              alignSelf: 'center',
-              marginTop: 30,
-            }}>
-            <Text>CITMAP</Text>
-          </View>
-          <ScrollView disableScrollViewPanResponder={true} style={{flex: 1}}>
-            <KeyboardAvoidingView
-              style={{
-                ...style.container,
-              }}
-              focusable={false}>
-              {/* data container */}
-              <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                <View style={{marginBottom: 20}}>
-                  {/* title */}
-                  <Text
-                    style={{
-                      ...globalStyles.globalText,
-                      textAlign: 'center',
-                      fontSize: FontSize.fontSize,
-                      fontWeight: 'bold',
-                      color: '#042f66',
-                    }}>
-                    Inicio de sesión
-                  </Text>
-                  {/* user name and icon */}
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      width: Size.globalWidth - 25,
-                      alignSelf: 'center',
-                      justifyContent: 'center',
-                    }}>
-                    <TextInput
-                      style={{
-                        ...style.textInput,
-                      }}
-                      left={
-                        <TextInput.Icon
-                          size={iconSize}
-                          icon={({size, color}) => (
-                            <Image
-                              source={require('../assets/icons/user.png')}
-                              style={{
-                                width: Size.globalWidth > 500 ? size - 10 : size,
-                                height: Size.globalWidth > 500 ? size - 10 : size,
-                              }}
-                            />
-                          )}
-                          style={{
-                            paddingLeft: Size.globalWidth > 500 ? 15 : 0,
-                            backgroundColor: 'transparent',
-                          }}
-                        />
-                        // <TextInputIcon icon={require('../assets/icons/user.png')} />
-                      }
-                      placeholder="Nombre de usuario"
-                      allowFontScaling={true}
-                      underlineStyle={{borderRadius: 200, marginHorizontal: 5}}
-                      mode="flat"
-                      autoCorrect={false}
-                      autoCapitalize="none"
-                      onChangeText={value => onChange(value, 'userName')}
-                      underlineColor="#B9E6FF"
-                      activeOutlineColor="#5C95FF"
-                      selectionColor="#2F3061"
-                      textColor="#2F3061"
-                      placeholderTextColor={Colors.lightblue}
-                      outlineColor="#5C95FF"
-                      autoFocus={false}
-                      dense={false}
-                      onPressIn={() => setUserError(false)}
-                      error={userError}
-                    />
-                  </View>
-                  {/* password and icon */}
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      width: Size.globalWidth - 25,
-                      alignSelf: 'center',
-                      marginVertical: 15,
-                      justifyContent: 'center',
-                    }}>
-                    {/* <View
-                  style={{
-                    width: iconSize,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginTop: 15,
-                    marginHorizontal: 10,
-                    paddingBottom: 5,
-                  }}>
-                  <IconButton
-                    icon="lock"
-                    iconColor={'#5C95FF'}
-                    size={iconSize}
-                    style={{
-                      width: iconSize,
-                      height: iconSize,
-                      alignSelf: 'center',
-                      top: 4,
-                    }}
-                  />
-                </View> */}
-                    <TextInput
-                      style={{...style.textInput}}
-                      left={
-                        <TextInput.Icon
-                          size={iconSize}
-                          icon={({size, color}) => (
-                            <Image
-                              source={require('../assets/icons/password.png')}
-                              style={{
-                                width: Size.globalWidth > 500 ? size - 10 : size,
-                                height: Size.globalWidth > 500 ? size - 10 : size,
-                              }}
-                            />
-                          )}
-                          style={{
-                            paddingLeft: Size.globalWidth > 500 ? 15 : 0,
-                            backgroundColor: 'transparent',
-                          }}
-                        />
-                      }
-                      textContentType={'password'}
-                      secureTextEntry={true}
-                      underlineStyle={{borderRadius: 200, marginHorizontal: 5}}
-                      allowFontScaling={true}
-                      placeholder="Contraseña"
-                      mode="flat"
-                      autoCorrect={false}
-                      autoCapitalize="none"
-                      onChangeText={value => onChange(value, 'password')}
-                      underlineColor="#B9E6FF"
-                      activeOutlineColor="#5C95FF"
-                      selectionColor="#2F3061"
-                      textColor="#2F3061"
-                      placeholderTextColor={Colors.lightblue}
-                      outlineColor="#5C95FF"
-                      autoFocus={false}
-                      dense={true}
-                      onPressIn={() => setPassError(false)}
-                      error={passError}
-                    />
-                  </View>
-                </View>
-              </TouchableWithoutFeedback>
-
-              {/* remember me and forgot password  */}
-              <View
-                style={{
-                  flexDirection: 'row',
-                  marginLeft:Size.globalWidth > 500 ? 25 : 10,
-                  marginRight:Size.globalWidth > 500 ? 35 : 20,
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginTop: Size.globalWidth > 500 ? 20 : 0,
-                  marginBottom: 5,
-                  paddingHorizontal: 10,
-                }}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'flex-start',
-                  }}>
-                  <Checkbox
-                    status={checked ? 'checked' : 'unchecked'}
-                    onPress={() => {
-                      setChecked(!checked);
-                    }}
-                  />
-                  <Text
-                    style={{
-                      alignSelf: 'center',
-                      justifyContent: 'center',
-                      fontSize: FontSize.fontSizeText,
-                      fontWeight: 'bold',
-                    }}>
-                    Remember me
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    // right: window.width > 500 ? -300 : -20,
-                    flexDirection: 'row',
-                    justifyContent: 'flex-end',
-                  }}>
-                  <TouchableOpacity
-                    style={{alignSelf: 'flex-end', justifyContent: 'flex-end'}}
-                    onPress={() => navigation.replace('ForgotPassword')}
-                    activeOpacity={0.6}>
-                    <Text
-                      style={{
-                        color: '#F3A712',
-                        fontWeight: 'bold',
-                        fontSize: FontSize.fontSizeText,
-                      }}>
-                      He olvidado la contraseña
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-
-              {/* line divider */}
-              <Divider
-                bold={true}
-                style={{marginVertical: Size.globalHeight > 720 ? 40 : 10}}
-              />
-
-              {/* register and enter with google */}
-              <View style={style.orContainer}>
-                <View
-                  style={{
-                    flex: 1,
-                  }}>
-                  {/* <Button
-                    style={{
-                      // width: window.width > 500 ? '50%' : window.width -250,
-                      height: window.height > 720 ? 70 : 40,
-                      borderRadius: 40,
-                      justifyContent: 'center',
-                      marginRight: 20,
-                    }}
-                    labelStyle={{
-                      fontSize: FontSize.fontSizeText,
-                      paddingTop: window.height > 720 ? 10 : 0,
-                    }}
-                    mode="contained"
-                    buttonColor={Colors.secondary}
-                    onPress={() => navigation.replace('RegisterScreen')}>
-                    Registro
-                  </Button> */}
-
-                  <ImageButton
-                    uri="login-background.jpg"
-                    text="Registro"
-                    style={{
-                      minWidth: 120,
-                      height: Size.globalHeight > 720 ? 70 : 40,
-                      borderRadius: 40,
-                      justifyContent: 'center',
-                      marginRight: 20,
-                      marginBottom: 10,
-                      // alignSelf: 'center',
-                    }}
-                    // buttonColor="#5C95FF"
-                    onPress={() => navigation.replace('RegisterScreen')}
-                  />
-                </View>
-
-                <View style={{...style.verticalSlash}}></View>
-                <View
-                  style={{
-                    flex: 1,
-                    flexDirection: 'row',
-                    // justifyContent: 'space-evenly',
-                    alignItems: 'center',
-                    marginLeft: 10,
-                  }}>
-                  <View style={{paddingRight: 0, marginHorizontal: 10}}>
-                    <TouchableOpacity
-                      activeOpacity={0.5}
-                      onPress={() => logginGoogle()}>
-                      <Image
-                        source={require('../assets/icons/google.png')}
-                        style={{
-                          width: iconSize,
-                          height: iconSize,
-                          borderRadius: 50,
-                        }}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                  <View style={{paddingRight: 0, marginHorizontal: 20}}>
-                    <TouchableOpacity
-                      activeOpacity={0.5}
-                      onPress={() => logginGoogle()}>
-                      <Image
-                        source={require('../assets/icons/facebook.png')}
-                        style={{
-                          width: iconSize,
-                          height: iconSize,
-                          borderRadius: 50,
-                        }}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              </View>
-
-              {/* sign in button  */}
-              {/* <View style={{justifyContent: 'center', marginTop: 20}}>
-              <Button
-                style={{
-                  // marginTop: 25,
-                  width: '50%',
-                  height: window.height > 720 ? 70 : 40,
-                  alignSelf: 'center',
-                  justifyContent: 'center',
-                  borderRadius: 30,
-                  backgroundColor: Colors.secondary,
-                }}
-                labelStyle={{
-                  fontSize: FontSize.fontSizeText + 4,
-                  paddingTop: window.height > 720 ? 16 : 0,
-                }}
-                icon="send"
-                mode="contained"
-                buttonColor="#5C95FF"
-                onPress={() => loggin()}>
-                Iniciar sesion
-              </Button>
-            </View> */}
-              {/* sign in */}
-              <View style={{justifyContent: 'center', marginHorizontal: 20}}>
-                <ImageButton
-                  uri="login-background.jpg"
-                  text="Iniciar sesion"
-                  style={{
-                    marginTop: '15%',
-                    // width: '70%',
-                    // height: window.height > 720 ? 70 : 40,
-                    // alignSelf: 'center',
-                    // justifyContent: 'center',
-                    // borderRadius: 30,
-                    // backgroundColor: Colors.secondary,
-                    // position: 'relative',
-                    // marginTop: 30,
-                  }}
-                  // labelStyle={{
-                  //   fontSize: FontSize.fontSizeText + 4,
-                  //   paddingTop: window.height > 720 ? 16 : 0,
-                  // }}
-                  // icon="send"
-                  // mode="contained"
-                  // buttonColor="#5C95FF"
-                  onPress={() => loggin()}
-                />
-              </View>
-            </KeyboardAvoidingView>
-          </ScrollView>
+              width: '70%',
+              height: '30%',
+              borderRadius: 50,
+              transform: [{rotate: '-5deg'}],
+            }}
+          />
         </View>
-      </ImageBackground>
-    </View>
+
+        <Text
+          style={{
+            fontFamily: 'Roboto-Medium',
+            fontSize: FontSize.fontSizeTextTitle,
+            fontWeight: '500',
+            color: '#333',
+            marginBottom: '8%',
+            alignSelf: 'center',
+          }}>
+          {translate.ES.login_screen[0].title}
+        </Text>
+
+        <InputField
+          label={translate.ES.login_screen[0].mail_input}
+          icon="email-outline"
+          keyboardType="email-address"
+          multiline={false}
+          numOfLines={1}
+          onChangeText={value => onChange(value, 'userName')}
+        />
+        <InputField
+          label={translate.ES.login_screen[0].password_input}
+          icon="lock-outline"
+          inputType="password"
+          multiline={false}
+          numOfLines={1}
+          onChangeText={value => onChange(value, 'password')}
+        />
+
+          <TouchableOpacity style={{alignItems: 'flex-end', marginBottom: '8%'}}
+            onPress={() => navigation.replace('ForgotPassword')}>
+            <Text
+              style={{
+                color: '#AD40AF',
+                fontWeight: '700',
+                fontFamily: 'roboto',
+                fontSize: FontSize.fontSizeText,
+              }}>
+              {' '}
+              {translate.ES.login_screen[0].recovery_password}
+            </Text>
+          </TouchableOpacity>
+
+        <CustomButton label={translate.ES.login_screen[0].login_button} onPress={() => loggin()} />
+
+        <Text
+          style={{
+            textAlign: 'center',
+            color: '#666',
+            marginBottom: '5%',
+            fontFamily: 'roboto',
+            fontSize: FontSize.fontSizeText,
+          }}>
+          {translate.ES.login_screen[0].or_login}
+        </Text>
+
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'center',
+            marginBottom: '10%',
+          }}>
+          <TouchableOpacity
+            onPress={() => {
+              logginGoogle();
+            }}
+            style={{
+              borderColor: '#ddd',
+              borderWidth: 2,
+              borderRadius: 10,
+              paddingHorizontal: 30,
+              paddingVertical: 10,
+            }}>
+            <Image
+              source={require('../assets/icons/google.png')}
+              style={{
+                width: iconSize,
+                height: iconSize,
+                borderRadius: 50,
+              }}
+            />
+          </TouchableOpacity>
+        </View>
+
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'center',
+            marginBottom: 30,
+          }}>
+          <Text style={{fontFamily: 'roboto', fontSize: FontSize.fontSizeText}}>
+          {translate.ES.login_screen[0].new_in_app}
+          </Text>
+          <TouchableOpacity
+            onPress={() => navigation.replace('RegisterScreen')}>
+            <Text
+              style={{
+                color: '#AD40AF',
+                fontWeight: '700',
+                fontFamily: 'roboto',
+                fontSize: FontSize.fontSizeText,
+              }}>
+              {' '}
+              {translate.ES.login_screen[0].register}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </SafeAreaView>
   );
 };
 //
@@ -526,7 +630,7 @@ const style = StyleSheet.create({
     justifyContent: 'center',
   },
   buttonText: {
-    fontSize: 18,
+    fontSize: FontSize.fontSizeText,
     color: '#5C95FF',
     alignSelf: 'center',
   },
@@ -546,11 +650,11 @@ const style = StyleSheet.create({
     justifyContent: 'center',
   },
   textInput: {
-    width: Size.globalWidth > 500 ? Size.globalWidth - 150 : Size.globalWidth - 110,
+    width: '80%',
     height: height,
     justifyContent: 'center',
     marginTop: 15,
-    paddingLeft: Size.globalWidth > 500 ? 35 : 15,
+    paddingLeft: '5%',
     paddingBottom: 0,
     borderWidth: 1,
     borderRadius: 8,

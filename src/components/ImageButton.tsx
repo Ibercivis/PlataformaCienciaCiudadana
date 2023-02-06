@@ -24,7 +24,7 @@ const width = window.width > 500 ? 180 : 120;
 // '../assets/backgrounds/login-background.jpg'
 export const ImageButton = ({uri, style, text, onPress}: Props) => {
   const [urii, setUrii] = useState(`../assets/backgrounds/${uri}`);
-  console.log(urii);
+  // console.log(urii);
   return (
     <TouchableOpacity style={[styles.touchable, style]} onPress={onPress}>
       <ImageBackground

@@ -6,6 +6,7 @@ import {AuthContext} from '../context/AuthContext';
 import {DrawerNavigation} from './DrawerNavigation';
 import {RegisterScreen} from '../screens/RegisterScreen';
 import { ForgotPassword } from '../screens/ForgotPassword';
+import { LoadingScreen } from '../screens/LoadingScreen';
 
 const Stack = createStackNavigator();
 
@@ -14,7 +15,10 @@ export const Navigator = () => {
   const {permissions} = useContext(PermissionsContext);
 
   //si no está logged, se le redirigirá hasta la pantalla de login
-  const {authState} = useContext(AuthContext);
+  const {status} = useContext(AuthContext);
+  if(status === 'checking'){
+    return <LoadingScreen/>
+  }
 
   return (
     <Stack.Navigator
@@ -24,16 +28,15 @@ export const Navigator = () => {
           backgroundColor: 'white',
         },
       }}>
-      {authState.isLoggedIn || authState.token ? (
-        // <Stack.Screen name="HomeScreen" component={HomeScreen} />
-        <Stack.Screen name="DrawerNavigation" component={DrawerNavigation} />
-      ) : (
-        // <Stack.Screen name="DrawerPaperNavigation" component={DrawerPaperNavigation} />
+      { status !== 'authenticated' ? (
         <>
-          <Stack.Screen name="LoginScreen" component={LoginScreen} />
-          <Stack.Screen name="RegisterScreen" component={RegisterScreen} />
-          <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
-        </>
+        <Stack.Screen name="LoginScreen" component={LoginScreen} />
+        <Stack.Screen name="RegisterScreen" component={RegisterScreen} />
+        <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+      </>
+        ) : (
+        <Stack.Screen name="DrawerNavigation" component={DrawerNavigation} />
+        
       )}
 
       {/* {permissions.locationStatus === 'granted' ? (

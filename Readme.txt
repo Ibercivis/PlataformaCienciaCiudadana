@@ -73,6 +73,9 @@ Modulos instalados y mini guía:
     
     - -D react-native-flipper
 
+- npm install react-native-responsive-fontsize --save 
+    - https://github.com/heyman333/react-native-responsive-fontSize para los tamaños del texto
+
 https://ibjects.medium.com/google-signin-tutorial-for-react-native-81a57fb67b18 WEB QUE EXPLICA SIGN IN ANDROID/IOS
 npm i @react-native-google-signin/google-signin
 LOGIN ANDROID: 

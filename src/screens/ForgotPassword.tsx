@@ -1,5 +1,5 @@
 import {StackScreenProps} from '@react-navigation/stack';
-import React, {useEffect} from 'react';
+import React, {useContext, useEffect} from 'react';
 import {
   Alert,
   Keyboard,
@@ -13,6 +13,10 @@ import {
   StyleSheet,
 } from 'react-native';
 import {Button, Divider, IconButton, TextInput} from 'react-native-paper';
+import { CustomAlert } from '../components/CustomAlert';
+import {CustomButton} from '../components/CustomButton';
+import {InputField} from '../components/InputField';
+import { AuthContext } from '../context/AuthContext';
 import {useForm} from '../hooks/useForm';
 import {Colors} from '../theme/colors';
 import {FontSize} from '../theme/fonts';
@@ -26,11 +30,37 @@ const height = window.width > 500 ? 80 : 50;
 interface Props extends StackScreenProps<any, any> {}
 
 export const ForgotPassword = ({navigation}: Props) => {
-
+  const {message, removeError, errorMessage, recoveryPass} = useContext(AuthContext)
   const {email, onChange} = useForm({
     email: '',
   });
 
+  useEffect(() => {
+    if (message.length === 0) return;
+    CustomAlert().showAlertOneButton(
+      'Correo enviado',
+      message,
+      'Ok',
+      removeError,
+    );
+    navigation.replace('LoginScreen')
+  }, [message]);
+
+  useEffect(() => {
+    if (errorMessage.length === 0) return;
+    CustomAlert().showAlertOneButton(
+      'Error al recuperar la contraseña',
+      errorMessage,
+      'Ok',
+      removeError,
+    );
+  }, [errorMessage]);
+  
+  const sendEmail = () => {
+    Keyboard.dismiss();
+    recoveryPass(email)
+  }
+  
   return (
     <View style={{flex: 1, backgroundColor: 'white'}}>
       <KeyboardAvoidingView
@@ -41,88 +71,38 @@ export const ForgotPassword = ({navigation}: Props) => {
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={{marginVertical: 20}}>
             {/* title */}
-            <View style={{ justifyContent:'center', alignItems: 'center'}} >
-              <Text
+            <Text
               style={{
-                ...globalStyles.globalText,
-                textAlign: 'center',
-                fontSize: FontSize.fontSize,
-                fontWeight: 'bold',
-                color: '#042f66',
-                width: '60%'
+                fontFamily: 'Roboto-Medium',
+                fontSize: FontSize.fontSizeTextTitle,
+                fontWeight: '500',
+                color: '#333',
+                marginVertical: '8%',
+                alignSelf: 'center',
               }}>
               Recuperar contraseña
             </Text>
-            </View>
-            
-            <Divider
-              bold={true}
-              style={{
-                marginVertical: window.height > 720 ? 40 : 10,
-                width: '50%',
-                borderWidth: 1,
-                alignSelf: 'center',
-                borderColor: 'black',
-              }}
-            />
+
             {/* mail and icon */}
             <View
               style={{
-                flexDirection: 'row',
-                width: window.width - 25,
-                alignSelf: 'center',
-                marginVertical: 15,
-                justifyContent: 'center',
+                paddingHorizontal: '8%',
               }}>
-              <TextInput
-                style={{...style.textInput}}
-                left={
-                  <TextInput.Icon
-                    size={iconSize}
-                    icon="email"
-                    style={{paddingLeft: 15}}
-                  />
-                }
-                textContentType={'emailAddress'}
-                placeholder="Email"
-                mode="flat"
-                autoCorrect={false}
-                autoCapitalize="none"
+              <InputField
+                label={'Correo'}
+                icon="email-outline"
+                keyboardType="email-address"
                 onChangeText={value => onChange(value, 'email')}
-                underlineColor="#B9E6FF"
-                activeOutlineColor="#5C95FF"
-                selectionColor="#2F3061"
-                textColor="#2F3061"
-                outlineColor="#5C95FF"
-                autoFocus={false}
-                dense={true}
+                multiline={false}
+                numOfLines={1}
               />
-            
+              <CustomButton label={'Enviar'} onPress={() => sendEmail()} />
             </View>
-            <View style={{justifyContent: 'center', marginTop: 20}} >
-            <Button
-            style={{
-              width: '50%',
-              height: window.height > 720 ? 70 : 40,
-              alignSelf: 'center',
-              justifyContent: 'center',
-              borderRadius: 30,
-              backgroundColor: Colors.secondary,
-            }}
-            labelStyle={{
-              fontSize: FontSize.fontSizeText + 4,
-              paddingTop: window.height > 720 ? 16 : 0,
-            }}
-            mode="contained"
-            buttonColor="#5C95FF"
-            onPress={() => console.log('')}>
-            Enviar
-          </Button>
-          </View>
+
             <IconButton
               style={{position: 'absolute', top: 10, left: 2}}
               icon="close-circle"
-              size={iconSizeFab+10}
+              size={iconSizeFab + 10}
               onPress={() => navigation.replace('LoginScreen')}
             />
           </View>

@@ -16,17 +16,17 @@ import {
   Text,
   TextInput,
 } from 'react-native-paper';
-import {globalStyles} from '../theme/theme';
+import {globalStyles} from '../../theme/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Project} from '../interfaces/appInterfaces';
+import {Project} from '../../interfaces/appInterfaces';
 import {
   CommonActions,
   useNavigation,
   StackActions,
 } from '@react-navigation/native';
-import {StackParams} from '../navigation/ProjectNavigator';
-import {Colors} from '../theme/colors';
-import {FontSize} from '../theme/fonts';
+import {StackParams} from '../../navigation/ProjectNavigator';
+import {Colors} from '../../theme/colors';
+import {fonts, FontSize} from '../../theme/fonts';
 
 const maxWidth = Dimensions.get('screen').width;
 const window = Dimensions.get('window');
@@ -134,7 +134,7 @@ export const MarcadorExample = ({route, navigation}: Props) => {
         <ScrollView
           style={styles.container}
           showsVerticalScrollIndicator={false}>
-          <Text style={styles.title}>PRUEBA TU MARCADOR</Text>
+          <Text style={fonts.title}>PRUEBA TU MARCADOR</Text>
           {marks.length > 0 &&
             marks.map((x, i) => (
               <View key={i}>

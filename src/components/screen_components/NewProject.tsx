@@ -9,31 +9,29 @@ import {
   Dimensions,
   TextInput as RNTextInput,
   TouchableOpacity,
+  ScrollView,
 } from 'react-native';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {
-  AnimatedFAB,
   Button,
   Dialog,
   IconButton,
   Paragraph,
   Portal,
-  TextInput,
 } from 'react-native-paper';
-import {globalStyles} from '../theme/theme';
-import {ScrollView} from 'react-native-gesture-handler';
-import {useForm} from '../hooks/useForm';
-import {Project, Mark} from '../interfaces/appInterfaces';
-import {Fab} from './Fab';
-import {StackParams} from '../navigation/ProjectNavigator';
-import {FontSize} from '../theme/fonts';
-import {Colors} from '../theme/colors';
-import {color} from 'react-native-reanimated';
-import {Size} from '../theme/size';
+import {globalStyles} from '../../theme/theme';
+import {useForm} from '../../hooks/useForm';
+import {Project, Mark} from '../../interfaces/appInterfaces';
+import {Fab} from '../Fab';
+import {StackParams} from '../../navigation/ProjectNavigator';
+import {fonts, FontSize} from '../../theme/fonts';
+import {Colors} from '../../theme/colors';
+import translate from '../../theme/es.json';
+import {CustomButton} from '../../components/CustomButton';
+import {InputField} from '../../components/InputField';
+import { Size } from '../../theme/size';
 
 const window = Dimensions.get('window');
-const height = window.width > 500 ? 80 : 50;
-const iconSize = window.width > 500 ? 60 : 30;
 const iconSizeFab = window.width > 500 ? 60 : 40;
 
 interface Props extends StackScreenProps<StackParams, 'NewProjectScreen'> {}
@@ -56,12 +54,6 @@ export const NewProject = ({navigation, route}: Props) => {
   };
 
   const hideDialog = () => setVisible(false);
-
-  useEffect(() => {
-    // onChange('', 'projectName');
-    // onChange('', 'description');
-    // onChange('', 'photo');
-  }, []);
 
   useEffect(() => {
     if (tempUri) onChange(tempUri, 'photo');
@@ -128,9 +120,11 @@ export const NewProject = ({navigation, route}: Props) => {
         <ScrollView
           style={styles.container}
           showsVerticalScrollIndicator={false}>
-          <Text style={styles.title}>NUEVO PROYECTO</Text>
+          <Text style={fonts.title}>
+            {translate.ES.new_project_screen[0].title}
+          </Text>
           <View>
-            <View
+            {/* <View
               style={{
                 flexDirection: 'row',
                 // width: window.width - 25,
@@ -142,15 +136,7 @@ export const NewProject = ({navigation, route}: Props) => {
                 style={{
                   ...styles.textInput,
                 }}
-                // right={
-                //   <TextInput.Icon
-                //     size={iconSize}
-                //     icon="close-circle"
-                //     style={{paddingLeft: 15,}}
-                //     onPress={() => projectNameRef.current!.clear()}
-                //   />
-                // }
-                placeholder="Nombre del proyecto"
+                placeholder={translate.ES.new_project_screen[0].project_name_input}
                 mode="flat"
                 autoCorrect={false}
                 autoCapitalize="none"
@@ -163,11 +149,19 @@ export const NewProject = ({navigation, route}: Props) => {
                 autoFocus={false}
                 dense={false}
               />
-            </View>
-            <View
+            </View> */}
+            <InputField
+              label={translate.ES.new_project_screen[0].project_name_input}
+              icon="format-title"
+              keyboardType="email-address"
+              multiline={false}
+              numOfLines={1}
+              onChangeText={value => onChange(value, 'projectName')}
+              iconColor={Colors.lightorange}
+            />
+            {/* <View
               style={{
                 flexDirection: 'row',
-                // width: window.width - 25,
                 alignSelf: 'center',
                 justifyContent: 'center',
               }}>
@@ -175,15 +169,9 @@ export const NewProject = ({navigation, route}: Props) => {
                 style={{
                   ...styles.textInput,
                 }}
-                // right={
-                //   <TextInput.Icon
-                //     size={iconSize}
-                //     icon="close-circle"
-                //     style={{paddingLeft: 15}}
-                //     onPress={() => onChange('', 'description')}
-                //   />
-                // }
-                placeholder="Descripcion"
+                placeholder={
+                  translate.ES.new_project_screen[0].description_input
+                }
                 mode="flat"
                 autoCorrect={false}
                 autoCapitalize="none"
@@ -198,33 +186,40 @@ export const NewProject = ({navigation, route}: Props) => {
                 multiline={true}
                 numberOfLines={10}
               />
-            </View>
+            </View> */}
+            <InputField
+              label={translate.ES.new_project_screen[0].description_input}
+              icon="text"
+              keyboardType="default"
+              multiline={true}
+              numOfLines={6}
+              onChangeText={value => onChange(value, 'description')}
+              iconColor={Colors.lightorange}
+            />
             <View
               style={{
                 flexDirection: 'row',
                 // width: window.width - 25,
-                alignSelf: 'center',
-                justifyContent: 'center',
               }}>
               <Text
                 style={{
-                  marginHorizontal: 20,
-                  marginTop: 20,
-                  marginBottom: 10,
+                  
+                  marginTop: '8%',
+                  marginBottom: '3%',
                   color: '#2F3061',
                   backgroundColor: ' red',
-                  fontSize: FontSize.fontSizeText
+                  fontSize: FontSize.fontSizeText,
                 }}>
-                Imagen del proyecto
+                {translate.ES.new_project_screen[0].image_title}
               </Text>
             </View>
             <View style={styles.photoContainer}>
               {!tempUri && (
                 <View style={styles.photo}>
                   <IconButton
-                    icon="image"
+                    icon="image-album"
                     iconColor="#5F4B66"
-                    size={50}
+                    size={Size.iconSizeLarge}
                     onPress={() => galeria()}
                   />
                 </View>
@@ -266,33 +261,12 @@ export const NewProject = ({navigation, route}: Props) => {
             labelStyle={{
               fontSize: FontSize.fontSizeText,
               justifyContent: 'center',
-              top: '2%',
+              top: '1%',
               paddingVertical: 5,
             }}
             onPress={() => nextScreen()}>
-            Siguiente
+            {translate.ES.global[0].next_button}
           </Button>
-          {/* <TouchableOpacity
-            style={{...styles.buttonNav}}
-            activeOpacity={0.5}
-            onPress={hideDialog}>
-            <View
-              style={{
-                justifyContent: 'center',
-                flexDirection: 'row',
-                alignItems: 'center',
-                margin: '5%',
-              }}>
-              <Text
-                style={{
-                  fontSize: FontSize.fontSizeText,
-                  justifyContent: 'center',
-                  color: 'black',
-                }}>
-                Siguiente
-              </Text>
-            </View>
-          </TouchableOpacity> */}
         </View>
       </KeyboardAvoidingView>
       <Fab
@@ -302,18 +276,6 @@ export const NewProject = ({navigation, route}: Props) => {
         size={iconSizeFab}
         iconSize={iconSizeFab}
       />
-      {/* <AnimatedFAB
-          icon={'chevron-right'}
-          label={'Siguiente'}
-          extended={true}
-          onPress={() =>
-            navigation.navigate('Marcador', {projectName, description, photo})
-          }
-          visible={true}
-          animateFrom={'right'}
-          iconMode={'dynamic'}
-          style={[styles.fabStyle]}
-        /> */}
       <Portal>
         <Dialog visible={visible} onDismiss={hideDialog}>
           <Dialog.Icon icon="alert" />
@@ -326,21 +288,6 @@ export const NewProject = ({navigation, route}: Props) => {
             </Paragraph>
           </Dialog.Content>
           <Dialog.Actions>
-            {/* <Button onPress={hideDialog} style={{
-                    height: 100,
-                    paddingVertical: 15,
-                    justifyContent: 'center',
-                    backgroundColor: 'blue'
-                  }}>
-                <Text
-                  style={{
-                    fontSize: FontSize.fontSizeText,
-                    paddingVertical: 15,
-                    justifyContent: 'center'
-                  }}>
-                  Cerrar
-                </Text>
-              </Button> */}
             <TouchableOpacity activeOpacity={0.5} onPress={hideDialog}>
               <View
                 style={{
@@ -365,17 +312,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginVertical: 10,
+    marginHorizontal: '4%'
   },
-  title: {
-    alignSelf: 'center',
-    fontSize: FontSize.fontSizeText + 15,
-    fontWeight: 'bold',
-    color: '#2F3061',
-    // borderBottomWidth: 1,
-    // borderColor: '#2F3061',
-    marginTop: 10,
-    marginBottom: 20,
-  },
+  
   fabStyle: {
     bottom: 16,
     right: 16,
@@ -401,13 +340,14 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   photoContainer: {
-    marginBottom: 20,
+    marginBottom: "10%",
   },
   photo: {
     alignItems: 'center',
+    flex:1,
     alignSelf: 'center',
-    height: 300,
-    width: '90%',
+    height: '100%',
+    width: '100%',
     borderWidth: 1,
     borderRadius: 10,
     borderColor: Colors.lightorange,
@@ -427,7 +367,7 @@ const styles = StyleSheet.create({
   },
 
   textInput: {
-    width: window.width > 500 ? window.width - 150 : window.width - 80,
+    width: '90%',
     // height: height,
     justifyContent: 'center',
     marginTop: 15,
