@@ -5,8 +5,8 @@ const window = Dimensions.get('window');
 
 export const FontSize = {
   fontSize: window.width > 500 ? 50 : 30,
-  fontSizeText: RFPercentage(2),
   fontSizeTextMin: RFPercentage(1.5),
+  fontSizeText: RFPercentage(2),
   fontSizeTextTitle: RFPercentage(3.5),
 };
 

@@ -1,12 +1,14 @@
 import {createStackNavigator} from '@react-navigation/stack';
 import {Marcador} from '../components/screen_components/Marcador';
 import {MarcadorExample} from '../components/screen_components/MarcadorExample';
-import {Mark} from '../interfaces/appInterfaces';
+import { Mark, HasTag, Topic } from '../interfaces/appInterfaces';
 import {HomeScreen} from '../screens/HomeScreen';
 import {NewProjectScreen} from '../screens/NewProjectScreen';
 
 export type StackParams = {
-  HomeScreen: undefined;
+  HomeScreen: {
+    dashboard?: boolean;
+  };
   NewProjectScreen: {
     marks?: Mark[];
   };
@@ -15,6 +17,8 @@ export type StackParams = {
     description: string;
     photo?: string;
     marks?: Mark[];
+    hastag: number[],
+    topic: number[],
     onBack?: boolean;
   };
   MarcadorExample: {
@@ -22,6 +26,8 @@ export type StackParams = {
     description: string;
     photo?: string;
     marks: Mark[];
+    hastag: number[],
+    topic: number[],
   };
 };
 
@@ -33,7 +39,7 @@ export function ProjectNavigator() {
       screenOptions={{
         headerShown: false,
       }}>
-      <Stack.Screen name="HomeScreen" component={HomeScreen} />
+      <Stack.Screen name="HomeScreen" component={HomeScreen} initialParams={{dashboard: true}} />
       <Stack.Screen name="NewProjectScreen" component={NewProjectScreen} />
       <Stack.Screen name="Marcador" component={Marcador} />
       <Stack.Screen name="MarcadorExample" component={MarcadorExample} />

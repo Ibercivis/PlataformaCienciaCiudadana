@@ -19,6 +19,8 @@ import {useForm} from '../hooks/useForm';
 import {Colors} from '../theme/colors';
 import {FontSize} from '../theme/fonts';
 import translate from '../theme/es.json';
+import {Size} from '../theme/size';
+import { globalStyles } from '../theme/theme';
 
 const window = Dimensions.get('window');
 const iconSize = window.width > 500 ? 60 : 45;
@@ -28,7 +30,8 @@ const height = window.width > 500 ? 80 : 50;
 interface Props extends StackScreenProps<any, any> {}
 
 export const SettingsScreen = ({navigation}: Props) => {
-  const {message, removeError, errorMessage, changePass} = useContext(AuthContext)
+  const {message, removeError, errorMessage, changePass} =
+    useContext(AuthContext);
   const {pass1, pass2, onChange} = useForm({
     pass1: '',
     pass2: '',
@@ -41,32 +44,31 @@ export const SettingsScreen = ({navigation}: Props) => {
       errorMessage,
       'Ok',
       removeError,
-      () => console.log()
+      () => console.log(),
     );
   }, [errorMessage]);
 
   useEffect(() => {
     if (message.length === 0) return;
     CustomAlert().showAlertOneButton(
-      translate.ES.change_password_screen[0].modal_message,
+      translate.strings.change_password_screen[0].modal_message,
       message,
       'Ok',
       () => okAlert(),
       // removeError,
-      () => navigation.navigate('HomeScreen')
+      () => navigation.navigate('HomeScreen'),
     );
-    
   }, [message]);
 
   const okAlert = () => {
     removeError();
     navigation.navigate('HomeScreen');
-  }
+  };
 
   const changePassword = () => {
     Keyboard.dismiss();
-    changePass(pass1,pass2)
-  }
+    changePass(pass1, pass2);
+  };
 
   return (
     <View style={{flex: 1, backgroundColor: 'white'}}>
@@ -87,16 +89,16 @@ export const SettingsScreen = ({navigation}: Props) => {
                 marginVertical: '8%',
                 alignSelf: 'center',
               }}>
-              {translate.ES.change_password_screen[0].title}
+              {translate.strings.change_password_screen[0].title}
             </Text>
 
             {/* mail and icon */}
             <View
               style={{
-                paddingHorizontal: '8%'
+                paddingHorizontal: '8%',
               }}>
               <InputField
-                label={translate.ES.change_password_screen[0].new_pass_1}
+                label={translate.strings.change_password_screen[0].new_pass_1}
                 icon="lock-outline"
                 inputType="password"
                 onChangeText={value => onChange(value, 'pass1')}
@@ -104,7 +106,7 @@ export const SettingsScreen = ({navigation}: Props) => {
                 numOfLines={1}
               />
               <InputField
-                label={translate.ES.change_password_screen[0].new_pass_2}
+                label={translate.strings.change_password_screen[0].new_pass_2}
                 icon="lock-reset"
                 inputType="password"
                 onChangeText={value => onChange(value, 'pass2')}
@@ -113,16 +115,15 @@ export const SettingsScreen = ({navigation}: Props) => {
               />
               <CustomButton label={'Enviar'} onPress={() => changePassword()} />
             </View>
-
-            <IconButton
-              style={{position: 'absolute', top: 10, left: 2}}
-              icon="close-circle"
-              size={iconSizeFab + 10}
-              onPress={() => navigation.navigate('HomeScreen')}
-            />
           </View>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
+      <IconButton
+        style={globalStyles.viewButtonBack}
+        icon="arrow-left"
+        size={Size.iconSizeMedium}
+        onPress={() => navigation.navigate('HomeScreen')}
+      />
     </View>
   );
 };

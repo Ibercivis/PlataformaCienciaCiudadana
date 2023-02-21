@@ -7,13 +7,12 @@ import {SettingsScreen} from '../screens/SettingsScreen';
 import {HomeScreen} from '../screens/HomeScreen';
 import React, {useContext, useEffect, useState} from 'react';
 import {View, Image, TouchableOpacity, Text} from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {globalStyles} from '../theme/theme';
 import {NavigatorMap} from './NavigatorMap';
 import {LoginScreen} from '../screens/LoginScreen';
 import {AuthContext} from '../context/AuthContext';
 import {NavigatorMapBox} from './NavigatorMapBox';
-import {PaperScreen} from '../screens/PaperScreen';
 import {ProjectNavigator} from './ProjectNavigator';
 import {Colors} from '../theme/colors';
 import {
@@ -21,6 +20,7 @@ import {
   statusCodes,
   User,
 } from '@react-native-google-signin/google-signin';
+import { Size } from '../theme/size';
 
 export type StackParams = {
   // HomeScreen: {projects?: Project[]};
@@ -53,7 +53,6 @@ export const DrawerNavigation = () => {
       {/* <Drawer.Screen name="NewProjectScreen" component={NewProjectScreen} />
       <Drawer.Screen name="Marcador" component={Marcador} />
       <Drawer.Screen name="MarcadorExample" component={MarcadorExample} /> */}
-      <Drawer.Screen name="PaperScreen" component={PaperScreen} />
       <Drawer.Screen name="NavigatorMap" component={NavigatorMap} />
       <Drawer.Screen name="NavigatorMapBox" component={NavigatorMapBox} />
       <Drawer.Screen name="SettingsScreen" component={SettingsScreen} />
@@ -115,16 +114,16 @@ const MenuInterno = ({navigation}: DrawerContentComponentProps) => {
       <View style={globalStyles.drawerItems}>
         <TouchableOpacity
           style={{...globalStyles.menuButton, flexDirection: 'row'}}
-          onPress={() => navigation.navigate('ProjectNavigator')}>
+          onPress={() => navigation.navigate('ProjectNavigator', {screen: 'HomeScreen',params: {dashboard: true}})}>
           <Icon
             style={globalStyles.icons}
             name="home"
-            size={25}
+            size={Size.iconSizeMedium}
             color={Colors.primary}
           />
-          <Text style={globalStyles.menuText}> Inicio</Text>
+          <Text style={globalStyles.menuText}>Inicio</Text>
         </TouchableOpacity>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={{...globalStyles.menuButton, flexDirection: 'row'}}
           onPress={() => navigation.navigate('PaperScreen')}>
           <Icon
@@ -134,36 +133,36 @@ const MenuInterno = ({navigation}: DrawerContentComponentProps) => {
             color={Colors.primary}
           />
           <Text style={globalStyles.menuText}> Paper</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <TouchableOpacity
           style={{...globalStyles.menuButton, flexDirection: 'row'}}
-          onPress={() => navigation.navigate('NavigatorMap')}>
+          onPress={() => navigation.navigate('ProjectNavigator', {screen: 'HomeScreen',params: {dashboard: false}})}>
           <Icon
             style={globalStyles.icons}
-            name="map"
-            size={25}
+            name="file-multiple"
+            size={Size.iconSizeMedium}
             color={Colors.primary}
           />
-          <Text style={globalStyles.menuText}> Mapa</Text>
+          <Text style={globalStyles.menuText}>Mis proyectos</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={{...globalStyles.menuButton, flexDirection: 'row'}}
           onPress={() => navigation.navigate('NavigatorMapBox')}>
           <Icon
             style={globalStyles.icons}
-            name="navigate"
-            size={25}
+            name="map"
+            size={Size.iconSizeMedium}
             color={Colors.primary}
           />
-          <Text style={globalStyles.menuText}> Mapa box</Text>
+          <Text style={globalStyles.menuText}>Map</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={{...globalStyles.menuButton, flexDirection: 'row'}}
           onPress={() => navigation.navigate('SettingsScreen')}>
           <Icon
             style={globalStyles.icons}
-            name="settings"
-            size={25}
+            name="cog"
+            size={Size.iconSizeMedium}
             color={Colors.primary}
           />
           <Text style={globalStyles.menuText}> Ajustes</Text>
@@ -173,8 +172,8 @@ const MenuInterno = ({navigation}: DrawerContentComponentProps) => {
           onPress={() => signOutApp()}>
           <Icon
             style={globalStyles.icons}
-            name="log-out"
-            size={25}
+            name="logout-variant"
+            size={Size.iconSizeMedium}
             color={Colors.primary}
           />
           <Text style={globalStyles.menuText}> Cerrar sesion</Text>

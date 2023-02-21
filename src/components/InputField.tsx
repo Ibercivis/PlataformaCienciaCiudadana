@@ -36,6 +36,7 @@ interface Props {
   multiline: boolean;
   numOfLines: number;
   iconColor?: string;
+  value?: string;
 }
 
 export const InputField = ({
@@ -48,7 +49,8 @@ export const InputField = ({
   onChangeText,
   multiline,
   numOfLines,
-  iconColor = '#666'
+  iconColor = '#666',
+  value,
 }: Props) => {
   return (
     <View
@@ -78,6 +80,7 @@ export const InputField = ({
           onChangeText={value => onChangeText(value)}
           // cursorColor={'red'}
           selectionColor={Colors.primary}
+          value={value}
         />
       ) : (
         <TextInput
@@ -97,6 +100,7 @@ export const InputField = ({
             marginLeft: '2%'
           }}
           onChangeText={value => onChangeText(value)}
+          value={value}
         />
       )}
       <TouchableOpacity onPress={fieldButtonFunction}>

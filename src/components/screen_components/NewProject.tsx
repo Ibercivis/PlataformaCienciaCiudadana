@@ -21,18 +21,18 @@ import {
 } from 'react-native-paper';
 import {globalStyles} from '../../theme/theme';
 import {useForm} from '../../hooks/useForm';
-import {Project, Mark} from '../../interfaces/appInterfaces';
-import {Fab} from '../Fab';
+import {Project, Mark, HasTag, Topic} from '../../interfaces/appInterfaces';
 import {StackParams} from '../../navigation/ProjectNavigator';
 import {fonts, FontSize} from '../../theme/fonts';
 import {Colors} from '../../theme/colors';
 import translate from '../../theme/es.json';
-import {CustomButton} from '../../components/CustomButton';
 import {InputField} from '../../components/InputField';
-import { Size } from '../../theme/size';
-
-const window = Dimensions.get('window');
-const iconSizeFab = window.width > 500 ? 60 : 40;
+import {Size} from '../../theme/size';
+import {IconTemp} from '../IconTemp';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import citmapApi from '../../api/citmapApi';
+import {MultiSelect} from 'react-native-element-dropdown';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface Props extends StackScreenProps<StackParams, 'NewProjectScreen'> {}
 
@@ -45,10 +45,18 @@ export const NewProject = ({navigation, route}: Props) => {
     projectName: '',
     description: '',
     photo: '',
+    hastag: [],
+    topic: [],
     marks: [],
   });
   const [visible, setVisible] = useState(false);
-  const {projectName, description, photo, onChange} = useForm<Project>(project);
+  const {projectName, description, photo, hastag, topic, onChange} =
+    useForm<Project>(project);
+  const [hasTag, setHasTag] = useState<HasTag[]>([]);
+  const [topics, setTopics] = useState<Topic[]>([]);
+  const [selectedHastag, setSelectedHastag] = useState<string[]>([]);
+  const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
+
   const showDialog = () => {
     setVisible(true);
   };
@@ -56,8 +64,45 @@ export const NewProject = ({navigation, route}: Props) => {
   const hideDialog = () => setVisible(false);
 
   useEffect(() => {
+    getHasTag();
+    getTopic();
+  }, []);
+
+  useEffect(() => {
     if (tempUri) onChange(tempUri, 'photo');
   }, [tempUri]);
+
+  const getHasTag = async () => {
+    const token = await AsyncStorage.getItem('token');
+    try {
+      const resp = await citmapApi.get('/project/hastag/', {
+        headers: {
+          Authorization: token,
+        },
+      });
+      if (resp.data) {
+        setHasTag(resp.data);
+      }
+    } catch (e) {
+      console.log('error hastag');
+    }
+  };
+
+  const getTopic = async () => {
+    const token = await AsyncStorage.getItem('token');
+    try {
+      const resp = await citmapApi.get('/project/topics/', {
+        headers: {
+          Authorization: token,
+        },
+      });
+      if (resp.data) {
+        setTopics(resp.data);
+      }
+    } catch (e) {
+      console.log('error topic');
+    }
+  };
 
   const takePhoto = () => {
     launchCamera(
@@ -97,12 +142,18 @@ export const NewProject = ({navigation, route}: Props) => {
   };
 
   const nextScreen = () => {
-    if (projectName.length > 0 && description.length > 0) {
+    if (
+      projectName.length > 0 &&
+      description.length > 0 &&
+      hasTag.length > 0
+    ) {
       navigation.navigate('Marcador', {
         projectName,
         description,
         photo,
         marks,
+        hastag,
+        topic,
         onBack: true,
       });
     } else {
@@ -114,6 +165,30 @@ export const NewProject = ({navigation, route}: Props) => {
     projectNameRef.current!.clear();
   };
 
+  const renderDataItem = (item: HasTag) => {
+    return (
+      <View style={styles.item}>
+        <Text style={styles.selectedTextStyle}>{item.hasTag}</Text>
+        <Icon name={'abjad-hebrew'} size={Size.iconSizeMin} color={'black'} />
+      </View>
+    );
+  };
+
+  const renderDataItemTopic = (item: Topic) => {
+    return (
+      <View style={styles.item}>
+        <Text style={styles.selectedTextStyle}>{item.topic}</Text>
+        <Icon name={'abjad-hebrew'} size={Size.iconSizeMin} color={'black'} />
+      </View>
+    );
+  };
+
+  //habría que borrarlos y añadirlos en base de datos?
+  const onNewText = (item: string) => {
+    // setSelectedHastag([...selectedHastag, item]);
+    console.log(selectedHastag);
+  };
+
   return (
     <>
       <KeyboardAvoidingView style={{...globalStyles.globalMargin, flex: 1}}>
@@ -121,37 +196,11 @@ export const NewProject = ({navigation, route}: Props) => {
           style={styles.container}
           showsVerticalScrollIndicator={false}>
           <Text style={fonts.title}>
-            {translate.ES.new_project_screen[0].title}
+            {translate.strings.new_project_screen[0].title}
           </Text>
           <View>
-            {/* <View
-              style={{
-                flexDirection: 'row',
-                // width: window.width - 25,
-                alignSelf: 'center',
-                justifyContent: 'center',
-              }}>
-              <TextInput
-                ref={projectNameRef}
-                style={{
-                  ...styles.textInput,
-                }}
-                placeholder={translate.ES.new_project_screen[0].project_name_input}
-                mode="flat"
-                autoCorrect={false}
-                autoCapitalize="none"
-                onChangeText={value => onChange(value, 'projectName')}
-                underlineColor="#B9E6FF"
-                activeOutlineColor="#5C95FF"
-                selectionColor="#2F3061"
-                textColor="#2F3061"
-                outlineColor={Colors.lightorange}
-                autoFocus={false}
-                dense={false}
-              />
-            </View> */}
             <InputField
-              label={translate.ES.new_project_screen[0].project_name_input}
+              label={translate.strings.new_project_screen[0].project_name_input}
               icon="format-title"
               keyboardType="email-address"
               multiline={false}
@@ -159,36 +208,9 @@ export const NewProject = ({navigation, route}: Props) => {
               onChangeText={value => onChange(value, 'projectName')}
               iconColor={Colors.lightorange}
             />
-            {/* <View
-              style={{
-                flexDirection: 'row',
-                alignSelf: 'center',
-                justifyContent: 'center',
-              }}>
-              <TextInput
-                style={{
-                  ...styles.textInput,
-                }}
-                placeholder={
-                  translate.ES.new_project_screen[0].description_input
-                }
-                mode="flat"
-                autoCorrect={false}
-                autoCapitalize="none"
-                onChangeText={value => onChange(value, 'description')}
-                underlineColor="#B9E6FF"
-                activeOutlineColor="#5C95FF"
-                selectionColor="#2F3061"
-                textColor="#2F3061"
-                outlineColor="#5C95FF"
-                autoFocus={false}
-                dense={false}
-                multiline={true}
-                numberOfLines={10}
-              />
-            </View> */}
+
             <InputField
-              label={translate.ES.new_project_screen[0].description_input}
+              label={translate.strings.new_project_screen[0].description_input}
               icon="text"
               keyboardType="default"
               multiline={true}
@@ -196,6 +218,167 @@ export const NewProject = ({navigation, route}: Props) => {
               onChangeText={value => onChange(value, 'description')}
               iconColor={Colors.lightorange}
             />
+            {/* MultiSelect de hastag */}
+            <View
+              style={{
+                justifyContent: 'space-between',
+                flexDirection: 'row',
+                marginTop: '5%',
+              }}>
+              <View
+                style={{
+                  width: '80%',
+                  // backgroundColor: 'blue'
+                }}>
+                <MultiSelect
+                  style={styles.dropdown}
+                  placeholderStyle={styles.placeholderStyle}
+                  selectedTextStyle={styles.selectedTextStyle}
+                  // inputSearchStyle={styles.inputSearchStyle}
+                  iconStyle={styles.iconStyle}
+                  data={hasTag}
+                  labelField="hasTag"
+                  valueField="id"
+                  placeholder="Hastags"
+                  value={selectedHastag}
+                  search
+                  searchPlaceholder="Buscar..."
+                  onChangeText={text => onNewText(text)}
+                  onChange={item => {
+                    setSelectedHastag(item);
+                    onChange(item, 'hastag');
+                  }}
+                  renderItem={renderDataItem}
+                  renderSelectedItem={(item, unSelect) => (
+                    <TouchableOpacity
+                      onPress={() => unSelect && unSelect(item)}>
+                      <View style={styles.selectedStyle}>
+                        <Text style={styles.textSelectedStyle}>
+                          {item.hasTag}
+                        </Text>
+                        <Icon
+                          name={'delete'}
+                          size={Size.iconSizeMin}
+                          // color={'black'}
+                        />
+                      </View>
+                    </TouchableOpacity>
+                  )}
+                />
+              </View>
+              <View
+                style={{
+                  justifyContent: 'flex-start',
+                  alignContent: 'center',
+                  width: '18%',
+                  // backgroundColor: 'red',
+                  
+                }}>
+                <TouchableOpacity style={{
+                      
+                    }}>
+                  <View
+                    style={{
+                      ...styles.selectedStyle,
+                      height: Size.window.height * 0.035,
+                      marginTop: 0,
+                      borderRadius: 50,
+                    }}>
+                    <Icon
+                      name={'plus'}
+                      size={Size.iconSizeMin}
+                      color={Colors.darkorange}
+                    />
+                    <Text
+                      style={{
+                        ...styles.textSelectedStyle,
+                        color: Colors.darkorange,
+                      }}>
+                      ADD
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            {/* MultiSelect de topic */}
+            <View
+              style={{
+                justifyContent: 'space-between',
+                flexDirection: 'row',
+                marginTop: '8%',
+              }}>
+              <View
+                style={{
+                  width: '80%',
+                }}>
+                <MultiSelect
+                  style={styles.dropdown}
+                  placeholderStyle={styles.placeholderStyle}
+                  selectedTextStyle={styles.selectedTextStyle}
+                  // inputSearchStyle={styles.inputSearchStyle}
+                  iconStyle={styles.iconStyle}
+                  data={topics}
+                  labelField="topic"
+                  valueField="id"
+                  placeholder="Topics"
+                  value={selectedTopics}
+                  search
+                  searchPlaceholder="Buscar..."
+                  onChangeText={text => onNewText(text)}
+                  onChange={item => {
+                    setSelectedTopics(item);
+                    onChange(item, 'topic');
+                  }}
+                  renderItem={renderDataItemTopic}
+                  renderSelectedItem={(item, unSelect) => (
+                    <TouchableOpacity
+                      onPress={() => unSelect && unSelect(item)}>
+                      <View style={styles.selectedStyle}>
+                        <Text style={styles.textSelectedStyle}>
+                          {item.topic}
+                        </Text>
+                        <Icon
+                          name={'delete'}
+                          size={Size.iconSizeMin}
+                          // color={'black'}
+                        />
+                      </View>
+                    </TouchableOpacity>
+                  )}
+                />
+              </View>
+              <View
+                style={{
+                  justifyContent: 'flex-start',
+                  alignContent: 'center',
+                  width: '18%',
+                }}>
+                <TouchableOpacity>
+                  <View
+                    style={{
+                      ...styles.selectedStyle,
+                      marginTop: 0,
+                      borderRadius: 50,
+                      height: Size.window.height * 0.035,
+                    }}>
+                    <Icon
+                      name={'plus'}
+                      size={Size.iconSizeMin}
+                      color={Colors.darkorange}
+                    />
+                    <Text
+                      style={{
+                        ...styles.textSelectedStyle,
+                        color: Colors.darkorange,
+                      }}>
+                      ADD
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </View>
+
             <View
               style={{
                 flexDirection: 'row',
@@ -203,14 +386,12 @@ export const NewProject = ({navigation, route}: Props) => {
               }}>
               <Text
                 style={{
-                  
                   marginTop: '8%',
                   marginBottom: '3%',
                   color: '#2F3061',
-                  backgroundColor: ' red',
                   fontSize: FontSize.fontSizeText,
                 }}>
-                {translate.ES.new_project_screen[0].image_title}
+                {translate.strings.new_project_screen[0].image_title}
               </Text>
             </View>
             <View style={styles.photoContainer}>
@@ -251,9 +432,10 @@ export const NewProject = ({navigation, route}: Props) => {
             </View>
           </View>
         </ScrollView>
+
+        {/* nextButton */}
         <View style={{...styles.bottomViewButtonNav}}>
           <Button
-            style={{...styles.buttonNav}}
             icon="chevron-right"
             mode="elevated"
             contentStyle={{flexDirection: 'row-reverse'}}
@@ -265,17 +447,28 @@ export const NewProject = ({navigation, route}: Props) => {
               paddingVertical: 5,
             }}
             onPress={() => nextScreen()}>
-            {translate.ES.global[0].next_button}
+            {translate.strings.global[0].next_button}
           </Button>
         </View>
       </KeyboardAvoidingView>
-      <Fab
-        iconName="arrow-left"
-        onPress={() => navigation.goBack()}
-        style={{position: 'absolute', top: 20, left: 20}}
-        size={iconSizeFab}
-        iconSize={iconSizeFab}
-      />
+
+      {/* back button */}
+      <View style={globalStyles.viewButtonBack}>
+        <TouchableOpacity
+          activeOpacity={0.5}
+          onPress={() => navigation.goBack()}>
+          <View
+            style={{
+              justifyContent: 'center',
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}>
+            <IconTemp name="chevron-left" size={Size.iconSizeLarge} />
+          </View>
+        </TouchableOpacity>
+      </View>
+
+      {/* err modal */}
       <Portal>
         <Dialog visible={visible} onDismiss={hideDialog}>
           <Dialog.Icon icon="alert" />
@@ -312,9 +505,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginVertical: 10,
-    marginHorizontal: '4%'
+    marginHorizontal: '4%',
   },
-  
+
   fabStyle: {
     bottom: 16,
     right: 16,
@@ -325,7 +518,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 10,
     marginHorizontal: 5,
-    width: 100,
+    width: '20%',
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
@@ -340,11 +533,11 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   photoContainer: {
-    marginBottom: "10%",
+    marginBottom: '10%',
   },
   photo: {
     alignItems: 'center',
-    flex:1,
+    flex: 1,
     alignSelf: 'center',
     height: '100%',
     width: '100%',
@@ -354,12 +547,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#EADEDA',
   },
-  buttonNav: {
-    // textAlign: 'center',
-    // color: 'white',
-    // justifyContent: 'center',
-    // alignItems: 'center',
-  },
+
   bottomViewButtonNav: {
     flexDirection: 'row-reverse',
     marginHorizontal: 5,
@@ -384,4 +572,113 @@ const styles = StyleSheet.create({
     paddingVertical: FontSize.fontSizeText,
     flexShrink: 1,
   },
+  ///////////////////////////////
+
+  dropdown: {
+    height: Size.window.height * 0.035,
+    backgroundColor: 'white',
+    borderRadius: 12,
+    padding: '4%',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+
+    elevation: 2,
+  },
+  placeholderStyle: {
+    fontSize: FontSize.fontSizeText,
+  },
+  selectedTextStyle: {
+    fontSize: FontSize.fontSizeTextMin,
+  },
+  iconStyle: {
+    width: Size.iconSizeMin,
+    height: Size.iconSizeMin,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: FontSize.fontSizeTextMin,
+  },
+  icon: {
+    marginRight: 5,
+  },
+  item: {
+    padding: '3%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  selectedStyle: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 14,
+    backgroundColor: 'white',
+    marginTop: 8,
+    marginRight: '3%',
+    paddingHorizontal: '4%',
+    marginVertical: '4%',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+
+    elevation: 2,
+  },
+  textSelectedStyle: {
+    marginRight: 5,
+    paddingVertical: '2%',
+    fontSize: FontSize.fontSizeTextMin,
+    color: Colors.lightorange
+  },
+
+  shadow: {
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+
+    elevation: 2,
+  },
 });
+
+{
+  /* <View
+              style={{
+                flexDirection: 'row',
+                alignSelf: 'center',
+                justifyContent: 'center',
+              }}>
+              <TextInput
+                style={{
+                  ...styles.textInput,
+                }}
+                placeholder={
+                  translate.strings.new_project_screen[0].description_input
+                }
+                mode="flat"
+                autoCorrect={false}
+                autoCapitalize="none"
+                onChangeText={value => onChange(value, 'description')}
+                underlineColor="#B9E6FF"
+                activeOutlineColor="#5C95FF"
+                selectionColor="#2F3061"
+                textColor="#2F3061"
+                outlineColor="#5C95FF"
+                autoFocus={false}
+                dense={false}
+                multiline={true}
+                numberOfLines={10}
+              />
+            </View> */
+}

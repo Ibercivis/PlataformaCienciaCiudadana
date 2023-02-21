@@ -18,10 +18,11 @@ import {CustomButton} from '../components/CustomButton';
 import {InputField} from '../components/InputField';
 import {useForm} from '../hooks/useForm';
 import {Colors} from '../theme/colors';
-import {FontSize} from '../theme/fonts';
+import {fonts, FontSize} from '../theme/fonts';
 import translate from '../theme/es.json';
 import {CustomAlert} from '../components/CustomAlert';
 import {AuthContext} from '../context/AuthContext';
+import {Size} from '../theme/size';
 
 const window = Dimensions.get('window');
 const iconSize = window.width > 500 ? 60 : 45;
@@ -349,18 +350,10 @@ export const RegisterScreen = ({navigation}: Props) => {
         }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View style={{marginVertical: 20}}>
+          <View style={{marginVertical: '4%'}}>
             {/* title */}
-            <Text
-              style={{
-                fontFamily: 'Roboto-Medium',
-                fontSize: FontSize.fontSizeTextTitle,
-                fontWeight: '500',
-                color: '#333',
-                marginVertical: '8%',
-                alignSelf: 'center',
-              }}>
-              {translate.ES.register_screen[0].title}
+            <Text style={fonts.title}>
+              {translate.strings.register_screen[0].title}
             </Text>
 
             {/* mail and icon */}
@@ -369,7 +362,7 @@ export const RegisterScreen = ({navigation}: Props) => {
                 paddingHorizontal: '8%',
               }}>
               <InputField
-                label={translate.ES.register_screen[0].user_name_input}
+                label={translate.strings.register_screen[0].user_name_input}
                 icon="account"
                 keyboardType="email-address"
                 onChangeText={value => onChange(value, 'name')}
@@ -377,7 +370,7 @@ export const RegisterScreen = ({navigation}: Props) => {
                 numOfLines={1}
               />
               <InputField
-                label={translate.ES.register_screen[0].email_input}
+                label={translate.strings.register_screen[0].email_input}
                 icon="email-outline"
                 keyboardType="email-address"
                 onChangeText={value => onChange(value, 'email')}
@@ -385,7 +378,7 @@ export const RegisterScreen = ({navigation}: Props) => {
                 numOfLines={1}
               />
               <InputField
-                label={translate.ES.register_screen[0].password1_input}
+                label={translate.strings.register_screen[0].password1_input}
                 icon="lock-outline"
                 inputType="password"
                 onChangeText={value => onChange(value, 'password')}
@@ -393,7 +386,7 @@ export const RegisterScreen = ({navigation}: Props) => {
                 numOfLines={1}
               />
               <InputField
-                label={translate.ES.register_screen[0].password2_input}
+                label={translate.strings.register_screen[0].password2_input}
                 icon="lock-outline"
                 inputType="password"
                 onChangeText={value => onChange(value, 'password2')}
@@ -402,16 +395,15 @@ export const RegisterScreen = ({navigation}: Props) => {
               />
               <CustomButton label={'Registrar'} onPress={() => onRegister()} />
             </View>
-
-            <IconButton
-              style={{position: 'absolute', top: 10, left: 2}}
-              icon="close-circle"
-              size={iconSizeFab + 10}
-              onPress={() => navigation.replace('LoginScreen')}
-            />
           </View>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
+      <IconButton
+        style={{left: '1%', top: window.height * 0.02, position: 'absolute'}}
+        icon="chevron-left"
+        size={Size.iconSizeLarge}
+        onPress={() => navigation.replace('LoginScreen')}
+      />
     </View>
   );
 };
@@ -422,7 +414,6 @@ const style = StyleSheet.create({
     // alignItems: 'center',
     marginHorizontal: 10,
     // justifyContent: 'center',
-
     backgroundColor: 'white',
     width: window.width - 25,
     height: window.height,

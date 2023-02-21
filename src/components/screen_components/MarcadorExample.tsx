@@ -18,7 +18,7 @@ import {
 } from 'react-native-paper';
 import {globalStyles} from '../../theme/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Project} from '../../interfaces/appInterfaces';
+import {Project, Projects} from '../../interfaces/appInterfaces';
 import {
   CommonActions,
   useNavigation,
@@ -27,14 +27,23 @@ import {
 import {StackParams} from '../../navigation/ProjectNavigator';
 import {Colors} from '../../theme/colors';
 import {fonts, FontSize} from '../../theme/fonts';
+import translate from '../../theme/es.json';
+import citmapApi from '../../api/citmapApi';
 
 const maxWidth = Dimensions.get('screen').width;
 const window = Dimensions.get('window');
 
 interface Props extends StackScreenProps<StackParams, 'MarcadorExample'> {}
 
+interface ProjectTemp {
+  hasTag: number[];
+  name: string;
+  creator: number;
+  description: string;
+}
+
 export const MarcadorExample = ({route, navigation}: Props) => {
-  const {projectName, description, photo, marks} = route.params;
+  const {projectName, description, photo, hastag, topic, marks} = route.params;
   const [visible, setVisible] = useState(false);
   const [visibleFinish, setVisibleFinish] = useState(false);
   const [showMoreText, setShowMoreText] = useState('');
@@ -43,6 +52,8 @@ export const MarcadorExample = ({route, navigation}: Props) => {
   const [newProject, setNewProject] = useState<Project>({
     projectName: '',
     description: '',
+    hastag: [],
+    topic: [],
     photo: '',
     marks: [],
   });
@@ -51,6 +62,8 @@ export const MarcadorExample = ({route, navigation}: Props) => {
     setNewProject({
       projectName: projectName,
       description: description,
+      hastag: hastag,
+      topic: topic,
       photo: photo,
       marks: marks,
     });
@@ -76,22 +89,8 @@ export const MarcadorExample = ({route, navigation}: Props) => {
 
     // se cargan los datos primero
     const data = await getData();
-    console.log(data)
     //si hay datos guardados se seleccionan
-    if (data) {
-      setProject(data);
-    }
 
-    // se guarda en base de datos
-    if (project) {
-      console.log('con data');
-      setProject([...project, newProject]);
-      console.log(project);
-    } else {
-      console.log('sin data');
-      setProject([newProject]);
-      console.log(project);
-    }
     setVisibleFinish(true);
   };
 
@@ -121,7 +120,41 @@ export const MarcadorExample = ({route, navigation}: Props) => {
 
   const saveData = async () => {
     try {
-      await AsyncStorage.setItem('projects', JSON.stringify(project));
+      // await AsyncStorage.setItem('projects', JSON.stringify(project));
+      // const result = await citmapApi.post('',{})
+      const token = await AsyncStorage.getItem('token');
+      let creator;
+      try {
+        const resp = await citmapApi.get('/authentication/user/', {
+          headers: {
+            Authorization: token,
+          },
+        });
+        creator = JSON.stringify(resp.data.pk, null, 1);
+      } catch (err) {
+        console.log('creator not selected');
+      }
+
+      try {
+        const resp = await citmapApi.post<Projects>(
+          '/project/create/',
+          {
+            hasTag: hastag,
+            topic: topic,
+            name: projectName,
+            creator: creator,
+            description: description,
+          },
+          {
+            headers: {
+              Authorization: token,
+            },
+          },
+        );
+        console.log(resp);
+      } catch (e) {
+        console.log(e);
+      }
     } catch (error) {
       // Error saving data
     }
@@ -133,7 +166,9 @@ export const MarcadorExample = ({route, navigation}: Props) => {
         <ScrollView
           style={styles.container}
           showsVerticalScrollIndicator={false}>
-          <Text style={fonts.title}>PRUEBA TU MARCADOR</Text>
+          <Text style={fonts.title}>
+            {translate.strings.new_project_mark_example_screen[0].title}
+          </Text>
           {marks.length > 0 &&
             marks.map((x, i) => (
               <View key={i}>
@@ -165,7 +200,10 @@ export const MarcadorExample = ({route, navigation}: Props) => {
                         icon="information-variant"
                       />
                     }
-                    placeholder="Respuesta"
+                    placeholder={
+                      translate.strings.new_project_mark_example_screen[0]
+                        .response_input
+                    }
                     mode="flat"
                     autoCorrect={false}
                     autoCapitalize="none"
@@ -200,6 +238,8 @@ export const MarcadorExample = ({route, navigation}: Props) => {
               navigation.navigate('Marcador', {
                 projectName,
                 description,
+                hastag,
+                topic,
                 photo,
                 marks,
                 onBack: true,
@@ -227,27 +267,57 @@ export const MarcadorExample = ({route, navigation}: Props) => {
         {/* show more info */}
         <Portal>
           <Dialog visible={visible} onDismiss={hideDialog}>
-            <Dialog.Title>Más información</Dialog.Title>
+            <Dialog.Title>
+              {
+                translate.strings.new_project_mark_example_screen[0]
+                  .more_information[0].title
+              }
+            </Dialog.Title>
             <Dialog.Content>
               <Paragraph>{showMoreText}</Paragraph>
             </Dialog.Content>
             <Dialog.Actions>
-              <Button onPress={hideDialog}>Cerrar</Button>
+              <Button onPress={hideDialog}>
+                {
+                  translate.strings.new_project_mark_example_screen[0]
+                    .more_information[0].close_button
+                }
+              </Button>
             </Dialog.Actions>
           </Dialog>
 
           {/* finish modal */}
           <Dialog visible={visibleFinish} onDismiss={hideDialogFinish}>
-            <Dialog.Title style={{textAlign: 'center'}}>Finalizar</Dialog.Title>
+            <Dialog.Title style={{textAlign: 'center'}}>
+              {
+                translate.strings.new_project_mark_example_screen[0]
+                  .save_project[0].title
+              }
+            </Dialog.Title>
             <Dialog.Content>
-              <Paragraph style={styles.modalText}>¿ Desea guardar el proyecto ?</Paragraph>
+              <Paragraph style={styles.modalText}>
+                {
+                  translate.strings.new_project_mark_example_screen[0]
+                    .save_project[0].body
+                }
+              </Paragraph>
             </Dialog.Content>
             <Dialog.Actions>
-              <Button labelStyle={styles.buttonModal} onPress={hideDialogFinish}>
-                Cerrar
+              <Button
+                labelStyle={styles.buttonModal}
+                onPress={hideDialogFinish}>
+                {
+                  translate.strings.new_project_mark_example_screen[0]
+                    .save_project[0].close_button
+                }
               </Button>
-              <Button labelStyle={styles.buttonModal} onPress={showFinishMessage}>
-                Guardar
+              <Button
+                labelStyle={styles.buttonModal}
+                onPress={showFinishMessage}>
+                {
+                  translate.strings.new_project_mark_example_screen[0]
+                    .save_project[0].save_button
+                }
               </Button>
             </Dialog.Actions>
           </Dialog>

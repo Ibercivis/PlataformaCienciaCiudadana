@@ -56,6 +56,7 @@ export const AuthProvider = ({children}: any) => {
   }, []);
 
   const checkToken = async () => {
+    
     const token = await AsyncStorage.getItem('token');
     console.log('CHECK TOKEN '+token);
     if (!token) return action({type: 'notAuthenticated'});
@@ -69,9 +70,11 @@ export const AuthProvider = ({children}: any) => {
       });
       keyToken = JSON.stringify(resp.config.headers.Authorization, null, 1);
       if (resp.status !== 200) {
+        await AsyncStorage.removeItem('token');
         return action({type: 'notAuthenticated'});
       }
     } catch (err) {
+      await AsyncStorage.removeItem('token');
       return action({type: 'notAuthenticated'});
     }
 
@@ -98,6 +101,7 @@ export const AuthProvider = ({children}: any) => {
           token: resp.data.key,
         },
       });
+      
       let key = 'Token ' + resp.data.key;
       //cuando se loggea, hay que cuardar el token como "Token (token)"
       await AsyncStorage.setItem('token', key);

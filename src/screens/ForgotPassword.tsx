@@ -17,7 +17,8 @@ import {InputField} from '../components/InputField';
 import { AuthContext } from '../context/AuthContext';
 import {useForm} from '../hooks/useForm';
 import {Colors} from '../theme/colors';
-import {FontSize} from '../theme/fonts';
+import {fonts, FontSize} from '../theme/fonts';
+import { Size } from '../theme/size';
 
 const window = Dimensions.get('window');
 const iconSize = window.width > 500 ? 60 : 45;
@@ -67,17 +68,10 @@ export const ForgotPassword = ({navigation}: Props) => {
         }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View style={{marginVertical: 20}}>
+          <View style={{marginVertical: '4%'}}>
             {/* title */}
             <Text
-              style={{
-                fontFamily: 'Roboto-Medium',
-                fontSize: FontSize.fontSizeTextTitle,
-                fontWeight: '500',
-                color: '#333',
-                marginVertical: '8%',
-                alignSelf: 'center',
-              }}>
+              style={fonts.title}>
               Recuperar contraseña
             </Text>
 
@@ -97,15 +91,18 @@ export const ForgotPassword = ({navigation}: Props) => {
               <CustomButton label={'Enviar'} onPress={() => sendEmail()} />
             </View>
 
-            <IconButton
-              style={{position: 'absolute', top: 10, left: 2}}
-              icon="close-circle"
-              size={iconSizeFab + 10}
-              onPress={() => navigation.replace('LoginScreen')}
-            />
+            
           </View>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
+      <IconButton
+              style={{left: '1%',
+              top: window.height * 0.02,
+              position: 'absolute',}}
+              icon="chevron-left"
+              size={Size.iconSizeLarge}
+              onPress={() => navigation.replace('LoginScreen')}
+            />
     </View>
   );
 };

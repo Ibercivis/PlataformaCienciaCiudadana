@@ -52,7 +52,7 @@ export const useLocation = () => {
     });
   };
 
-  const folloowUserLocation = () => {
+  const followUserLocation = () => {
     watchId.current = Geolocation.watchPosition(
       ({coords}) => {
 
@@ -82,7 +82,7 @@ export const useLocation = () => {
     hasLocation,
     initialPosition,
     getCurrentLocation,
-    folloowUserLocation,
+    followUserLocation,
     userLocation,
     stopFollowUserLocation,
     routeLines,

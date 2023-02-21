@@ -1,5 +1,6 @@
 import React from 'react'
 import { TouchableOpacity, Text } from 'react-native'
+import { Colors } from '../theme/colors';
 
 interface Props {
     label: string;
@@ -11,7 +12,7 @@ export const CustomButton = ({label, onPress}: Props) => {
     <TouchableOpacity
       onPress={onPress}
       style={{
-        backgroundColor: '#AD40AF',
+        backgroundColor:  Colors.secondary,
         padding: 20,
         borderRadius: 10,
         marginBottom: 30,

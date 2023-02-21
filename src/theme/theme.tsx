@@ -1,5 +1,7 @@
 import {Dimensions, StyleSheet} from 'react-native';
 import {Colors} from './colors'
+import { FontSize } from './fonts';
+import { Size } from './size';
 
 const window = Dimensions.get('window');
 
@@ -26,20 +28,22 @@ export const globalStyles = StyleSheet.create({
     marginVertical: 30,
     marginHorizontal: 30,
     alignContent: 'flex-start',
+    justifyContent: 'center',
   },
   menuButton: {
-    marginVertical: 10,
-    marginTop: 10,
+    marginVertical: Size.window.height * 0.01,
+    // marginTop: 10,
   },
   menuText: {
-    fontSize: 20,
+    fontSize: FontSize.fontSizeText,
     color: Colors.primary,
     marginLeft: 10,
+    textAlignVertical: 'center',
   },
   icons: {
     justifyContent: 'center',
     alignItems: 'center',
-    top: 1,
+    // top: 1,
     backgroundColor: 'transparent'
   },
   formContainer: {
@@ -89,14 +93,17 @@ export const globalStyles = StyleSheet.create({
     alignItems: 'flex-end',
     marginTop: 20,
   },
-  buttonReturn: {
+  viewButtonBack: {
+    left: '1%',
+    top: window.height * 0.02,
     position: 'absolute',
-    top: 50,
-    right: 20,
-    borderWidth: 1,
-    borderColor: '#5C95FF',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 100,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.29,
+    shadowRadius: 4.65,
+    elevation: 7,
   },
 });

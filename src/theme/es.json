@@ -1,5 +1,5 @@
 {
-  "ES": {
+  "strings": {
     "global": [
       {
         "next_button": "Siguiente",
@@ -41,6 +41,48 @@
           {
             "title": "Error de creación",
             "body": "Es necesario establecer un nombre y una descripción válidos."
+          }
+        ]
+      }
+    ],
+    "new_project_mark_screen": [
+      {
+        "title": "MARCADOR",
+        "none_mark": "Seleccione el tipo de respuesta del usuario",
+        "new_mark": [
+          {
+            "ask_input": "Pregunta",
+            "description_input": "Descripción de la pregunta",
+            "title": "Marca",
+            "save_button":"Guardar",
+            "close_button":"Cancelar"
+          }
+        ],
+        "modal_error": [
+          {
+            "title": "Error de creación",
+            "body": "Se requiere añadir al menos una pregunta.",
+            "close_button": "Cerrar"
+          }
+        ]
+      }
+    ],
+    "new_project_mark_example_screen": [
+      {
+        "title": "PRUEBA TU MARCADOR",
+        "response_input": "Respuesta",
+        "save_project": [
+          {
+            "title": "Finalizar",
+            "body": "¿ Desea guardar el proyecto ?",
+            "save_button":"Guardar",
+            "close_button":"Cancelar"
+          }
+        ],
+        "more_information": [
+          {
+            "title": "Más información",
+            "close_button": "Cerrar"
           }
         ]
       }

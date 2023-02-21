@@ -20,7 +20,7 @@ export const CustomAlert = () => {
         );
       };
 
-      const showAlertOneButton = (title: string, body:string, okText: string, onPress: () => void, onDismiss: () => void) => {
+      const showAlertOneButton = (title: string, body:string, okText: string, onPress: () => void, onDismiss?: () => void) => {
         Alert.alert(
           title,
           body,

@@ -487,11 +487,11 @@ export const LoginScreen = ({navigation}: Props) => {
             marginBottom: '8%',
             alignSelf: 'center',
           }}>
-          {translate.ES.login_screen[0].title}
+          {translate.strings.login_screen[0].title}
         </Text>
 
         <InputField
-          label={translate.ES.login_screen[0].mail_input}
+          label={translate.strings.login_screen[0].mail_input}
           icon="email-outline"
           keyboardType="email-address"
           multiline={false}
@@ -499,7 +499,7 @@ export const LoginScreen = ({navigation}: Props) => {
           onChangeText={value => onChange(value, 'userName')}
         />
         <InputField
-          label={translate.ES.login_screen[0].password_input}
+          label={translate.strings.login_screen[0].password_input}
           icon="lock-outline"
           inputType="password"
           multiline={false}
@@ -511,17 +511,17 @@ export const LoginScreen = ({navigation}: Props) => {
             onPress={() => navigation.replace('ForgotPassword')}>
             <Text
               style={{
-                color: '#AD40AF',
+                color: Colors.darkorange,
                 fontWeight: '700',
                 fontFamily: 'roboto',
                 fontSize: FontSize.fontSizeText,
               }}>
               {' '}
-              {translate.ES.login_screen[0].recovery_password}
+              {translate.strings.login_screen[0].recovery_password}
             </Text>
           </TouchableOpacity>
 
-        <CustomButton label={translate.ES.login_screen[0].login_button} onPress={() => loggin()} />
+        <CustomButton label={translate.strings.login_screen[0].login_button} onPress={() => loggin()} />
 
         <Text
           style={{
@@ -531,7 +531,7 @@ export const LoginScreen = ({navigation}: Props) => {
             fontFamily: 'roboto',
             fontSize: FontSize.fontSizeText,
           }}>
-          {translate.ES.login_screen[0].or_login}
+          {translate.strings.login_screen[0].or_login}
         </Text>
 
         <View
@@ -569,19 +569,19 @@ export const LoginScreen = ({navigation}: Props) => {
             marginBottom: 30,
           }}>
           <Text style={{fontFamily: 'roboto', fontSize: FontSize.fontSizeText}}>
-          {translate.ES.login_screen[0].new_in_app}
+          {translate.strings.login_screen[0].new_in_app}
           </Text>
           <TouchableOpacity
             onPress={() => navigation.replace('RegisterScreen')}>
             <Text
               style={{
-                color: '#AD40AF',
+                color: Colors.darkorange,
                 fontWeight: '700',
                 fontFamily: 'roboto',
                 fontSize: FontSize.fontSizeText,
               }}>
               {' '}
-              {translate.ES.login_screen[0].register}
+              {translate.strings.login_screen[0].register}
             </Text>
           </TouchableOpacity>
         </View>

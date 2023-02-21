@@ -85,7 +85,21 @@ LOGIN ANDROID:
     webClient ID 0Auth: 235777853257-rnbdsrqchtl76jq0givh1h6l7u47rs4k.apps.googleusercontent.com
         - secret: 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
 
+- npm install react-native-multi-selectbox
+
 INSTRUCCIONES PARA ARRANCAR LA APP 
 - npm i
 - Instalar android studio (xcode para correr en ios) y configurar dispositivos en API 30
 - npx react-native run-android/ios (uno de los dos)
+
+INSTRUCCIONES CREAR APP DEBUG
+- if you have index.android.js in project root then run
+    react-native bundle --dev false --platform android --entry-file index.android.js --bundle-output ./android/app/build/intermediates/assets/debug/index.android.bundle --assets-dest ./android/app/build/intermediates/res/merged/debug
+
+- if you have index.js in project root then run
+    react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
+
+- cd android/
+    .\gradlew assembleDebug
+- Then You can find your apk here:
+    cd app/build/outputs/apk/

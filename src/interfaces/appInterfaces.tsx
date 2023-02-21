@@ -56,5 +56,26 @@ export interface Project {
   projectName: string;
   description: string;
   photo?: string;
+  hastag: number[];
+  topic:number[];
   marks: Mark[];
+}
+
+export interface Projects {
+  id: number;
+  name: string;
+  description: string;
+  creator: number;
+  topic: number[];
+  hasTag: number[];
+}
+
+export interface Topic {
+  id: number;
+  topic: string;
+}
+
+export interface HasTag {
+  id: number;
+  hasTag: string;
 }
