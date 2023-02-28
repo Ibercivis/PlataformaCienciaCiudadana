@@ -33,14 +33,48 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import citmapApi from '../../api/citmapApi';
 import {MultiSelect} from 'react-native-element-dropdown';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {IMultiSelectRef} from 'react-native-element-dropdown/lib/typescript/components/MultiSelect/model';
+import Carousel, {Pagination} from 'react-native-snap-carousel';
 
 interface Props extends StackScreenProps<StackParams, 'NewProjectScreen'> {}
 
+const dataCarousel = [
+  {
+    title: 'Aenean leo',
+    body: 'Ut tincidunt tincidunt erat. Sed cursus turpis vitae tortor. Quisque malesuada placerat nisl. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.',
+  },
+  {
+    title: 'In turpis',
+    body: 'Aenean ut eros et nisl sagittis vestibulum. Donec posuere vulputate arcu. Proin faucibus arcu quis ante. Curabitur at lacus ac velit ornare lobortis. ',
+  },
+  {
+    title: 'Lorem Ipsum',
+    body: 'Phasellus ullamcorper ipsum rutrum nunc. Nullam quis ante. Etiam ultricies nisi vel augue. Aenean tellus metus, bibendum sed, posuere ac, mattis non, nunc.',
+  },
+];
+
+export const SLIDER_WIDTH = Dimensions.get('window').width*0.8;
+export const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.9);
+
 export const NewProject = ({navigation, route}: Props) => {
-  const {marks} = route.params;
+  const {
+    marks,
+    description: descript,
+    hastag: hastags,
+    photo: photos,
+    projectName: name,
+    topic: topicos,
+  } = route.params;
   const projectNameRef = useRef<RNTextInput>(null);
+  const multiselectHastag = useRef<IMultiSelectRef>(null);
+  // carousel
+  const carousel = useRef(null);
+  const [index, setIndex] = useState(0);
+  const isCarousel = useRef(null)
+  // image
   const [img, setImg] = useState('');
   const [tempUri, setTempUri] = useState<string>();
+
   const [project, setProject] = useState<Project>({
     projectName: '',
     description: '',
@@ -50,15 +84,23 @@ export const NewProject = ({navigation, route}: Props) => {
     marks: [],
   });
   const [visible, setVisible] = useState(false);
+  const [helpModal, setHelpModal] = useState(false);
   const {projectName, description, photo, hastag, topic, onChange} =
     useForm<Project>(project);
   const [hasTag, setHasTag] = useState<HasTag[]>([]);
+  const [hasTagObjectSelected, setHasTagObjectSelected] = useState<HasTag[]>(
+    [],
+  );
   const [topics, setTopics] = useState<Topic[]>([]);
   const [selectedHastag, setSelectedHastag] = useState<string[]>([]);
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
 
+  // dialogs
   const showDialog = () => {
     setVisible(true);
+  };
+  const showHelpModal = () => {
+    setHelpModal(true);
   };
 
   const hideDialog = () => setVisible(false);
@@ -68,10 +110,44 @@ export const NewProject = ({navigation, route}: Props) => {
     getTopic();
   }, []);
 
+  /**
+   * cambia en el form la foto cuando detecta que ha sido cambiada
+   */
   useEffect(() => {
     if (tempUri) onChange(tempUri, 'photo');
   }, [tempUri]);
 
+  /**
+   * abre la información guía
+   */
+  useEffect(() => {
+    showHelpModal();
+  }, []);
+
+  /**
+   * cuando detecta que el state hasTag ha cambiado, comprueba si le han pasado por params hastags, si es así, entra en el método
+   */
+  useEffect(() => {
+    if (hastags) {
+      setSelectedHastags();
+    }
+    console.log(selectedHastag);
+  }, [hasTag]);
+
+  /**
+   * si hay movimiento en el state de hastagobjectselected, hace un mapeo para renderizar los items uno a uno
+   */
+  useEffect(() => {
+    // hasTagObjectSelected.map(x => {
+    //   renderDataItemHastagSelected(x, undefined);
+    // });
+    console.log(selectedHastag);
+  }, [selectedHastag]);
+
+  /**
+   * Metodo que obtiene los hastag mediante el token.
+   * Setea hastag
+   */
   const getHasTag = async () => {
     const token = await AsyncStorage.getItem('token');
     try {
@@ -88,6 +164,33 @@ export const NewProject = ({navigation, route}: Props) => {
     }
   };
 
+  /**
+   * Si se le han pasado hastag en los params, genera un array de strings,
+   * hace un mapeo de los hastag que le han pasado por params, dentro, se hace un mapeo de los hastag obtenidos de la api para que
+   * si coincide el id, sean añadidos al array de strings y al array de hastagSelected
+   */
+  const setSelectedHastags = () => {
+    if (hastags) {
+      console.log('entra en setSelectedHastags');
+      let hastagos: string[] = [];
+      hastags.map(x => {
+        hasTag.map(y => {
+          if (y.id === x) {
+            // console.log(y);
+            setHasTagObjectSelected([...hasTagObjectSelected, y]);
+            hastagos.push(y.id.toString()); //cosa rara, por defecto cuando se añaden, se añade el id
+          }
+        });
+      });
+
+      // setSelectedHastag(hastagos);
+    }
+  };
+
+  /**
+   * Metodo que obtiene los topic mediante el token.
+   * Setea topic
+   */
   const getTopic = async () => {
     const token = await AsyncStorage.getItem('token');
     try {
@@ -98,6 +201,9 @@ export const NewProject = ({navigation, route}: Props) => {
       });
       if (resp.data) {
         setTopics(resp.data);
+      }
+      if (topicos) {
+        onChange(topicos, 'topic');
       }
     } catch (e) {
       console.log('error topic');
@@ -142,11 +248,7 @@ export const NewProject = ({navigation, route}: Props) => {
   };
 
   const nextScreen = () => {
-    if (
-      projectName.length > 0 &&
-      description.length > 0 &&
-      hasTag.length > 0
-    ) {
+    if (projectName.length > 0 && description.length > 0 && hasTag.length > 0) {
       navigation.navigate('Marcador', {
         projectName,
         description,
@@ -183,6 +285,39 @@ export const NewProject = ({navigation, route}: Props) => {
     );
   };
 
+  const onCloseHelpModal = () => {
+    setHelpModal(!helpModal);
+  };
+
+  const renderCarouselItem = (item: any) => {
+    return (
+      <View style={styles2.container}>
+        <Paragraph style={styles.modalText}>
+          <Text>{item.title}</Text>
+          <Text>{item.body}</Text>
+        </Paragraph>
+      </View>
+    );
+  };
+
+  const renderDataItemHastagSelected = (
+    item: HasTag,
+    unSelect: ((item: HasTag) => void) | undefined,
+  ) => {
+    return (
+      <TouchableOpacity onPress={() => unSelect && unSelect(item)}>
+        <View style={styles.selectedStyle}>
+          <Text style={styles.textSelectedStyle}>{item.hasTag}</Text>
+          <Icon
+            name={'delete'}
+            size={Size.iconSizeMin}
+            // color={'black'}
+          />
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
   //habría que borrarlos y añadirlos en base de datos?
   const onNewText = (item: string) => {
     // setSelectedHastag([...selectedHastag, item]);
@@ -207,6 +342,7 @@ export const NewProject = ({navigation, route}: Props) => {
               numOfLines={1}
               onChangeText={value => onChange(value, 'projectName')}
               iconColor={Colors.lightorange}
+              value={name}
             />
 
             <InputField
@@ -217,6 +353,7 @@ export const NewProject = ({navigation, route}: Props) => {
               numOfLines={6}
               onChangeText={value => onChange(value, 'description')}
               iconColor={Colors.lightorange}
+              value={descript}
             />
             {/* MultiSelect de hastag */}
             <View
@@ -231,6 +368,7 @@ export const NewProject = ({navigation, route}: Props) => {
                   // backgroundColor: 'blue'
                 }}>
                 <MultiSelect
+                  ref={multiselectHastag}
                   style={styles.dropdown}
                   placeholderStyle={styles.placeholderStyle}
                   selectedTextStyle={styles.selectedTextStyle}
@@ -250,6 +388,7 @@ export const NewProject = ({navigation, route}: Props) => {
                   }}
                   renderItem={renderDataItem}
                   renderSelectedItem={(item, unSelect) => (
+                    // renderDataItemHastagSelected(item, unSelect)
                     <TouchableOpacity
                       onPress={() => unSelect && unSelect(item)}>
                       <View style={styles.selectedStyle}>
@@ -266,17 +405,16 @@ export const NewProject = ({navigation, route}: Props) => {
                   )}
                 />
               </View>
+
+              {/* add tag */}
               <View
                 style={{
                   justifyContent: 'flex-start',
                   alignContent: 'center',
                   width: '18%',
                   // backgroundColor: 'red',
-                  
                 }}>
-                <TouchableOpacity style={{
-                      
-                    }}>
+                <TouchableOpacity style={{}}>
                   <View
                     style={{
                       ...styles.selectedStyle,
@@ -497,6 +635,58 @@ export const NewProject = ({navigation, route}: Props) => {
           </Dialog.Actions>
         </Dialog>
       </Portal>
+
+      {/* help info */}
+      <Portal>
+        <Dialog visible={helpModal} onDismiss={onCloseHelpModal}>
+          <Dialog.Title style={{alignSelf: 'center'}}>Información</Dialog.Title>
+          <Dialog.Content style={{top: '4%', paddingVertical: 10}}>
+            <View>
+              <Carousel
+                layout="default"
+                layoutCardOffset={9}
+                useScrollView={true}
+                ref={carousel}
+                data={dataCarousel}
+                renderItem={item => renderCarouselItem(item)}
+                sliderWidth={SLIDER_WIDTH}
+                itemWidth={ITEM_WIDTH}
+                onSnapToItem={(index) => setIndex(index)}
+              />
+              <Pagination
+                dotsLength={dataCarousel.length}
+                activeDotIndex={index}
+                ref={isCarousel}
+                dotStyle={{
+                  width: 10,
+                  height: 10,
+                  borderRadius: 5,
+                  marginHorizontal: 0,
+                  backgroundColor: 'rgba(0, 0, 0, 0.92)',
+                }}
+                inactiveDotOpacity={0.4}
+                inactiveDotScale={0.6}
+                tappableDots={true}
+              />
+            </View>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <TouchableOpacity activeOpacity={0.5} onPress={onCloseHelpModal}>
+              <View
+                style={{
+                  justifyContent: 'center',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  margin: '5%',
+                }}>
+                <Text style={{fontSize: FontSize.fontSizeText, color: 'black'}}>
+                  Cerrar
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </>
   );
 };
@@ -636,7 +826,7 @@ const styles = StyleSheet.create({
     marginRight: 5,
     paddingVertical: '2%',
     fontSize: FontSize.fontSizeTextMin,
-    color: Colors.lightorange
+    color: Colors.lightorange,
   },
 
   shadow: {
@@ -649,6 +839,40 @@ const styles = StyleSheet.create({
     shadowRadius: 1.41,
 
     elevation: 2,
+  },
+});
+
+const styles2 = StyleSheet.create({
+  container: {
+    backgroundColor: 'white',
+    borderRadius: 8,
+    width: '100%',
+    paddingBottom: 40,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.29,
+    shadowRadius: 4.65,
+    elevation: 7,
+  },
+  image: {
+    width: ITEM_WIDTH,
+    height: 300,
+  },
+  header: {
+    color: '#222',
+    fontSize: 28,
+    fontWeight: 'bold',
+    // paddingLeft: 20,
+    paddingTop: 20,
+  },
+  body: {
+    color: '#222',
+    fontSize: 18,
+    // paddingLeft: 20,
+    // paddingRight: 20,
   },
 });
 

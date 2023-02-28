@@ -98,6 +98,7 @@ export const MapBox = () => {
     const coords = featureRef.current.geometry.coordinates;
     setMarks([...marks, coords]);
     setVisible(false);
+    centerToMark(coords);
   };
 
   const addMarkPlus = () => {
@@ -116,6 +117,11 @@ export const MapBox = () => {
     const posi: Position = [location.longitude, location.latitude];
     cameraRef.current?.flyTo(posi, 200);
   };
+
+  const centerToMark = async (coords: Position) => {
+    cameraRef.current?.flyTo(coords, 200);
+    followView.current = false;
+  }
 
   const userDirecction = () => {
     followView.current = followView.current!;

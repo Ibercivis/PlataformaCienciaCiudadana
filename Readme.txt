@@ -103,3 +103,6 @@ INSTRUCCIONES CREAR APP DEBUG
     .\gradlew assembleDebug
 - Then You can find your apk here:
     cd app/build/outputs/apk/
+
+- npm install --save react-native-snap-carousel
+    -- npm install --save @types/react-native-snap-carousel

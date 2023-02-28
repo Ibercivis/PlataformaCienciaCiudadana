@@ -10,7 +10,12 @@ export type StackParams = {
     dashboard?: boolean;
   };
   NewProjectScreen: {
+    projectName?: string;
+    description?: string;
+    photo?: string;
     marks?: Mark[];
+    hastag?: number[],
+    topic?: number[],
   };
   Marcador: {
     projectName: string;

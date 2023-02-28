@@ -40,23 +40,38 @@ export const Home = ({navigation}: Props) => {
     setSearchQuery(query);
 
   const [project, setProject] = useState<Projects[]>([]);
+  const [projectAll, setProjectAll] = useState<Projects[]>([]);
   const [hasTag, setHasTag] = useState<HasTag[]>([]);
+  const [hasTagToFilter, setHasTagToFilter] = useState<number>(0);
   const [topics, setTopics] = useState<Topic[]>([]);
   const [selected, setSelected] = useState<Projects>();
 
+  const [isFiltered, setIsFiltered] = useState(false);
   const [visible, setVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+
+  const [creator, setCreator] = useState(0);
 
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
 
   useEffect(() => {
+    getCreator();
     setProject([]);
+    setProjectAll([]);
     getHasTag();
     getTopics();
     getData();
     setRefreshing(false);
   }, [refreshing]);
+
+  useEffect(() => {
+    setProjectByTag(hasTagToFilter);
+  }, [hasTagToFilter, isFiltered]);
+
+  useEffect(() => {
+    console.log(projectAll);
+  }, [projectAll]);
 
   const getData = async () => {
     const token = await AsyncStorage.getItem('token');
@@ -70,6 +85,7 @@ export const Home = ({navigation}: Props) => {
       });
       if (resp.data) {
         setProject(resp.data);
+        setProjectAll(resp.data);
       }
     } catch (e) {
       console.log('error get projects ' + e);
@@ -150,12 +166,15 @@ export const Home = ({navigation}: Props) => {
         //   }}>
         //   {data}
         // </Paragraph>
-        <View style={{flexDirection: 'column'}}>
+
+        <Paragraph style={styles.item}>
           {hastags.map(x => (
             <TouchableOpacity
               key={x.id}
-              style={{...styles.tags, marginVertical: '1%'}}
-              onPress={() => console.log(x)}>
+              style={{...styles.tags}}
+              onPress={() => {
+                setIsFiltered(!isFiltered), setHasTagToFilter(x.id);
+              }}>
               <View style={{marginHorizontal: 15}}>
                 <Text
                   style={{
@@ -167,7 +186,7 @@ export const Home = ({navigation}: Props) => {
               </View>
             </TouchableOpacity>
           ))}
-        </View>
+        </Paragraph>
       );
     } else {
       return <Paragraph>Nothing</Paragraph>;
@@ -183,7 +202,6 @@ export const Home = ({navigation}: Props) => {
         }
       });
     });
-    console.log(topico);
 
     if (topico.length > 0) {
       return (
@@ -191,11 +209,11 @@ export const Home = ({navigation}: Props) => {
         //   style={{fontSize: FontSize.fontSizeTextMin, color: Colors.lightblue}}>
         //   {data}
         // </Paragraph>
-        <View style={{flexDirection: 'column'}}>
+        <Paragraph style={styles.item}>
           {topico.map(x => (
             <TouchableOpacity
               key={x.id}
-              style={{...styles.tags, marginVertical: '1%'}}
+              style={{...styles.tags}}
               onPress={() => console.log(x)}>
               <View style={{marginHorizontal: 15}}>
                 <Text
@@ -208,7 +226,7 @@ export const Home = ({navigation}: Props) => {
               </View>
             </TouchableOpacity>
           ))}
-        </View>
+        </Paragraph>
       );
     } else {
       return <Paragraph>Nothing</Paragraph>;
@@ -220,10 +238,39 @@ export const Home = ({navigation}: Props) => {
   };
 
   const setProjectByTag = (id: number) => {
-    let projectFiltered = project.map(x => {
-      x.hasTag.filter(y => y === id);
-    });
+    console.log(isFiltered);
+    if (isFiltered) {
+      setProject([]);
+      project.map(x => {
+        x.hasTag.map(y => {
+          if (y === id) {
+            setProject([...project, x]);
+            console.log(x);
+          }
+        });
+      });
+    } else {
+      setProject(projectAll);
+      setIsFiltered(false);
+    }
+
     // setProject(projectFiltered);
+  };
+
+  const getCreator = async () => {
+    const token = await AsyncStorage.getItem('token');
+    try {
+      const resp = await citmapApi.get('/authentication/user/', {
+        headers: {
+          Authorization: token,
+        },
+      });
+      const data = parseInt(JSON.stringify(resp.data.pk, null, 1));
+      const filtered = project.filter(x => x.creator === creator);
+      setCreator(data);
+    } catch (err) {
+      console.log('creator not selected');
+    }
   };
 
   return (
@@ -281,14 +328,40 @@ export const Home = ({navigation}: Props) => {
               <Card.Content>{showHastagFull(item.hasTag)}</Card.Content>
               <Card.Content>{showTopicsFull(item.topic)}</Card.Content>
               <Card.Actions style={{alignSelf: 'center'}}>
-                <Button
-                  labelStyle={{
-                    fontSize: FontSize.fontSizeText,
-                    paddingTop: Size.globalHeight > 720 ? 10 : 0,
-                  }}
-                  onPress={() => showHastagFull(item.hasTag)}>
-                  Participar
-                </Button>
+                {creator === item.creator ? (
+                  <>
+                    <Button
+                      labelStyle={{
+                        fontSize: FontSize.fontSizeText,
+                      }}
+                      onPress={() =>
+                        navigation.navigate('NewProjectScreen', {
+                          projectName: item.name,
+                          description: item.description,
+                          hastag: item.hasTag,
+                          topic: item.topic,
+                          id: item.id,
+                        })
+                      }>
+                      Editar
+                    </Button>
+                    <Button
+                      labelStyle={{
+                        fontSize: FontSize.fontSizeText,
+                      }}
+                      onPress={() => showHastagFull(item.hasTag)}>
+                      Borrar
+                    </Button>
+                  </>
+                ) : (
+                  <Button
+                    labelStyle={{
+                      fontSize: FontSize.fontSizeText,
+                    }}
+                    onPress={() => navigation.navigate('NavigatorMapBox')}>
+                    Participar
+                  </Button>
+                )}
               </Card.Actions>
             </Card>
           ))}
@@ -369,8 +442,9 @@ const styles = StyleSheet.create({
     elevation: 7,
   },
   tags: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    // justifyContent: 'center',
+    // alignItems: 'center',
+
     borderRadius: 14,
     backgroundColor: 'white',
     shadowColor: '#000',
@@ -382,5 +456,12 @@ const styles = StyleSheet.create({
     shadowRadius: 1.41,
 
     elevation: 2,
+  },
+  item: {
+    // padding: '3%',
+    // marginHorizontal: '3%',
+    flexDirection: 'row',
+    // alignItems: 'flex-start',
+    justifyContent: 'space-between',
   },
 });
