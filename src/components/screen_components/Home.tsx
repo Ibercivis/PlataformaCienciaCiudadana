@@ -41,9 +41,17 @@ export const Home = ({navigation}: Props) => {
 
   const [project, setProject] = useState<Projects[]>([]);
   const [projectAll, setProjectAll] = useState<Projects[]>([]);
+  const [projectFiltered, setProjectFiltered] = useState<Projects[]>([]);
+
   const [hasTag, setHasTag] = useState<HasTag[]>([]);
-  const [hasTagToFilter, setHasTagToFilter] = useState<number>(0);
   const [topics, setTopics] = useState<Topic[]>([]);
+
+  //filtros
+  const [hasTagToFilter, setHasTagToFilter] = useState<number>(0);
+  const [lastHastagFilter, setLastHastagFilter] = useState<number>(0);
+  const [topicToFilter, setTopicToFilter] = useState<number>(0);
+  const [lastTopicFilter, setLastTopicFilter] = useState<number>(0);
+
   const [selected, setSelected] = useState<Projects>();
 
   const [isFiltered, setIsFiltered] = useState(false);
@@ -56,22 +64,34 @@ export const Home = ({navigation}: Props) => {
   const hideModal = () => setVisible(false);
 
   useEffect(() => {
+    setHasTagToFilter(0);
+    setLastHastagFilter(0);
+    setTopicToFilter(0);
+    getData();
     getCreator();
     setProject([]);
     setProjectAll([]);
     getHasTag();
     getTopics();
-    getData();
     setRefreshing(false);
   }, [refreshing]);
 
+  //espera a que cambie el valor numerico del id del hastag por el que filtrar para así cambiar el del isFiltered
   useEffect(() => {
-    setProjectByTag(hasTagToFilter);
-  }, [hasTagToFilter, isFiltered]);
+    setIsFiltered(!isFiltered);
+  }, [hasTagToFilter, topicToFilter]);
 
+  // si isfiltered, se limpian los proyectos para luego rellenarlos
   useEffect(() => {
-    console.log(projectAll);
-  }, [projectAll]);
+    if (isFiltered) {
+      setProject([]);
+    }
+  }, [isFiltered]);
+
+  // si isFiltered y se han limpiado los proyectos, se llamará a la función que llena de nuevo los proyectos filtrados
+  useEffect(() => {
+    if (isFiltered) setProjectByTag(hasTagToFilter);
+  }, [project]);
 
   const getData = async () => {
     const token = await AsyncStorage.getItem('token');
@@ -128,6 +148,22 @@ export const Home = ({navigation}: Props) => {
     }
   };
 
+  const getCreator = async () => {
+    const token = await AsyncStorage.getItem('token');
+    try {
+      const resp = await citmapApi.get('/authentication/user/', {
+        headers: {
+          Authorization: token,
+        },
+      });
+      const data = parseInt(JSON.stringify(resp.data.pk, null, 1));
+      const filtered = project.filter(x => x.creator === creator);
+      setCreator(data);
+    } catch (err) {
+      console.log('creator not selected');
+    }
+  };
+
   const showHastag = (id: number) => {
     const data = hasTag.find(x => x.id === id);
     if (data) {
@@ -167,26 +203,59 @@ export const Home = ({navigation}: Props) => {
         //   {data}
         // </Paragraph>
 
-        <Paragraph style={styles.item}>
+        <>
           {hastags.map(x => (
-            <TouchableOpacity
-              key={x.id}
-              style={{...styles.tags}}
-              onPress={() => {
-                setIsFiltered(!isFiltered), setHasTagToFilter(x.id);
-              }}>
-              <View style={{marginHorizontal: 15}}>
-                <Text
+            <>
+              {hasTagToFilter === x.id ? (
+                <TouchableOpacity
+                  key={x.id}
                   style={{
-                    color: Colors.darkorange,
-                    fontStyle: 'italic',
+                    ...styles.tags,
+                    backgroundColor: Colors.lightorange,
+                    marginVertical: '2%',
+                    marginRight: '2%',
+                    alignItems: 'baseline',
+                  }}
+                  onPress={() => {
+                    setHasTagToFilter(0);
+                    setLastHastagFilter(0);
                   }}>
-                  {x.hasTag}
-                </Text>
-              </View>
-            </TouchableOpacity>
+                  <View style={{marginHorizontal: '2%'}}>
+                    <Text
+                      style={{
+                        color: Colors.primary,
+                        fontStyle: 'italic',
+                      }}>
+                      {x.hasTag}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  key={x.id}
+                  style={{
+                    ...styles.tags,
+                    marginVertical: '1%',
+                    marginRight: '2%',
+                    alignItems: 'baseline',
+                  }}
+                  onPress={() => {
+                    setHasTagToFilter(x.id);
+                  }}>
+                  <View style={{marginHorizontal: 15}}>
+                    <Text
+                      style={{
+                        color: Colors.darkorange,
+                        fontStyle: 'italic',
+                      }}>
+                      {x.hasTag}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              )}
+            </>
           ))}
-        </Paragraph>
+        </>
       );
     } else {
       return <Paragraph>Nothing</Paragraph>;
@@ -209,11 +278,16 @@ export const Home = ({navigation}: Props) => {
         //   style={{fontSize: FontSize.fontSizeTextMin, color: Colors.lightblue}}>
         //   {data}
         // </Paragraph>
-        <Paragraph style={styles.item}>
+        <>
           {topico.map(x => (
             <TouchableOpacity
               key={x.id}
-              style={{...styles.tags}}
+              style={{
+                ...styles.tags,
+                marginVertical: '1%',
+                marginRight: '2%',
+                alignItems: 'baseline',
+              }}
               onPress={() => console.log(x)}>
               <View style={{marginHorizontal: 15}}>
                 <Text
@@ -226,51 +300,64 @@ export const Home = ({navigation}: Props) => {
               </View>
             </TouchableOpacity>
           ))}
-        </Paragraph>
+        </>
       );
     } else {
-      return <Paragraph>Nothing</Paragraph>;
+      return <Paragraph>Sin topics</Paragraph>;
     }
   };
 
   const onRefresh = () => {
     setRefreshing(true);
+    setProject(projectAll);
+    setIsFiltered(false);
+    setHasTagToFilter(0);
   };
 
   const setProjectByTag = (id: number) => {
-    console.log(isFiltered);
-    if (isFiltered) {
-      setProject([]);
-      project.map(x => {
-        x.hasTag.map(y => {
-          if (y === id) {
-            setProject([...project, x]);
-            console.log(x);
-          }
+    console.log(
+      'hastagToFilter ' +
+        hasTagToFilter +
+        ' lastHastagFilter ' +
+        lastHastagFilter,
+    );
+    console.log(JSON.stringify(project, null, 2));
+    if (hasTagToFilter > 0) {
+      // si el ultimo filtrado es diferente del nuevo y el ultimo es diferente de 0, significa que se está intentando filtrar por otro nuevo
+      if (lastHastagFilter !== id && lastHastagFilter !== 0) {
+        let newProject: Projects[] = [];
+        projectFiltered.map(x => {
+          x.hasTag.map(y => {
+            if (y === id) {
+              newProject.push(x);
+            }
+          });
         });
-      });
+        setProject(newProject);
+        setIsFiltered(false);
+      } else {
+        let newProject: Projects[] = [];
+        projectAll.map(x => {
+          x.hasTag.map(y => {
+            if (y === id) {
+              // setProject([...project, x]);
+              newProject.push(x);
+              // console.log('id ' + id + ' es igual a ' + x.hasTag);
+            }
+          });
+        });
+        setProject(newProject);
+        setIsFiltered(false);
+        setProjectFiltered(newProject);
+        setLastHastagFilter(id);
+      }
     } else {
-      setProject(projectAll);
       setIsFiltered(false);
+      setProject(projectAll);
+      setHasTagToFilter(0);
     }
 
     // setProject(projectFiltered);
-  };
-
-  const getCreator = async () => {
-    const token = await AsyncStorage.getItem('token');
-    try {
-      const resp = await citmapApi.get('/authentication/user/', {
-        headers: {
-          Authorization: token,
-        },
-      });
-      const data = parseInt(JSON.stringify(resp.data.pk, null, 1));
-      const filtered = project.filter(x => x.creator === creator);
-      setCreator(data);
-    } catch (err) {
-      console.log('creator not selected');
-    }
   };
 
   return (
@@ -296,43 +383,58 @@ export const Home = ({navigation}: Props) => {
             <Card
               style={globalStyles.globalMargin}
               mode="elevated"
-              key={item.id}
-              onPress={() => {
-                setSelected(item);
-                showModal();
-              }}>
+              key={index}
+              // onPress={() => {
+              //   setSelected(item);
+              //   showModal();
+              // }}
+            >
               <Card.Title
                 title={item.name}
-                subtitle={item.creator}
+                // subtitle={item.creator}
                 titleStyle={{fontSize: FontSize.fontSizeText}}
                 key={item.id}
-                left={() => (
-                  <Icon
-                    style={globalStyles.icons}
-                    name="arrow-back"
-                    size={25}
-                    color="#5C95FF"
-                  />
-                )}
+                // left={() => (
+                //   <Icon
+                //     style={globalStyles.icons}
+                //     name="arrow-back"
+                //     size={25}
+                //     color="#5C95FF"
+                //   />
+                // )}
               />
 
               <Card.Cover
                 style={{padding: 2, marginTop: '2%'}}
                 source={{uri: 'https://picsum.photos/700'}}
               />
-              <Card.Content>
+              <Card.Content style={{marginVertical: '4%'}}>
                 <Title>Descripcion</Title>
                 <Paragraph>{item.description}</Paragraph>
               </Card.Content>
               {/* <Card.Content>{item.hasTag.map(x => showHastag(x))}</Card.Content> */}
-              <Card.Content>{showHastagFull(item.hasTag)}</Card.Content>
-              <Card.Content>{showTopicsFull(item.topic)}</Card.Content>
+              <Card.Content
+                style={{
+                  marginVertical: '2%',
+                  flexDirection: 'row',
+                  flexWrap: 'wrap',
+                }}>
+                {showHastagFull(item.hasTag)}
+              </Card.Content>
+              <Card.Content
+                style={{
+                  marginVertical: '2%',
+                  flexDirection: 'row',
+                  flexWrap: 'wrap',
+                }}>
+                {showTopicsFull(item.topic)}
+              </Card.Content>
               <Card.Actions style={{alignSelf: 'center'}}>
                 {creator === item.creator ? (
                   <>
                     <Button
                       labelStyle={{
-                        fontSize: FontSize.fontSizeText,
+                        ...styles.buttonModal
                       }}
                       onPress={() =>
                         navigation.navigate('NewProjectScreen', {
@@ -347,7 +449,7 @@ export const Home = ({navigation}: Props) => {
                     </Button>
                     <Button
                       labelStyle={{
-                        fontSize: FontSize.fontSizeText,
+                        ...styles.buttonModal
                       }}
                       onPress={() => showHastagFull(item.hasTag)}>
                       Borrar
@@ -426,7 +528,10 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   buttonModal: {
-    marginVertical: 5,
+    fontSize: FontSize.fontSizeText,
+    borderWidth: 1,
+    borderRadius: 20,
+    padding: 10,
   },
   viewButtonModalAdd: {
     bottom: Size.window.width * 0.05,
@@ -442,9 +547,6 @@ const styles = StyleSheet.create({
     elevation: 7,
   },
   tags: {
-    // justifyContent: 'center',
-    // alignItems: 'center',
-
     borderRadius: 14,
     backgroundColor: 'white',
     shadowColor: '#000',
@@ -462,6 +564,6 @@ const styles = StyleSheet.create({
     // marginHorizontal: '3%',
     flexDirection: 'row',
     // alignItems: 'flex-start',
-    justifyContent: 'space-between',
+    // justifyContent: 'space-between',
   },
 });
