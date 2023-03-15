@@ -1,7 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:orientation="vertical"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FDFCFC"
+    android:gravity="center"
+    android:orientation="vertical">
 
+    <FrameLayout
+        android:layout_width="230dp"
+        android:layout_height="193dp"
+        android:layout_gravity="center"
+        android:background="@mipmap/ic_launcher_foreground">
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:autoText="false"
+        android:background="#FFFFFF"
+        android:fontFamily="serif"
+        android:gravity="center"
+        android:text="CITMAPP"
+        android:textAlignment="center"
+        android:textColor="#6091E6"
+        android:textSize="24sp"
+        android:textStyle="bold" />
 </LinearLayout>

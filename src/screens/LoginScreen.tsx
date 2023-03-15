@@ -24,8 +24,11 @@ import {Size} from '../theme/size';
 import {CustomButton} from '../components/CustomButton';
 import {InputField} from '../components/InputField';
 import translate from '../theme/es.json';
+import SplashScreen from 'react-native-splash-screen'
 import citmapApi from '../api/citmapApi';
 import { Keyboard } from 'react-native';
+import Modal from 'react-native-modal';
+import { globalStyles } from '../theme/theme';
 
 const height = Size.globalWidth > 500 ? 80 : 50;
 const iconSize = Size.globalWidth > 500 ? 70 : 40;
@@ -47,6 +50,10 @@ export const LoginScreen = ({navigation}: Props) => {
   // console.log(authState.token);
 
   useEffect(() => {
+    SplashScreen.hide();
+  }, []);
+
+  useEffect(() => {
     GoogleSignin.configure({
       webClientId:
         '235777853257-rnbdsrqchtl76jq0givh1h6l7u47rs4k.apps.googleusercontent.com',
@@ -55,13 +62,15 @@ export const LoginScreen = ({navigation}: Props) => {
 
   useEffect(() => {
     if (errorMessage.length === 0) return;
-    CustomAlert().showAlertOneButton(
-      'Error de inicio de sesion',
-      errorMessage,
-      'Ok',
-      removeError,
-      () => console.log()
-    );
+    // CustomAlert().showAlertOneButton(
+    //   'Error de inicio de sesion',
+    //   errorMessage,
+    //   'Ok',
+    //   removeError,
+    //   () => console.log()
+    // );
+    console.log(userError)
+    setUserError(true)
   }, [errorMessage]);
 
   //aquí se comprobaría si existe el usuario y en caso de que sí, se le permitiría pasar
@@ -507,6 +516,8 @@ export const LoginScreen = ({navigation}: Props) => {
           onChangeText={value => onChange(value, 'password')}
         />
 
+
+        <CustomButton label={translate.strings.login_screen[0].login_button} onPress={() => loggin()} />
           <TouchableOpacity style={{alignItems: 'flex-end', marginBottom: '8%'}}
             onPress={() => navigation.replace('ForgotPassword')}>
             <Text
@@ -520,8 +531,6 @@ export const LoginScreen = ({navigation}: Props) => {
               {translate.strings.login_screen[0].recovery_password}
             </Text>
           </TouchableOpacity>
-
-        <CustomButton label={translate.strings.login_screen[0].login_button} onPress={() => loggin()} />
 
         <Text
           style={{
@@ -586,6 +595,25 @@ export const LoginScreen = ({navigation}: Props) => {
           </TouchableOpacity>
         </View>
       </View>
+
+      <Modal
+        style={{alignItems: 'center'}}
+        onBackdropPress={() => {setUserError(false), removeError()}}
+        isVisible={userError}
+        animationIn="shake"
+        animationInTiming={300}
+        animationOut="zoomOut"
+        animationOutTiming={300}
+        // backdropColor="#B4B3DB"
+        backdropOpacity={0.8}
+        backdropTransitionInTiming={600}
+        backdropTransitionOutTiming={600}>
+        <View
+          style={globalStyles.viewModal}>
+          <Text style={{justifyContent: 'center', fontSize: FontSize.fontSizeTextTitle}}>ERROR</Text>
+          <Text style={{justifyContent: 'center', fontSize: FontSize.fontSizeText}}>{errorMessage}</Text>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };

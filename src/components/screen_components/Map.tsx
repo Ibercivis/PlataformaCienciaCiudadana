@@ -15,7 +15,7 @@ export const Map = () => {
     hasLocation,
     initialPosition,
     getCurrentLocation,
-    folloowUserLocation,
+    followUserLocation,
     userLocation,
     stopFollowUserLocation,
     routeLines,
@@ -27,7 +27,7 @@ export const Map = () => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    folloowUserLocation();
+    followUserLocation();
 
     return () => {
       //cancelar el seguimiento

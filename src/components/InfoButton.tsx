@@ -8,9 +8,9 @@ interface Props {
     onPress: () => void;
   }
 
-export const BackButton = ({onPress}: Props) => {
+export const InfoButton = ({onPress}: Props) => {
   return (
-    <View style={globalStyles.viewButtonBack}>
+    <View style={globalStyles.viewButtonInfo}>
         <TouchableOpacity
           activeOpacity={0.5}
           onPress={onPress}>
@@ -20,7 +20,7 @@ export const BackButton = ({onPress}: Props) => {
               flexDirection: 'row',
               alignItems: 'center',
             }}>
-            <IconTemp name="arrow-left" size={Size.iconSizeLarge} />
+            <IconTemp name="information-variant" size={Size.iconSizeLarge} />
           </View>
         </TouchableOpacity>
       </View>

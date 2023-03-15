@@ -17,11 +17,15 @@ import {globalStyles} from '../../theme/theme';
 import {Button, Dialog, Portal, TextInput} from 'react-native-paper';
 import {InputField} from '../InputField';
 import {onChange} from 'react-native-reanimated';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
+import {Colors} from '../../theme/colors';
 import {useForm} from '../../hooks/useForm';
 import translate from '../../theme/es.json';
 import {IconTemp} from '../IconTemp';
 import {Size} from '../../theme/size';
+import {BackButton} from '../BackButton';
+import Modal from 'react-native-modal';
+import {FontSize} from '../../theme/fonts';
+import { mdiOrnament } from '@mdi/js';
 
 MapboxGL.setWellKnownTileServer('Mapbox');
 MapboxGL.setAccessToken(
@@ -31,9 +35,6 @@ MapboxGL.setConnected(true);
 const {MapView, Camera, PointAnnotation, MarkerView} = MapboxGL;
 
 type Position = number[];
-
-const window = Dimensions.get('window');
-const iconSize = window.width > 500 ? 70 : 50;
 
 export const MapBox = () => {
   const navigation = useNavigation();
@@ -58,6 +59,7 @@ export const MapBox = () => {
   const [followUser, setFollowUser] = useState(false);
   const featureRef = useRef<any>([]);
   const [lastCoordinate, setLastCoordinate] = useState<Position>([]);
+  const [timer, setTimer] = useState(0);
 
   const {form, onChange} = useForm({});
 
@@ -78,6 +80,17 @@ export const MapBox = () => {
       stopFollowUserLocation();
     };
   }, []);
+
+  useEffect(() => {
+    if (!hasLocation) {
+      setTimeout(() => {
+        console.log('1 sec.');
+      }, 1000);
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+  }, [hasLocation]);
 
   //seccion metodos
 
@@ -121,7 +134,7 @@ export const MapBox = () => {
   const centerToMark = async (coords: Position) => {
     cameraRef.current?.flyTo(coords, 200);
     followView.current = false;
-  }
+  };
 
   const userDirecction = () => {
     followView.current = followView.current!;
@@ -143,9 +156,10 @@ export const MapBox = () => {
           <MapView
             ref={element => (mapViewRef.current = element!)}
             style={styles.map}
-            logoEnabled={true}
+            logoEnabled={false}
             localizeLabels={true}
             collapsable={true}
+            animated={true}
             onTouchStart={() => (followView.current = false)}
             onLongPress={data => {
               showDialog(data);
@@ -167,34 +181,36 @@ export const MapBox = () => {
               onUpdate={location => onUserLocationUpdate(location)}
             />
             {marks.length > 0 &&
-              marks.map(x => {
+              marks.map((x, index) => {
                 return (
-                  <MarkerView coordinate={x}>
-                    <TouchableOpacity onPress={() => showMark(x)}>
-                      <View style={styles.markerContainer}>
-                        <Button
-                          icon={({size, color}) => (
-                            <Image
-                              source={require('../../assets/icons/mark.png')}
-                              style={{
-                                alignSelf: 'center',
-                                backgroundColor: 'transparent',
-                                width: 50,
-                                height: 50,
-                              }}
-                            />
-                          )}
-                          children={undefined}></Button>
-                      </View>
-                    </TouchableOpacity>
-                  </MarkerView>
+                  <View key={index}>
+                    <MarkerView coordinate={x}>
+                      <TouchableOpacity onPress={() => showMark(x)}>
+                        <View style={styles.markerContainer}>
+                          <Button
+                            icon={({size, color}) => (
+                              <Image
+                                source={require('../../assets/icons/mark.png')}
+                                style={{
+                                  alignSelf: 'center',
+                                  backgroundColor: 'transparent',
+                                  width: 50,
+                                  height: 50,
+                                }}
+                              />
+                            )}
+                            children={undefined}></Button>
+                        </View>
+                      </TouchableOpacity>
+                    </MarkerView>
+                  </View>
                 );
               })}
           </MapView>
         </View>
 
         {/* dialogo creacion */}
-        <Portal>
+        {/* <Portal>
           <Dialog visible={visible} onDismiss={hideDialog}>
             <Dialog.Title>Crear marca</Dialog.Title>
             <Dialog.Content>
@@ -220,7 +236,78 @@ export const MapBox = () => {
               <Button onPress={() => addMarkFeature()}>Done</Button>
             </Dialog.Actions>
           </Dialog>
-        </Portal>
+        </Portal> */}
+        <Modal
+          style={{alignItems: 'center'}}
+          onBackdropPress={() => setVisible(false)}
+          isVisible={visible}
+          animationIn="zoomIn"
+          animationInTiming={300}
+          animationOut="zoomOut"
+          animationOutTiming={300}
+          // backdropColor="#B4B3DB"
+          backdropOpacity={0.8}
+          backdropTransitionInTiming={600}
+          backdropTransitionOutTiming={600}>
+          <View
+            style={{
+              borderRadius: 40,
+              width: '100%',
+              height: Size.window.height * 0.3,
+              paddingVertical: 10,
+              alignItems: 'center',
+              // justifyContent: 'center',
+              marginHorizontal: '5%',
+              backgroundColor: 'white',
+            }}>
+            <Text
+              style={{
+                top: '1%',
+                fontSize: FontSize.fontSizeTextTitle,
+                color: Colors.primary,
+              }}>
+              Nueva marca
+            </Text>
+            {featureRef.current.geometry && (
+              <View
+                style={{
+                  justifyContent: 'center',
+                  width: '100%',
+                  alignContent: 'center',
+                }}>
+                <InputField
+                  label={'coordenadas'}
+                  icon="format-title"
+                  keyboardType="email-address"
+                  multiline={false}
+                  numOfLines={1}
+                  value={featureRef.current.geometry.coordinates[0].toString()}
+                  onChangeText={value =>
+                    console.log(featureRef.current.geometry.coordinates)
+                  }
+                  iconColor={Colors.lightorange}
+                />
+                <InputField
+                  label={'coordenadas'}
+                  icon="format-title"
+                  keyboardType="email-address"
+                  multiline={false}
+                  numOfLines={1}
+                  value={featureRef.current.geometry.coordinates[1].toString()}
+                  onChangeText={value =>
+                    console.log(featureRef.current.geometry.coordinates)
+                  }
+                  iconColor={Colors.lightorange}
+                />
+              </View>
+            )}
+            <Button
+              style={{position: 'absolute', bottom: '4%'}}
+              onPress={() => addMarkFeature()}>
+              Crear
+            </Button>
+          </View>
+        </Modal>
 
         {/* dialogo con datos */}
         <Dialog visible={visibleInfo} onDismiss={hideDialogInfo}>
@@ -246,12 +333,12 @@ export const MapBox = () => {
       </KeyboardAvoidingView>
 
       {/* buttons */}
-      
+
       <View
         style={{
           ...styles.button,
           position: 'absolute',
-          bottom: window.height * 0.1,
+          bottom: Size.window.height * 0.1,
           right: '2%',
         }}>
         <TouchableOpacity activeOpacity={0.5} onPress={() => addMarkPlus()}>
@@ -270,7 +357,6 @@ export const MapBox = () => {
               alignItems: 'center',
             }}>
             <IconTemp name="plus-circle" size={Size.iconSizeExtraLarge} />
-            
           </View>
         </TouchableOpacity>
       </View>
@@ -278,7 +364,7 @@ export const MapBox = () => {
         style={{
           ...styles.button,
           position: 'absolute',
-          bottom: window.height * 0.02,
+          bottom: Size.window.height * 0.02,
           right: '2%',
         }}>
         <TouchableOpacity activeOpacity={0.5} onPress={() => centerPosition()}>
@@ -305,7 +391,9 @@ export const MapBox = () => {
         </TouchableOpacity>
       </View>
 
-      <View
+      {/* back button */}
+      <BackButton onPress={() => navigation.goBack()} />
+      {/* <View
         style={{
           ...styles.button,
           left: '2%',
@@ -315,14 +403,14 @@ export const MapBox = () => {
         <TouchableOpacity
           activeOpacity={0.5}
           onPress={() => navigation.navigate('HomeScreen' as never)}>
-          {/* <Image
+          <Image
             source={require('../../assets/icons/back.png')}
             style={{
               width: iconSize,
               height: iconSize,
               borderRadius: 50,
             }}
-          /> */}
+          />
           <View
             style={{
               justifyContent: 'center',
@@ -332,7 +420,7 @@ export const MapBox = () => {
             <IconTemp name="chevron-left" size={Size.iconSizeExtraLarge} />
           </View>
         </TouchableOpacity>
-      </View>
+      </View> */}
     </>
   );
 };

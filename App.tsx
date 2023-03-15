@@ -6,6 +6,7 @@ import {PermissionsProvider} from './src/context/PermissionsContext';
 import {NavigationContainer, DefaultTheme} from '@react-navigation/native';
 import {Navigator} from './src/navigation/Navigator';
 import {AuthProvider} from './src/context/AuthContext';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
 
 const App = () => {
   const tema = DefaultTheme;
@@ -14,9 +15,11 @@ const App = () => {
     <AppAuth>
       <AppState>
         <PaperProvider>
-          <NavigationContainer theme={tema}>
-            <Navigator />
-          </NavigationContainer>
+          <SafeAreaProvider>
+            <NavigationContainer theme={tema}>
+              <Navigator />
+            </NavigationContainer>
+          </SafeAreaProvider>
         </PaperProvider>
       </AppState>
     </AppAuth>

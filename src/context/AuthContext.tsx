@@ -106,6 +106,7 @@ export const AuthProvider = ({children}: any) => {
       //cuando se loggea, hay que cuardar el token como "Token (token)"
       await AsyncStorage.setItem('token', key);
     } catch (err) {
+      console.log(err)
       let textError = '';
       const dataError = JSON.stringify(err.response.data, null);
       const dataErrorObj = JSON.parse(dataError);

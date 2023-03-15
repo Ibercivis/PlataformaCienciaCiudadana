@@ -1,5 +1,5 @@
-import {StackScreenProps} from '@react-navigation/stack';
 import React, {useEffect, useRef, useState} from 'react';
+import {StackScreenProps} from '@react-navigation/stack';
 
 import {Picker} from '@react-native-picker/picker';
 import {
@@ -37,9 +37,6 @@ interface Props extends StackScreenProps<StackParams, 'Marcador'> {}
 
 const maxWidth = Dimensions.get('screen').width;
 const window = Dimensions.get('window');
-const height = window.width > 500 ? 80 : 50;
-const iconSize = window.width > 500 ? 70 : 50;
-const iconSizeFab = window.width > 500 ? 50 : 20;
 
 export const Marcador = ({route, navigation}: Props) => {
   const {projectName, description, photo, marks: markas, hastag, topic, onBack} = route.params;

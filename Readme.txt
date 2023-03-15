@@ -106,3 +106,11 @@ INSTRUCCIONES CREAR APP DEBUG
 
 - npm install --save react-native-snap-carousel
     -- npm install --save @types/react-native-snap-carousel
+
+- react native splash screen 
+    -- https://github.com/crazycodeboy/react-native-splash-screen
+    -- android: INSTALLED
+    -- ios: NOT INSTALLED
+     
+- stepper installed
+- mui npm install @mui/material @emotion/react @emotion/styled

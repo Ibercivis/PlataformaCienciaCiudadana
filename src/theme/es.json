@@ -34,6 +34,7 @@
     "new_project_screen": [
       {
         "title": "NUEVO PROYECTO",
+        "title_edit": "EDICIÓN",
         "project_name_input": "Nombre del proyecto",
         "description_input": "Descripción",
         "image_title": "Imagen del proyecto",

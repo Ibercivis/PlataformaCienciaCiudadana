@@ -1,5 +1,4 @@
-import {StackScreenProps} from '@react-navigation/stack';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   View,
   Text,
@@ -12,6 +11,7 @@ import {
   ScrollView,
   ListRenderItemInfo,
 } from 'react-native';
+import {StackScreenProps} from '@react-navigation/stack';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {
   Button,
@@ -20,39 +20,48 @@ import {
   Paragraph,
   Portal,
 } from 'react-native-paper';
-import {globalStyles} from '../../theme/theme';
+
 import {useForm} from '../../hooks/useForm';
-import {Project, Mark, HasTag, Topic} from '../../interfaces/appInterfaces';
+import {useAnimation} from '../../hooks/useAnimation';
+import citmapApi from '../../api/citmapApi';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {StackParams} from '../../navigation/ProjectNavigator';
+import {Project, Mark, HasTag, Topic} from '../../interfaces/appInterfaces';
+
+import {globalStyles} from '../../theme/theme';
 import {fonts, FontSize} from '../../theme/fonts';
 import {Colors} from '../../theme/colors';
+import {Size} from '../../theme/size';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import translate from '../../theme/es.json';
 import {InputField} from '../../components/InputField';
-import {Size} from '../../theme/size';
 import {IconTemp} from '../IconTemp';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import citmapApi from '../../api/citmapApi';
+
 import {MultiSelect} from 'react-native-element-dropdown';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {IMultiSelectRef} from 'react-native-element-dropdown/lib/typescript/components/MultiSelect/model';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
-import { useAnimation } from '../../hooks/useAnimation';
-import { BackButton } from '../BackButton';
+import {BackButton} from '../BackButton';
+import Modal from 'react-native-modal';
+import { InfoButton } from '../InfoButton';
 
 interface Props extends StackScreenProps<StackParams, 'NewProjectScreen'> {}
 
 const dataCarousel = [
   {
-    title: 'Aenean leo',
-    body: 'Ut tincidunt tincidunt erat. Sed cursus turpis vitae tortor. Quisque malesuada placerat nisl. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.',
+    title: 'Creación del proyecto',
+    numPantalla: 'Primera',
+    body: 'En estos campos es obligatorio el nombre, descripción y añadir mínimo un hastag y topic ',
   },
   {
-    title: 'In turpis',
-    body: 'Aenean ut eros et nisl sagittis vestibulum. Donec posuere vulputate arcu. Proin faucibus arcu quis ante. Curabitur at lacus ac velit ornare lobortis. ',
+    title: 'Añadir marcas',
+    numPantalla: 'Segunda',
+    body: 'En la parte inferior derecha, tenemos 3 botones que añadirán una marca de tipo imagen, número o campo de texto',
   },
   {
-    title: 'Lorem Ipsum',
-    body: 'Phasellus ullamcorper ipsum rutrum nunc. Nullam quis ante. Etiam ultricies nisi vel augue. Aenean tellus metus, bibendum sed, posuere ac, mattis non, nunc.',
+    title: 'Fase final',
+    numPantalla: 'Tercera',
+    body: 'En esta pantalla habrá que rellenar los campos que has creado a modo de ejemplo',
   },
 ];
 
@@ -70,6 +79,8 @@ export const NewProject = ({navigation, route}: Props) => {
     projectName: name,
     topic: topicos,
   } = route.params;
+
+  // refers
   const projectNameRef = useRef<RNTextInput>(null);
   const multiselectHastag = useRef<IMultiSelectRef>(null);
   const multiselectTopic = useRef<IMultiSelectRef>(null);
@@ -94,11 +105,11 @@ export const NewProject = ({navigation, route}: Props) => {
   const [helpModal, setHelpModal] = useState(false);
 
   // hooks
-  const {projectName, description, photo, hastag, topic, onChange} =
+  let {projectName, description, photo, hastag, topic, onChange} =
     useForm<Project>(project);
   const {FadeIn, FadeOut, opacity} = useAnimation();
 
-  // variables  
+  // variables
   const [hasTag, setHasTag] = useState<HasTag[]>([]);
   const [topics, setTopics] = useState<Topic[]>([]);
   const [hasTagObjectSelected, setHasTagObjectSelected] = useState<HasTag[]>(
@@ -112,12 +123,19 @@ export const NewProject = ({navigation, route}: Props) => {
   const showDialog = () => {
     setVisible(true);
   };
+
   const showHelpModal = () => {
-    FadeIn(500);
     setHelpModal(true);
   };
 
   const hideDialog = () => setVisible(false);
+
+  useEffect(() => {
+    if (name && descript) {
+      projectName = name;
+      description = descript;
+    }
+  }, []);
 
   useEffect(() => {
     getHasTag();
@@ -293,19 +311,16 @@ export const NewProject = ({navigation, route}: Props) => {
   };
 
   const nextScreen = () => {
-    if(name){
-      // console.log('entra en name descript '+ name + ' ' + descript)
-      onChange(name, 'projectName');
-      
-      console.log( projectName)
+    if (name && descript) {
+      projectName = name;
+      description = descript;
     }
-    if(descript){
-      // console.log('entra en name descript '+ name + ' ' + descript)
-      
-      onChange(descript, 'description');
-      console.log( description)
-    }
-    if (projectName.length > 0 && description.length > 0 && hasTag.length > 0) {
+    if (
+      projectName.length > 0 &&
+      description.length > 0 &&
+      hasTag.length > 0 &&
+      topic.length > 0
+    ) {
       navigation.navigate('Marcador', {
         projectName,
         description,
@@ -347,20 +362,28 @@ export const NewProject = ({navigation, route}: Props) => {
     setHelpModal(!helpModal);
   };
 
+  /**
+   * 
+   * @param item cada elemento del carousel
+   * @returns cada vista del carousel
+   */
   const renderCarouselItem = (
     item:
-      | ListRenderItemInfo<{title: string; body: string}>
-      | {item: {title: string; body: string}; index: number},
+      | ListRenderItemInfo<{title: string; body: string; numPantalla: string}>
+      | {
+          item: {title: string; body: string; numPantalla: string};
+          index: number;
+        },
   ) => {
     return (
       <View style={carouselStyles.container}>
-        <Paragraph style={styles.modalText}>
-          <Text style={{fontSize: FontSize.fontSizeTextTitle}}>
-            Guía de uso
-          </Text>
-          <Text>{item.item.title}</Text>
-          <Text>{item.item.body}</Text>
-        </Paragraph>
+        <Text style={{fontSize: FontSize.fontSizeTextTitle, marginVertical: '5%', alignSelf: 'center', fontWeight: 'bold'}}>
+          {item.item.title}
+        </Text>
+        <Text style={{fontSize: FontSize.fontSizeTextMin}}>
+          {item.item.numPantalla}
+        </Text>
+        <Text style={{fontSize: FontSize.fontSizeText}}>{item.item.body}</Text>
       </View>
     );
   };
@@ -426,14 +449,21 @@ export const NewProject = ({navigation, route}: Props) => {
         <ScrollView
           style={styles.container}
           showsVerticalScrollIndicator={false}>
-          <Text style={fonts.title}>
-            {translate.strings.new_project_screen[0].title}
-          </Text>
+          {name ? (
+            <Text style={fonts.title}>
+              {translate.strings.new_project_screen[0].title_edit}
+            </Text>
+          ) : (
+            <Text style={fonts.title}>
+              {translate.strings.new_project_screen[0].title}
+            </Text>
+          )}
+
           <View>
             <InputField
               label={translate.strings.new_project_screen[0].project_name_input}
-              icon="format-title"
-              keyboardType="email-address"
+              icon="border-color"
+              keyboardType="default"
               multiline={false}
               numOfLines={1}
               onChangeText={value => onChange(value, 'projectName')}
@@ -692,21 +722,9 @@ export const NewProject = ({navigation, route}: Props) => {
 
       {/* back button */}
       <BackButton onPress={() => navigation.goBack()} />
+
       {/* info button */}
-      <View style={globalStyles.viewButtonInfo}>
-        <TouchableOpacity
-          activeOpacity={0.5}
-          onPress={() => showHelpModal()}>
-          <View
-            style={{
-              justifyContent: 'center',
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}>
-            <IconTemp name="information-outline" size={Size.iconSizeLarge} />
-          </View>
-        </TouchableOpacity>
-      </View>
+      <InfoButton onPress={() => showHelpModal()} />
 
       {/* err modal */}
       <Portal>
@@ -739,12 +757,11 @@ export const NewProject = ({navigation, route}: Props) => {
       </Portal>
 
       {/* help info */}
-      <Portal>
+      {/* <Portal>
         <Dialog
           visible={helpModal}
           onDismiss={onCloseHelpModal}
-          style={{backgroundColor: 'white', opacity: 1}}
-        >
+          style={{backgroundColor: 'white', opacity: 1}}>
           <Dialog.Content style={{top: '4%', paddingVertical: 10}}>
             <View>
               <Carousel
@@ -763,7 +780,6 @@ export const NewProject = ({navigation, route}: Props) => {
               <Pagination
                 dotsLength={dataCarousel.length}
                 activeDotIndex={index}
-                // carouselRef={isCarousel}
                 ref={isCarousel}
                 dotStyle={{
                   width: 10,
@@ -774,7 +790,6 @@ export const NewProject = ({navigation, route}: Props) => {
                 }}
                 inactiveDotOpacity={0.4}
                 inactiveDotScale={0.6}
-                // tappableDots={true}
               />
             </View>
           </Dialog.Content>
@@ -794,7 +809,50 @@ export const NewProject = ({navigation, route}: Props) => {
             </TouchableOpacity>
           </Dialog.Actions>
         </Dialog>
-      </Portal>
+      </Portal> */}
+      <Modal
+        style={{alignItems: 'center'}}
+        onBackdropPress={() => setHelpModal(false)}
+        isVisible={helpModal}
+        animationIn="zoomIn"
+        animationInTiming={300}
+        animationOut="zoomOut"
+        animationOutTiming={300}
+        // backdropColor="#B4B3DB"
+        backdropOpacity={0.8}
+        backdropTransitionInTiming={600}
+        backdropTransitionOutTiming={600}>
+        <View
+          style={globalStyles.viewModal}>
+          <Carousel 
+            layout="default"
+            layoutCardOffset={9}
+            useScrollView={true}
+            ref={carousel}
+            data={dataCarousel}
+            renderItem={item => renderCarouselItem(item)}
+            sliderWidth={SLIDER_WIDTH}
+            sliderHeight={SLIDER_HEIGHT}
+            itemWidth={ITEM_WIDTH}
+            itemHeight={ITEM_HEIGHT}
+            onSnapToItem={index => setIndex(index)}
+          />
+          <Pagination
+            dotsLength={dataCarousel.length}
+            activeDotIndex={index}
+            ref={isCarousel}
+            dotStyle={{
+              width: 10,
+              height: 10,
+              borderRadius: 5,
+              marginHorizontal: 0,
+              backgroundColor: 'rgba(0, 0, 0, 0.92)',
+            }}
+            inactiveDotOpacity={0.4}
+            inactiveDotScale={0.6}
+          />
+        </View>
+      </Modal>
     </>
   );
 };
@@ -868,7 +926,8 @@ const styles = StyleSheet.create({
     fontSize: FontSize.fontSizeText,
     textAlign: 'center',
     paddingVertical: FontSize.fontSizeText,
-    flexShrink: 1,
+    // flexShrink: 1,
+    alignItems: 'baseline',
   },
   ///////////////////////////////
 
@@ -952,11 +1011,14 @@ const styles = StyleSheet.create({
 
 const carouselStyles = StyleSheet.create({
   container: {
-    backgroundColor: 'white',
+    backgroundColor: 'transparent',
     borderRadius: 8,
     width: '100%',
     height: SLIDER_HEIGHT,
-    paddingBottom: 40,
+    paddingBottom: 0,
+    marginVertical: '2%',
+    // flexDirection: 'row',
+    // flexWrap: 'wrap',
     // shadowColor: '#000',
     // shadowOffset: {
     //   width: 0,

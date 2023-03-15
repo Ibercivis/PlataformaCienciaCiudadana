@@ -1,7 +1,7 @@
 import {Dimensions, StyleSheet} from 'react-native';
-import {Colors} from './colors'
-import { FontSize } from './fonts';
-import { Size } from './size';
+import {Colors} from './colors';
+import {FontSize} from './fonts';
+import {Size} from './size';
 
 const window = Dimensions.get('window');
 
@@ -11,7 +11,7 @@ export const globalStyles = StyleSheet.create({
     marginTop: 20,
   },
   globalText: {
-    color: 'black'
+    color: 'black',
   },
   avatarContainer: {
     justifyContent: 'center',
@@ -44,7 +44,7 @@ export const globalStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     // top: 1,
-    backgroundColor: 'transparent'
+    backgroundColor: 'transparent',
   },
   formContainer: {
     flex: 1,
@@ -95,7 +95,7 @@ export const globalStyles = StyleSheet.create({
   },
   viewButtonBack: {
     left: '1%',
-    top: window.height * 0.02,
+    top: window.height * 0.05,
     position: 'absolute',
     shadowColor: '#000',
     shadowOffset: {
@@ -108,7 +108,7 @@ export const globalStyles = StyleSheet.create({
   },
   viewButtonInfo: {
     right: '1%',
-    top: window.height * 0.02,
+    top: window.height * 0.05,
     position: 'absolute',
     shadowColor: '#000',
     shadowOffset: {
@@ -118,5 +118,14 @@ export const globalStyles = StyleSheet.create({
     shadowOpacity: 0.29,
     shadowRadius: 4.65,
     elevation: 7,
+  },
+  viewModal: {
+    borderRadius: 40,
+    backgroundColor: 'white',
+    width: '100%',
+    height: Size.window.height * 0.5,
+    top: '4%',
+    paddingVertical: 10,
+    alignItems: 'center',
   },
 });
