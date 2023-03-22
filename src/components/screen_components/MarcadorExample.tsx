@@ -29,6 +29,7 @@ import {Colors} from '../../theme/colors';
 import {fonts, FontSize} from '../../theme/fonts';
 import translate from '../../theme/es.json';
 import citmapApi from '../../api/citmapApi';
+import { HeaderComponent } from '../HeaderComponent';
 
 const maxWidth = Dimensions.get('screen').width;
 const window = Dimensions.get('window');
@@ -163,12 +164,17 @@ export const MarcadorExample = ({route, navigation}: Props) => {
   return (
     <>
       <KeyboardAvoidingView style={{...globalStyles.globalMargin, flex: 1}}>
+      <HeaderComponent
+          title={translate.strings.new_project_mark_example_screen[0].title}
+          onPressLeft={() => navigation.goBack()}
+          onPressRight={() => console.log()}
+        />
         <ScrollView
           style={styles.container}
           showsVerticalScrollIndicator={false}>
-          <Text style={fonts.title}>
+          {/* <Text style={fonts.title}>
             {translate.strings.new_project_mark_example_screen[0].title}
-          </Text>
+          </Text> */}
           {marks.length > 0 &&
             marks.map((x, i) => (
               <View key={i}>
@@ -228,10 +234,7 @@ export const MarcadorExample = ({route, navigation}: Props) => {
             icon="chevron-left"
             mode="elevated"
             labelStyle={{
-              fontSize: FontSize.fontSizeText,
-              justifyContent: 'center',
-              top: '2%',
-              paddingVertical: 5,
+              fontSize: FontSize.fontSizeTextMin,
             }}
             buttonColor="white"
             onPress={() =>
@@ -253,10 +256,7 @@ export const MarcadorExample = ({route, navigation}: Props) => {
             mode="elevated"
             contentStyle={{flexDirection: 'row-reverse'}}
             labelStyle={{
-              fontSize: FontSize.fontSizeText,
-              justifyContent: 'center',
-              top: '2%',
-              paddingVertical: 5,
+              fontSize: FontSize.fontSizeTextMin,
             }}
             buttonColor="white"
             onPress={() => endProject()}>

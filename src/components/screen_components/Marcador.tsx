@@ -4,6 +4,7 @@ import {StackScreenProps} from '@react-navigation/stack';
 import {Picker} from '@react-native-picker/picker';
 import {
   View,
+  Button as ButtonNative,
   Text,
   StyleSheet,
   KeyboardAvoidingView,
@@ -15,8 +16,8 @@ import {
 import {
   Button,
   Dialog,
+  HelperText,
   IconButton,
-  Modal,
   Paragraph,
   Portal,
   TextInput,
@@ -32,6 +33,10 @@ import {Keyboard} from 'react-native';
 import {Size} from '../../theme/size';
 import translate from '../../theme/es.json';
 import {IconTemp} from '../IconTemp';
+import {HeaderComponent} from '../HeaderComponent';
+import Modal from 'react-native-modal';
+import {InputField} from '../InputField';
+import {CustomButton} from '../CustomButton';
 
 interface Props extends StackScreenProps<StackParams, 'Marcador'> {}
 
@@ -39,7 +44,15 @@ const maxWidth = Dimensions.get('screen').width;
 const window = Dimensions.get('window');
 
 export const Marcador = ({route, navigation}: Props) => {
-  const {projectName, description, photo, marks: markas, hastag, topic, onBack} = route.params;
+  const {
+    projectName,
+    description,
+    photo,
+    marks: markas,
+    hastag,
+    topic,
+    onBack,
+  } = route.params;
   const [marks, setMarks] = useState<Mark[]>([]);
   const [markType, setMarkType] = useState('');
   const [selectedMark, setSelectedMark] = useState<Mark>({
@@ -60,6 +73,8 @@ export const Marcador = ({route, navigation}: Props) => {
 
   const [visible, setVisible] = useState(false);
   const [visibleAlert, setVisibleAlert] = useState(false);
+  const [askError, setAskError] = useState(false);
+  const [descriptionError, setDescriptionError] = useState(false);
 
   useEffect(() => {
     // console.log(projectName + ' '+description + ' ' + topic + ' ' + hastag  )
@@ -72,7 +87,11 @@ export const Marcador = ({route, navigation}: Props) => {
     }
   }, []);
 
-  const showModal = () => setVisible(true);
+  const showModal = () => {
+    setAskError(false);
+    setDescriptionError(false);
+    setVisible(true);
+  };
   const hideModal = () => setVisible(false);
 
   const showDialog = () => {
@@ -96,7 +115,27 @@ export const Marcador = ({route, navigation}: Props) => {
   const addAsk = () => {
     if (!isEdit) {
       form.type = markType;
-      setMarks([...marks, form]);
+      if (form.ask.length <= 0) {
+        console.log('entra si ask <= 0');
+        setAskError(true);
+      }else{
+        setAskError(false);
+      }
+
+      if (form.description.length <= 0) {
+        console.log('entra si descrip <= 0');
+        setDescriptionError(true);
+      }else{
+        setDescriptionError(false);
+      }
+      
+      if (form.ask.length > 0 && form.description.length > 0) {
+        setMarks([...marks, form]);
+        setAskError(false);
+        setDescriptionError(false);
+        // showDialog();
+        hideModal();
+      }
     } else {
       //primero se coge el que se va a editar del array y su posicion
       //segundo se copia lo del form a esa posicion
@@ -114,8 +153,8 @@ export const Marcador = ({route, navigation}: Props) => {
         }
       });
       setMarks(updated);
+      hideModal();
     }
-    hideModal();
   };
 
   const showMark = (item: Mark) => {
@@ -124,7 +163,6 @@ export const Marcador = ({route, navigation}: Props) => {
     setSelectedMark(item);
     showModal();
   };
-
   const removeMark = (item: Mark) => {
     const arrayCopy = [...marks];
     const index = marks.indexOf(item);
@@ -136,7 +174,6 @@ export const Marcador = ({route, navigation}: Props) => {
   const duplicate = (item: Mark) => {
     setMarks([...marks, item]);
   };
-
   const onSelectType = (value: string = '') => {
     onChange(value, 'type');
   };
@@ -157,21 +194,17 @@ export const Marcador = ({route, navigation}: Props) => {
     }
   };
 
-  const onClearInput = async () => {
-    console.log('clear');
-    Keyboard.dismiss();
-    projectNameRef.current!.clear();
-  };
-
   return (
     <>
-      <KeyboardAvoidingView style={{...globalStyles.globalMargin, flex: 1}}>
+      <KeyboardAvoidingView style={{flex: 1}}>
+        <HeaderComponent
+          title={translate.strings.new_project_mark_screen[0].title}
+          onPressLeft={() => navigation.goBack()}
+          onPressRight={() => console.log()}
+        />
         <ScrollView
           style={styles.container}
           showsVerticalScrollIndicator={false}>
-          <Text style={fonts.title}>
-            {translate.strings.new_project_mark_screen[0].title}
-          </Text>
           {marks.length > 0 ? (
             marks.map((item, index) => (
               <View
@@ -179,6 +212,8 @@ export const Marcador = ({route, navigation}: Props) => {
                 style={{
                   flexDirection: 'row',
                   width: maxWidth,
+                  justifyContent: 'center',
+                  alignItems: 'center',
                 }}>
                 <TouchableOpacity
                   style={styles.mark}
@@ -264,31 +299,44 @@ export const Marcador = ({route, navigation}: Props) => {
 
         {/* buttons screen */}
         <View style={styles.bottomViewButton}>
+          {/* <View>
+            <CustomButton
+              label={'VOLVER'}
+              onPress={() => navigation.navigate('NewProjectScreen', {marks})}
+              backgroundColor={'#ffffff'}
+              fontColor={Colors.primary}
+              width={Size.globalWidth * 0.3}
+              iconLeft={'chevron-left'}
+            />
+          </View> */}
+          {/* <View>
+            <CustomButton
+              label={'SIGUIENTE'}
+              onPress={() => nextScreen()}
+              backgroundColor={'#ffffff'}
+              fontColor={Colors.primary}
+              width={Size.globalWidth * 0.3}
+              iconRight={'chevron-right'}
+            />
+          </View> */}
           <Button
-            style={styles.button}
             icon="chevron-left"
             mode="elevated"
             labelStyle={{
-              fontSize: FontSize.fontSizeText,
-              justifyContent: 'center',
-              top: '2%',
-              paddingVertical: 5,
+              fontSize: FontSize.fontSizeTextMin,
             }}
             buttonColor="white"
             onPress={() => navigation.navigate('NewProjectScreen', {marks})}>
             Volver
           </Button>
           <Button
-            style={{...styles.button}}
             icon="chevron-right"
             mode="elevated"
             buttonColor="white"
             labelStyle={{
-              fontSize: FontSize.fontSizeText,
-              justifyContent: 'center',
-              top: '2%',
-              paddingVertical: 5,
+              fontSize: FontSize.fontSizeTextMin,
             }}
+            contentStyle={{flexDirection: 'row-reverse'}}
             onPress={() => nextScreen()}>
             Siguiente
           </Button>
@@ -376,126 +424,174 @@ export const Marcador = ({route, navigation}: Props) => {
       </KeyboardAvoidingView>
 
       {/* modal add/edit */}
-      <Portal>
-        <Modal
-          visible={visible}
-          onDismiss={hideModal}
-          style={styles.modalStyle}>
-          <View>
-            <ScrollView
-              disableScrollViewPanResponder={true}
-              style={{paddingVertical: 20}}
-              showsVerticalScrollIndicator={false}>
-              <Text
-                style={{
-                  alignSelf: 'center',
-                  fontSize: FontSize.fontSizeText,
-                  fontWeight: 'bold',
-                  color: '#2F3061',
-                  borderColor: '#2F3061',
-                  marginVertical: 20,
-                }}>
-                {translate.strings.new_project_mark_screen[0].new_mark[0].title}
-              </Text>
+      <Modal
+        isVisible={visible}
+        onDismiss={hideModal}
+        style={{alignItems: 'center'}}
+        animationIn="zoomIn"
+        animationInTiming={300}
+        animationOut="zoomOut"
+        animationOutTiming={300}
+        backdropOpacity={0.8}
+        backdropTransitionInTiming={600}
+        backdropTransitionOutTiming={600}>
+        <View
+          style={{...globalStyles.viewModal, height: Size.window.height * 0.5}}>
+          <ScrollView
+            disableScrollViewPanResponder={true}
+            style={{borderRadius: 40, paddingHorizontal: '5%', width: '100%'}}
+            showsVerticalScrollIndicator={false}>
+            <Text
+              style={{
+                alignSelf: 'center',
+                fontSize: FontSize.fontSizeTextSubTitle,
+                marginBottom: '5%',
+                fontWeight: 'bold',
+                color: '#2F3061',
+                borderColor: '#2F3061',
+              }}>
+              {translate.strings.new_project_mark_screen[0].new_mark[0].title}
+            </Text>
+            <View style={{marginBottom: '8%'}}>
+              <InputField
+                label={
+                  translate.strings.new_project_mark_screen[0].new_mark[0]
+                    .ask_input
+                }
+                icon="border-color"
+                keyboardType="default"
+                multiline={false}
+                numOfLines={1}
+                onChangeText={value => onChange(value, 'ask')}
+                iconColor={Colors.lightorange}
+                marginBottom={'2%'}
+                value={form.ask}
+              />
+              {askError ? (
+                <HelperText
+                  type="error"
+                  visible={true}
+                  style={styles.helperText}>
+                  {
+                    translate.strings.new_project_mark_screen[0].new_mark[0]
+                      .ask_input_err
+                  }
+                </HelperText>
+              ) : (
+                <HelperText
+                  type="info"
+                  visible={true}
+                  style={styles.helperText}>
+                  {
+                    translate.strings.new_project_mark_screen[0].new_mark[0]
+                      .ask_input
+                  }
+                </HelperText>
+              )}
+              {/* <HelperText type="info" visible={true} style={styles.helperText}>
+                {
+                  translate.strings.new_project_mark_screen[0].new_mark[0]
+                    .ask_input
+                }
+              </HelperText> */}
+            </View>
+            {isEdit && (
               <View
                 style={{
                   flex: 1,
                   alignSelf: 'center',
                   justifyContent: 'center',
                 }}>
-                <TextInput
-                  ref={projectNameRef}
-                  style={{
-                    ...styles.textInput,
-                  }}
-                  placeholder={
-                    translate.strings.new_project_mark_screen[0].new_mark[0]
-                      .ask_input
-                  }
-                  mode="flat"
-                  autoCorrect={false}
-                  autoCapitalize="none"
-                  onChangeText={value => onChange(value, 'ask')}
-                  // underlineColor="#B9E6FF"
-                  activeOutlineColor="#5C95FF"
-                  selectionColor="#2F3061"
-                  textColor="#2F3061"
-                  // outlineColor={Colors.lightorange}
-                  autoFocus={false}
-                  dense={false}
-                  defaultValue={selectedMark.ask}
-                />
-              </View>
-              {isEdit && (
-                <View
+                <Picker
                   style={{
                     flex: 1,
-                    alignSelf: 'center',
-                    justifyContent: 'center',
-                  }}>
-                  <Picker
-                    style={{
-                      flex: 1,
-                      width:
-                        window.width > 500
-                          ? window.width - 120
-                          : window.width - 60,
-                    }}
-                    selectedValue={form.type}
-                    placeholder="Tipo de dato"
-                    onValueChange={(itemValue, itemIndex) =>
-                      onSelectType(itemValue)
-                    }>
-                    <Picker.Item label="Texto" value="string" />
-                    <Picker.Item label="Número" value="number" />
-                    <Picker.Item label="Fotografía" value="photo" />
-                  </Picker>
-                </View>
-              )}
-
-              <View
-                style={{
-                  flexDirection: 'row',
-                  // width: window.width - 25,
-                  alignSelf: 'center',
-                  justifyContent: 'center',
-                }}>
-                <TextInput
-                  ref={projectNameRef}
-                  style={{
-                    ...styles.textInput,
+                    width:
+                      window.width > 500
+                        ? window.width - 120
+                        : window.width - 60,
                   }}
-                  multiline
-                  numberOfLines={8}
-                  placeholder={
-                    translate.strings.new_project_mark_screen[0].new_mark[0]
-                      .description_input
-                  }
-                  mode="flat"
-                  autoCorrect={false}
-                  autoCapitalize="none"
-                  onChangeText={value => onChange(value, 'description')}
-                  // underlineColor="#B9E6FF"
-                  activeOutlineColor="#5C95FF"
-                  selectionColor="#2F3061"
-                  textColor="#2F3061"
-                  // outlineColor={Colors.lightorange}
-                  autoFocus={false}
-                  dense={false}
-                  defaultValue={selectedMark.description}
-                />
+                  selectedValue={form.type}
+                  placeholder="Tipo de dato"
+                  onValueChange={(itemValue, itemIndex) =>
+                    onSelectType(itemValue)
+                  }>
+                  <Picker.Item label="Texto" value="string" />
+                  <Picker.Item label="Número" value="number" />
+                  <Picker.Item label="Fotografía" value="photo" />
+                </Picker>
               </View>
+            )}
 
-              <Button labelStyle={styles.buttonModal} onPress={addAsk}>
-              {translate.strings.new_project_mark_screen[0].new_mark[0].save_button}
-              </Button>
-              <Button labelStyle={styles.buttonModal} onPress={hideModal}>
-              {translate.strings.new_project_mark_screen[0].new_mark[0].close_button}
-              </Button>
-            </ScrollView>
+            <View style={{marginBottom: '8%'}}>
+              <InputField
+                label={
+                  translate.strings.new_project_mark_screen[0].new_mark[0]
+                    .description_input
+                }
+                icon="text"
+                keyboardType="default"
+                multiline={true}
+                numOfLines={6}
+                onChangeText={value => onChange(value, 'description')}
+                iconColor={Colors.lightorange}
+                marginBottom={'2%'}
+                value={form.description}
+              />
+              {descriptionError ? (
+                <HelperText type="error" visible={true} style={styles.helperText}>
+                {
+                  translate.strings.new_project_mark_screen[0].new_mark[0]
+                    .description_input_err
+                }
+              </HelperText>
+              ) : (
+                <HelperText type="info" visible={true} style={styles.helperText}>
+                {
+                  translate.strings.new_project_mark_screen[0].new_mark[0]
+                    .description_input
+                }
+              </HelperText>
+              )}
+              
+            </View>
+
+            {/* <Button labelStyle={styles.buttonModal} onPress={addAsk}>
+              {
+                translate.strings.new_project_mark_screen[0].new_mark[0]
+                  .save_button
+              }
+            </Button>
+            <Button labelStyle={styles.buttonModal} onPress={hideModal}>
+              {
+                translate.strings.new_project_mark_screen[0].new_mark[0]
+                  .close_button
+              }
+            </Button> */}
+          </ScrollView>
+          <View
+            style={{
+              // backgroundColor:'red',
+              width: '100%',
+              flexDirection: 'row',
+              justifyContent: 'space-around',
+            }}>
+            {/* <ButtonNative title="Hide modal" onPress={hideModal} />
+            <ButtonNative title="Hide modal" onPress={hideModal} /> */}
+            <Button labelStyle={styles.buttonModal} onPress={addAsk}>
+              {
+                translate.strings.new_project_mark_screen[0].new_mark[0]
+                  .save_button
+              }
+            </Button>
+            <Button labelStyle={styles.buttonModal} onPress={hideModal}>
+              {
+                translate.strings.new_project_mark_screen[0].new_mark[0]
+                  .close_button
+              }
+            </Button>
           </View>
-        </Modal>
-      </Portal>
+        </View>
+      </Modal>
 
       {/* modal error */}
       <Portal>
@@ -511,14 +607,17 @@ export const Marcador = ({route, navigation}: Props) => {
           </Dialog.Title>
           <Dialog.Content>
             <Paragraph style={styles.modalText}>
-            {translate.strings.new_project_mark_screen[0].modal_error[0].body}
+              {translate.strings.new_project_mark_screen[0].modal_error[0].body}
             </Paragraph>
           </Dialog.Content>
           <Dialog.Actions>
             <Button
               labelStyle={{...styles.modalText, textAlign: 'center'}}
               onPress={hideDialog}>
-              {translate.strings.new_project_mark_screen[0].modal_error[0].close_button}
+              {
+                translate.strings.new_project_mark_screen[0].modal_error[0]
+                  .close_button
+              }
             </Button>
           </Dialog.Actions>
         </Dialog>
@@ -530,7 +629,7 @@ export const Marcador = ({route, navigation}: Props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // borderWidth: 1,
+    // marginHorizontal: '3%',
     borderRadius: 10,
     marginVertical: 10,
   },
@@ -547,29 +646,27 @@ const styles = StyleSheet.create({
   bottomViewButton: {
     justifyContent: 'space-between',
     flexDirection: 'row',
-    marginHorizontal: 5,
-    marginVertical: 10,
+    alignItems: 'center',
+    marginHorizontal: '2%',
+    marginVertical: '2%',
   },
-  button: {
-    // position: 'absolute',
-    // bottom: 0,
-    // alignSelf: 'flex-start',
-    // width: 210,
+  helperText: {
+    fontSize: FontSize.fontSizeTextMin,
   },
   modalStyle: {
     justifyContent: 'center',
     alignSelf: 'center',
     backgroundColor: 'white',
-    marginBottom: 15,
-    marginHorizontal: 20,
-    padding: 20,
     borderRadius: 20,
+    width: '100%',
+    height: Size.window.height * 0.5,
+    top: '4%',
   },
   buttonModal: {
-    marginVertical: 10,
+    // marginVertical: 10,
     color: Colors.lightorange,
-    fontSize: FontSize.fontSizeText,
-    paddingVertical: 10,
+    fontSize: FontSize.fontSizeTextMin,
+    // paddingVertical: 10,
   },
   text: {
     fontSize: FontSize.fontSizeText,
@@ -582,10 +679,13 @@ const styles = StyleSheet.create({
     borderColor: 'black',
     padding: 5,
     paddingHorizontal: 20,
-    marginVertical: 10,
+    // marginVertical: '2%',
+
+    alignContent: 'center',
     marginLeft: 10,
-    width: maxWidth - 150,
+    width: maxWidth * 0.7,
     backgroundColor: 'white',
+
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -622,8 +722,9 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.29,
     shadowRadius: 5.65,
-    marginVertical: 10,
+    marginVertical: '1%',
     elevation: 1,
+    right: 10,
   },
   modalText: {
     fontSize: FontSize.fontSizeText,

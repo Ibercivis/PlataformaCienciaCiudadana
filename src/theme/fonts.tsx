@@ -7,6 +7,7 @@ export const FontSize = {
   fontSize: window.width > 500 ? 50 : 30,
   fontSizeTextMin: RFPercentage(1.5),
   fontSizeText: RFPercentage(2),
+  fontSizeTextSubTitle: RFPercentage(2.7),
   fontSizeTextTitle: RFPercentage(3.5),
 };
 

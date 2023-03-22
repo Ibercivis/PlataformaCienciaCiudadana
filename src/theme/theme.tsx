@@ -123,7 +123,7 @@ export const globalStyles = StyleSheet.create({
     borderRadius: 40,
     backgroundColor: 'white',
     width: '100%',
-    height: Size.window.height * 0.5,
+    height: Size.window.height * 0.7,
     top: '4%',
     paddingVertical: 10,
     alignItems: 'center',

@@ -16,6 +16,7 @@ import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {
   Button,
   Dialog,
+  HelperText,
   IconButton,
   Paragraph,
   Portal,
@@ -43,7 +44,8 @@ import {IMultiSelectRef} from 'react-native-element-dropdown/lib/typescript/comp
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import {BackButton} from '../BackButton';
 import Modal from 'react-native-modal';
-import { InfoButton } from '../InfoButton';
+import {InfoButton} from '../InfoButton';
+import {HeaderComponent} from '../HeaderComponent';
 
 interface Props extends StackScreenProps<StackParams, 'NewProjectScreen'> {}
 
@@ -64,10 +66,12 @@ const dataCarousel = [
     body: 'En esta pantalla habrá que rellenar los campos que has creado a modo de ejemplo',
   },
 ];
-
-const SLIDER_WIDTH = Dimensions.get('window').width * 0.8;
+/**
+ * constantes dedicadas al carousel, tamaño de los items dentro de este y de el mismo
+ */
+const SLIDER_WIDTH = Dimensions.get('window').width ;
 const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.9);
-const SLIDER_HEIGHT = Dimensions.get('window').height * 0.5;
+const SLIDER_HEIGHT = Dimensions.get('window').height;
 const ITEM_HEIGHT = Math.round(SLIDER_WIDTH * 0.9);
 
 export const NewProject = ({navigation, route}: Props) => {
@@ -363,7 +367,7 @@ export const NewProject = ({navigation, route}: Props) => {
   };
 
   /**
-   * 
+   *
    * @param item cada elemento del carousel
    * @returns cada vista del carousel
    */
@@ -377,7 +381,13 @@ export const NewProject = ({navigation, route}: Props) => {
   ) => {
     return (
       <View style={carouselStyles.container}>
-        <Text style={{fontSize: FontSize.fontSizeTextTitle, marginVertical: '5%', alignSelf: 'center', fontWeight: 'bold'}}>
+        <Text
+          style={{
+            fontSize: FontSize.fontSizeTextTitle,
+            marginVertical: '5%',
+            alignSelf: 'center',
+            fontWeight: 'bold',
+          }}>
           {item.item.title}
         </Text>
         <Text style={{fontSize: FontSize.fontSizeTextMin}}>
@@ -445,42 +455,72 @@ export const NewProject = ({navigation, route}: Props) => {
 
   return (
     <>
-      <KeyboardAvoidingView style={{...globalStyles.globalMargin, flex: 1}}>
+      <KeyboardAvoidingView style={{flex: 1}}>
+        {name ? (
+          // <Text style={fonts.title}>
+          //   {translate.strings.new_project_screen[0].title_edit}
+          // </Text>
+          <HeaderComponent
+            title={translate.strings.new_project_screen[0].title_edit}
+            onPressLeft={() => navigation.goBack()}
+            onPressRight={() => showHelpModal()}
+          />
+        ) : (
+          // <Text style={fonts.title}>
+          //   {translate.strings.new_project_screen[0].title}
+          // </Text>
+          <HeaderComponent
+            title={translate.strings.new_project_screen[0].title}
+            onPressLeft={() => navigation.goBack()}
+            onPressRight={() => showHelpModal()}
+          />
+        )}
         <ScrollView
           style={styles.container}
           showsVerticalScrollIndicator={false}>
-          {name ? (
-            <Text style={fonts.title}>
-              {translate.strings.new_project_screen[0].title_edit}
-            </Text>
-          ) : (
-            <Text style={fonts.title}>
-              {translate.strings.new_project_screen[0].title}
-            </Text>
-          )}
-
           <View>
-            <InputField
-              label={translate.strings.new_project_screen[0].project_name_input}
-              icon="border-color"
-              keyboardType="default"
-              multiline={false}
-              numOfLines={1}
-              onChangeText={value => onChange(value, 'projectName')}
-              iconColor={Colors.lightorange}
-              value={name}
-            />
+            <View>
+              <Text style={styles.title}>
+                {translate.strings.new_project_screen[0].title_section}
+              </Text>
+            </View>
 
-            <InputField
-              label={translate.strings.new_project_screen[0].description_input}
-              icon="text"
-              keyboardType="default"
-              multiline={true}
-              numOfLines={6}
-              onChangeText={value => onChange(value, 'description')}
-              iconColor={Colors.lightorange}
-              value={descript}
-            />
+            <View style={{marginBottom: '8%'}}>
+              <InputField
+                label={
+                  translate.strings.new_project_screen[0].project_name_input
+                }
+                icon="border-color"
+                keyboardType="default"
+                multiline={false}
+                numOfLines={1}
+                onChangeText={value => onChange(value, 'projectName')}
+                iconColor={Colors.lightorange}
+                value={name}
+                marginBottom={'2%'}
+              />
+              <HelperText type="info" visible={true} style={styles.helperText}>
+                {translate.strings.new_project_screen[0].project_name_helper}
+              </HelperText>
+            </View>
+            <View style={{marginBottom: '8%'}}>
+              <InputField
+                label={
+                  translate.strings.new_project_screen[0].description_input
+                }
+                icon="text"
+                keyboardType="default"
+                multiline={true}
+                numOfLines={6}
+                onChangeText={value => onChange(value, 'description')}
+                iconColor={Colors.lightorange}
+                value={descript}
+                marginBottom={'2%'}
+              />
+              <HelperText type="info" visible={true} style={styles.helperText}>
+                {translate.strings.new_project_screen[0].description_helper}
+              </HelperText>
+            </View>
             {/* MultiSelect de hastag */}
             <View
               style={{
@@ -647,56 +687,49 @@ export const NewProject = ({navigation, route}: Props) => {
               </View>
             </View>
 
-            <View
-              style={{
-                flexDirection: 'row',
-                // width: window.width - 25,
-              }}>
-              <Text
-                style={{
-                  marginTop: '8%',
-                  marginBottom: '3%',
-                  color: '#2F3061',
-                  fontSize: FontSize.fontSizeText,
-                }}>
-                {translate.strings.new_project_screen[0].image_title}
-              </Text>
-            </View>
-            <View style={styles.photoContainer}>
-              {!tempUri && (
-                <View style={styles.photo}>
-                  <IconButton
-                    icon="image-album"
-                    iconColor="#5F4B66"
-                    size={Size.iconSizeLarge}
-                    onPress={() => galeria()}
-                  />
-                </View>
-              )}
-              {tempUri && (
-                <>
-                  <Image
-                    source={{
-                      uri: tempUri,
-                    }}
-                    style={{
-                      width: '90%',
-                      height: 350,
-                      backgroundColor: 'white',
-                      alignSelf: 'center',
-                      borderRadius: 10,
-                    }}
-                  />
-                  <Button
-                    style={{margin: 15, width: 150, alignSelf: 'center'}}
-                    icon="delete"
-                    mode="elevated"
-                    buttonColor="white"
-                    onPress={() => deleteImage()}>
-                    Borrar imagen
-                  </Button>
-                </>
-              )}
+            <View style={{marginVertical: '8%'}}>
+              <View>
+                <Text style={styles.title}>
+                  {translate.strings.new_project_screen[0].image_title}
+                </Text>
+              </View>
+
+              <View style={styles.photoContainer}>
+                {!tempUri && (
+                  <View style={styles.photo}>
+                    <IconButton
+                      icon="image-album"
+                      iconColor="#5F4B66"
+                      size={Size.iconSizeLarge}
+                      onPress={() => galeria()}
+                    />
+                  </View>
+                )}
+                {tempUri && (
+                  <>
+                    <Image
+                      source={{
+                        uri: tempUri,
+                      }}
+                      style={{
+                        width: '90%',
+                        height: 350,
+                        backgroundColor: 'white',
+                        alignSelf: 'center',
+                        borderRadius: 10,
+                      }}
+                    />
+                    <Button
+                      style={{margin: 15, width: 150, alignSelf: 'center'}}
+                      icon="delete"
+                      mode="elevated"
+                      buttonColor="white"
+                      onPress={() => deleteImage()}>
+                      Borrar imagen
+                    </Button>
+                  </>
+                )}
+              </View>
             </View>
           </View>
         </ScrollView>
@@ -709,10 +742,7 @@ export const NewProject = ({navigation, route}: Props) => {
             contentStyle={{flexDirection: 'row-reverse'}}
             buttonColor="white"
             labelStyle={{
-              fontSize: FontSize.fontSizeText,
-              justifyContent: 'center',
-              top: '1%',
-              paddingVertical: 5,
+              fontSize: FontSize.fontSizeTextMin,
             }}
             onPress={() => nextScreen()}>
             {translate.strings.global[0].next_button}
@@ -721,10 +751,10 @@ export const NewProject = ({navigation, route}: Props) => {
       </KeyboardAvoidingView>
 
       {/* back button */}
-      <BackButton onPress={() => navigation.goBack()} />
+      {/* <BackButton onPress={() => navigation.goBack()} /> */}
 
       {/* info button */}
-      <InfoButton onPress={() => showHelpModal()} />
+      {/* <InfoButton onPress={() => showHelpModal()} /> */}
 
       {/* err modal */}
       <Portal>
@@ -822,9 +852,8 @@ export const NewProject = ({navigation, route}: Props) => {
         backdropOpacity={0.8}
         backdropTransitionInTiming={600}
         backdropTransitionOutTiming={600}>
-        <View
-          style={globalStyles.viewModal}>
-          <Carousel 
+        <View style={globalStyles.viewModal}>
+          <Carousel
             layout="default"
             layoutCardOffset={9}
             useScrollView={true}
@@ -836,6 +865,7 @@ export const NewProject = ({navigation, route}: Props) => {
             itemWidth={ITEM_WIDTH}
             itemHeight={ITEM_HEIGHT}
             onSnapToItem={index => setIndex(index)}
+            slideStyle={{backgroundColor: 'transparent', paddingHorizontal: '3%'}}
           />
           <Pagination
             dotsLength={dataCarousel.length}
@@ -860,33 +890,18 @@ export const NewProject = ({navigation, route}: Props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginVertical: 10,
-    marginHorizontal: '4%',
+    marginVertical: '2%',
+    marginHorizontal: '6%',
   },
-
-  fabStyle: {
-    bottom: 16,
-    right: 16,
-    position: 'absolute',
+  title: {
+    fontSize: FontSize.fontSizeTextSubTitle,
+    paddingVertical: FontSize.fontSizeText,
+    alignItems: 'baseline',
+    marginTop: '2%',
+    marginBottom: '3%',
   },
-  touchable: {
-    borderWidth: 1,
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    marginHorizontal: 5,
-    width: '20%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    alignSelf: 'center',
-  },
-  textButton: {
-    color: 'black',
-  },
-  bottomViewButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginVertical: 10,
+  helperText: {
+    fontSize: FontSize.fontSizeTextMin,
   },
   photoContainer: {
     marginBottom: '10%',
@@ -903,24 +918,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#EADEDA',
   },
-
   bottomViewButtonNav: {
     flexDirection: 'row-reverse',
     marginHorizontal: 5,
     marginBottom: 10,
-  },
-
-  textInput: {
-    width: '90%',
-    // height: height,
-    justifyContent: 'center',
-    marginTop: 15,
-    paddingLeft: 25,
-    paddingBottom: 0,
-    borderWidth: 1,
-    backgroundColor: 'white',
-    borderColor: Colors.lightorange,
-    fontSize: FontSize.fontSizeText,
   },
   modalText: {
     fontSize: FontSize.fontSizeText,
@@ -995,18 +996,6 @@ const styles = StyleSheet.create({
     fontSize: FontSize.fontSizeTextMin,
     color: Colors.lightorange,
   },
-
-  shadow: {
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.41,
-
-    elevation: 2,
-  },
 });
 
 const carouselStyles = StyleSheet.create({
@@ -1027,23 +1016,6 @@ const carouselStyles = StyleSheet.create({
     // shadowOpacity: 0.29,
     // shadowRadius: 4.65,
     // elevation: 7,
-  },
-  image: {
-    width: ITEM_WIDTH,
-    height: 300,
-  },
-  header: {
-    color: '#222',
-    fontSize: 28,
-    fontWeight: 'bold',
-    // paddingLeft: 20,
-    paddingTop: 20,
-  },
-  body: {
-    color: '#222',
-    fontSize: FontSize.fontSizeTextTitle,
-    // paddingLeft: 20,
-    // paddingRight: 20,
   },
 });
 

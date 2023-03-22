@@ -37,6 +37,8 @@ interface Props {
   numOfLines: number;
   iconColor?: string;
   value?: string;
+  marginBottom?: string | number;
+  maxLength?: number;
 }
 
 export const InputField = ({
@@ -51,6 +53,8 @@ export const InputField = ({
   numOfLines,
   iconColor = '#666',
   value,
+  marginBottom = '6%',
+  maxLength = 100
 }: Props) => {
   return (
     <View
@@ -58,8 +62,8 @@ export const InputField = ({
         flexDirection: 'row',
         borderBottomColor: '#ccc',
         borderBottomWidth: 1,
-        paddingBottom: 8,
-        marginBottom: 25,
+        paddingBottom: '2%',
+        marginBottom: marginBottom,
       }}>
       <Icon name={icon} size={Size.iconSizeMedium} color={iconColor} />
       {inputType == 'password' ? (
@@ -68,19 +72,19 @@ export const InputField = ({
           multiline={multiline}
           numberOfLines={numOfLines}
           keyboardType={keyboardType}
+          selectionColor={Colors.primary}
           style={{
             flex: 1,
             paddingVertical: 0,
             fontFamily: 'roboto',
             fontSize: FontSize.fontSizeText,
-            // top: '1%',
             marginLeft: '2%',
           }}
           secureTextEntry={true}
           onChangeText={value => onChangeText(value)}
           // cursorColor={'red'}
-          selectionColor={Colors.primary}
           value={value}
+          maxLength={maxLength}
         />
       ) : (
         <TextInput
@@ -88,8 +92,8 @@ export const InputField = ({
           keyboardType={keyboardType}
           multiline={multiline}
           numberOfLines={numOfLines}
-          // placeholderTextColor={'#5C95FF'}
           selectionColor={Colors.primary}
+          // placeholderTextColor={'#5C95FF'}
           style={{
             flex: 1,
             paddingVertical: 0,
@@ -101,6 +105,7 @@ export const InputField = ({
           }}
           onChangeText={value => onChangeText(value)}
           value={value}
+          maxLength={maxLength}
         />
       )}
       <TouchableOpacity onPress={fieldButtonFunction}>

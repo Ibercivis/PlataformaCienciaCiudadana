@@ -10,7 +10,7 @@ import {
   TouchableWithoutFeedback,
   StyleSheet,
 } from 'react-native';
-import {IconButton} from 'react-native-paper';
+import {HelperText, IconButton} from 'react-native-paper';
 import {CustomAlert} from '../components/CustomAlert';
 import {CustomButton} from '../components/CustomButton';
 import {InputField} from '../components/InputField';
@@ -20,7 +20,9 @@ import {Colors} from '../theme/colors';
 import {FontSize} from '../theme/fonts';
 import translate from '../theme/es.json';
 import {Size} from '../theme/size';
-import { globalStyles } from '../theme/theme';
+import {globalStyles} from '../theme/theme';
+import {HeaderComponent} from '../components/HeaderComponent';
+import { ScrollView } from 'react-native';
 
 const window = Dimensions.get('window');
 const iconSize = window.width > 500 ? 60 : 45;
@@ -51,7 +53,7 @@ export const SettingsScreen = ({navigation}: Props) => {
   useEffect(() => {
     if (message.length === 0) return;
     CustomAlert().showAlertOneButton(
-      translate.strings.change_password_screen[0].modal_message,
+      translate.strings.settings_screen[0].change_password_screen[0].modal_message,
       message,
       'Ok',
       () => okAlert(),
@@ -72,28 +74,75 @@ export const SettingsScreen = ({navigation}: Props) => {
 
   return (
     <View style={{flex: 1, backgroundColor: 'white'}}>
+      <HeaderComponent
+        title={translate.strings.settings_screen[0].title}
+        onPressLeft={() => navigation.goBack()}
+        onPressRight={() => console.log()}
+      />
       <KeyboardAvoidingView
         style={{
           flex: 1,
         }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View style={{marginVertical: 20}}>
-            {/* title */}
-            <Text
-              style={{
-                fontFamily: 'Roboto-Medium',
-                fontSize: FontSize.fontSizeTextTitle,
-                fontWeight: '500',
-                color: '#333',
-                marginVertical: '8%',
-                alignSelf: 'center',
-              }}>
-              {translate.strings.change_password_screen[0].title}
-            </Text>
-
+          <ScrollView style={{...styles.container}}>
             {/* mail and icon */}
-            <View
+
+            <View>
+              <View>
+                <Text style={styles.title}>
+                  {
+                    translate.strings.settings_screen[0].change_password_screen[0].title
+                  }
+                </Text>
+              </View>
+
+              {/* contact name input */}
+              <View style={{marginBottom: '8%'}}>
+                <InputField
+                  label={translate.strings.settings_screen[0].change_password_screen[0].new_pass_1}
+                  icon="lock-outline"
+                  inputType="password"
+                  multiline={false}
+                  numOfLines={1}
+                  onChangeText={value => onChange(value, 'pass1')}
+                  iconColor={Colors.lightorange}
+                  marginBottom={'2%'}
+                />
+                <HelperText
+                  type="info"
+                  visible={true}
+                  style={styles.helperText}>
+                  {
+                    translate.strings.settings_screen[0].change_password_screen[0].new_pass_1_helper
+                  }
+                </HelperText>
+              </View>
+
+              {/* contact mail input */}
+              <View style={{marginBottom: '8%'}}>
+                <InputField
+                  label={translate.strings.settings_screen[0].change_password_screen[0].new_pass_2}
+                  icon="lock-reset"
+                  inputType="password"
+                  multiline={false}
+                  numOfLines={1}
+                  onChangeText={value => onChange(value, 'pass2')}
+                  iconColor={Colors.lightorange}
+                  marginBottom={'2%'}
+                />
+                <HelperText
+                  type="info"
+                  visible={true}
+                  style={styles.helperText}>
+                  {
+                    translate.strings.settings_screen[0].change_password_screen[0].new_pass_2_helper
+                  }
+                </HelperText>
+              </View>
+            </View>
+
+            {/* <View
               style={{
                 paddingHorizontal: '8%',
               }}>
@@ -114,16 +163,39 @@ export const SettingsScreen = ({navigation}: Props) => {
                 numOfLines={1}
               />
               <CustomButton label={'Enviar'} onPress={() => changePassword()} />
-            </View>
-          </View>
+            </View> */}
+          </ScrollView>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
-      <IconButton
+      {/* <IconButton
         style={globalStyles.viewButtonBack}
         icon="arrow-left"
         size={Size.iconSizeMedium}
         onPress={() => navigation.navigate('HomeScreen')}
-      />
+      /> */}
     </View>
   );
 };
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginVertical: '2%',
+    marginHorizontal: '6%',
+  },
+  title: {
+    fontSize: FontSize.fontSizeTextSubTitle,
+    paddingVertical: FontSize.fontSizeText,
+    alignItems: 'baseline',
+    marginTop: '2%',
+    marginBottom: '3%',
+  },
+  helperText: {
+    fontSize: FontSize.fontSizeTextMin,
+  },
+  divider: {
+    borderColor: 'black',
+    borderWidth: 1,
+    marginTop: '5%',
+    marginBottom: '3%',
+  },
+});

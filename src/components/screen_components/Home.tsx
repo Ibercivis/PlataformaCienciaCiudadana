@@ -36,6 +36,7 @@ import {AnimatedFab} from '../AnimatedFab';
 import {CustomButton} from '../CustomButton';
 
 import {SpeedDial} from '@rneui/themed';
+import { StatusBar } from 'react-native';
 
 interface Props extends StackScreenProps<any, any> {}
 
@@ -49,6 +50,7 @@ export const Home = ({navigation}: Props) => {
   // speeddial
 
   const [open, setOpen] = useState(false);
+  const speedDialRef = useRef().current;
 
   // proyectos sin y con filtro
   const [project, setProject] = useState<Projects[]>([]);
@@ -108,7 +110,12 @@ export const Home = ({navigation}: Props) => {
     SplashScreen.hide();
   }, []);
 
+  // useEffect(() => {
+
+  // }, []);
+
   useEffect(() => {
+    StatusBar.setHidden(true)
     setHasTagToFilter(0);
     setLastHastagFilter(0);
     setTopicToFilter(0);
@@ -490,6 +497,24 @@ export const Home = ({navigation}: Props) => {
     }
   };
 
+  /**
+   * Método que establece el Speed Dial a false y redirige a la ruta seleccionada.
+   * @param nav number que indicará la ruta a tomar ( 1 nuevo proyecto, 2 nueva organización )
+   */
+  const onSpeedDialPress = (nav: number) => {
+    switch (nav) {
+      case 1:
+        setOpen(!open);
+        navigation.navigate('NewProjectScreen', []);
+        break;
+
+      case 2:
+        setOpen(!open);
+        navigation.navigate('OrganisationScreen');
+        break;
+    }
+  };
+
   if (!isAllCharged) {
     return <LoadingScreen />;
   }
@@ -509,7 +534,7 @@ export const Home = ({navigation}: Props) => {
         style={{
           flex: 1,
           backgroundColor: 'transparent',
-          marginVertical: 10,
+          marginVertical: 0,
           marginTop: refreshing ? top : 0,
         }}>
         <Searchbar
@@ -626,45 +651,30 @@ export const Home = ({navigation}: Props) => {
             </Card>
           ))}
       </ScrollView>
-      {/* <Animated.View></Animated.View> */}
-      {/* <AnimatedFab label='' onPress={() => navigation.navigate('NewProjectScreen', [])}/> */}
-      {/* <View style={styles.viewButtonModalAdd}>
-        <TouchableOpacity activeOpacity={0.5} onPress={() => handlePress()}>
-          <Animated.View
-            style={
-              [
-                {
-                  justifyContent: 'center',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                },
-                animatedStyle,
-              ]
-            }>
-            <IconTemp
-              style={{}}
-              name="plus-circle"
-              size={Size.iconSizeExtraLarge}
-            />
-          </Animated.View>
-        </TouchableOpacity>
-      </View> */}
       <SpeedDial
-        // style={styles.viewButtonModalAdd}
+        ref={speedDialRef}
+        transitionDuration={200}
+        color={Colors.primary}
         isOpen={open}
-        icon={{name: 'edit', color: '#fff'}}
-        openIcon={{name: 'close', color: '#fff'}}
+        icon={{name: 'plus', type: 'material-community', color: '#fff'}}
+        openIcon={{name: 'close', type: 'material-community', color: '#fff'}}
         onOpen={() => setOpen(!open)}
         onClose={() => setOpen(!open)}>
         <SpeedDial.Action
-          icon={{name: 'add', color: '#fff'}}
+          color={Colors.primary}
+          icon={{
+            name: 'database-plus',
+            type: 'material-community',
+            color: '#fff',
+          }}
           title="Nuevo proyecto"
-          onPress={() => navigation.navigate('NewProjectScreen', [])}
+          onPress={() => {onSpeedDialPress(1)}}
         />
         <SpeedDial.Action
-          icon={{name: 'domain', color: '#fff'}}
+          color={Colors.primary}
+          icon={{name: 'domain', type: 'material-community', color: '#fff'}}
           title="Nueva organización"
-          onPress={() => navigation.navigate('OrganisationScreen')}
+          onPress={() => {onSpeedDialPress(2)}}
         />
       </SpeedDial>
       {/* <IconButtonTemp

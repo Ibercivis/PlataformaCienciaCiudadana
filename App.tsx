@@ -14,13 +14,13 @@ const App = () => {
   return (
     <AppAuth>
       <AppState>
-        <PaperProvider>
-          <SafeAreaProvider>
+        <SafeAreaProvider>
+          <PaperProvider>
             <NavigationContainer theme={tema}>
               <Navigator />
             </NavigationContainer>
-          </SafeAreaProvider>
-        </PaperProvider>
+          </PaperProvider>
+        </SafeAreaProvider>
       </AppState>
     </AppAuth>
   );
