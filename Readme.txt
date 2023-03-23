@@ -114,3 +114,5 @@ INSTRUCCIONES CREAR APP DEBUG
      
 - stepper installed
 - mui npm install @mui/material @emotion/react @emotion/styled
+
+- IMPORTANTE IOS. Instalar npm install --save react-native-permissions y seguir para añadir permisos

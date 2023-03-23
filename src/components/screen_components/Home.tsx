@@ -44,6 +44,8 @@ export const Home = ({navigation}: Props) => {
   const [searchQuery, setSearchQuery] = useState('');
   const {top} = useSafeAreaInsets();
 
+  const insets = useSafeAreaInsets(); //controlar el notch?
+
   const onChangeSearch = (query: SetStateAction<string>) =>
     setSearchQuery(query);
 
@@ -115,7 +117,7 @@ export const Home = ({navigation}: Props) => {
   // }, []);
 
   useEffect(() => {
-    StatusBar.setHidden(true)
+    StatusBar.setHidden(true);
     setHasTagToFilter(0);
     setLastHastagFilter(0);
     setTopicToFilter(0);
@@ -534,8 +536,7 @@ export const Home = ({navigation}: Props) => {
         style={{
           flex: 1,
           backgroundColor: 'transparent',
-          marginVertical: 0,
-          marginTop: refreshing ? top : 0,
+          marginTop: insets.top*0.8,
         }}>
         <Searchbar
           style={{marginBottom: 10}}

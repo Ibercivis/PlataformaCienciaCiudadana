@@ -1,11 +1,6 @@
 import {StackScreenProps} from '@react-navigation/stack';
 import React, {useContext, useEffect, useState} from 'react';
-import {
-  View,
-  StyleSheet,
-  Image,
-  SafeAreaView,
-} from 'react-native';
+import {View, StyleSheet, Image, SafeAreaView} from 'react-native';
 import {Text} from 'react-native-paper';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
@@ -24,11 +19,11 @@ import {Size} from '../theme/size';
 import {CustomButton} from '../components/CustomButton';
 import {InputField} from '../components/InputField';
 import translate from '../theme/es.json';
-import SplashScreen from 'react-native-splash-screen'
+import SplashScreen from 'react-native-splash-screen';
 import citmapApi from '../api/citmapApi';
-import { Keyboard } from 'react-native';
+import {Keyboard} from 'react-native';
 import Modal from 'react-native-modal';
-import { globalStyles } from '../theme/theme';
+import {globalStyles} from '../theme/theme';
 
 const height = Size.globalWidth > 500 ? 80 : 50;
 const iconSize = Size.globalWidth > 500 ? 70 : 40;
@@ -37,7 +32,8 @@ interface Props extends StackScreenProps<any, any> {}
 
 export const LoginScreen = ({navigation}: Props) => {
   const {top} = useSafeAreaInsets();
-  const {signIn, signOut, signUp, errorMessage, removeError} = useContext(AuthContext);
+  const {signIn, signOut, signUp, errorMessage, removeError} =
+    useContext(AuthContext);
   const {onChange, form} = useForm({
     userName: '',
     password: '',
@@ -55,6 +51,7 @@ export const LoginScreen = ({navigation}: Props) => {
 
   useEffect(() => {
     GoogleSignin.configure({
+      iosClientId: '235777853257-rnbdsrqchtl76jq0givh1h6l7u47rs4k.apps.googleusercontent.com',
       webClientId:
         '235777853257-rnbdsrqchtl76jq0givh1h6l7u47rs4k.apps.googleusercontent.com',
     });
@@ -69,15 +66,15 @@ export const LoginScreen = ({navigation}: Props) => {
     //   removeError,
     //   () => console.log()
     // );
-    console.log(userError)
-    setUserError(true)
+    console.log(userError);
+    setUserError(true);
   }, [errorMessage]);
 
   //aquí se comprobaría si existe el usuario y en caso de que sí, se le permitiría pasar
   const loggin = () => {
     Keyboard.dismiss();
-    signIn({correo: form.userName, password: form.password})
-  }
+    signIn({correo: form.userName, password: form.password});
+  };
 
   //TODO mover todo esto a un contexto para que se pueda controlar el logout desde cualquier lado
   const logginGoogle = async () => {
@@ -112,7 +109,6 @@ export const LoginScreen = ({navigation}: Props) => {
   if (isLoading) {
     return <LoadingScreen />;
   }
-
 
   return (
     // <View style={{flex: 1, backgroundColor: 'transparent'}}>
@@ -489,7 +485,7 @@ export const LoginScreen = ({navigation}: Props) => {
 
         <Text
           style={{
-            fontFamily: 'Roboto-Medium',
+            // fontFamily: 'Roboto-Medium',
             fontSize: FontSize.fontSizeTextTitle,
             fontWeight: '500',
             color: '#333',
@@ -516,28 +512,31 @@ export const LoginScreen = ({navigation}: Props) => {
           onChangeText={value => onChange(value, 'password')}
         />
 
-
-        <CustomButton label={translate.strings.login_screen[0].login_button} onPress={() => loggin()} />
-          <TouchableOpacity style={{alignItems: 'flex-end', marginBottom: '8%'}}
-            onPress={() => navigation.replace('ForgotPassword')}>
-            <Text
-              style={{
-                color: Colors.darkorange,
-                fontWeight: '700',
-                fontFamily: 'roboto',
-                fontSize: FontSize.fontSizeText,
-              }}>
-              {' '}
-              {translate.strings.login_screen[0].recovery_password}
-            </Text>
-          </TouchableOpacity>
+        <CustomButton
+          label={translate.strings.login_screen[0].login_button}
+          onPress={() => loggin()}
+        />
+        <TouchableOpacity
+          style={{alignItems: 'flex-end', marginBottom: '8%'}}
+          onPress={() => navigation.replace('ForgotPassword')}>
+          <Text
+            style={{
+              color: Colors.darkorange,
+              fontWeight: '700',
+              // fontFamily: 'roboto',
+              fontSize: FontSize.fontSizeText,
+            }}>
+            {' '}
+            {translate.strings.login_screen[0].recovery_password}
+          </Text>
+        </TouchableOpacity>
 
         <Text
           style={{
             textAlign: 'center',
             color: '#666',
             marginBottom: '5%',
-            fontFamily: 'roboto',
+            // fontFamily: 'roboto',
             fontSize: FontSize.fontSizeText,
           }}>
           {translate.strings.login_screen[0].or_login}
@@ -577,8 +576,10 @@ export const LoginScreen = ({navigation}: Props) => {
             justifyContent: 'center',
             marginBottom: 30,
           }}>
-          <Text style={{fontFamily: 'roboto', fontSize: FontSize.fontSizeText}}>
-          {translate.strings.login_screen[0].new_in_app}
+          <Text style={{
+            // fontFamily: 'roboto', 
+            fontSize: FontSize.fontSizeText}}>
+            {translate.strings.login_screen[0].new_in_app}
           </Text>
           <TouchableOpacity
             onPress={() => navigation.replace('RegisterScreen')}>
@@ -586,7 +587,7 @@ export const LoginScreen = ({navigation}: Props) => {
               style={{
                 color: Colors.darkorange,
                 fontWeight: '700',
-                fontFamily: 'roboto',
+                // fontFamily: 'roboto',
                 fontSize: FontSize.fontSizeText,
               }}>
               {' '}
@@ -598,7 +599,9 @@ export const LoginScreen = ({navigation}: Props) => {
 
       <Modal
         style={{alignItems: 'center'}}
-        onBackdropPress={() => {setUserError(false), removeError()}}
+        onBackdropPress={() => {
+          setUserError(false), removeError();
+        }}
         isVisible={userError}
         animationIn="shake"
         animationInTiming={300}
@@ -608,10 +611,18 @@ export const LoginScreen = ({navigation}: Props) => {
         backdropOpacity={0.8}
         backdropTransitionInTiming={600}
         backdropTransitionOutTiming={600}>
-        <View
-          style={globalStyles.viewModal}>
-          <Text style={{justifyContent: 'center', fontSize: FontSize.fontSizeTextTitle}}>ERROR</Text>
-          <Text style={{justifyContent: 'center', fontSize: FontSize.fontSizeText}}>{errorMessage}</Text>
+        <View style={globalStyles.viewModal}>
+          <Text
+            style={{
+              justifyContent: 'center',
+              fontSize: FontSize.fontSizeTextTitle,
+            }}>
+            ERROR
+          </Text>
+          <Text
+            style={{justifyContent: 'center', fontSize: FontSize.fontSizeText}}>
+            {errorMessage}
+          </Text>
         </View>
       </Modal>
     </SafeAreaView>

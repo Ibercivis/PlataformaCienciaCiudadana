@@ -76,7 +76,7 @@ export const InputField = ({
           style={{
             flex: 1,
             paddingVertical: 0,
-            fontFamily: 'roboto',
+            // fontFamily: 'roboto',
             fontSize: FontSize.fontSizeText,
             marginLeft: '2%',
           }}
@@ -97,7 +97,7 @@ export const InputField = ({
           style={{
             flex: 1,
             paddingVertical: 0,
-            fontFamily: 'roboto',
+            // fontFamily: 'roboto',
             fontSize: FontSize.fontSizeText,
             textAlignVertical: 'top',
             top: '1%',
@@ -113,7 +113,7 @@ export const InputField = ({
           style={{
             color: '#AD40AF',
             fontWeight: '700',
-            fontFamily: 'roboto',
+            // fontFamily: 'roboto',
             fontSize: FontSize.fontSizeText,
           }}>
           {fieldButtonLabel}

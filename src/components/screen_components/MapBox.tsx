@@ -2,7 +2,7 @@ import {useNavigation} from '@react-navigation/native';
 import React, {useEffect, useRef, useState} from 'react';
 import {useLocation} from '../../hooks/useLocation';
 import {LoadingScreen} from '../../screens/LoadingScreen';
-import MapboxGL from '@rnmapbox/maps';
+import Mapbox, { UserTrackingMode } from '@rnmapbox/maps';
 import {
   StyleSheet,
   Text,
@@ -12,7 +12,6 @@ import {
   Dimensions,
   Image,
 } from 'react-native';
-import {UserTrackingMode} from '@rnmapbox/maps/javascript/components/Camera';
 import {globalStyles} from '../../theme/theme';
 import {Button, Dialog, Portal, TextInput} from 'react-native-paper';
 import {InputField} from '../InputField';
@@ -27,12 +26,12 @@ import Modal from 'react-native-modal';
 import {FontSize} from '../../theme/fonts';
 import { mdiOrnament } from '@mdi/js';
 
-MapboxGL.setWellKnownTileServer('Mapbox');
-MapboxGL.setAccessToken(
+Mapbox.setWellKnownTileServer('mapbox');
+Mapbox.setAccessToken(
   'pk.eyJ1IjoiYXBlbmE3IiwiYSI6ImNsYWt1NHYwNjBxMXYzbnBqN2luamV2ajQifQ.XJQH9SnPmCxVPoDnU0P2KQ',
 );
-MapboxGL.setConnected(true);
-const {MapView, Camera, PointAnnotation, MarkerView} = MapboxGL;
+// Mapbox.setConnected(true);
+const {MapView, Camera, PointAnnotation, MarkerView} = Mapbox;
 
 type Position = number[];
 
@@ -48,8 +47,8 @@ export const MapBox = () => {
     routeLines,
   } = useLocation();
   const [marks, setMarks] = useState<Position[]>([]);
-  const mapViewRef = useRef<MapboxGL.MapView>();
-  const cameraRef = useRef<MapboxGL.Camera>();
+  const mapViewRef = useRef<Mapbox.MapView>();
+  const cameraRef = useRef<Mapbox.Camera>();
   const followView = useRef<boolean>(true);
   const [initialPositionArray, setInitialPositionArray] = useState<number[]>(
     [],
@@ -125,10 +124,13 @@ export const MapBox = () => {
 
   //TODO comprobar si la posicion del usuario y la de la camara son las mismas, sino, es que el usuario ha movido el mapa
   const centerPosition = async () => {
+    console.log('entra en center position')
     const location = await getCurrentLocation();
+    console.log(location)
     followView.current = !followView.current;
     const posi: Position = [location.longitude, location.latitude];
     cameraRef.current?.flyTo(posi, 200);
+    console.log('sale en center position')
   };
 
   const centerToMark = async (coords: Position) => {
@@ -159,7 +161,6 @@ export const MapBox = () => {
             logoEnabled={false}
             localizeLabels={true}
             collapsable={true}
-            animated={true}
             onTouchStart={() => (followView.current = false)}
             onLongPress={data => {
               showDialog(data);
@@ -176,7 +177,7 @@ export const MapBox = () => {
               allowUpdates={true}
             />
             {/* <PointAnnotation id="point" coordinate={initialPositionArray} /> */}
-            <MapboxGL.UserLocation
+            <Mapbox.UserLocation
               visible={true}
               onUpdate={location => onUserLocationUpdate(location)}
             />

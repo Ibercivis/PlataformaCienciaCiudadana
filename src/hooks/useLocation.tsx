@@ -6,7 +6,9 @@ export const useLocation = () => {
   const [hasLocation, setHasLocation] = useState(false);
   const [routeLines, setRouteLines] = useState<Location[]>([]);
 
-  const [initialPositionArray, setInitialPositionArray] = useState<number[]>([]);
+  const [initialPositionArray, setInitialPositionArray] = useState<number[]>(
+    [],
+  );
   const [initialPosition, setInitialPosition] = useState<Location>();
 
   const [userLocation, setUserLocation] = useState<Location>({
@@ -21,16 +23,16 @@ export const useLocation = () => {
     isMounted.current = true;
     return () => {
       isMounted.current = false;
-    }
+    };
   }, []);
 
   useEffect(() => {
     getCurrentLocation().then(location => {
-      if(!isMounted.current) return;
+      if (!isMounted.current) return;
       setInitialPosition(location);
-      setInitialPositionArray([ location.longitude,location.latitude]);
+      setInitialPositionArray([location.longitude, location.latitude]);
       setUserLocation(location);
-      setRouteLines(routes =>[...routes, location]);
+      setRouteLines(routes => [...routes, location]);
       setHasLocation(true);
     });
   }, []);
@@ -39,14 +41,18 @@ export const useLocation = () => {
     return new Promise((resolve, reject) => {
       Geolocation.getCurrentPosition(
         info => {
+          console.log(info);
           resolve({
             latitude: info.coords.latitude,
             longitude: info.coords.longitude,
           });
         },
-        err => reject({err}),
-        {
-          enableHighAccuracy: true,
+        err => {
+          console.log(err);
+          reject({err}),
+            {
+              enableHighAccuracy: true,
+            };
         },
       );
     });
@@ -55,8 +61,7 @@ export const useLocation = () => {
   const followUserLocation = () => {
     watchId.current = Geolocation.watchPosition(
       ({coords}) => {
-
-        if(!isMounted.current) return;
+        if (!isMounted.current) return;
 
         const location: Location = {
           latitude: coords.latitude,
@@ -64,7 +69,7 @@ export const useLocation = () => {
         };
         setUserLocation(location);
 
-        setRouteLines(routes =>[...routes, location]);
+        setRouteLines(routes => [...routes, location]);
       },
       err => console.log(err),
       {
@@ -87,6 +92,6 @@ export const useLocation = () => {
     stopFollowUserLocation,
     routeLines,
     initialPositionArray,
-    setInitialPositionArray
+    setInitialPositionArray,
   };
 };

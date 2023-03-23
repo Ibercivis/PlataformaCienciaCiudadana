@@ -26,55 +26,55 @@ export const fonts = StyleSheet.create({
   },
 
   typographyHeadlines: {
-    fontFamily: 'Roboto',
+    // fontFamily: 'Roboto',
     fontSize: 96,
   },
   typographyHeadlines2: {
-    fontFamily: 'Roboto',
+    // fontFamily: 'Roboto',
     fontSize: 60,
   },
   typographyHeadlines3: {
-    fontFamily: 'Roboto',
+    // fontFamily: 'Roboto',
     fontSize: 48,
   },
   typographyHeadlines4: {
-    fontFamily: 'Roboto',
+    // fontFamily: 'Roboto',
     fontSize: 34,
   },
   typographyHeadlines5: {
-    fontFamily: 'Roboto',
+    // fontFamily: 'Roboto',
     fontSize: 24,
   },
   typographyHeadlines6: {
-    fontFamily: 'Roboto',
+    // fontFamily: 'Roboto',
     fontSize: 20,
   },
   typographyBody1: {
-    fontFamily: 'Roboto',
+    // fontFamily: 'Roboto',
     fontSize: 16,
   },
   typographyBody2: {
-    fontFamily: 'Roboto',
+    // fontFamily: 'Roboto',
     fontSize: 14,
   },
   typographySubtitle1: {
-    fontFamily: 'Roboto',
+    // fontFamily: 'Roboto',
     fontSize: 16,
   },
   typographySubtitle2: {
-    fontFamily: 'Roboto',
+    // fontFamily: 'Roboto',
     fontSize: 14,
   },
   typographyButton: {
-    fontFamily: 'Roboto',
+    // fontFamily: 'Roboto',
     fontSize: 14,
   },
   typographyOverline: {
-    fontFamily: 'Roboto',
+    // fontFamily: 'Roboto',
     fontSize: 10,
   },
   typographyCaption: {
-    fontFamily: 'Roboto',
+    // fontFamily: 'Roboto',
     fontSize: 12,
   },
 });
