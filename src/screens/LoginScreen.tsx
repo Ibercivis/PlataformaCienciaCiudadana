@@ -51,9 +51,10 @@ export const LoginScreen = ({navigation}: Props) => {
 
   useEffect(() => {
     GoogleSignin.configure({
-      iosClientId: '235777853257-rnbdsrqchtl76jq0givh1h6l7u47rs4k.apps.googleusercontent.com',
-      webClientId:
-        '235777853257-rnbdsrqchtl76jq0givh1h6l7u47rs4k.apps.googleusercontent.com',
+      offlineAccess: true,
+      iosClientId: '235777853257-djkpgca69noinapgft2ua7vgq2bcieg3.apps.googleusercontent.com',
+      webClientId: '235777853257-rnbdsrqchtl76jq0givh1h6l7u47rs4k.apps.googleusercontent.com',
+      
     });
   }, []);
 

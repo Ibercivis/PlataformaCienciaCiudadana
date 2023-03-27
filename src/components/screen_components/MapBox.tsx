@@ -132,7 +132,7 @@ export const MapBox = () => {
     followView.current = !followView.current;
     const posi: Position = [location.longitude, location.latitude];
     cameraRef.current?.flyTo(posi, 200);
-    console.log('sale en center position')
+    console.log(' en center position')
   };
 
   const centerToMark = async (coords: Position) => {

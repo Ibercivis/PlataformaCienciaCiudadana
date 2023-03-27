@@ -89,6 +89,15 @@ PODS:
   - GTMSessionFetcher/Core (2.3.0)
   - hermes-engine (0.70.4)
   - libevent (2.1.12)
+  - MapboxCommon (23.3.2)
+  - MapboxCoreMaps (10.11.1):
+    - MapboxCommon (~> 23.3)
+  - MapboxMaps (10.11.1):
+    - MapboxCommon (= 23.3.2)
+    - MapboxCoreMaps (= 10.11.1)
+    - MapboxMobileEvents (= 1.0.10)
+    - Turf (~> 2.0)
+  - MapboxMobileEvents (1.0.10)
   - OpenSSL-Universal (1.1.1100)
   - Permission-Camera (3.8.0):
     - RNPermissions
@@ -418,12 +427,16 @@ PODS:
     - GoogleSignIn (~> 6.2)
     - React-Core
   - rnmapbox-maps (10.0.0-rc.0):
+    - MapboxMaps (~> 10.11.1)
     - React
     - React-Core
     - rnmapbox-maps/DynamicLibrary (= 10.0.0-rc.0)
+    - Turf
   - rnmapbox-maps/DynamicLibrary (10.0.0-rc.0):
+    - MapboxMaps (~> 10.11.1)
     - React
     - React-Core
+    - Turf
   - RNPermissions (3.8.0):
     - React-Core
   - RNReanimated (2.14.4):
@@ -459,6 +472,7 @@ PODS:
   - RNVectorIcons (9.2.0):
     - React-Core
   - SocketRocket (0.6.0)
+  - Turf (2.6.1)
   - Yoga (1.14.0)
   - YogaKit (1.18.1):
     - Yoga (~> 1.14)
@@ -562,8 +576,13 @@ SPEC REPOS:
     - GTMAppAuth
     - GTMSessionFetcher
     - libevent
+    - MapboxCommon
+    - MapboxCoreMaps
+    - MapboxMaps
+    - MapboxMobileEvents
     - OpenSSL-Universal
     - SocketRocket
+    - Turf
     - YogaKit
 
 EXTERNAL SOURCES:
@@ -699,6 +718,10 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: 3a63d75eecd6aa32c2fc79f578064e1214dfdec2
   hermes-engine: 3623325e0d0676a45fbc544d72c57dd79fce7446
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
+  MapboxCommon: c3a35f6884b80d898de9f11d88cb28c5caba584a
+  MapboxCoreMaps: 03e7214fabb54d496ff56314ff8159dd264b6093
+  MapboxMaps: 85610575a8871b3f5e98be2a234f0229a33324a7
+  MapboxMobileEvents: de50b3a4de180dd129c326e09cd12c8adaaa46d6
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   Permission-Camera: e6d142d7d8b714afe0a83e5e6ae17eb949f1e3e9
   Permission-LocationAccuracy: d6aa5146c084e7077e7efc4cbb543c7f6c72c51a
@@ -742,15 +765,16 @@ SPEC CHECKSUMS:
   RNCPicker: 0bf8ef8f7800524f32d2bb2a8bcadd53eda0ecd1
   RNGestureHandler: 071d7a9ad81e8b83fe7663b303d132406a7d8f39
   RNGoogleSignin: 22e468a9474dbcb8618d8847205ad4f0b2575d13
-  rnmapbox-maps: 538867a4018d534ebc55dd045f599fb0dc69ba7a
+  rnmapbox-maps: 22d49ec1835dbf11785d324270dee553e2a1d455
   RNPermissions: 215c54462104b3925b412b0fb3c9c497b21c358b
   RNReanimated: 6668b0587bebd4b15dd849b99e5a9c70fc12ed95
   RNScreens: 34cc502acf1b916c582c60003dc3089fa01dc66d
   RNVectorIcons: fcc2f6cb32f5735b586e66d14103a74ce6ad61f8
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
+  Turf: 469ce2c3d22e5e8e4818d5a3b254699a5c89efa4
   Yoga: 1f02ef4ce4469aefc36167138441b27d988282b1
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: b4b457190a59e0d65f3485071b8b0a492dd50614
+PODFILE CHECKSUM: 4283589520a536a42b4453bb9a5d6e655d0c88b7
 
 COCOAPODS: 1.12.0
