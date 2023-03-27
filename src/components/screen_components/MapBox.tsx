@@ -2,7 +2,6 @@ import {useNavigation} from '@react-navigation/native';
 import React, {useEffect, useRef, useState} from 'react';
 import {useLocation} from '../../hooks/useLocation';
 import {LoadingScreen} from '../../screens/LoadingScreen';
-import Mapbox, { UserTrackingMode } from '@rnmapbox/maps';
 import {
   StyleSheet,
   Text,
@@ -11,11 +10,11 @@ import {
   KeyboardAvoidingView,
   Dimensions,
   Image,
+  Platform,
 } from 'react-native';
 import {globalStyles} from '../../theme/theme';
 import {Button, Dialog, Portal, TextInput} from 'react-native-paper';
 import {InputField} from '../InputField';
-import {onChange} from 'react-native-reanimated';
 import {Colors} from '../../theme/colors';
 import {useForm} from '../../hooks/useForm';
 import translate from '../../theme/es.json';
@@ -24,13 +23,16 @@ import {Size} from '../../theme/size';
 import {BackButton} from '../BackButton';
 import Modal from 'react-native-modal';
 import {FontSize} from '../../theme/fonts';
-import { mdiOrnament } from '@mdi/js';
+import Mapbox, { UserTrackingMode } from '@rnmapbox/maps';
 
 Mapbox.setWellKnownTileServer('mapbox');
 Mapbox.setAccessToken(
   'pk.eyJ1IjoiYXBlbmE3IiwiYSI6ImNsYWt1NHYwNjBxMXYzbnBqN2luamV2ajQifQ.XJQH9SnPmCxVPoDnU0P2KQ',
 );
-// Mapbox.setConnected(true);
+// Mapbox.setAccessToken(
+//   'sk.eyJ1IjoiYXBlbmE3IiwiYSI6ImNsZnFqbDhjbDAwMTIzcGxnZ2RvaTFjanEifQ.A_Zi_uoS-0D0Vm0kh9ECDA',
+// );
+
 const {MapView, Camera, PointAnnotation, MarkerView} = Mapbox;
 
 type Position = number[];
@@ -126,7 +128,7 @@ export const MapBox = () => {
   const centerPosition = async () => {
     console.log('entra en center position')
     const location = await getCurrentLocation();
-    console.log(location)
+    // console.log(location)
     followView.current = !followView.current;
     const posi: Position = [location.longitude, location.latitude];
     cameraRef.current?.flyTo(posi, 200);

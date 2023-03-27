@@ -9,7 +9,6 @@ import React, {useContext, useEffect, useState} from 'react';
 import {View, Image, TouchableOpacity, Text} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {globalStyles} from '../theme/theme';
-import {NavigatorMap} from './NavigatorMap';
 import {LoginScreen} from '../screens/LoginScreen';
 import {AuthContext} from '../context/AuthContext';
 import {NavigatorMapBox} from './NavigatorMapBox';
@@ -53,7 +52,6 @@ export const DrawerNavigation = () => {
       {/* <Drawer.Screen name="NewProjectScreen" component={NewProjectScreen} />
       <Drawer.Screen name="Marcador" component={Marcador} />
       <Drawer.Screen name="MarcadorExample" component={MarcadorExample} /> */}
-      <Drawer.Screen name="NavigatorMap" component={NavigatorMap} />
       <Drawer.Screen name="NavigatorMapBox" component={NavigatorMapBox} />
       <Drawer.Screen name="SettingsScreen" component={SettingsScreen} />
       <Drawer.Screen name="LoginScreen" component={LoginScreen} />

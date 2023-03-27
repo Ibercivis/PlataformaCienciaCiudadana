@@ -28,6 +28,7 @@ export const useLocation = () => {
 
   useEffect(() => {
     getCurrentLocation().then(location => {
+      console.log('get currentlocation usereffect');
       if (!isMounted.current) return;
       setInitialPosition(location);
       setInitialPositionArray([location.longitude, location.latitude]);
@@ -59,6 +60,7 @@ export const useLocation = () => {
   };
 
   const followUserLocation = () => {
+    
     watchId.current = Geolocation.watchPosition(
       ({coords}) => {
         if (!isMounted.current) return;
@@ -71,11 +73,11 @@ export const useLocation = () => {
 
         setRouteLines(routes => [...routes, location]);
       },
-      err => console.log(err),
+      err => {console.log(err),
       {
         enableHighAccuracy: true,
         distanceFilter: 10,
-      },
+      }},
     );
   };
 

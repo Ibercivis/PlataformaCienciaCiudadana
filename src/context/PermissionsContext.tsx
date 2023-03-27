@@ -31,9 +31,9 @@ export const PermissionsProvider = ({children}: any) => {
 
   useEffect(() => {
     AppState.addEventListener('change', state => {
-        if(state === 'active'){
-            checkLocationPErmission();
-        }
+      if (state === 'active') {
+        checkLocationPErmission();
+      }
     });
   }, []);
 
@@ -44,12 +44,20 @@ export const PermissionsProvider = ({children}: any) => {
       permissionStatus = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
     } else {
       permissionStatus = await request(
-        PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
+        PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION,
+        {
+          title: 'Location Permission',
+          message: 'Get your location to post request',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
       );
+      console.log(permissionStatus)
     }
 
-    if(permissionStatus === 'blocked'){
-        openSettings();
+    if (permissionStatus === 'blocked') {
+      openSettings();
     }
     setPermissions({...permissions, locationStatus: permissionStatus});
   };
@@ -60,10 +68,9 @@ export const PermissionsProvider = ({children}: any) => {
     if (Platform.OS === 'ios') {
       permissionStatus = await check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
     } else {
-      permissionStatus = await check(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
+      permissionStatus = await check(PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION);
     }
 
-    
     setPermissions({...permissions, locationStatus: permissionStatus});
   };
 

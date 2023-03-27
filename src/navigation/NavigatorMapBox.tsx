@@ -1,6 +1,5 @@
 import React, {useContext} from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
-import {MapScreen} from '../screens/MapScreen';
 import {PermissionsScreen} from '../screens/PermissionsScreen';
 import {PermissionsContext} from '../context/PermissionsContext';
 import {LoadingScreen} from '../screens/LoadingScreen';

@@ -224,6 +224,7 @@ android {
             keyPassword 'android'
         }
     }
+    namespace 'com.reactnativeplantilla'
     buildTypes {
         debug {
             signingConfig signingConfigs.debug

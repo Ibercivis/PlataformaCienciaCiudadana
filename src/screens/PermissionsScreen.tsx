@@ -6,16 +6,21 @@ export const PermissionsScreen = () => {
     const [state, setState] = useState(0);
     const {permissions, checkLocationPErmission, askLocationPermission} = useContext(PermissionsContext)
 
+    useEffect(() => {
+        checkLocationPermission()
+    }, [])
+    
+
     const checkLocationPermission = async () => {
         askLocationPermission();
     }
 
   return (
     <View style={styles.container}>
-        <Text>Permiso de ubicación requerido</Text>
+        {/* <Text>Permiso de ubicación requerido</Text>
         <TouchableOpacity style={styles.touchable} onPress={checkLocationPermission} activeOpacity={0.6} >
             <Text style={styles.touchableText}>Dar permisos</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
     </View>
   )
 }
