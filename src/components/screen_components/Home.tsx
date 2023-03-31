@@ -14,6 +14,7 @@ import {
   View,
   RefreshControl,
   Animated,
+  ToastAndroid,
 } from 'react-native';
 import {Projects, HasTag, Topic} from '../../interfaces/appInterfaces';
 import {
@@ -24,6 +25,7 @@ import {
   Paragraph,
   Portal,
   Modal,
+  Divider,
 } from 'react-native-paper';
 import {fonts, FontSize} from '../../theme/fonts';
 import {Size} from '../../theme/size';
@@ -36,9 +38,13 @@ import {AnimatedFab} from '../AnimatedFab';
 import {CustomButton} from '../CustomButton';
 
 import {SpeedDial} from '@rneui/themed';
-import { StatusBar } from 'react-native';
+import {StatusBar} from 'react-native';
 
 interface Props extends StackScreenProps<any, any> {}
+interface Collapse {
+  id: number;
+  open: boolean;
+}
 
 export const Home = ({navigation}: Props) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -108,13 +114,54 @@ export const Home = ({navigation}: Props) => {
     navigation.navigate('NewProjectScreen', []);
   };
 
+  // fav y marcadores
+  const [fav, setFav] = useState(false);
+
+  /**
+   * lista correspondiente al boolean de cada projecto empleado para mostrar o no la descripcion
+   */
+  const [booleanProjectList, setBooleanProjectList] = useState<Collapse[]>([]);
+
+  /**
+   * Metodo que setea la lista con el cambio del boolean del proyecto al que hace referencia
+   * @param open id del proyecto
+   */
+  const toggleOpen = (open: number) => {
+    let newArr = [...booleanProjectList];
+    booleanProjectList.map((x, index) => {
+      if (x.id === open) {
+        newArr[index].open = !x.open
+      }
+    });
+    setBooleanProjectList(newArr)
+  };
+
+  /**
+   * Metodo que se llama en el render para mostrar si la descripcion está abierta o no 
+   * //TODO  mejorar rendimiento, poco eficiente
+   * @param id identificador del proyecto
+   * @returns devuelve si es true o no
+   */
+  const isCollapsed = (id: number) => {
+    const bool = booleanProjectList.find(x => x.id === id);
+    return bool?.open;
+  };
+
+  /**
+   * Oculta la pantalla de carga al arrancar la app
+   */
   useEffect(() => {
     SplashScreen.hide();
   }, []);
 
-  // useEffect(() => {
-
-  // }, []);
+  /**
+   * Cuando detecta que la lista ha sido rellenada, todos los elementos estarán cargados
+   */
+  useEffect(() => {
+    if (booleanProjectList.length > 0) {
+      setIsAllCharged(true);
+    }
+  }, [booleanProjectList]);
 
   useEffect(() => {
     StatusBar.setHidden(true);
@@ -141,21 +188,13 @@ export const Home = ({navigation}: Props) => {
 
   // si isfiltered, se limpian los proyectos para luego rellenarlos
   useEffect(() => {
-    console.log('HASTAG');
-    console.log(isFilteredHastag);
-    console.log(isFilteredTopic);
     if (isFilteredHastag && !isFilteredTopic) {
-      console.log('entra para limpiar los proyectos en hastag');
       setProject([]);
     }
   }, [isFilteredHastag]);
 
   useEffect(() => {
-    console.log('TOPIC');
-    console.log(isFilteredHastag);
-    console.log(isFilteredTopic);
     if (!isFilteredHastag && isFilteredTopic) {
-      console.log('entra para limpiar los proyectos en topic');
       setProject([]);
     }
   }, [isFilteredTopic]);
@@ -164,6 +203,7 @@ export const Home = ({navigation}: Props) => {
   useEffect(() => {
     if (isFilteredHastag) setProjectByTag(hasTagToFilter);
     if (isFilteredTopic) setProjectByTopic(topicToFilter);
+    if (project.length > 0) setBooleanOnProjectList();
   }, [project]);
 
   const getData = async () => {
@@ -180,7 +220,7 @@ export const Home = ({navigation}: Props) => {
         setProject(resp.data);
         setProjectAll(resp.data);
       }
-      setIsAllCharged(true);
+      // setIsAllCharged(true);
     } catch (e) {
       console.log('error get projects ' + e);
       getData();
@@ -238,6 +278,24 @@ export const Home = ({navigation}: Props) => {
     }
   };
 
+  const setBooleanOnProjectList = () => {
+    let list: Collapse[] = [];
+    project.forEach(x => {
+      list.push({id: x.id, open: false});
+    });
+    if (list.length > 0) {
+      setBooleanProjectList(list);
+    }
+  };
+
+  const showToast = () => {
+    if (fav) {
+      ToastAndroid.show('Añadido a favoritos', ToastAndroid.SHORT);
+    } else {
+      ToastAndroid.show('Quitado de favoritos', ToastAndroid.SHORT);
+    }
+  };
+
   /**
    * Metodo que devuelve tags de tipo Hastag
    * @param ids array con los id por los cuales se filtrará
@@ -270,7 +328,7 @@ export const Home = ({navigation}: Props) => {
                   style={{
                     ...styles.tags,
                     backgroundColor: Colors.lightorange,
-                    marginVertical: '2%',
+                    // marginVertical: '2%',
                     marginRight: '2%',
                     alignItems: 'baseline',
                   }}
@@ -285,7 +343,7 @@ export const Home = ({navigation}: Props) => {
                         fontStyle: 'italic',
                         fontSize: FontSize.fontSizeTextMin,
                       }}>
-                      {x.hasTag}
+                      #{x.hasTag}
                     </Text>
                   </View>
                 </TouchableOpacity>
@@ -294,21 +352,22 @@ export const Home = ({navigation}: Props) => {
                   key={index}
                   style={{
                     ...styles.tags,
-                    marginVertical: '2%',
+                    // marginVertical: '2%',
                     marginRight: '2%',
                     alignItems: 'baseline',
                   }}
                   onPress={() => {
                     setHasTagToFilter(x.id);
                   }}>
-                  <View style={{marginHorizontal: 15}}>
+                  {/* aquí estaba a 15 */}
+                  <View style={{marginHorizontal: '0%'}}>
                     <Text
                       style={{
                         color: Colors.darkorange,
                         fontStyle: 'italic',
                         fontSize: FontSize.fontSizeTextMin,
                       }}>
-                      {x.hasTag}
+                      #{x.hasTag}
                     </Text>
                   </View>
                 </TouchableOpacity>
@@ -343,7 +402,7 @@ export const Home = ({navigation}: Props) => {
           {topico.map((x, index) => (
             <View
               style={{
-                marginVertical: '2%',
+                // marginVertical: '2%',
                 flexDirection: 'row',
                 flexWrap: 'wrap',
               }}
@@ -354,7 +413,7 @@ export const Home = ({navigation}: Props) => {
                   style={{
                     ...styles.tags,
                     backgroundColor: Colors.lightblue,
-                    marginVertical: '2%',
+                    // marginVertical: '2%',
                     marginRight: '2%',
                     alignItems: 'baseline',
                   }}
@@ -362,14 +421,14 @@ export const Home = ({navigation}: Props) => {
                     setTopicToFilter(0);
                     setLastTopicFilter(0);
                   }}>
-                  <View style={{marginHorizontal: '2%'}}>
+                  <View style={{marginHorizontal: '0%'}}>
                     <Text
                       style={{
                         color: Colors.primary,
                         fontStyle: 'italic',
                         fontSize: FontSize.fontSizeTextMin,
                       }}>
-                      {x.topic}
+                      #{x.topic}
                     </Text>
                   </View>
                 </TouchableOpacity>
@@ -378,21 +437,21 @@ export const Home = ({navigation}: Props) => {
                   key={index}
                   style={{
                     ...styles.tags,
-                    marginVertical: '1%',
+                    // marginVertical: '1%',
                     marginRight: '2%',
                     alignItems: 'baseline',
                   }}
                   onPress={() => {
                     setTopicToFilter(x.id);
                   }}>
-                  <View style={{marginHorizontal: 15}}>
+                  <View style={{marginHorizontal: 0}}>
                     <Text
                       style={{
                         color: Colors.lightblue,
                         fontStyle: 'italic',
                         fontSize: FontSize.fontSizeTextMin,
                       }}>
-                      {x.topic}
+                      #{x.topic}
                     </Text>
                   </View>
                 </TouchableOpacity>
@@ -536,7 +595,7 @@ export const Home = ({navigation}: Props) => {
         style={{
           flex: 1,
           backgroundColor: 'transparent',
-          marginTop: insets.top*0.8,
+          marginTop: insets.top * 0.8,
         }}>
         <Searchbar
           style={{marginBottom: 10}}
@@ -547,7 +606,10 @@ export const Home = ({navigation}: Props) => {
         {project.length > 0 &&
           project.map((item, index) => (
             <Card
-              style={{...globalStyles.globalMargin, marginVertical: '3%'}}
+              style={{
+                // ...globalStyles.globalMargin,
+                marginVertical: '10%',
+              }}
               mode="elevated"
               key={item.id}
               // onPress={() => {
@@ -559,7 +621,7 @@ export const Home = ({navigation}: Props) => {
                 title={item.name}
                 // subtitle={item.creator}
                 titleStyle={{
-                  fontSize: FontSize.fontSizeText,
+                  fontSize: FontSize.fontSizeTextSubTitle,
                   marginVertical: '5%',
                   alignSelf: 'center',
                   fontWeight: 'bold',
@@ -567,24 +629,105 @@ export const Home = ({navigation}: Props) => {
               />
 
               <Card.Cover
-                style={{padding: 2, marginTop: '2%', marginHorizontal: '3%'}}
+                style={{
+                  padding: 2,
+                  marginTop: '2%',
+                  marginHorizontal: '0%',
+                  maxHeight: 300,
+                }}
                 source={{uri: 'https://picsum.photos/700'}}
               />
-              <Card.Content style={{marginTop: '4%'}}>
-                <Title>Descripcion</Title>
-                <Paragraph style={{marginVertical: '2%'}}>
-                  {item.description}
-                </Paragraph>
+              {/* fav y num marcadores */}
+              <Card.Content style={{marginTop: '2%'}}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                  }}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setFav(!fav), showToast();
+                    }}>
+                    {fav ? (
+                      <IconTemp
+                        name="heart-outline"
+                        size={Size.iconSizeMedium}
+                      />
+                    ) : (
+                      <IconTemp name="heart" size={Size.iconSizeMedium} />
+                    )}
+                  </TouchableOpacity>
+                  <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                    <Text
+                      style={{
+                        textAlign: 'center',
+                        fontSize: FontSize.fontSizeText,
+                        marginRight: 10,
+                      }}>
+                      {item.topic.length}
+                    </Text>
+                    <IconTemp
+                      name="map-marker-multiple"
+                      size={Size.iconSizeMedium}
+                    />
+                  </View>
+                </View>
               </Card.Content>
+              <Divider
+                style={{
+                  borderWidth: 0.8,
+                  borderColor: 'grey',
+                  width: '95%',
+                  marginTop: '2%',
+                  alignSelf: 'center',
+                }}
+              />
+              {/* descripcion */}
+              <Card.Content style={{marginTop: '2%'}}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                  }}>
+                  <Title>Descripcion</Title>
+                  <TouchableOpacity
+                    onPress={() => {
+                      toggleOpen(item.id);
+                    }}>
+                    {!booleanProjectList[item.id - 1].open ? (
+                      <IconTemp name="chevron-up" size={Size.iconSizeMedium} />
+                    ) : (
+                      <IconTemp
+                        name="chevron-down"
+                        size={Size.iconSizeMedium}
+                      />
+                    )}
+                  </TouchableOpacity>
+                </View>
+                {isCollapsed(item.id) && (
+                  <Paragraph style={{marginVertical: '1%'}}>
+                    {item.description}
+                  </Paragraph>
+                )}
+              </Card.Content>
+              <Divider
+                style={{
+                  borderWidth: 0.8,
+                  borderColor: 'grey',
+                  width: '95%',
+                  marginTop: '2%',
+                  alignSelf: 'center',
+                }}
+              />
               {/* <Card.Content>{item.hasTag.map(x => showHastag(x))}</Card.Content> */}
-              <Card.Content
+              {/* <Card.Content
                 style={{
                   marginTop: '2%',
                   flexDirection: 'row',
                   flexWrap: 'wrap',
                 }}>
                 {showHastagFull(item.hasTag)}
-              </Card.Content>
+              </Card.Content> */}
               <Card.Content
                 style={{
                   marginVertical: '2%',
@@ -645,6 +788,7 @@ export const Home = ({navigation}: Props) => {
                   // </Button>
                   <CustomButton
                     label={'Participar'}
+                    backgroundColor={Colors.primary}
                     onPress={() => navigation.navigate('NavigatorMapBox')}
                   />
                 )}
@@ -654,7 +798,7 @@ export const Home = ({navigation}: Props) => {
       </ScrollView>
       <SpeedDial
         ref={speedDialRef}
-        transitionDuration={200}
+        // transitionDuration={200}
         color={Colors.primary}
         isOpen={open}
         icon={{name: 'plus', type: 'material-community', color: '#fff'}}
@@ -669,13 +813,17 @@ export const Home = ({navigation}: Props) => {
             color: '#fff',
           }}
           title="Nuevo proyecto"
-          onPress={() => {onSpeedDialPress(1)}}
+          onPress={() => {
+            onSpeedDialPress(1);
+          }}
         />
         <SpeedDial.Action
           color={Colors.primary}
           icon={{name: 'domain', type: 'material-community', color: '#fff'}}
           title="Nueva organización"
-          onPress={() => {onSpeedDialPress(2)}}
+          onPress={() => {
+            onSpeedDialPress(2);
+          }}
         />
       </SpeedDial>
       {/* <IconButtonTemp
@@ -749,17 +897,16 @@ const styles = StyleSheet.create({
     elevation: 7,
   },
   tags: {
-    borderRadius: 14,
-    backgroundColor: 'white',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.41,
-
-    elevation: 2,
+    // borderRadius: 14,
+    // backgroundColor: 'white',
+    // shadowColor: '#000',
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 1,
+    // },
+    // shadowOpacity: 0.2,
+    // shadowRadius: 1.41,
+    // elevation: 2,
   },
   item: {
     // padding: '3%',

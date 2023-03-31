@@ -23,7 +23,7 @@ import {Size} from '../../theme/size';
 import {BackButton} from '../BackButton';
 import Modal from 'react-native-modal';
 import {FontSize} from '../../theme/fonts';
-import Mapbox, { UserTrackingMode } from '@rnmapbox/maps';
+import Mapbox, {UserTrackingMode} from '@rnmapbox/maps';
 
 Mapbox.setWellKnownTileServer('mapbox');
 Mapbox.setAccessToken(
@@ -126,13 +126,13 @@ export const MapBox = () => {
 
   //TODO comprobar si la posicion del usuario y la de la camara son las mismas, sino, es que el usuario ha movido el mapa
   const centerPosition = async () => {
-    console.log('entra en center position')
+    console.log('entra en center position');
     const location = await getCurrentLocation();
     // console.log(location)
     followView.current = !followView.current;
     const posi: Position = [location.longitude, location.latitude];
     cameraRef.current?.flyTo(posi, 200);
-    console.log(' en center position')
+    console.log(' en center position');
   };
 
   const centerToMark = async (coords: Position) => {
@@ -146,74 +146,78 @@ export const MapBox = () => {
 
   const onUserLocationUpdate = (location: any) => {};
 
-  if (!hasLocation) {
-    return <LoadingScreen />;
-  }
+  // if (!hasLocation) {
+  //   return <LoadingScreen />;
+  // }
 
   return (
     <>
-      <KeyboardAvoidingView
-        behavior="padding"
-        enabled={false}
-        style={styles.page}>
-        <View style={styles.container}>
-          <MapView
-            ref={element => (mapViewRef.current = element!)}
-            style={styles.map}
-            logoEnabled={false}
-            localizeLabels={true}
-            collapsable={true}
-            onTouchStart={() => (followView.current = false)}
-            onLongPress={data => {
-              showDialog(data);
-            }}>
-            <Camera
-              ref={reference => (cameraRef.current = reference!)}
-              zoomLevel={14}
-              centerCoordinate={initialPositionArray}
-              followUserLocation={followUser}
-              followUserMode={UserTrackingMode.FollowWithHeading}
-              minZoomLevel={15}
-              animationMode="flyTo"
-              animationDuration={1000}
-              allowUpdates={true}
-            />
-            {/* <PointAnnotation id="point" coordinate={initialPositionArray} /> */}
-            <Mapbox.UserLocation
-              visible={true}
-              onUpdate={location => onUserLocationUpdate(location)}
-            />
-            {marks.length > 0 &&
-              marks.map((x, index) => {
-                return (
-                  <View key={index}>
-                    <MarkerView coordinate={x}>
-                      <TouchableOpacity onPress={() => showMark(x)}>
-                        <View style={styles.markerContainer}>
-                          <Button
-                            icon={({size, color}) => (
-                              <Image
-                                source={require('../../assets/icons/mark.png')}
-                                style={{
-                                  alignSelf: 'center',
-                                  backgroundColor: 'transparent',
-                                  width: 50,
-                                  height: 50,
-                                }}
-                              />
-                            )}
-                            children={undefined}></Button>
-                        </View>
-                      </TouchableOpacity>
-                    </MarkerView>
-                  </View>
-                );
-              })}
-          </MapView>
-        </View>
+      {!hasLocation ? (
+        <LoadingScreen />
+      ) : (
+        <>
+          <KeyboardAvoidingView
+            behavior="padding"
+            enabled={false}
+            style={styles.page}>
+            <View style={styles.container}>
+              <MapView
+                ref={element => (mapViewRef.current = element!)}
+                style={styles.map}
+                logoEnabled={false}
+                localizeLabels={true}
+                collapsable={true}
+                onTouchStart={() => (followView.current = false)}
+                onLongPress={data => {
+                  showDialog(data);
+                }}>
+                <Camera
+                  ref={reference => (cameraRef.current = reference!)}
+                  zoomLevel={14}
+                  centerCoordinate={initialPositionArray}
+                  followUserLocation={followUser}
+                  followUserMode={UserTrackingMode.FollowWithHeading}
+                  minZoomLevel={15}
+                  animationMode="flyTo"
+                  animationDuration={1000}
+                  allowUpdates={true}
+                />
+                {/* <PointAnnotation id="point" coordinate={initialPositionArray} /> */}
+                <Mapbox.UserLocation
+                  visible={true}
+                  onUpdate={location => onUserLocationUpdate(location)}
+                />
+                {marks.length > 0 &&
+                  marks.map((x, index) => {
+                    return (
+                      <View key={index}>
+                        <MarkerView coordinate={x}>
+                          <TouchableOpacity onPress={() => showMark(x)}>
+                            <View style={styles.markerContainer}>
+                              <Button
+                                icon={({size, color}) => (
+                                  <Image
+                                    source={require('../../assets/icons/mark.png')}
+                                    style={{
+                                      alignSelf: 'center',
+                                      backgroundColor: 'transparent',
+                                      width: 50,
+                                      height: 50,
+                                    }}
+                                  />
+                                )}
+                                children={undefined}></Button>
+                            </View>
+                          </TouchableOpacity>
+                        </MarkerView>
+                      </View>
+                    );
+                  })}
+              </MapView>
+            </View>
 
-        {/* dialogo creacion */}
-        {/* <Portal>
+            {/* dialogo creacion */}
+            {/* <Portal>
           <Dialog visible={visible} onDismiss={hideDialog}>
             <Dialog.Title>Crear marca</Dialog.Title>
             <Dialog.Content>
@@ -240,112 +244,112 @@ export const MapBox = () => {
             </Dialog.Actions>
           </Dialog>
         </Portal> */}
-        <Modal
-          style={{alignItems: 'center'}}
-          onBackdropPress={() => setVisible(false)}
-          isVisible={visible}
-          animationIn="zoomIn"
-          animationInTiming={300}
-          animationOut="zoomOut"
-          animationOutTiming={300}
-          // backdropColor="#B4B3DB"
-          backdropOpacity={0.8}
-          backdropTransitionInTiming={600}
-          backdropTransitionOutTiming={600}>
-          <View
-            style={{
-              borderRadius: 40,
-              width: '100%',
-              height: Size.window.height * 0.3,
-              paddingVertical: 10,
-              alignItems: 'center',
-              // justifyContent: 'center',
-              marginHorizontal: '5%',
-              backgroundColor: 'white',
-            }}>
-            <Text
-              style={{
-                top: '1%',
-                fontSize: FontSize.fontSizeTextTitle,
-                color: Colors.primary,
-              }}>
-              Nueva marca
-            </Text>
-            {featureRef.current.geometry && (
+            <Modal
+              style={{alignItems: 'center'}}
+              onBackdropPress={() => setVisible(false)}
+              isVisible={visible}
+              animationIn="zoomIn"
+              animationInTiming={300}
+              animationOut="zoomOut"
+              animationOutTiming={300}
+              // backdropColor="#B4B3DB"
+              backdropOpacity={0.8}
+              backdropTransitionInTiming={600}
+              backdropTransitionOutTiming={600}>
               <View
                 style={{
-                  justifyContent: 'center',
+                  borderRadius: 40,
                   width: '100%',
-                  alignContent: 'center',
+                  height: Size.window.height * 0.3,
+                  paddingVertical: 10,
+                  alignItems: 'center',
+                  // justifyContent: 'center',
+                  marginHorizontal: '5%',
+                  backgroundColor: 'white',
                 }}>
-                <InputField
-                  label={'coordenadas'}
-                  icon="format-title"
-                  keyboardType="email-address"
-                  multiline={false}
-                  numOfLines={1}
-                  value={featureRef.current.geometry.coordinates[0].toString()}
-                  onChangeText={value =>
-                    console.log(featureRef.current.geometry.coordinates)
-                  }
-                  iconColor={Colors.lightorange}
-                />
-                <InputField
-                  label={'coordenadas'}
-                  icon="format-title"
-                  keyboardType="email-address"
-                  multiline={false}
-                  numOfLines={1}
-                  value={featureRef.current.geometry.coordinates[1].toString()}
-                  onChangeText={value =>
-                    console.log(featureRef.current.geometry.coordinates)
-                  }
-                  iconColor={Colors.lightorange}
-                />
+                <Text
+                  style={{
+                    top: '1%',
+                    fontSize: FontSize.fontSizeTextTitle,
+                    color: Colors.primary,
+                  }}>
+                  Nueva marca
+                </Text>
+                {featureRef.current.geometry && (
+                  <View
+                    style={{
+                      justifyContent: 'center',
+                      width: '100%',
+                      alignContent: 'center',
+                    }}>
+                    <InputField
+                      label={'coordenadas'}
+                      icon="format-title"
+                      keyboardType="email-address"
+                      multiline={false}
+                      numOfLines={1}
+                      value={featureRef.current.geometry.coordinates[0].toString()}
+                      onChangeText={value =>
+                        console.log(featureRef.current.geometry.coordinates)
+                      }
+                      iconColor={Colors.lightorange}
+                    />
+                    <InputField
+                      label={'coordenadas'}
+                      icon="format-title"
+                      keyboardType="email-address"
+                      multiline={false}
+                      numOfLines={1}
+                      value={featureRef.current.geometry.coordinates[1].toString()}
+                      onChangeText={value =>
+                        console.log(featureRef.current.geometry.coordinates)
+                      }
+                      iconColor={Colors.lightorange}
+                    />
+                  </View>
+                )}
+                <Button
+                  style={{position: 'absolute', bottom: '4%'}}
+                  onPress={() => addMarkFeature()}>
+                  Crear
+                </Button>
               </View>
-            )}
-            <Button
-              style={{position: 'absolute', bottom: '4%'}}
-              onPress={() => addMarkFeature()}>
-              Crear
-            </Button>
-          </View>
-        </Modal>
+            </Modal>
 
-        {/* dialogo con datos */}
-        <Dialog visible={visibleInfo} onDismiss={hideDialogInfo}>
-          <Dialog.Title>Datos de la marca</Dialog.Title>
-          <Dialog.Content>
-            {lastCoordinate && (
-              <Text
-                style={{
-                  ...globalStyles.globalText,
-                  fontSize: 20,
-                  fontWeight: 'bold',
-                  color: '#1C2321',
-                }}>
-                {lastCoordinate[0]}
-                {lastCoordinate[1]}
-              </Text>
-            )}
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={hideDialogInfo}>cancel</Button>
-          </Dialog.Actions>
-        </Dialog>
-      </KeyboardAvoidingView>
+            {/* dialogo con datos */}
+            <Dialog visible={visibleInfo} onDismiss={hideDialogInfo}>
+              <Dialog.Title>Datos de la marca</Dialog.Title>
+              <Dialog.Content>
+                {lastCoordinate && (
+                  <Text
+                    style={{
+                      ...globalStyles.globalText,
+                      fontSize: 20,
+                      fontWeight: 'bold',
+                      color: '#1C2321',
+                    }}>
+                    {lastCoordinate[0]}
+                    {lastCoordinate[1]}
+                  </Text>
+                )}
+              </Dialog.Content>
+              <Dialog.Actions>
+                <Button onPress={hideDialogInfo}>cancel</Button>
+              </Dialog.Actions>
+            </Dialog>
+          </KeyboardAvoidingView>
 
-      {/* buttons */}
+          {/* buttons */}
 
-      <View
-        style={{
-          ...styles.button,
-          position: 'absolute',
-          bottom: Size.window.height * 0.1,
-          right: '2%',
-        }}>
-        <TouchableOpacity activeOpacity={0.5} onPress={() => addMarkPlus()}>
-          {/* <Image
+          <View
+            style={{
+              ...styles.button,
+              position: 'absolute',
+              bottom: Size.window.height * 0.1,
+              right: '2%',
+            }}>
+            <TouchableOpacity activeOpacity={0.5} onPress={() => addMarkPlus()}>
+              {/* <Image
             source={require('../../assets/icons/add.png')}
             style={{
               width: iconSize,
@@ -353,25 +357,27 @@ export const MapBox = () => {
               borderRadius: 50,
             }}
           /> */}
+              <View
+                style={{
+                  justifyContent: 'center',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}>
+                <IconTemp name="plus-circle" size={Size.iconSizeExtraLarge} />
+              </View>
+            </TouchableOpacity>
+          </View>
           <View
             style={{
-              justifyContent: 'center',
-              flexDirection: 'row',
-              alignItems: 'center',
+              ...styles.button,
+              position: 'absolute',
+              bottom: Size.window.height * 0.02,
+              right: '2%',
             }}>
-            <IconTemp name="plus-circle" size={Size.iconSizeExtraLarge} />
-          </View>
-        </TouchableOpacity>
-      </View>
-      <View
-        style={{
-          ...styles.button,
-          position: 'absolute',
-          bottom: Size.window.height * 0.02,
-          right: '2%',
-        }}>
-        <TouchableOpacity activeOpacity={0.5} onPress={() => centerPosition()}>
-          {/* <Image
+            <TouchableOpacity
+              activeOpacity={0.5}
+              onPress={() => centerPosition()}>
+              {/* <Image
             source={require('../../assets/icons/center-position.png')}
             style={{
               width: iconSize,
@@ -379,24 +385,27 @@ export const MapBox = () => {
               borderRadius: 50,
             }}
           /> */}
-          <View
-            style={{
-              justifyContent: 'center',
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}>
-            {followView.current ? (
-              <IconTemp name="compass" size={Size.iconSizeExtraLarge} />
-            ) : (
-              <IconTemp name="crosshairs-gps" size={Size.iconSizeExtraLarge} />
-            )}
+              <View
+                style={{
+                  justifyContent: 'center',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}>
+                {followView.current ? (
+                  <IconTemp name="compass" size={Size.iconSizeExtraLarge} />
+                ) : (
+                  <IconTemp
+                    name="crosshairs-gps"
+                    size={Size.iconSizeExtraLarge}
+                  />
+                )}
+              </View>
+            </TouchableOpacity>
           </View>
-        </TouchableOpacity>
-      </View>
 
-      {/* back button */}
-      <BackButton onPress={() => navigation.goBack()} />
-      {/* <View
+          {/* back button */}
+          <BackButton onPress={() => navigation.goBack()} />
+          {/* <View
         style={{
           ...styles.button,
           left: '2%',
@@ -424,6 +433,8 @@ export const MapBox = () => {
           </View>
         </TouchableOpacity>
       </View> */}
+        </>
+      )}
     </>
   );
 };
