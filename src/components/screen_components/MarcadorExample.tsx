@@ -13,6 +13,7 @@ import {
   Divider,
   Paragraph,
   Portal,
+  ProgressBar,
   Text,
   TextInput,
 } from 'react-native-paper';
@@ -29,7 +30,7 @@ import {Colors} from '../../theme/colors';
 import {fonts, FontSize} from '../../theme/fonts';
 import translate from '../../theme/es.json';
 import citmapApi from '../../api/citmapApi';
-import { HeaderComponent } from '../HeaderComponent';
+import {HeaderComponent} from '../HeaderComponent';
 
 const maxWidth = Dimensions.get('screen').width;
 const window = Dimensions.get('window');
@@ -47,6 +48,7 @@ export const MarcadorExample = ({route, navigation}: Props) => {
   const {projectName, description, photo, hastag, topic, marks} = route.params;
   const [visible, setVisible] = useState(false);
   const [visibleFinish, setVisibleFinish] = useState(false);
+  const [loadingProgressBar, setLoadingProgressBar] = useState(false);
   const [showMoreText, setShowMoreText] = useState('');
 
   const [project, setProject] = useState<Project[]>([]);
@@ -79,10 +81,9 @@ export const MarcadorExample = ({route, navigation}: Props) => {
   const hideDialogFinish = () => setVisibleFinish(false);
 
   const showFinishMessage = async () => {
-    await saveData();
     hideDialogFinish();
-
-    navigation.popToTop();
+    setLoadingProgressBar(true);
+    await saveData();
   };
 
   const endProject = async () => {
@@ -121,8 +122,6 @@ export const MarcadorExample = ({route, navigation}: Props) => {
 
   const saveData = async () => {
     try {
-      // await AsyncStorage.setItem('projects', JSON.stringify(project));
-      // const result = await citmapApi.post('',{})
       const token = await AsyncStorage.getItem('token');
       let creator;
       try {
@@ -152,7 +151,10 @@ export const MarcadorExample = ({route, navigation}: Props) => {
             },
           },
         );
-        console.log(resp);
+        setLoadingProgressBar(false);
+        setTimeout(() => {
+          navigation.popToTop();
+        }, 1000);
       } catch (e) {
         console.log(e);
       }
@@ -164,7 +166,7 @@ export const MarcadorExample = ({route, navigation}: Props) => {
   return (
     <>
       <KeyboardAvoidingView style={{...globalStyles.globalMargin, flex: 1}}>
-      <HeaderComponent
+        <HeaderComponent
           title={translate.strings.new_project_mark_example_screen[0].title}
           onPressLeft={() => navigation.goBack()}
           onPressRight={() => console.log()}
@@ -284,6 +286,24 @@ export const MarcadorExample = ({route, navigation}: Props) => {
                 }
               </Button>
             </Dialog.Actions>
+          </Dialog>
+          <Dialog visible={loadingProgressBar} onDismiss={hideDialog}>
+            <Dialog.Title>
+              {
+                translate.strings.new_project_mark_example_screen[0]
+                  .more_information[0].title
+              }
+            </Dialog.Title>
+            <Dialog.Content>
+              <View>
+                <Text style={{marginBottom: 20}}>Guardando proyecto</Text>
+                <ProgressBar
+                  // progress={60}
+                  indeterminate
+                  color="#4a0072"
+                />
+              </View>
+            </Dialog.Content>
           </Dialog>
 
           {/* finish modal */}

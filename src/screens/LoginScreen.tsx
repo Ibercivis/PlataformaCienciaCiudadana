@@ -52,9 +52,10 @@ export const LoginScreen = ({navigation}: Props) => {
   useEffect(() => {
     GoogleSignin.configure({
       offlineAccess: true,
-      iosClientId: '235777853257-djkpgca69noinapgft2ua7vgq2bcieg3.apps.googleusercontent.com',
-      webClientId: '235777853257-rnbdsrqchtl76jq0givh1h6l7u47rs4k.apps.googleusercontent.com',
-      
+      iosClientId:
+        '235777853257-djkpgca69noinapgft2ua7vgq2bcieg3.apps.googleusercontent.com',
+      webClientId:
+        '235777853257-rnbdsrqchtl76jq0givh1h6l7u47rs4k.apps.googleusercontent.com',
     });
   }, []);
 
@@ -67,7 +68,7 @@ export const LoginScreen = ({navigation}: Props) => {
     //   removeError,
     //   () => console.log()
     // );
-    console.log(userError);
+    // console.log(userError);
     setUserError(true);
   }, [errorMessage]);
 
@@ -471,18 +472,18 @@ export const LoginScreen = ({navigation}: Props) => {
     //   </ImageBackground>
     // </View>
     <SafeAreaView style={{flex: 1, justifyContent: 'center'}}>
-      <View style={{paddingHorizontal: '8%'}}>
-        <View style={{alignItems: 'center'}}>
-          <Image
-            source={require('../assets/backgrounds/login-background.jpg')}
-            style={{
-              width: '70%',
-              height: '30%',
-              borderRadius: 50,
-              transform: [{rotate: '-5deg'}],
-            }}
-          />
-        </View>
+      <View style={{paddingHorizontal: '8%', flex: 1}}>
+        <Image
+          source={require('../assets/icons/appicon.png')}
+          style={{
+            alignSelf: 'center',
+            width: '50%',
+            height: '20%',
+            borderRadius: 0,
+            marginTop: '5%',
+            aspectRatio: 1,
+          }}
+        />
 
         <Text
           style={{
@@ -491,6 +492,7 @@ export const LoginScreen = ({navigation}: Props) => {
             fontWeight: '500',
             color: '#333',
             marginBottom: '8%',
+            marginTop: '8%',
             alignSelf: 'center',
           }}>
           {translate.strings.login_screen[0].title}
@@ -577,9 +579,11 @@ export const LoginScreen = ({navigation}: Props) => {
             justifyContent: 'center',
             marginBottom: 30,
           }}>
-          <Text style={{
-            // fontFamily: 'roboto', 
-            fontSize: FontSize.fontSizeText}}>
+          <Text
+            style={{
+              // fontFamily: 'roboto',
+              fontSize: FontSize.fontSizeText,
+            }}>
             {translate.strings.login_screen[0].new_in_app}
           </Text>
           <TouchableOpacity

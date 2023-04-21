@@ -69,7 +69,7 @@ const dataCarousel = [
 /**
  * constantes dedicadas al carousel, tamaño de los items dentro de este y de el mismo
  */
-const SLIDER_WIDTH = Dimensions.get('window').width ;
+const SLIDER_WIDTH = Dimensions.get('window').width *0.9 ; // tamaño total del componente
 const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.9);
 const SLIDER_HEIGHT = Dimensions.get('window').height;
 const ITEM_HEIGHT = Math.round(SLIDER_WIDTH * 0.9);

@@ -20,6 +20,7 @@ import {
   User,
 } from '@react-native-google-signin/google-signin';
 import { Size } from '../theme/size';
+import { Divider } from 'react-native-paper';
 
 export type StackParams = {
   // HomeScreen: {projects?: Project[]};
@@ -109,6 +110,15 @@ const MenuInterno = ({navigation}: DrawerContentComponentProps) => {
         />
         {userLogged && <Text>{userLogged!.user.givenName}</Text>}
       </View>
+      <Divider
+                style={{
+                  borderWidth: 0.8,
+                  borderColor: 'grey',
+                  width: '95%',
+                  marginTop: '2%',
+                  alignSelf: 'center',
+                }}
+              />
       <View style={globalStyles.drawerItems}>
         <TouchableOpacity
           style={{...globalStyles.menuButton, flexDirection: 'row'}}
@@ -138,7 +148,7 @@ const MenuInterno = ({navigation}: DrawerContentComponentProps) => {
           <Icon
             style={globalStyles.icons}
             name="file-multiple"
-            size={Size.iconSizeMedium}
+            size={Size.iconSizeMin+(Size.window.width*0.02)}
             color={Colors.primary}
           />
           <Text style={globalStyles.menuText}>Mis proyectos</Text>

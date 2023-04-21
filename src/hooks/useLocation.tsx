@@ -1,4 +1,5 @@
 import Geolocation from '@react-native-community/geolocation';
+// import Geolocation from 'react-native-geolocation-service';
 import {useEffect, useRef, useState} from 'react';
 import {Location} from '../interfaces/appInterfaces';
 
@@ -9,7 +10,10 @@ export const useLocation = () => {
   const [initialPositionArray, setInitialPositionArray] = useState<number[]>(
     [],
   );
-  const [initialPosition, setInitialPosition] = useState<Location>();
+  const [initialPosition, setInitialPosition] = useState<Location>({
+    latitude: 0,
+    longitude: 0,
+  });
 
   const [userLocation, setUserLocation] = useState<Location>({
     latitude: 0,
@@ -28,28 +32,29 @@ export const useLocation = () => {
 
   useEffect(() => {
     getCurrentLocation().then(location => {
-      console.log('get currentlocation usereffect');
       if (!isMounted.current) return;
       setInitialPosition(location);
       setInitialPositionArray([location.longitude, location.latitude]);
       setUserLocation(location);
       setRouteLines(routes => [...routes, location]);
       setHasLocation(true);
+     
     });
   }, []);
+
+  useEffect(() => {
+  }, [userLocation]);
 
   const getCurrentLocation = (): Promise<Location> => {
     return new Promise((resolve, reject) => {
       Geolocation.getCurrentPosition(
         info => {
-          console.log(info);
           resolve({
             latitude: info.coords.latitude,
             longitude: info.coords.longitude,
           });
         },
         err => {
-          console.log(err);
           reject({err}),
             {
               enableHighAccuracy: true,
@@ -60,24 +65,23 @@ export const useLocation = () => {
   };
 
   const followUserLocation = () => {
-    
     watchId.current = Geolocation.watchPosition(
       ({coords}) => {
+        // console.log('entrado en watch position')
         if (!isMounted.current) return;
-
         const location: Location = {
           latitude: coords.latitude,
           longitude: coords.longitude,
         };
+        // console.log('entra en watchPosition');
         setUserLocation(location);
-
         setRouteLines(routes => [...routes, location]);
       },
-      err => {console.log(err),
+      err => console.log(err),
       {
         enableHighAccuracy: true,
-        distanceFilter: 10,
-      }},
+        distanceFilter: 5, //metros para que te notifique
+      },
     );
   };
 

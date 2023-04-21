@@ -1,4 +1,4 @@
-import {StackScreenProps} from '@react-navigation/stack';
+import { StackScreenProps } from '@react-navigation/stack';
 import React, {useContext, useEffect} from 'react';
 import {
   Keyboard,
@@ -12,22 +12,16 @@ import {
 } from 'react-native';
 import {HelperText, IconButton} from 'react-native-paper';
 import {CustomAlert} from '../components/CustomAlert';
-import {CustomButton} from '../components/CustomButton';
 import {InputField} from '../components/InputField';
 import {AuthContext} from '../context/AuthContext';
 import {useForm} from '../hooks/useForm';
 import {Colors} from '../theme/colors';
 import {FontSize} from '../theme/fonts';
 import translate from '../theme/es.json';
-import {Size} from '../theme/size';
-import {globalStyles} from '../theme/theme';
 import {HeaderComponent} from '../components/HeaderComponent';
 import { ScrollView } from 'react-native';
 
 const window = Dimensions.get('window');
-const iconSize = window.width > 500 ? 60 : 45;
-const iconSizeFab = window.width > 500 ? 50 : 20;
-const height = window.width > 500 ? 80 : 50;
 
 interface Props extends StackScreenProps<any, any> {}
 

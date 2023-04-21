@@ -1,5 +1,5 @@
-import React, {useEffect, useRef, useState} from 'react';
 import {StackScreenProps} from '@react-navigation/stack';
+import React, {useEffect, useRef, useState} from 'react';
 
 import {Picker} from '@react-native-picker/picker';
 import {
@@ -12,6 +12,7 @@ import {
   Dimensions,
   TextInput as RNTextInput,
   Image,
+  TouchableOpacity,
 } from 'react-native';
 import {
   Button,
@@ -24,12 +25,10 @@ import {
 } from 'react-native-paper';
 import {globalStyles} from '../../theme/theme';
 import {useForm} from '../../hooks/useForm';
-import {TouchableOpacity} from 'react-native-gesture-handler';
 import {Mark} from '../../interfaces/appInterfaces';
 import {StackParams} from '../../navigation/ProjectNavigator';
 import {Colors} from '../../theme/colors';
 import {fonts, FontSize} from '../../theme/fonts';
-import {Keyboard} from 'react-native';
 import {Size} from '../../theme/size';
 import translate from '../../theme/es.json';
 import {IconTemp} from '../IconTemp';

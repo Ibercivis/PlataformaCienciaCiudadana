@@ -29,7 +29,7 @@ export const CustomButton = ({
       activeOpacity={0.6}
       onPress={onPress}
       style={{...styles.touchable, backgroundColor: backgroundColor, width: width}}>
-      <View style={{justifyContent: 'center',paddingTop: '2%', flexDirection: 'row',alignContent: 'center', backgroundColor: 'transparent'}}>
+      <View style={{justifyContent: 'center',paddingTop: '0%', flexDirection: 'row',alignContent: 'center', backgroundColor: 'transparent'}}>
         {iconLeft && (
           <IconTemp
             name={iconLeft}

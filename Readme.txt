@@ -116,3 +116,9 @@ INSTRUCCIONES CREAR APP DEBUG
 - mui npm install @mui/material @emotion/react @emotion/styled
 
 - IMPORTANTE IOS. Instalar npm install --save react-native-permissions y seguir para añadir permisos
+
+- npm install react-native-geolocation-service 
+    servicio para ios y android para que funcione la geolocalización en la v10 de mapbox
+    https://github.com/Agontuk/react-native-geolocation-service/blob/master/docs/setup.md
+
+- npm install react-native-animated-progress

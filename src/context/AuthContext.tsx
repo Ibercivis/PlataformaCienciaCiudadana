@@ -57,7 +57,6 @@ export const AuthProvider = ({children}: any) => {
 
   const checkToken = async () => {
     const token = await AsyncStorage.getItem('token');
-    console.log('CHECK TOKEN ' + token);
     if (!token) return action({type: 'notAuthenticated'});
     const key = 'Token ' + token;
     let keyToken;
@@ -94,7 +93,6 @@ export const AuthProvider = ({children}: any) => {
         username: loginData.correo,
         password: loginData.password,
       });
-      console.log(JSON.stringify(resp));
       if (resp.data) {
         action({
           type: 'signIn',

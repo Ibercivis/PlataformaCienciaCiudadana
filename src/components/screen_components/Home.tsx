@@ -15,6 +15,7 @@ import {
   RefreshControl,
   Animated,
   ToastAndroid,
+  Share,
 } from 'react-native';
 import {Projects, HasTag, Topic} from '../../interfaces/appInterfaces';
 import {
@@ -34,17 +35,14 @@ import citmapApi from '../../api/citmapApi';
 import {Colors} from '../../theme/colors';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {LoadingScreen} from '../../screens/LoadingScreen';
-import {AnimatedFab} from '../AnimatedFab';
 import {CustomButton} from '../CustomButton';
 
 import {SpeedDial} from '@rneui/themed';
 import {StatusBar} from 'react-native';
+import {CollapseItem} from '../CollapseItem';
 
 interface Props extends StackScreenProps<any, any> {}
-interface Collapse {
-  id: number;
-  open: boolean;
-}
+
 
 export const Home = ({navigation}: Props) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -96,56 +94,26 @@ export const Home = ({navigation}: Props) => {
   const hideModal = () => setVisible(false);
 
   //prueba boton animado
-  const animation = useRef(new Animated.Value(1)).current;
-  const handlePress = () => {
-    Animated.spring(animation, {
-      toValue: 1.2,
-      friction: 2,
-      tension: 60,
-      useNativeDriver: true,
-    }).start(() => {
-      Animated.timing(animation, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true,
-      }).start();
-    });
+  // const animation = useRef(new Animated.Value(1)).current;
+  // const handlePress = () => {
+  //   Animated.spring(animation, {
+  //     toValue: 1.2,
+  //     friction: 2,
+  //     tension: 60,
+  //     useNativeDriver: true,
+  //   }).start(() => {
+  //     Animated.timing(animation, {
+  //       toValue: 1,
+  //       duration: 500,
+  //       useNativeDriver: true,
+  //     }).start();
+  //   });
 
-    navigation.navigate('NewProjectScreen', []);
-  };
+  //   navigation.navigate('NewProjectScreen', []);
+  // };
 
   // fav y marcadores
   const [fav, setFav] = useState(false);
-
-  /**
-   * lista correspondiente al boolean de cada projecto empleado para mostrar o no la descripcion
-   */
-  const [booleanProjectList, setBooleanProjectList] = useState<Collapse[]>([]);
-
-  /**
-   * Metodo que setea la lista con el cambio del boolean del proyecto al que hace referencia
-   * @param open id del proyecto
-   */
-  const toggleOpen = (open: number) => {
-    let newArr = [...booleanProjectList];
-    booleanProjectList.map((x, index) => {
-      if (x.id === open) {
-        newArr[index].open = !x.open
-      }
-    });
-    setBooleanProjectList(newArr)
-  };
-
-  /**
-   * Metodo que se llama en el render para mostrar si la descripcion está abierta o no 
-   * //TODO  mejorar rendimiento, poco eficiente
-   * @param id identificador del proyecto
-   * @returns devuelve si es true o no
-   */
-  const isCollapsed = (id: number) => {
-    const bool = booleanProjectList.find(x => x.id === id);
-    return bool?.open;
-  };
 
   /**
    * Oculta la pantalla de carga al arrancar la app
@@ -153,15 +121,6 @@ export const Home = ({navigation}: Props) => {
   useEffect(() => {
     SplashScreen.hide();
   }, []);
-
-  /**
-   * Cuando detecta que la lista ha sido rellenada, todos los elementos estarán cargados
-   */
-  useEffect(() => {
-    if (booleanProjectList.length > 0) {
-      setIsAllCharged(true);
-    }
-  }, [booleanProjectList]);
 
   useEffect(() => {
     StatusBar.setHidden(true);
@@ -203,7 +162,6 @@ export const Home = ({navigation}: Props) => {
   useEffect(() => {
     if (isFilteredHastag) setProjectByTag(hasTagToFilter);
     if (isFilteredTopic) setProjectByTopic(topicToFilter);
-    if (project.length > 0) setBooleanOnProjectList();
   }, [project]);
 
   const getData = async () => {
@@ -220,7 +178,7 @@ export const Home = ({navigation}: Props) => {
         setProject(resp.data);
         setProjectAll(resp.data);
       }
-      // setIsAllCharged(true);
+      setIsAllCharged(true);
     } catch (e) {
       console.log('error get projects ' + e);
       getData();
@@ -275,16 +233,6 @@ export const Home = ({navigation}: Props) => {
       setCreator(data);
     } catch (err) {
       console.log('creator not selected');
-    }
-  };
-
-  const setBooleanOnProjectList = () => {
-    let list: Collapse[] = [];
-    project.forEach(x => {
-      list.push({id: x.id, open: false});
-    });
-    if (list.length > 0) {
-      setBooleanProjectList(list);
     }
   };
 
@@ -412,7 +360,7 @@ export const Home = ({navigation}: Props) => {
                   key={index}
                   style={{
                     ...styles.tags,
-                    backgroundColor: Colors.lightblue,
+                    backgroundColor: Colors.lightorange,
                     // marginVertical: '2%',
                     marginRight: '2%',
                     alignItems: 'baseline',
@@ -447,7 +395,7 @@ export const Home = ({navigation}: Props) => {
                   <View style={{marginHorizontal: 0}}>
                     <Text
                       style={{
-                        color: Colors.lightblue,
+                        color: Colors.darkorange,
                         fontStyle: 'italic',
                         fontSize: FontSize.fontSizeTextMin,
                       }}>
@@ -582,8 +530,32 @@ export const Home = ({navigation}: Props) => {
   /**
    * animación que se aplica al style de una Animated.View
    */
-  const animatedStyle = {
-    transform: [{scale: animation}],
+  // const animatedStyle = {
+  //   transform: [{scale: animation}],
+  // };
+
+  /**
+   * metodo que gestiona el share
+   */
+  const onShare = async () => {
+    try {
+      const result = await Share.share({
+        message: 'https://play.google.com/store/apps/details?id=nic.goi.aarogyasetu&hl=en',
+        title: 'Compartir el proyecto con:',
+        url:'www.google.es'
+      });
+      console.log(result)
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          // shared with activity type of result.activityType
+          console.log(result.activityType);
+        } else {
+          // shared
+        }
+      } else if (result.action === Share.dismissedAction) {
+        // dismissed
+      }
+    } catch (error: any) {}
   };
 
   return (
@@ -594,7 +566,7 @@ export const Home = ({navigation}: Props) => {
         }
         style={{
           flex: 1,
-          backgroundColor: 'transparent',
+          backgroundColor: '#edf6fb',
           marginTop: insets.top * 0.8,
         }}>
         <Searchbar
@@ -608,21 +580,22 @@ export const Home = ({navigation}: Props) => {
             <Card
               style={{
                 // ...globalStyles.globalMargin,
-                marginVertical: '10%',
+                borderColor: '#aaabbe',
+                borderWidth: 1,
+                marginBottom: '10%',
               }}
               mode="elevated"
               key={item.id}
-              // onPress={() => {
-              //   setSelected(item);
-              //   showModal();
-              // }}
             >
               <Card.Title
                 title={item.name}
                 // subtitle={item.creator}
                 titleStyle={{
                   fontSize: FontSize.fontSizeTextSubTitle,
-                  marginVertical: '5%',
+                  paddingVertical: '1%',
+                  textAlign: 'center',
+                  marginVertical: '3%',
+                  textAlignVertical: 'center',
                   alignSelf: 'center',
                   fontWeight: 'bold',
                 }}
@@ -652,9 +625,14 @@ export const Home = ({navigation}: Props) => {
                       <IconTemp
                         name="heart-outline"
                         size={Size.iconSizeMedium}
+                        color="red"
                       />
                     ) : (
-                      <IconTemp name="heart" size={Size.iconSizeMedium} />
+                      <IconTemp
+                        name="heart"
+                        size={Size.iconSizeMedium}
+                        color="red"
+                      />
                     )}
                   </TouchableOpacity>
                   <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -684,42 +662,11 @@ export const Home = ({navigation}: Props) => {
               />
               {/* descripcion */}
               <Card.Content style={{marginTop: '2%'}}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                  }}>
-                  <Title>Descripcion</Title>
-                  <TouchableOpacity
-                    onPress={() => {
-                      toggleOpen(item.id);
-                    }}>
-                    {!booleanProjectList[item.id - 1].open ? (
-                      <IconTemp name="chevron-up" size={Size.iconSizeMedium} />
-                    ) : (
-                      <IconTemp
-                        name="chevron-down"
-                        size={Size.iconSizeMedium}
-                      />
-                    )}
-                  </TouchableOpacity>
-                </View>
-                {isCollapsed(item.id) && (
-                  <Paragraph style={{marginVertical: '1%'}}>
-                    {item.description}
-                  </Paragraph>
-                )}
+                <CollapseItem title={'Descripción'}>
+                  {item.description}
+                </CollapseItem>
+                
               </Card.Content>
-              <Divider
-                style={{
-                  borderWidth: 0.8,
-                  borderColor: 'grey',
-                  width: '95%',
-                  marginTop: '2%',
-                  alignSelf: 'center',
-                }}
-              />
-              {/* <Card.Content>{item.hasTag.map(x => showHastag(x))}</Card.Content> */}
               {/* <Card.Content
                 style={{
                   marginTop: '2%',
@@ -728,6 +675,7 @@ export const Home = ({navigation}: Props) => {
                 }}>
                 {showHastagFull(item.hasTag)}
               </Card.Content> */}
+              {/* topics/hastagas */}
               <Card.Content
                 style={{
                   marginVertical: '2%',
@@ -739,21 +687,6 @@ export const Home = ({navigation}: Props) => {
               <Card.Actions style={{alignSelf: 'center'}}>
                 {creator === item.creator ? (
                   <>
-                    {/* <Button
-                      labelStyle={{
-                        ...styles.buttonModal,
-                      }}
-                      onPress={() =>
-                        navigation.navigate('NewProjectScreen', {
-                          projectName: item.name,
-                          description: item.description,
-                          hastag: item.hasTag,
-                          topic: item.topic,
-                          id: item.id,
-                        })
-                      }>
-                      Editar
-                    </Button> */}
                     <CustomButton
                       label={'Editar'}
                       onPress={() =>
@@ -765,33 +698,28 @@ export const Home = ({navigation}: Props) => {
                           id: item.id,
                         })
                       }
+                      backgroundColor={Colors.primary}
                     />
                     <CustomButton
                       label={'Borrar'}
                       onPress={() => showHastagFull(item.hasTag)}
+                      backgroundColor={Colors.primary}
                     />
-                    {/* <Button
-                      labelStyle={{
-                        ...styles.buttonModal,
-                      }}
-                      onPress={() => showHastagFull(item.hasTag)}>
-                      Borrar
-                    </Button> */}
                   </>
                 ) : (
-                  // <Button
-                  //   labelStyle={{
-                  //     fontSize: FontSize.fontSizeText,
-                  //   }}
-                  //   onPress={() => navigation.navigate('NavigatorMapBox')}>
-                  //   Participar
-                  // </Button>
                   <CustomButton
                     label={'Participar'}
                     backgroundColor={Colors.primary}
                     onPress={() => navigation.navigate('NavigatorMapBox')}
                   />
                 )}
+              </Card.Actions>
+              <Card.Actions style={{alignSelf: 'center', marginBottom: '4%'}}>
+                <TouchableOpacity onPress={() => onShare()}>
+                  <IconTemp
+                    name="share-variant"
+                    size={Size.iconSizeMedium}></IconTemp>
+                </TouchableOpacity>
               </Card.Actions>
             </Card>
           ))}

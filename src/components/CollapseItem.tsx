@@ -1,7 +1,41 @@
-import React, {useState} from 'react';
-import {View} from 'react-native';
+import React, {PropsWithChildren, useState} from 'react';
+import {TouchableOpacity, View} from 'react-native';
+import {Paragraph, Title} from 'react-native-paper';
+import {Size} from '../theme/size';
+import {IconTemp} from './IconTemp';
 
-export const CollapseItem = () => {
+type AccordionItemPros = PropsWithChildren<{
+  title: string;
+}>;
+
+export const CollapseItem = ({children, title}: AccordionItemPros) => {
   const [expanded, setExpanded] = useState(false);
-  return <View></View>;
+
+  const toggleItem = () => {
+    setExpanded(!expanded);
+  };
+
+  const body = <Paragraph style={{marginVertical: '1%'}}>{children}</Paragraph>;
+
+  return (
+    <>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}>
+        <Title>Descripcion</Title>
+        <TouchableOpacity
+          onPress={() => {
+            toggleItem();
+          }}>
+          <IconTemp
+            name={expanded ? 'chevron-up' : 'chevron-down'}
+            size={Size.iconSizeMedium}
+          />
+        </TouchableOpacity>
+      </View>
+      {expanded && body}
+    </>
+  );
 };

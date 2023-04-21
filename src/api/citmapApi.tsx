@@ -7,7 +7,7 @@ const baseURL = 'http://fran.ibercivis.es:10000/api';
 const citmapApi = axios.create({baseURL});
 
 
-//esto añadirá el token siempre en el encabezado a mis peticiones siempre y cuando el token exista
+//esto añadirá el token siempre en el encabezado a las peticiones siempre y cuando el token exista
 citmapApi.interceptors.request.use(
     
     async (config) => {
@@ -25,16 +25,5 @@ citmapApi.interceptors.request.use(
     } 
 
 )
-
-// citmapApi.interceptors.response.use(
-    
-//     async (response) => {
-//         console.log(response)
-        
-
-//         return response;
-//     } 
-
-// )
 
 export default citmapApi;
