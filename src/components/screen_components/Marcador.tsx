@@ -35,7 +35,7 @@ import {IconTemp} from '../IconTemp';
 import {HeaderComponent} from '../HeaderComponent';
 import Modal from 'react-native-modal';
 import {InputField} from '../InputField';
-import {CustomButton} from '../CustomButton';
+import {CustomButton} from '../utility/CustomButton';
 
 interface Props extends StackScreenProps<StackParams, 'Marcador'> {}
 

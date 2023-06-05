@@ -10,6 +10,7 @@ export const Size = {
   navigationButtonWith: '30%',
   iconSizeMin: RFPercentage(2),
   iconSizeMedium: RFPercentage(3.5),
+  iconSizeMediumPlus: RFPercentage(4),
   iconSizeLarge: RFPercentage(6),
   iconSizeExtraLarge: RFPercentage(8),
 };

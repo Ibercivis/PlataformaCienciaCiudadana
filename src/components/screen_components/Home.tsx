@@ -35,7 +35,7 @@ import citmapApi from '../../api/citmapApi';
 import {Colors} from '../../theme/colors';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {LoadingScreen} from '../../screens/LoadingScreen';
-import {CustomButton} from '../CustomButton';
+import {CustomButton} from '../utility/CustomButton';
 
 import {SpeedDial} from '@rneui/themed';
 import {StatusBar} from 'react-native';

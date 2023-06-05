@@ -5,10 +5,29 @@ const window = Dimensions.get('window');
 
 export const FontSize = {
   fontSize: window.width > 500 ? 50 : 30,
+  fontSizeTextExtraMin: RFPercentage(1.3),
   fontSizeTextMin: RFPercentage(1.5),
   fontSizeText: RFPercentage(2),
   fontSizeTextSubTitle: RFPercentage(2.7),
   fontSizeTextTitle: RFPercentage(3.5),
+  
+  fontSizeText13: RFPercentage(1.7),
+  fontSizeText14: RFPercentage(2),
+  fontSizeText20: RFPercentage(2.7),
+};
+
+export const FontFamily = {
+  NotoSansDisplayLight: 'NotoSansDisplay-Light',
+  NotoSansDisplayRegular: 'NotoSansDisplay-Regular',
+  NotoSansDisplayMedium: 'NotoSansDisplay-Medium',
+  NotoSansDisplaySemiBold: 'NotoSansDisplay-SemiBold',
+}
+
+export const FontWeight = {
+  ligth: '300',
+  regular: '400',
+  medium: '500',
+  semiBold: '600'
 };
 
 export const fonts = StyleSheet.create({

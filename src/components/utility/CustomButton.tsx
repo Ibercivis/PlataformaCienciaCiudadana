@@ -1,9 +1,9 @@
 import React from 'react';
 import {TouchableOpacity, Text, View, StyleSheet} from 'react-native';
-import {Colors} from '../theme/colors';
-import {FontSize} from '../theme/fonts';
-import {Size} from '../theme/size';
-import {IconTemp} from './IconTemp';
+import {Colors} from '../../theme/colors';
+import {FontFamily, FontSize} from '../../theme/fonts';
+import {Size} from '../../theme/size';
+import {IconTemp} from '../IconTemp';
 
 interface Props {
   label?: string;
@@ -13,6 +13,7 @@ interface Props {
   iconLeft?: string;
   iconRight?: string;
   width?: number;
+  fontFamily?: string;
 }
 
 export const CustomButton = ({
@@ -23,13 +24,25 @@ export const CustomButton = ({
   iconLeft = '',
   iconRight = '',
   width,
+  fontFamily= FontFamily.NotoSansDisplayMedium
 }: Props) => {
   return (
     <TouchableOpacity
       activeOpacity={0.6}
       onPress={onPress}
-      style={{...styles.touchable, backgroundColor: backgroundColor, width: width}}>
-      <View style={{justifyContent: 'center',paddingTop: '0%', flexDirection: 'row',alignContent: 'center', backgroundColor: 'transparent'}}>
+      style={{
+        ...styles.touchable,
+        backgroundColor: backgroundColor,
+       
+      }}>
+      <View
+        style={{
+          justifyContent: 'center',
+          paddingTop: '0%',
+          flexDirection: 'row',
+          alignContent: 'center',
+          backgroundColor: 'transparent',
+        }}>
         {iconLeft && (
           <IconTemp
             name={iconLeft}
@@ -41,9 +54,10 @@ export const CustomButton = ({
           <Text
             style={{
               textAlign: 'center',
-              fontWeight: '700',
-              fontSize: FontSize.fontSizeText,
+              fontWeight: '500',
+              fontSize: FontSize.fontSizeText14,
               alignSelf: 'center',
+              fontFamily: fontFamily,
               color: fontColor,
             }}>
             {label}
@@ -63,19 +77,22 @@ export const CustomButton = ({
 
 const styles = StyleSheet.create({
   touchable: {
-    paddingHorizontal: '5%',
-    paddingVertical: '2%',
-    borderRadius: 25,
-    marginBottom: '4%',
-    marginHorizontal: '2%',
-    marginVertical: '1%',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.29,
-    shadowRadius: 5.65,
-    elevation: 1,
+    // paddingHorizontal: '5%',
+    // paddingVertical: '2%',
+    width: '100%',
+    justifyContent:'center',
+    height:35,
+    borderRadius: 10,
+    // marginBottom: '4%',
+    // marginHorizontal: '2%',
+    marginTop: '2.5%',
+    // shadowColor: '#000',
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 3,
+    // },
+    // shadowOpacity: 0.29,
+    // shadowRadius: 5.65,
+    // elevation: 1,
   },
 });

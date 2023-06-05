@@ -39,7 +39,7 @@ import {BackButton} from '../BackButton';
 import {InfoButton} from '../InfoButton';
 import {MultiSelect} from 'react-native-element-dropdown';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {CustomButton} from '../CustomButton';
+import {CustomButton} from '../utility/CustomButton';
 import {Picker} from '@react-native-picker/picker';
 import {Header} from '@rneui/base';
 import {IconTemp} from '../IconTemp';

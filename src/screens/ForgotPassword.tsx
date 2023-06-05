@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import {IconButton} from 'react-native-paper';
 import { CustomAlert } from '../components/CustomAlert';
-import {CustomButton} from '../components/CustomButton';
+import {CustomButton} from '../components/utility/CustomButton';
 import {InputField} from '../components/InputField';
 import { AuthContext } from '../context/AuthContext';
 import {useForm} from '../hooks/useForm';

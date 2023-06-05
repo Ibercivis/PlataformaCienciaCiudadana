@@ -12,22 +12,33 @@
     "login_screen": [
       {
         "title": "Inicio de sesión",
-        "mail_input": "Correo",
+        "mail_input": "Correo electrónico",
         "password_input": "Contraseña",
-        "recovery_password": "Recuperar contraseña",
+        "recovery_password": "¿Has olvidado la ",
         "or_login": "O logear con...",
         "new_in_app": "¿Nuevo en la App?",
-        "register": "Resgístrate",
-        "login_button": "Entrar"
+        "register": "Crear cuenta",
+        "login_button": "Continuar",
+        "loggin_google": "Continuar con Google",
+        "loggin_apple": "Continuar con Apple",
+        "loggin_microsoft": "Continuar con Microsoft",
+        "subtitle": "¡Bienvenid@!"
       }
     ],
     "register_screen": [
       {
         "title": "Registrar",
-        "user_name_input": "Usuario",
-        "email_input": "Email",
+        "subtitle": "¡Vamos a empezar!",
+        "user_name_input": "Nombre de usuario",
+        "email_input": "Correo electrónico",
         "password1_input": "Contraseña",
-        "password2_input": "Repetir contraseña"
+        "password2_input": "Confirmar contraseña",
+        "have_account": "¿Ya tienes una cuenta?",
+        "enter": " Entrar",
+        "register_button": "Continuar",
+        "register_google": "Continuar con Google",
+        "register_apple": "Continuar con Apple",
+        "register_microsoft": "Continuar con Microsoft"
       }
     ],
     "home_screen": [],

@@ -122,3 +122,9 @@ INSTRUCCIONES CREAR APP DEBUG
     https://github.com/Agontuk/react-native-geolocation-service/blob/master/docs/setup.md
 
 - npm install react-native-animated-progress
+
+- "react-native-waveview": "^1.1.0", https://github.com/CubeSugar/react-native-waveview
+- "react-native-svg": "^13.9.0",
+- npm install react-native-svg-uri --save https://github.com/software-mansion/react-native-svg/blob/main/USAGE.md
+
+https://github.com/dstaley/react-native-bootstrap-icons
