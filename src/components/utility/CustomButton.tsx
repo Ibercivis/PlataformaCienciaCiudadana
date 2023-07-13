@@ -1,5 +1,5 @@
 import React from 'react';
-import {TouchableOpacity, Text, View, StyleSheet} from 'react-native';
+import {TouchableOpacity, Text, View, StyleSheet, useWindowDimensions} from 'react-native';
 import {Colors} from '../../theme/colors';
 import {FontFamily, FontSize} from '../../theme/fonts';
 import {Size} from '../../theme/size';
@@ -26,6 +26,7 @@ export const CustomButton = ({
   width,
   fontFamily= FontFamily.NotoSansDisplayMedium
 }: Props) => {
+  const {fontScale} = useWindowDimensions();
   return (
     <TouchableOpacity
       activeOpacity={0.6}
@@ -55,7 +56,7 @@ export const CustomButton = ({
             style={{
               textAlign: 'center',
               fontWeight: '500',
-              fontSize: FontSize.fontSizeText14,
+              fontSize: FontSize.fontSizeText14 / fontScale,
               alignSelf: 'center',
               fontFamily: fontFamily,
               color: fontColor,

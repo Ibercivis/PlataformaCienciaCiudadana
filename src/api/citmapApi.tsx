@@ -2,7 +2,8 @@ import axios from "axios";
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const baseURL = 'http://fran.ibercivis.es:10000/api';
+// const baseURL = 'http://fran.ibercivis.es:10000/api';
+const baseURL = 'http://jorge.ibercivis.es:10000/api';
 
 const citmapApi = axios.create({baseURL});
 

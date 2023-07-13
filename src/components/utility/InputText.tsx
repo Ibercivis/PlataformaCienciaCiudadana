@@ -1,18 +1,20 @@
 import React, {useState} from 'react';
 import {
+  Dimensions,
   KeyboardTypeOptions,
   Pressable,
   StyleSheet,
   TouchableOpacity,
   View,
+  useWindowDimensions,
 } from 'react-native';
 import {Colors} from '../../theme/colors';
 import {FontFamily, FontSize} from '../../theme/fonts';
-import {Size} from '../../theme/size';
 import {useTogglePasswordVisibility} from '../../hooks/useTogglePasswordVisibility';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {IconBootstrap} from './IconBootstrap';
 import {TextInput} from 'react-native-paper';
+
+const window = Dimensions.get('window');
 
 /**
  * @label nombre visible
@@ -27,7 +29,7 @@ import {TextInput} from 'react-native-paper';
  */
 interface Props {
   label: string;
-  icon?: string;
+  iconLeft?: string;
   inputType?: boolean;
   keyboardType?: KeyboardTypeOptions;
   fieldButtonLabel?: string;
@@ -42,17 +44,14 @@ interface Props {
 }
 export const InputText = ({
   label,
-  icon,
+  iconLeft,
   inputType,
   keyboardType,
-  fieldButtonLabel,
-  fieldButtonFunction,
   onChangeText,
   multiline,
   numOfLines,
   iconColor = '#666',
   value,
-  marginBottom = '6%',
   maxLength = 100,
 }: Props) => {
   // variable que establece por defecto el color del input cuando no es presionado y que al ser presionado, cambiará
@@ -61,7 +60,7 @@ export const InputText = ({
   const [iconColorFocus, setIconColorFocus] = useState('#c9c4c4');
   const {passwordVisibility, rightIcon, handlePasswordVisibility} =
     useTogglePasswordVisibility();
-
+  const {fontScale} = useWindowDimensions();
   /**
    * Establece el color del borde del input y del placeholder a negro cuando el focus está en el
    */
@@ -77,70 +76,77 @@ export const InputText = ({
     setOnBlurInput('transparent');
     setOnBlurTextInput('#c9c4c4');
     setIconColorFocus('#c9c4c4');
-    
   };
 
   return (
     // <View style={styles.container}>
-      <View style={{...styles.inputContainer, borderColor: onBlurInput}}>
-        <TextInput
+    <View style={{...styles.inputContainer, borderColor: onBlurInput}}>
+      {iconLeft && (
+        <View
           style={{
-            width: '80%',
-            marginLeft: '1%',
-            fontSize: FontSize.fontSizeText13,
-            fontFamily: FontFamily.NotoSansDisplayLight,
-            fontWeight: '300',
-            color: 'black',
-            alignSelf: 'center',
-            backgroundColor: 'white',
-            height: 35,
-          }}
-          placeholderTextColor={onBlurTextInput}
-          mode="flat"
-          underlineColor="transparent"
-          activeUnderlineColor="transparent"
-          textAlignVertical="center"
-          autoCapitalize="none"
-          outlineStyle={{borderWidth: 0}}
-          secureTextEntry={passwordVisibility}
-          placeholder={label}
-          keyboardType={keyboardType}
-          multiline={multiline}
-          numberOfLines={numOfLines}
-          selectionColor={Colors.primary}
-          value={value}
-          maxLength={maxLength}
-          onChangeText={value => onChangeText(value)}
-          onBlur={customBlurColor}
-          onFocus={customFocus}
-        />
-        {inputType && (
-          <TouchableOpacity
-            activeOpacity={1}
-            onPress={handlePasswordVisibility}
-            style={{
-              // ...styles.touchable,
-              // maxHeight: 35,
-              marginRight: '1%',
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-              top:'1%',
-              // backgroundColor: 'red',
-            }}>
-            {/* <MaterialCommunityIcons
+            flex: 1,
+            marginHorizontal: '5%',
+            // alignItems: 'center',
+            justifyContent: 'center',
+            top:1,
+          }}>
+          <IconBootstrap name={iconLeft} size={20} color={iconColorFocus} />
+        </View>
+      )}
+      <TextInput
+        style={{
+          width: '80%',
+          // marginLeft: '1%',
+          fontSize: FontSize.fontSizeText13 / fontScale,
+          fontFamily: FontFamily.NotoSansDisplayLight,
+          fontWeight: '300',
+          color: 'black',
+          alignSelf: 'center',
+          backgroundColor: 'transparent',
+          height: window.width > 500 ? 35 : 35,
+        }}
+        placeholderTextColor={onBlurTextInput}
+        mode="flat"
+        underlineColor="transparent"
+        activeUnderlineColor="transparent"
+        textAlignVertical="center"
+        autoCapitalize="none"
+        outlineStyle={{borderWidth: 0}}
+        secureTextEntry={passwordVisibility}
+        placeholder={label}
+        keyboardType={keyboardType}
+        multiline={multiline}
+        numberOfLines={numOfLines}
+        selectionColor={Colors.primary}
+        value={value}
+        maxLength={maxLength}
+        onChangeText={value => onChangeText(value)}
+        onBlur={customBlurColor}
+        onFocus={customFocus}
+      />
+      {inputType && (
+        <TouchableOpacity
+          activeOpacity={1}
+          onPress={handlePasswordVisibility}
+          style={{
+            // ...styles.touchable,
+            // maxHeight: 35,
+            marginRight: '1%',
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            top: '1%',
+            // backgroundColor: 'red',
+          }}>
+          {/* <MaterialCommunityIcons
               name={rightIcon}
               size={15}
               color="#232323"
             /> */}
-            <IconBootstrap
-              name={rightIcon}
-              size={20}
-              color={iconColorFocus}
-            />
-          </TouchableOpacity>
-        )}
-      </View>
+          <IconBootstrap name={rightIcon} size={20} color={iconColorFocus} />
+        </TouchableOpacity>
+      )}
+    </View>
     // </View>
   );
 };

@@ -1,27 +1,53 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {View} from 'react-native';
 import Wave from 'react-native-waveview';
 import {RFPercentage} from 'react-native-responsive-fontsize';
 
-const WaveBackground = () => {
+interface Props {
+  isAnimated?: boolean;
+}
 
+const WaveBackground = ({isAnimated = false}: Props) => {
+  const [marginHorizontal, setMarginHorizontal] = useState(-28); //-28 el estable
 
   return (
-    <View style={{flex: 1,
-      marginVertical: 0,
-      marginHorizontal: RFPercentage(-28),//-88
-      backgroundColor: 'transparent'
-      }}>
-      <Wave
-        style={{flex: 1}}
-        H={RFPercentage(6)}
-        
-        waveParams={[
-          {A: RFPercentage(9), T: RFPercentage(60), fill: '#FFF'},
-        ]}
-        animated={false}
-      />
-    </View>
+    <>
+      {isAnimated ? (
+        <View
+          style={{
+            flex: 1,
+            marginVertical: 0,
+            marginHorizontal: RFPercentage(-28), //-88
+            backgroundColor: 'transparent',
+          }}>
+          <Wave
+            style={{flex: 1}}
+            H={RFPercentage(6)}
+            waveParams={[
+              {A: RFPercentage(9), T: RFPercentage(60), fill: '#FFF'},
+            ]}
+            animated={false}
+          />
+        </View>
+      ) : (
+        <View
+          style={{
+            flex: 1,
+            marginVertical: 0,
+            marginHorizontal: RFPercentage(marginHorizontal), //-88
+            backgroundColor: 'transparent',
+          }}>
+          <Wave
+            style={{flex: 1}}
+            H={RFPercentage(6)}
+            waveParams={[
+              {A: RFPercentage(9), T: RFPercentage(60), fill: '#FFF'},
+            ]}
+            animated={false}
+          />
+        </View>
+      )}
+    </>
   );
 };
 export default WaveBackground;

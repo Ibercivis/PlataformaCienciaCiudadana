@@ -128,3 +128,5 @@ INSTRUCCIONES CREAR APP DEBUG
 - npm install react-native-svg-uri --save https://github.com/software-mansion/react-native-svg/blob/main/USAGE.md
 
 https://github.com/dstaley/react-native-bootstrap-icons
+
+- Las escalas nuevas en el tamaño de letra han sido sacadas de aquí: https://spin.atomicobject.com/2021/11/12/3-ways-scale-react-native-app/

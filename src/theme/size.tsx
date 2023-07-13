@@ -8,6 +8,7 @@ export const Size = {
   globalWidth: window.width,
   globalHeight: window.height,
   navigationButtonWith: '30%',
+  iconSizeExtraMin: RFPercentage(1),
   iconSizeMin: RFPercentage(2),
   iconSizeMedium: RFPercentage(3.5),
   iconSizeMediumPlus: RFPercentage(4),

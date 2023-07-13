@@ -41,6 +41,21 @@
         "register_microsoft": "Continuar con Microsoft"
       }
     ],
+    "recovery_screen": [
+      {
+        "title": "Registrar",
+        "subtitle": "¡Vamos a empezar!",
+        "title_info": "¿Problemas para iniciar sesión?",
+        "content_info": "Introduzca su correo electrónico y le enviaremos un enlace para que pueda volver a entrar en su cuenta.",
+        "email_input": "Correo electrónico",
+        "email_input_err": "Correo electrónico incorrecto",
+        "session": " al inicio de sesión",
+        "back": "Volver",
+        "send_email": "Enviar enlace",
+        "send_email_try_again": "Intentar de nuevo",
+        "create_account": "Crear cuenta"
+      }
+    ],
     "home_screen": [],
     "new_project_screen": [
       {

@@ -11,9 +11,18 @@ export const FontSize = {
   fontSizeTextSubTitle: RFPercentage(2.7),
   fontSizeTextTitle: RFPercentage(3.5),
   
-  fontSizeText13: RFPercentage(1.7),
-  fontSizeText14: RFPercentage(2),
-  fontSizeText20: RFPercentage(2.7),
+  // TODOS LOS FONT SIZE TENDRO DE LA APP TIENEN QUE SER APLICADOS CON /fontScale usando const {fontScale} = useWindowDimensions();
+  // Esto se usa para que escale el tamaño de letras con las diferentes pantallas
+  fontSizeText10: 10,
+  // fontSizeText10: RFPercentage(1.3),
+  fontSizeText13: 13,
+  // fontSizeText13: RFPercentage(1.7),
+  fontSizeText14: 14,
+  // fontSizeText14: RFPercentage(1.9),
+  fontSizeText18: 18,
+  // fontSizeText18: RFPercentage(2.3),
+  fontSizeText20: 20,
+  // fontSizeText20: RFPercentage(2.7),
 };
 
 export const FontFamily = {

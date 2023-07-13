@@ -25,6 +25,7 @@ const authInitialState: AuthState = {
   errorMessage: '',
   message: '',
   status: 'checking',
+  // status: 'authenticated',
 };
 
 //definir todo lo que el contexto va a pasarle a los hijos. Le dice a react como luce y que expone el context
@@ -61,7 +62,7 @@ export const AuthProvider = ({children}: any) => {
     const key = 'Token ' + token;
     let keyToken;
     try {
-      const resp = await citmapApi.get('/authentication/user/', {
+      const resp = await citmapApi.get('/users/authentication/user/', {
         headers: {
           Authorization: token,
         },
@@ -89,7 +90,7 @@ export const AuthProvider = ({children}: any) => {
 
   const signIn = async (loginData: LoginData) => {
     try {
-      const resp = await citmapApi.post('/authentication/login/', {
+      const resp = await citmapApi.post('/users/authentication/login/', {
         username: loginData.correo,
         password: loginData.password,
       });
@@ -127,7 +128,7 @@ export const AuthProvider = ({children}: any) => {
 
   const signUp = async (data: RegisterData) => {
     try {
-      const resp = await citmapApi.post<LoginResponse>('/registration/', {
+      const resp = await citmapApi.post<LoginResponse>('/users/registration/', {
         username: data.username,
         email: data.email,
         password1: data.password1,
