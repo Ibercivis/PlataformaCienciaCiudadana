@@ -168,7 +168,7 @@ export const Home = ({navigation}: Props) => {
           <InputText
             iconLeft="search"
             label={'search'}
-            
+            keyboardType="email-address"
             multiline={false}
             numOfLines={1}
             onChangeText={value => onSearchText(value)}

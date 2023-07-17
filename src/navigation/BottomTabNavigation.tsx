@@ -6,6 +6,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { ProjectNavigator } from './ProjectNavigator';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { LoginScreen } from '../screens/LoginScreen';
+import CustomTab from '../components/utility/CustomTab';
 
 
 const Tab = createBottomTabNavigator<StackParams>();
@@ -34,9 +35,21 @@ export const BottomTabNavigation = () => {
       screenOptions={{
         headerShown: false,
       }}>
-      <Tab.Screen name="ProjectNavigator" component={ProjectNavigator} />
-      <Tab.Screen name="SettingsScreen" component={SettingsScreen} />
-      <Tab.Screen name="LoginScreen" component={LoginScreen} />
+      <Tab.Screen name="ProjectNavigator" component={ProjectNavigator} options={{
+      tabBarIcon: ({ focused }) => (
+        <CustomTab label="ProjectNavigator" focused={focused} onPress={() => {}} />
+      ),
+    }}/>
+      <Tab.Screen name="SettingsScreen" component={SettingsScreen} options={{
+      tabBarIcon: ({ focused }) => (
+        <CustomTab label="SettingsScreen" focused={focused} onPress={() => {}} />
+      ),
+    }}/>
+      <Tab.Screen name="LoginScreen" component={LoginScreen} options={{
+      tabBarIcon: ({ focused }) => (
+        <CustomTab label="LoginScreen" focused={focused} onPress={() => {}} />
+      ),
+    }}/>
     </Tab.Navigator>
   );
 };

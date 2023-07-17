@@ -30,7 +30,7 @@ export const Navigator = () => {
           backgroundColor: 'white',
         },
       }}>
-      {status !== 'authenticated' ? (
+      {status === 'authenticated' ? (
         <>
           <Stack.Screen
             name="LoginScreen"
