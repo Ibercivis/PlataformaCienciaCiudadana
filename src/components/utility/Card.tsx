@@ -9,6 +9,7 @@ import Heart from '../../assets/icons/general/heart.svg';
 import HeartFill from '../../assets/icons/general/heart-fill.svg';
 import Plus from '../../assets/icons/general/plus-lg.svg';
 import {FontSize} from '../../theme/fonts';
+import { Colors } from '../../theme/colors';
 
 const categoryIcons = [
   require('../../assets/icons/category/Group-1.png'),
@@ -29,60 +30,110 @@ interface Props {
   categoryImage?: number;
   onPress?: () => void;
   title?: string;
-  bool?: boolean;
+  boolHelper?: boolean;
 }
 export const Card = ({
   type,
   categoryImage = 0,
   onPress,
   title = 'prueba',
-  bool = false,
+  boolHelper = false,
 }: Props) => {
+  const [pressed, setPressed] = useState(false);
   const [heart, setHeart] = useState(false);
+
+  const onChangeCategoryPressed = () => {
+    setPressed(!pressed)
+  }
 
   const cardType = () => {
     switch (type) {
       case 'category':
         return (
-          <TouchableOpacity style={style.category} onPress={onPress}>
-            <View>
-              {/* <IconBootstrap name="eye" size={99} color="black" /> */}
-              <View
-                style={{
-                  height: '75%',
-                  alignContent: 'center',
-                  alignItems: 'center',
-                  alignSelf: 'center',
-                  padding: '30%',
-                  // backgroundColor: 'blue',
-                }}>
-                <Image
-                  style={{alignSelf: 'center'}}
-                  source={categoryIcons[categoryImage]}
-                />
-              </View>
-              <View
-                style={{
-                  alignContent: 'center',
-                  alignItems: 'center',
-                  alignSelf: 'center',
-                  height: '22%',
-                  flexDirection: 'row',
-                  marginHorizontal: '2%',
-                }}>
-                <Text
-                  style={{
-                    textAlign: 'center',
-                    textAlignVertical: 'center',
-                    alignSelf: 'center',
-                    flexWrap: 'wrap',
-                    fontSize: FontSize.fontSizeText10,
-                  }}>
-                  {title}
-                </Text>
-              </View>
-            </View>
-          </TouchableOpacity>
+          <>
+          {/* el primero es si está presionado, el segundo si no */}
+            {boolHelper ? (
+              <TouchableOpacity style={style.categoryPressed} onPress={onChangeCategoryPressed}>
+                <View>
+                  {/* <IconBootstrap name="eye" size={99} color="black" /> */}
+                  <View
+                    style={{
+                      height: '75%',
+                      alignContent: 'center',
+                      alignItems: 'center',
+                      alignSelf: 'center',
+                      padding: '30%',
+                      // backgroundColor: 'blue',
+                    }}>
+                    <Image
+                      style={{alignSelf: 'center'}}
+                      source={categoryIcons[categoryImage]}
+                    />
+                  </View>
+                  <View
+                    style={{
+                      alignContent: 'center',
+                      alignItems: 'center',
+                      alignSelf: 'center',
+                      height: '22%',
+                      flexDirection: 'row',
+                      marginHorizontal: '2%',
+                    }}>
+                    <Text
+                      style={{
+                        textAlign: 'center',
+                        textAlignVertical: 'center',
+                        alignSelf: 'center',
+                        flexWrap: 'wrap',
+                        fontSize: FontSize.fontSizeText10,
+                      }}>
+                      {title}
+                    </Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity style={style.category} onPress={onChangeCategoryPressed}>
+                <View>
+                  {/* <IconBootstrap name="eye" size={99} color="black" /> */}
+                  <View
+                    style={{
+                      height: '75%',
+                      alignContent: 'center',
+                      alignItems: 'center',
+                      alignSelf: 'center',
+                      padding: '30%',
+                      // backgroundColor: 'blue',
+                    }}>
+                    <Image
+                      style={{alignSelf: 'center'}}
+                      source={categoryIcons[categoryImage]}
+                    />
+                  </View>
+                  <View
+                    style={{
+                      alignContent: 'center',
+                      alignItems: 'center',
+                      alignSelf: 'center',
+                      height: '22%',
+                      flexDirection: 'row',
+                      marginHorizontal: '2%',
+                    }}>
+                    <Text
+                      style={{
+                        textAlign: 'center',
+                        textAlignVertical: 'center',
+                        alignSelf: 'center',
+                        flexWrap: 'wrap',
+                        fontSize: FontSize.fontSizeText10,
+                      }}>
+                      {title}
+                    </Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            )}
+          </>
         );
       case 'categoryPlus':
         return (
@@ -210,7 +261,7 @@ export const Card = ({
                     1500
                   </Text>
                   {/* <IconBootstrap name={'plus'} size={20} color={'black'} /> */}
-                  {bool ? (
+                  {boolHelper ? (
                     <HeartFill width={16} height={16} color={'#ff0000'} />
                   ) : (
                     <Heart width={16} height={16} color={'#000000'} />
@@ -444,15 +495,23 @@ export const Card = ({
                   width: '100%',
                   height: 200,
                 }}>
-                <View style={{flexDirection: 'row', alignItems: 'flex-end'}}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginHorizontal: RFPercentage(1),
+                    // backgroundColor: 'red',
+                    top: RFPercentage(16),
+                  }}>
                   <View
                     style={{
                       flexDirection: 'row',
                       backgroundColor: 'white',
-                      borderRadius: 10,
+                      borderRadius: 15,
                       margin: '2%',
                       paddingHorizontal: '3%',
-                      paddingVertical: '1%',
+                      paddingVertical: '2%',
                     }}>
                     <People width={16} height={16} color={'#000000'} />
                     <Text
@@ -463,7 +522,7 @@ export const Card = ({
                       1500
                     </Text>
                     {/* <IconBootstrap name={'plus'} size={20} color={'black'} /> */}
-                    {bool ? (
+                    {boolHelper ? (
                       <HeartFill width={16} height={16} color={'#ff0000'} />
                     ) : (
                       <Heart width={16} height={16} color={'#000000'} />
@@ -476,7 +535,15 @@ export const Card = ({
                       120
                     </Text>
                   </View>
-                  <View style={{flexDirection: 'row', backgroundColor: 'white'}}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      backgroundColor: 'white',
+                      borderRadius: 15,
+                      margin: '2%',
+                      paddingHorizontal: '3%',
+                      paddingVertical: '2%',
+                    }}>
                     <Text
                       style={{
                         fontSize: FontSize.fontSizeText13,
@@ -512,6 +579,24 @@ const style = StyleSheet.create({
     marginHorizontal: 4,
     marginVertical: 4,
     backgroundColor: 'white',
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    borderBottomRightRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
+  },
+  categoryPressed: {
+    height: RFPercentage(13),
+    width: 90,
+    marginHorizontal: 4,
+    marginVertical: 4,
+    backgroundColor: Colors.backgrounSecondaryDark,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
     borderBottomRightRadius: 10,

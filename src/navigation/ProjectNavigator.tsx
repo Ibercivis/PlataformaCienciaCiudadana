@@ -5,10 +5,15 @@ import { Mark, HasTag, Topic } from '../interfaces/appInterfaces';
 import {HomeScreen} from '../screens/HomeScreen';
 import {NewProjectScreen} from '../screens/NewProjectScreen';
 import { OrganisationScreen } from '../screens/OrganisationScreen';
+import { ProjectList } from '../components/screen_components/Home/ProjectList';
 
 export type StackParams = {
   HomeScreen: {
     dashboard?: boolean;
+  };
+  ProjectList: {
+    id?: number;
+    // dashboard?: boolean;
   };
   NewProjectScreen: {
     projectName?: string;
@@ -56,6 +61,7 @@ export function ProjectNavigator() {
         headerShown: false,
       }}>
       <Stack.Screen name="HomeScreen" component={HomeScreen} initialParams={{dashboard: true}} />
+      <Stack.Screen name="ProjectList" component={ProjectList} />
       <Stack.Screen name="NewProjectScreen" component={NewProjectScreen} />
       <Stack.Screen name="Marcador" component={Marcador} />
       <Stack.Screen name="MarcadorExample" component={MarcadorExample} />

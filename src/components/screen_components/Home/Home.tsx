@@ -341,7 +341,7 @@ export const Home = ({navigation}: Props) => {
                         key={index}
                         type="importants"
                         categoryImage={index}
-                        bool={true}
+                        boolHelper={true}
                       />
                     );
                   }
@@ -457,7 +457,7 @@ export const Home = ({navigation}: Props) => {
           </View>
         ) : (
           <View>
-            <FlatList
+            {/* <FlatList
               contentContainerStyle={{
                 alignSelf: 'center',
                 // backgroundColor: 'red',
@@ -476,7 +476,27 @@ export const Home = ({navigation}: Props) => {
                   />
                 ); //aquí poner el plus
               }}
-            />
+            /> */}
+            <ScrollView
+              style={{
+                alignSelf: 'center',
+                // backgroundColor: 'red',
+                width: '90%',
+              }}
+              horizontal={false}
+              showsHorizontalScrollIndicator={false}>
+              {importantProjectList.map((x, index) => {
+                if (importantProjectList.length - 1 === index) {
+                  return (
+                    <Card
+                      key={index}
+                      type="projectFound"
+                      categoryImage={index}
+                    />
+                  );
+                }
+              })}
+            </ScrollView>
           </View>
         )}
       </ScrollView>

@@ -2,12 +2,11 @@ import React, {useContext} from 'react';
 import {PermissionsContext} from '../context/PermissionsContext';
 import {AuthContext} from '../context/AuthContext';
 import {LoadingScreen} from '../screens/LoadingScreen';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { ProjectNavigator } from './ProjectNavigator';
-import { SettingsScreen } from '../screens/SettingsScreen';
-import { LoginScreen } from '../screens/LoginScreen';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {ProjectNavigator} from './ProjectNavigator';
+import {SettingsScreen} from '../screens/SettingsScreen';
+import {LoginScreen} from '../screens/LoginScreen';
 import CustomTab from '../components/utility/CustomTab';
-
 
 const Tab = createBottomTabNavigator<StackParams>();
 
@@ -34,23 +33,52 @@ export const BottomTabNavigation = () => {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
+        tabBarShowLabel: false,
       }}>
-      <Tab.Screen name="ProjectNavigator" component={ProjectNavigator} options={{
-      tabBarIcon: ({ focused }) => (
-        <CustomTab label="ProjectNavigator" focused={focused} onPress={() => {}} />
-      ),
-    }}/>
-      <Tab.Screen name="SettingsScreen" component={SettingsScreen} options={{
-      tabBarIcon: ({ focused }) => (
-        <CustomTab label="SettingsScreen" focused={focused} onPress={() => {}} />
-      ),
-    }}/>
-      <Tab.Screen name="LoginScreen" component={LoginScreen} options={{
-      tabBarIcon: ({ focused }) => (
-        <CustomTab label="LoginScreen" focused={focused} onPress={() => {}} />
-      ),
-    }}/>
+        {/* esto sería cambiarlo a que lleve a homeScreem o a otro donde se incluya para ver los proyectos */}
+      <Tab.Screen
+        name="ProjectNavigator"
+        component={ProjectNavigator}
+        options={{
+          tabBarIcon: ({focused}) => (
+            <CustomTab
+              label="Home"
+              route="ProjectNavigator"
+              focused={focused}
+              onPress={() => {}}
+            />
+          ),
+        }}
+      />
+      {/* aquí iría una navegación que contendría la creación de las cosas */}
+      <Tab.Screen
+        name="LoginScreen"
+        component={LoginScreen}
+        options={{
+          tabBarIcon: ({focused}) => (
+            <CustomTab
+              label="+"
+              route="LoginScreen"
+              focused={focused}
+              onPress={() => {}}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="SettingsScreen"
+        component={SettingsScreen}
+        options={{
+          tabBarIcon: ({focused}) => (
+            <CustomTab
+              label="Ajustes"
+              route="SettingsScreen"
+              focused={focused}
+              onPress={() => {}}
+            />
+          ),
+        }}
+      />
     </Tab.Navigator>
   );
 };
-
