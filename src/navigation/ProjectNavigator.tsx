@@ -15,6 +15,9 @@ export type StackParams = {
     id?: number;
     // dashboard?: boolean;
   };
+  projectScreen: {
+    id?: number;
+  };
   NewProjectScreen: {
     projectName?: string;
     description?: string;
@@ -59,13 +62,18 @@ export function ProjectNavigator() {
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
+        headerStyle:{
+          // backgroundColor: 'transparent',
+          zIndex: -999
+        }
       }}>
       <Stack.Screen name="HomeScreen" component={HomeScreen} initialParams={{dashboard: true}} />
       <Stack.Screen name="ProjectList" component={ProjectList} />
-      <Stack.Screen name="NewProjectScreen" component={NewProjectScreen} />
+      {/* <Stack.Screen name="ProjectScreen" component={ProjectScreen} /> */}
+      {/* <Stack.Screen name="NewProjectScreen" component={NewProjectScreen} />
       <Stack.Screen name="Marcador" component={Marcador} />
       <Stack.Screen name="MarcadorExample" component={MarcadorExample} />
-      <Stack.Screen name="OrganisationScreen" component={OrganisationScreen} />
+      <Stack.Screen name="OrganisationScreen" component={OrganisationScreen} /> */}
     </Stack.Navigator>
   );
 }

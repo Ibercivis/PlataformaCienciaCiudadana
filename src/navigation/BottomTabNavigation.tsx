@@ -7,6 +7,8 @@ import {ProjectNavigator} from './ProjectNavigator';
 import {SettingsScreen} from '../screens/SettingsScreen';
 import {LoginScreen} from '../screens/LoginScreen';
 import CustomTab from '../components/utility/CustomTab';
+import {SafeAreaView, View} from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 
 const Tab = createBottomTabNavigator<StackParams>();
 
@@ -30,55 +32,74 @@ export const BottomTabNavigation = () => {
   }
 
   return (
-    <Tab.Navigator
-      screenOptions={{
-        headerShown: false,
-        tabBarShowLabel: false,
-      }}>
+    // <SafeAreaView style={{flex: 1, backgroundColor: 'transparent'}}>
+      <Tab.Navigator
+        screenOptions={{
+          headerShown: false,
+          tabBarShowLabel: false,
+          // tabBarStyle: {backgroundColor: 'white'},
+          // headerStyle: {backgroundColor: 'transparent'},
+          // tabBarBackground() {
+          //   return (
+          //     <View style={{ flex: 1 }}>
+          //       <LinearGradient
+          //         colors={['transparent', '#fff']}
+          //         style={{flex: 1}}
+          //         start={{x: 0, y: 0}}
+          //         end={{x: 0, y: 1}}
+          //       />
+          //     </View>
+          //   );
+          // },
+        }}>
         {/* esto sería cambiarlo a que lleve a homeScreem o a otro donde se incluya para ver los proyectos */}
-      <Tab.Screen
-        name="ProjectNavigator"
-        component={ProjectNavigator}
-        options={{
-          tabBarIcon: ({focused}) => (
-            <CustomTab
-              label="Home"
-              route="ProjectNavigator"
-              focused={focused}
-              onPress={() => {}}
-            />
-          ),
-        }}
-      />
-      {/* aquí iría una navegación que contendría la creación de las cosas */}
-      <Tab.Screen
-        name="LoginScreen"
-        component={LoginScreen}
-        options={{
-          tabBarIcon: ({focused}) => (
-            <CustomTab
-              label="+"
-              route="LoginScreen"
-              focused={focused}
-              onPress={() => {}}
-            />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="SettingsScreen"
-        component={SettingsScreen}
-        options={{
-          tabBarIcon: ({focused}) => (
-            <CustomTab
-              label="Ajustes"
-              route="SettingsScreen"
-              focused={focused}
-              onPress={() => {}}
-            />
-          ),
-        }}
-      />
-    </Tab.Navigator>
+        <Tab.Screen
+          name="ProjectNavigator"
+          component={ProjectNavigator}
+          options={{
+            tabBarIcon: ({focused}) => (
+              <CustomTab
+                label="Home"
+                route="ProjectNavigator"
+                focused={focused}
+                onPress={() => {}}
+                icon="home"
+              />
+            ),
+          }}
+        />
+        {/* aquí iría una navegación que contendría la creación de las cosas */}
+        <Tab.Screen
+          name="LoginScreen"
+          component={LoginScreen}
+          options={{
+            tabBarIcon: ({focused}) => (
+              <CustomTab
+                label=""
+                route="LoginScreen"
+                focused={focused}
+                onPress={() => {}}
+                icon="plus"
+              />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="SettingsScreen"
+          component={SettingsScreen}
+          options={{
+            tabBarIcon: ({focused}) => (
+              <CustomTab
+                label="Ajustes"
+                route="SettingsScreen"
+                focused={focused}
+                onPress={() => {}}
+                icon="heart"
+              />
+            ),
+          }}
+        />
+      </Tab.Navigator>
+    // </SafeAreaView>
   );
 };

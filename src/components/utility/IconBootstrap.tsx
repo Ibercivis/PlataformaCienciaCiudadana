@@ -9,6 +9,7 @@ import Stars from 'react-native-bootstrap-icons/icons/stars';
 import PersonHearts from 'react-native-bootstrap-icons/icons/person';
 import Magic from 'react-native-bootstrap-icons/icons/map';
 import Plus from 'react-native-bootstrap-icons/icons/plus-lg';
+import Home from 'react-native-bootstrap-icons/icons/hourglass';
 import {Colors} from '../../theme/colors';
 
 interface Props {
@@ -35,7 +36,7 @@ export const IconBootstrap = ({
       return <Search width={size} height={size} fill={color} />;
     case 'stars':
       return <Stars width={size} height={size} fill={color} />;
-    case 'stars':
+    case 'heart':
       return <PersonHearts  width={size} height={size} fill={color} />;
     case 'stars':
       return <Magic width={size} height={size} fill={color} />;
@@ -43,6 +44,8 @@ export const IconBootstrap = ({
     //   return <Stars width={size} height={size} fill={color} />;
     case 'plus':
       return <Plus width={size} height={size} fill={color} />;
+    case 'Home':
+      return <Home width={size} height={size} fill={color} />;
 
     default:
       return <Dice1 width={size} height={size} fill={color} />;
