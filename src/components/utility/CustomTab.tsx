@@ -27,14 +27,15 @@ const CustomTab = ({label, route, icon, focused = false, onPress}: Props) => {
     // Estilos personalizados
     backgroundColor: focused ? Colors.primaryLigth : 'transparent',
     borderRadius: 20,
-    padding: 10,
-    height: 40,
+    padding: RFPercentage(1),
+    height: RFPercentage(4),
+    marginTop: RFPercentage(0.6)
   };
 
   const textStyle = {
     // Estilos de texto personalizados
     color: focused ? '#FFFFFF' : '#000000',
-    fontSize: FontSize.fontSizeText14,
+    fontSize: RFPercentage(1.6),
     marginHorizontal: RFPercentage(1),
     // fontWeight: 'bold',
   };
@@ -67,7 +68,7 @@ const CustomTab = ({label, route, icon, focused = false, onPress}: Props) => {
             }}>
             <IconBootstrap
               name={icon}
-              size={RFPercentage(2)}
+              size={RFPercentage(2.2)}
               color={focused ? '#FFFFFF' : '#000000'}
             />
           </View>

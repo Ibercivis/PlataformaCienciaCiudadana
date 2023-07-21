@@ -32,10 +32,11 @@ interface Props extends StackScreenProps<any, any> {}
 export const Home = ({navigation}: Props) => {
   //#region Variables/const
   const [categoryList, setCategoryList] = useState<HasTag[]>([]); //clonar para que la que se muestre solo tenga X registros siendo la ultima el +
+  const [categoriesSelected, setCategoriesSelected] = useState<HasTag[]>([]);
   const [newProjectList, setNewProjectList] = useState<Project[]>([]); // partir la lista en 2
 
   const [importantProjectList, setImportantProjectList] = useState<number[]>([
-    1, 2, 3, 4, 5, 6, 7, 8,9, 10, 11, 12
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
   ]);
   const [interestingProjectList, setInterestingProjectList] = useState<
     number[]
@@ -74,6 +75,7 @@ export const Home = ({navigation}: Props) => {
     categoryListApi();
     projectListApi();
     setRefreshing(false);
+    onSearchText('');
   }, [refreshing]);
 
   //#endregion
@@ -100,8 +102,10 @@ export const Home = ({navigation}: Props) => {
    */
   const onSearchText = (value: string) => {
     if (value.length > 0) {
+      onChange(value, 'searchText')
       setOnSearch(true);
     } else {
+      onChange('', 'searchText')
       setOnSearch(false);
     }
   };
@@ -114,6 +118,13 @@ export const Home = ({navigation}: Props) => {
     categoryListApi();
     projectListApi();
   };
+
+  const onProjectPress = (id: number) =>{
+    console.log(id)
+    if(id > 0){
+      navigation.navigate('ProjectPage', {id})
+    }
+  }
 
   //#region ApiCalls
 
@@ -148,82 +159,83 @@ export const Home = ({navigation}: Props) => {
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
-      <View style={{flex: 1}}>{/* titulo */}
-          <View style={HomeStyles.titleView}>
-            <Text style={HomeStyles.title}>HOME</Text>
-          </View>
+      <View style={{flex: 1}}>
+        {/* titulo */}
+        <View style={HomeStyles.titleView}>
+          <Text style={HomeStyles.title}>HOME</Text>
+        </View>
+        {/* barra de busqueda */}
+        <View style={HomeStyles.searchView}>
+          <InputText
+            iconLeft="search"
+            label={'search'}
+            keyboardType="email-address"
+            multiline={false}
+            numOfLines={1}
+            value={form.searchText}
+            onChangeText={value => onSearchText(value)}
+          />
+        </View>
         <ScrollView
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
           style={HomeStyles.scrollParent}
           onTouchEnd={onClickExit}
-          // nestedScrollEnabled={true}
+          nestedScrollEnabled={true}
           contentContainerStyle={{flexGrow: 1}}
           keyboardShouldPersistTaps="handled"
           // scrollEnabled={!onSearch}
-          >
-          
-          {/* barra de busqueda */}
-          <View style={HomeStyles.searchView}>
-            <InputText
-              iconLeft="search"
-              label={'search'}
-              keyboardType="email-address"
-              multiline={false}
-              numOfLines={1}
-              onChangeText={value => onSearchText(value)}
-            />
-          </View>
-          {/* view de categoría */}
-          <LinearGradient
-            colors={['rgba(255, 138, 0, 0.42)', '#CB9DA8']}
-            style={HomeStyles.categoryView}
-            start={{x: 0, y: 0.5}}
-            end={{x: 1, y: 0.5}}>
-            <Text
-              style={{
-                height: 54,
-                width: '100%',
-                textAlignVertical: 'center',
-                marginLeft: 24,
-                fontFamily: FontFamily.NotoSansDisplaySemiBold,
-                fontSize: FontSize.fontSizeText18,
-              }}>
-              Categorías
-            </Text>
-            <ScrollView
-              style={HomeStyles.categoryScrollView}
-              horizontal={true}
-              showsHorizontalScrollIndicator={false}>
-              {categoryList.map((x, index) => {
-                if (categoryList.length - 1 === index) {
-                  return (
-                    <Card
-                      key={index}
-                      type="categoryPlus"
-                      categoryImage={index}
-                      onPress={() => {
-                        onCategoryPress();
-                      }}
-                    />
-                  );
-                } else {
-                  return (
-                    <Card
-                      key={index}
-                      type="category"
-                      categoryImage={index}
-                      title={x.hasTag}
-                    />
-                  );
-                }
-              })}
-            </ScrollView>
-          </LinearGradient>
-
-          {onSearch == false ? (
+        >
+          {!onSearch && (
             <View>
+              {/* view de categoría */}
+              <LinearGradient
+                colors={['rgba(255, 138, 0, 0.42)', '#CB9DA8']}
+                style={HomeStyles.categoryView}
+                start={{x: 0, y: 0.5}}
+                end={{x: 1, y: 0.5}}>
+                <Text
+                  style={{
+                    height: 54,
+                    width: '100%',
+                    textAlignVertical: 'center',
+                    marginLeft: 24,
+                    fontFamily: FontFamily.NotoSansDisplaySemiBold,
+                    fontSize: FontSize.fontSizeText18,
+                  }}>
+                  Categorías
+                </Text>
+                <ScrollView
+                  style={HomeStyles.categoryScrollView}
+                  horizontal={true}
+                  nestedScrollEnabled={true}
+                  showsHorizontalScrollIndicator={false}>
+                  {categoryList.map((x, index) => {
+                    if (categoryList.length - 1 === index) {
+                      return (
+                        <Card
+                          key={index}
+                          type="categoryPlus"
+                          categoryImage={index}
+                          onPress={() => {
+                            onCategoryPress();
+                          }}
+                        />
+                      );
+                    } else {
+                      return (
+                        <Card
+                          key={index}
+                          type="category"
+                          categoryImage={index}
+                          title={x.hasTag}
+                        />
+                      );
+                    }
+                  })}
+                </ScrollView>
+              </LinearGradient>
               {/* view de nuevos proyectos */}
               <View style={HomeStyles.newProjectView}>
                 <View
@@ -254,7 +266,8 @@ export const Home = ({navigation}: Props) => {
                 <ScrollView
                   style={HomeStyles.newProjectScrollView}
                   horizontal={true}
-                  showsHorizontalScrollIndicator={false}>
+                  showsHorizontalScrollIndicator={false}
+                  nestedScrollEnabled={true}>
                   {/* <View
               style={{
                 flexDirection: 'row',
@@ -323,7 +336,7 @@ export const Home = ({navigation}: Props) => {
                     Proyectos destacados
                   </Text>
                 </View>
-                <ScrollView
+                {/* <ScrollView
                   style={HomeStyles.importantProjectScrollView}
                   horizontal={true}
                   showsHorizontalScrollIndicator={false}>
@@ -347,7 +360,41 @@ export const Home = ({navigation}: Props) => {
                       );
                     }
                   })}
-                </ScrollView>
+                </ScrollView> */}
+                <FlatList
+                  style={HomeStyles.importantProjectScrollView}
+                  horizontal={true}
+                  showsHorizontalScrollIndicator={false}
+                  data={importantProjectList}
+                  renderItem={({item, index}) => {
+                    if (importantProjectList.length - 1 === index) {
+                      return (
+                        <Card
+                          key={index}
+                          type="importantsPlus"
+                          categoryImage={index}
+                          onPress={() => {
+                            onProjectPress(item)
+                          }}
+                        />
+                      );
+                    } else {
+                      return (
+                        <Card
+                          key={index}
+                          type="importants"
+                          categoryImage={index}
+                          boolHelper={true}
+                          onPress={() => {
+                            onProjectPress(item)
+                          }}
+                        />
+                      );
+                    }
+                  }}
+                  keyExtractor={(item, index) => index.toString()}
+                  nestedScrollEnabled
+                />
               </View>
 
               {/* view de te puede interesar */}
@@ -380,7 +427,8 @@ export const Home = ({navigation}: Props) => {
                 <ScrollView
                   style={HomeStyles.importantProjectScrollView}
                   horizontal={true}
-                  showsHorizontalScrollIndicator={false}>
+                  showsHorizontalScrollIndicator={false}
+                  nestedScrollEnabled={true}>
                   {interestingProjectList.map((x, index) => {
                     if (interestingProjectList.length - 1 === index) {
                       return (
@@ -433,6 +481,7 @@ export const Home = ({navigation}: Props) => {
                 <ScrollView
                   style={HomeStyles.importantOrganizationScrollView}
                   horizontal={true}
+                  nestedScrollEnabled={true}
                   showsHorizontalScrollIndicator={false}>
                   {organizationList.map((x, index) => {
                     if (organizationList.length - 1 === index) {
@@ -456,8 +505,17 @@ export const Home = ({navigation}: Props) => {
                 </ScrollView>
               </View>
             </View>
-          ) : (
-            <View >
+          )}
+
+          {onSearch && (
+            <View
+              style={{
+                position: 'absolute',
+                top: RFPercentage(0),
+                left: 0,
+                right: 0,
+                bottom: 0,
+              }}>
               <View
                 style={{
                   flexDirection: 'row',
@@ -472,7 +530,7 @@ export const Home = ({navigation}: Props) => {
                     justifyContent: 'center',
                     top: 1,
                   }}>
-                  <IconBootstrap name={'stars'} size={20} color={'red'} />
+                  <IconBootstrap name={'search'} size={20} color={'black'} />
                 </View>
                 <Text
                   style={{
@@ -480,13 +538,13 @@ export const Home = ({navigation}: Props) => {
                     fontFamily: FontFamily.NotoSansDisplaySemiBold,
                     fontSize: FontSize.fontSizeText18,
                   }}>
-                  Organizaciones destacadas
+                  Resultados de busqueda
                 </Text>
               </View>
               <ScrollView
                 style={{
                   alignSelf: 'center',
-                  backgroundColor: 'red',
+                  // backgroundColor: 'red',
                   width: '90%',
                 }}
                 contentContainerStyle={{flexGrow: 1}}
@@ -495,20 +553,43 @@ export const Home = ({navigation}: Props) => {
                 scrollEnabled={true}
                 horizontal={false}
                 showsHorizontalScrollIndicator={false}
-                >
+                showsVerticalScrollIndicator={false}>
                 {importantProjectList.map((x, index) => {
                   // if (importantProjectList.length - 1 === index) {
-                    return (
-                      <Card
-                        key={index}
-                        type="projectFound"
-                        categoryImage={index}
-                        title={x.toString()}
-                      />
-                    );
+                  return (
+                    <Card
+                      key={index}
+                      type="projectFound"
+                      categoryImage={index}
+                      title={x.toString()}
+                    />
+                  );
                   // }
                 })}
               </ScrollView>
+              {/* <FlatList
+                style={{
+                  alignSelf: 'center',
+                  backgroundColor: 'red',
+                  width: '90%',
+                }}
+                contentContainerStyle={{flexGrow: 1}}
+                data={importantProjectList}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({item, index}) => (
+                  <Card
+                    key={index}
+                    type="projectFound"
+                    categoryImage={index}
+                    title={item.toString()}
+                  />
+                )}
+                nestedScrollEnabled
+                automaticallyAdjustContentInsets={false}
+                scrollEnabled
+                horizontal={false}
+                showsHorizontalScrollIndicator={false}
+              /> */}
             </View>
           )}
         </ScrollView>
@@ -630,7 +711,7 @@ const HomeStyles = StyleSheet.create({
   },
   importantOrganizationView: {
     // backgroundColor: 'grey',
-    marginBottom: RFPercentage(7),
+    marginBottom: RFPercentage(1),
     height: RFPercentage(30),
   },
   importantOrganizationScrollView: {

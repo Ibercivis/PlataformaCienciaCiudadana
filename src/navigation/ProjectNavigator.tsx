@@ -6,6 +6,7 @@ import {HomeScreen} from '../screens/HomeScreen';
 import {NewProjectScreen} from '../screens/NewProjectScreen';
 import { OrganisationScreen } from '../screens/OrganisationScreen';
 import { ProjectList } from '../components/screen_components/Home/ProjectList';
+import { ProjectPage } from '../components/screen_components/Home/ProjectPage';
 
 export type StackParams = {
   HomeScreen: {
@@ -15,8 +16,8 @@ export type StackParams = {
     id?: number;
     // dashboard?: boolean;
   };
-  projectScreen: {
-    id?: number;
+  ProjectPage: {
+    id: number;
   };
   NewProjectScreen: {
     projectName?: string;
@@ -69,7 +70,7 @@ export function ProjectNavigator() {
       }}>
       <Stack.Screen name="HomeScreen" component={HomeScreen} initialParams={{dashboard: true}} />
       <Stack.Screen name="ProjectList" component={ProjectList} />
-      {/* <Stack.Screen name="ProjectScreen" component={ProjectScreen} /> */}
+      <Stack.Screen name="ProjectPage" component={ProjectPage} />
       {/* <Stack.Screen name="NewProjectScreen" component={NewProjectScreen} />
       <Stack.Screen name="Marcador" component={Marcador} />
       <Stack.Screen name="MarcadorExample" component={MarcadorExample} />
