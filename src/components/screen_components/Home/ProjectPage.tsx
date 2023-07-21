@@ -10,10 +10,9 @@ import {Text} from 'react-native-paper';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {RFPercentage} from 'react-native-responsive-fontsize';
 import {Size} from '../../../theme/size';
-import { StackScreenProps } from '@react-navigation/stack';
-import { StackParams } from '../../../navigation/ProjectNavigator';
-// import Carousel from 'react-native-reanimated-carousel';
-
+import {StackScreenProps} from '@react-navigation/stack';
+import {StackParams} from '../../../navigation/ProjectNavigator';
+import Carousel from 'react-native-snap-carousel';
 
 interface CarouselItem {
   image: number;
@@ -35,35 +34,33 @@ const data = [
 
 interface Props extends StackScreenProps<StackParams, 'ProjectPage'> {}
 
-export const ProjectPage = (props : Props) => {
+export const ProjectPage = (props: Props) => {
+  //#region USEEFECT
+  //meter el funcionamiento para coger un project
+  //#endregion
 
-    //#region USEEFECT
-    //meter el funcionamiento para coger un project
-    //#endregion
-
-  const renderItem = (
-    {item}: {item: CarouselItem},
-  ) => {
-    return (
-      <View style={styles.slide}>
-        <Image source={item.image} style={styles.image} resizeMode="cover" />
-        <View style={styles.textContainer}>
-          <Text style={styles.title}>{'mismo titulo'}</Text>
-        </View>
-      </View>
-    );
-  };
 
   return (
     <SafeAreaView>
-      {/* <Carousel
+      <Carousel
         data={data}
-        renderItem={data => {
-          return renderItem(data);
+        renderItem={x => {
+          return (
+            <View style={styles.slide}>
+              <Image
+                source={x.index}
+                style={styles.image}
+                resizeMode="cover"
+              />
+              <View style={styles.textContainer}>
+                <Text style={styles.title}>{'mismo titulo'}</Text>
+              </View>
+            </View>
+          );
         }}
-        width={Size.window.width}
-        height={Size.window.height/2}
-      /> */}
+        itemWidth={Size.window.width}
+        sliderWidth={Size.window.height / 2}
+      />
     </SafeAreaView>
   );
 };

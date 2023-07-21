@@ -130,3 +130,6 @@ INSTRUCCIONES CREAR APP DEBUG
 https://github.com/dstaley/react-native-bootstrap-icons
 
 - Las escalas nuevas en el tamaño de letra han sido sacadas de aquí: https://spin.atomicobject.com/2021/11/12/3-ways-scale-react-native-app/
+
+anterior version de react native reanimated = 2.14.4, modificada para que pueda funcionar react-native-reanimated-carousel
+
