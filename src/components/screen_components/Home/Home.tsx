@@ -102,10 +102,10 @@ export const Home = ({navigation}: Props) => {
    */
   const onSearchText = (value: string) => {
     if (value.length > 0) {
-      onChange(value, 'searchText')
+      onChange(value, 'searchText');
       setOnSearch(true);
     } else {
-      onChange('', 'searchText')
+      onChange('', 'searchText');
       setOnSearch(false);
     }
   };
@@ -119,12 +119,25 @@ export const Home = ({navigation}: Props) => {
     projectListApi();
   };
 
-  const onProjectPress = (id: number) =>{
-    console.log(id)
-    if(id > 0){
-      navigation.navigate('ProjectPage', {id})
+  /**
+   * Navega a la pagina del proyecto
+   * @param id id del proyecto
+   */
+  const onProjectPress = (id: number) => {
+    if (id > 0) {
+      navigation.navigate('ProjectPage', {id});
     }
-  }
+  };
+
+  const splitDataIntoRows = (data: Project[], columns: number) => {
+    const rows = [];
+    for (let i = 0; i < data.length; i += columns) {
+      rows.push(data.slice(i, i + columns));
+    }
+    return rows;
+  };
+
+  const rows = splitDataIntoRows(newProjectList, 2);
 
   //#region ApiCalls
 
@@ -148,7 +161,7 @@ export const Home = ({navigation}: Props) => {
           Authorization: token,
         },
       });
-      console.log(JSON.stringify(resp.data));
+      // console.log(JSON.stringify(resp.data));
       setNewProjectList(resp.data);
     } catch {}
   };
@@ -159,7 +172,7 @@ export const Home = ({navigation}: Props) => {
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
-      <View style={{flex: 1}}>
+      <View style={{flex: 1}} onTouchEnd={onClickExit}>
         {/* titulo */}
         <View style={HomeStyles.titleView}>
           <Text style={HomeStyles.title}>HOME</Text>
@@ -265,22 +278,16 @@ export const Home = ({navigation}: Props) => {
                 </View>
                 <ScrollView
                   style={HomeStyles.newProjectScrollView}
-                  horizontal={true}
+                  horizontal
+                  showsVerticalScrollIndicator={false}
                   showsHorizontalScrollIndicator={false}
                   nestedScrollEnabled={true}>
-                  {/* <View
-              style={{
-                flexDirection: 'row',
-              }}>
-              {newProjectList1.map((x, index) => (
-                <Card key={index} type="newProjects" categoryImage={index} />
-              ))}
-            </View> */}
                   <FlatList
                     contentContainerStyle={{alignSelf: 'flex-start'}}
-                    numColumns={2}
+                    numColumns={Math.ceil(10 / 2)}
                     showsVerticalScrollIndicator={false}
                     showsHorizontalScrollIndicator={false}
+                    // scrollEnabled={false}
                     data={newProjectList}
                     renderItem={({item, index}) => {
                       if (
@@ -292,6 +299,9 @@ export const Home = ({navigation}: Props) => {
                             key={index}
                             type="newProjectsPlus"
                             categoryImage={index}
+                            onPress={() => {
+                              navigation.navigate('ProjectList');
+                            }}
                           />
                         ); //aquí poner el plus
                       } else {
@@ -374,7 +384,7 @@ export const Home = ({navigation}: Props) => {
                           type="importantsPlus"
                           categoryImage={index}
                           onPress={() => {
-                            onProjectPress(item)
+                            navigation.navigate('ProjectList');
                           }}
                         />
                       );
@@ -386,7 +396,7 @@ export const Home = ({navigation}: Props) => {
                           categoryImage={index}
                           boolHelper={true}
                           onPress={() => {
-                            onProjectPress(item)
+                            onProjectPress(item);
                           }}
                         />
                       );
@@ -593,57 +603,58 @@ export const Home = ({navigation}: Props) => {
             </View>
           )}
         </ScrollView>
-        {showCategoryList && (
-          <View style={HomeStyles.showCategoryView}>
-            <View
-              style={{
-                width: '100%',
-                alignItems: 'center',
-                backgroundColor: 'white',
-                height: 10,
-                marginBottom: '2%',
-              }}>
-              <TouchableOpacity
-                style={{
-                  borderRadius: 50,
-                  backgroundColor: 'grey',
-                  height: 8,
-                  width: '10%',
-                }}></TouchableOpacity>
-            </View>
-            <FlatList
-              contentContainerStyle={{
-                alignSelf: 'center',
-                backgroundColor: 'red',
-                width: '90%',
-              }}
-              numColumns={1}
-              showsVerticalScrollIndicator={false}
-              showsHorizontalScrollIndicator={false}
-              data={newProjectList}
-              renderItem={({item, index}) => {
-                return (
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      alignContent: 'space-around',
-                      alignItems: 'center',
-                      // alignSelf: 'center',
-                    }}>
-                    <Text>index</Text>
-                    <Checkbox
-                      status={'checked'}
-                      onPress={() => {
-                        console.log(item);
-                      }}
-                    />
-                  </View>
-                ); //aquí poner el plus
-              }}
-            />
-          </View>
-        )}
       </View>
+      {showCategoryList && (
+        <View style={HomeStyles.showCategoryView}>
+          <View
+            style={{
+              width: '100%',
+              alignItems: 'center',
+              backgroundColor: 'white',
+              height: 10,
+              marginBottom: '2%',
+            }}>
+            <TouchableOpacity
+              style={{
+                borderRadius: 50,
+                backgroundColor: 'grey',
+                height: 8,
+                width: '10%',
+              }}></TouchableOpacity>
+          </View>
+          <FlatList
+            contentContainerStyle={{
+              alignItems: 'center',
+              alignSelf: 'center',
+              justifyContent: 'center',
+              width: '90%',
+            }}
+            numColumns={1}
+            showsVerticalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
+            data={categoryList}
+            renderItem={({item, index}) => {
+              return (
+                <View
+                  style={{
+                    width: RFPercentage(42),
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}>
+                  <Text>{item.hasTag}</Text>
+                  <Checkbox
+                    status={'checked'}
+                    onPress={() => {
+                      console.log(item);
+                    }}
+                  />
+                </View>
+              ); //aquí poner el plus
+            }}
+          />
+        </View>
+      )}
     </SafeAreaView>
   );
 };
@@ -651,7 +662,6 @@ export const Home = ({navigation}: Props) => {
 const HomeStyles = StyleSheet.create({
   scrollParent: {
     flexGrow: 1,
-    // zIndex: 9999,
   },
   title: {
     alignSelf: 'center',
@@ -726,7 +736,9 @@ const HomeStyles = StyleSheet.create({
     zIndex: 200,
     bottom: 0,
     alignSelf: 'center',
-    borderWidth: 1,
+    borderTopWidth: 1,
+    borderLeftWidth: 1,
+    borderRightWidth: 1,
     borderTopRightRadius: 34,
     borderTopLeftRadius: 34,
     paddingVertical: '5%',

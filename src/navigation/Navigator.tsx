@@ -8,6 +8,7 @@ import {RegisterScreen} from '../screens/RegisterScreen';
 import {ForgotPassword} from '../screens/ForgotPassword';
 import {LoadingScreen} from '../screens/LoadingScreen';
 import { BottomTabNavigation } from './BottomTabNavigation';
+import { BackgroundLayerStyle } from '@rnmapbox/maps';
 
 const Stack = createStackNavigator();
 
@@ -29,8 +30,9 @@ export const Navigator = () => {
         cardStyle: {
           backgroundColor: 'transparent',
         },
+        headerTransparent: true
       }}>
-      {status === 'authenticated' ? (
+      {status !== 'authenticated' ? (
         <>
           <Stack.Screen
             name="LoginScreen"

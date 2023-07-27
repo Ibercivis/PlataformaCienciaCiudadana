@@ -133,3 +133,7 @@ https://github.com/dstaley/react-native-bootstrap-icons
 
 anterior version de react native reanimated = 2.14.4, modificada para que pueda funcionar react-native-reanimated-carousel
 
+- npm install react-navigation @react-navigation/native react-native-dropdown-picker  (quitada)
+- npm install react native elements
+
+

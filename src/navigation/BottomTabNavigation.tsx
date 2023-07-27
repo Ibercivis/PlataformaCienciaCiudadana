@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import {PermissionsContext} from '../context/PermissionsContext';
 import {AuthContext} from '../context/AuthContext';
 import {LoadingScreen} from '../screens/LoadingScreen';
@@ -7,8 +7,9 @@ import {ProjectNavigator} from './ProjectNavigator';
 import {SettingsScreen} from '../screens/SettingsScreen';
 import {LoginScreen} from '../screens/LoginScreen';
 import CustomTab from '../components/utility/CustomTab';
-import {SafeAreaView, View} from 'react-native';
+import {Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator<StackParams>();
 
@@ -18,6 +19,7 @@ export type StackParams = {
   SettingsScreen: undefined;
   LoginScreen: undefined;
   ProjectNavigator: undefined;
+  SelectorTab: undefined;
 };
 
 export const BottomTabNavigation = () => {
@@ -32,25 +34,25 @@ export const BottomTabNavigation = () => {
   }
 
   return (
-    // <SafeAreaView style={{flex: 1, backgroundColor: 'transparent'}}>
+    <SafeAreaView style={{flex: 1, backgroundColor: 'transparent'}}>
       <Tab.Navigator
+
         screenOptions={{
           headerShown: false,
           tabBarShowLabel: false,
-          // tabBarStyle: {backgroundColor: 'white'},
-          // headerStyle: {backgroundColor: 'transparent'},
-          // tabBarBackground() {
-          //   return (
-          //     <View style={{ flex: 1 }}>
-          //       <LinearGradient
-          //         colors={['transparent', '#fff']}
-          //         style={{flex: 1}}
-          //         start={{x: 0, y: 0}}
-          //         end={{x: 0, y: 1}}
-          //       />
-          //     </View>
-          //   );
-          // },
+          tabBarStyle: {backgroundColor: 'transparent'},
+          tabBarBackground() {
+            return (
+              <View style={{ flex: 1, backgroundColor: 'white' }}>
+                <LinearGradient
+                  colors={['transparent', '#fff']}
+                  style={{flex: 1}}
+                  start={{x: 0, y: 0}}
+                  end={{x: 0, y: 1}}
+                />
+              </View>
+            );
+          },
         }}>
         {/* esto sería cambiarlo a que lleve a homeScreem o a otro donde se incluya para ver los proyectos */}
         <Tab.Screen
@@ -100,6 +102,6 @@ export const BottomTabNavigation = () => {
           }}
         />
       </Tab.Navigator>
-    // </SafeAreaView>
+     </SafeAreaView>
   );
 };

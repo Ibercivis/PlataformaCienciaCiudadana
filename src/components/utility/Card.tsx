@@ -443,6 +443,7 @@ export const Card = ({
           </TouchableOpacity>
         );
       case 'projectFound':
+      case 'organizationFound':
         return (
           <TouchableOpacity
             activeOpacity={0.5}

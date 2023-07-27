@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   SafeAreaView,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -1302,6 +1303,8 @@ export const LoginScreen = ({navigation, route}: Props) => {
       <ScrollView
         contentContainerStyle={{flexGrow: 1}}
         keyboardShouldPersistTaps="handled">
+          {/* Ocultar la barra de estado */}
+      <StatusBar hidden />
         <KeyboardAvoidingView style={styles.parent}>
           {/* contenedor de formas geometricas y titulo */}
           <SafeAreaView style={styles.child1}>
