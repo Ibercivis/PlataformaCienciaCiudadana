@@ -7,10 +7,16 @@ import citmapApi from '../../../api/citmapApi';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Project} from '../../../interfaces/interfaces';
 import {useForm} from '../../../hooks/useForm';
-import { RFPercentage } from 'react-native-responsive-fontsize';
+import {RFPercentage} from 'react-native-responsive-fontsize';
+import {HeaderComponent} from '../../HeaderComponent';
+import {useNavigation} from '@react-navigation/native';
+import { StackParams } from '../../../navigation/ProjectNavigator';
+import { StackScreenProps } from '@react-navigation/stack';
 
-export const ProjectList = () => {
-  const [newProjectList, setNewProjectList] = useState<Project[]>([]); // partir la lista en 2
+interface Props extends StackScreenProps<StackParams, 'ProjectList'> {}
+
+export const ProjectList = (props: Props) => {
+  const [projectList, setProjectList] = useState<Project[]>([]); // partir la lista en 2
 
   useEffect(() => {
     projectListApi();
@@ -23,22 +29,35 @@ export const ProjectList = () => {
           Authorization: token,
         },
       });
-      console.log(JSON.stringify(resp.data));
-      setNewProjectList(resp.data);
+      setProjectList(resp.data);
     } catch {}
   };
 
   return (
-    <View style={{flex: 1,  padding: RFPercentage(2)}}>
+    <View style={{flex: 1, padding: RFPercentage(2)}}>
+      <HeaderComponent
+        title={'Listado'}
+        onPressLeft={() => props.navigation.goBack()}
+        onPressRight={() => console.log('jaja')}
+        rightIcon={false}
+      />
       <FlatList
         style={{flex: 1}}
         contentContainerStyle={{alignItems: 'center'}}
-        numColumns={2}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
-        data={newProjectList}
+        data={projectList}
         renderItem={({item, index}) => {
-          return <Card key={index} type="projectFound" categoryImage={index} />;
+          return (
+            <Card
+              key={index}
+              type="projectFound"
+              categoryImage={index}
+              title={item.name}
+              description={item.description}
+              onPress={() => props.navigation.navigate('ProjectPage', {id: item.id})}
+            />
+          );
         }}
       />
     </View>

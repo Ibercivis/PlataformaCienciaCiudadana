@@ -8,8 +8,8 @@ import People from '../../assets/icons/general/people.svg';
 import Heart from '../../assets/icons/general/heart.svg';
 import HeartFill from '../../assets/icons/general/heart-fill.svg';
 import Plus from '../../assets/icons/general/plus-lg.svg';
-import {FontSize} from '../../theme/fonts';
-import { Colors } from '../../theme/colors';
+import {FontSize, FontWeight} from '../../theme/fonts';
+import {Colors} from '../../theme/colors';
 
 const categoryIcons = [
   require('../../assets/icons/category/Group-1.png'),
@@ -30,6 +30,8 @@ interface Props {
   categoryImage?: number;
   onPress?: () => void;
   title?: string;
+  description?:string;
+  auxString?:string;
   boolHelper?: boolean;
 }
 export const Card = ({
@@ -37,23 +39,27 @@ export const Card = ({
   categoryImage = 0,
   onPress,
   title = 'prueba',
+  description = '',
+  auxString = '',
   boolHelper = false,
 }: Props) => {
   const [pressed, setPressed] = useState(false);
   const [heart, setHeart] = useState(false);
 
   const onChangeCategoryPressed = () => {
-    setPressed(!pressed)
-  }
+    setPressed(!pressed);
+  };
 
   const cardType = () => {
     switch (type) {
       case 'category':
         return (
           <>
-          {/* el primero es si está presionado, el segundo si no */}
+            {/* el primero es si está presionado, el segundo si no */}
             {boolHelper ? (
-              <TouchableOpacity style={style.categoryPressed} onPress={onChangeCategoryPressed}>
+              <TouchableOpacity
+                style={style.categoryPressed}
+                onPress={onChangeCategoryPressed}>
                 <View>
                   {/* <IconBootstrap name="eye" size={99} color="black" /> */}
                   <View
@@ -93,7 +99,9 @@ export const Card = ({
                 </View>
               </TouchableOpacity>
             ) : (
-              <TouchableOpacity style={style.category} onPress={onChangeCategoryPressed}>
+              <TouchableOpacity
+                style={style.category}
+                onPress={onChangeCategoryPressed}>
                 <View>
                   {/* <IconBootstrap name="eye" size={99} color="black" /> */}
                   <View
@@ -233,7 +241,7 @@ export const Card = ({
                     marginBottom: 9,
                     alignSelf: 'flex-start',
                   }}>
-                  Project Name
+                  {title}
                 </Text>
                 <Text
                   style={{
@@ -241,7 +249,8 @@ export const Card = ({
                     alignSelf: 'flex-start',
                     color: 'blue',
                   }}>
-                  adsasdaasdasdasdasadasdas
+                  {/* {description} */}
+                  {description.length > 20 ? description.slice(0, 20) + '...' : description}
                 </Text>
                 <View
                   style={{
@@ -385,7 +394,7 @@ export const Card = ({
               <View style={{alignItems: 'stretch'}}>
                 <Text
                   style={{
-                    // textAlign: 'center',
+                    textAlign: 'center',
                     marginBottom: '7%',
                     marginLeft: '10%',
                     marginRight: '10%',
@@ -394,7 +403,7 @@ export const Card = ({
                     alignSelf: 'center',
                     justifyContent: 'center',
                   }}>
-                  organization name
+                  {title}
                 </Text>
               </View>
             </View>
@@ -443,50 +452,50 @@ export const Card = ({
           </TouchableOpacity>
         );
       case 'projectFound':
-      case 'organizationFound':
         return (
           <TouchableOpacity
             activeOpacity={0.5}
             style={style.projectFound}
             onPress={onPress}>
-            <View>
-              <View>
+            <View style={{
+                    paddingHorizontal: RFPercentage(3),
+                    // width:'100%',
+                    // backgroundColor:'green'
+                  }}>
                 <View
                   style={{
-                    // marginHorizontal: 14,
-                    marginTop: 13,
+                    // marginHorizontal: RFPercentage(2),
+                    width:'100%',
+                    marginTop: RFPercentage(2),
                     marginBottom: 6,
                   }}>
                   <Text
                     style={{
-                      // backgroundColor: 'white',
+                      // backgroundColor: 'blue',
                       marginBottom: '1%',
                       alignSelf: 'flex-start',
                     }}>
-                    Project Name
+                    {title}
                   </Text>
                   <Text
                     style={{
                       // backgroundColor: 'white',
                       alignSelf: 'flex-start',
                       color: 'blue',
-                      marginBottom: '4%',
+                      marginBottom: '2%',
                     }}>
-                    organization
+                    {auxString}
                   </Text>
                   <Text
                     style={{
-                      // backgroundColor: 'white',
+                      // backgroundColor: 'red',
                       alignSelf: 'flex-start',
-                      marginBottom: '4%',
+                      marginBottom: '2%',
+                      // padding: RFPercentage(1)
                     }}>
-                    MUCHO textoMUCHO textoMUCHO textoMUCHO textoMUCHO textoMUCHO
-                    textoMUCHO textoMUCHO textoMUCHO textoMUCHO textoMUCHO
-                    textoMUCHO textoMUCHO textoMUCHO textoMUCHO textoMUCHO
-                    textoMUCHO textoMUCHO textoMUCHO textoMUCHO textoMUCHO texto
+                    {description}
                   </Text>
                 </View>
-              </View>
               <ImageBackground
                 // borderRadius={10}
                 // source={require(urii)}
@@ -556,6 +565,66 @@ export const Card = ({
                   </View>
                 </View>
               </ImageBackground>
+            </View>
+          </TouchableOpacity>
+        );
+      case 'organizationFound':
+        return (
+          <TouchableOpacity
+            activeOpacity={0.5}
+            style={style.organizationFound}
+            onPress={onPress}>
+            <View
+              style={{
+                flexDirection: 'row',
+                // backgroundColor: 'red'
+              }}>
+              <View
+                style={{
+                  alignSelf: 'center',
+                  width: '30%',
+                  alignContent: 'center',
+                  alignItems: 'center',
+                  // backgroundColor: 'blue',
+                }}>
+                <ImageBackground
+                  borderRadius={100}
+                  // source={require(urii)}
+                  source={require('../../assets/backgrounds/login-background.jpg')}
+                  style={{
+                    height: RFPercentage(12),
+                    width: RFPercentage(12),
+                  }}></ImageBackground>
+              </View>
+
+              <View
+                style={{
+                  marginHorizontal: RFPercentage(1),
+                  marginTop: 13,
+                  marginBottom: 6,
+                  width: '70%',
+                }}>
+                <Text
+                  style={{
+                    // backgroundColor: 'white',
+                    marginBottom: '1%',
+                    alignSelf: 'flex-start',
+                    fontWeight: 'bold',
+                    fontSize: FontSize.fontSizeText14
+                  }}>
+                  {title}
+                </Text>
+
+                <Text
+                  style={{
+                    // backgroundColor: 'white',
+                    alignSelf: 'flex-start',
+                    marginBottom: '4%',
+                    fontSize: FontSize.fontSizeText13
+                  }}>
+                  {description}
+                </Text>
+              </View>
             </View>
           </TouchableOpacity>
         );
@@ -630,8 +699,8 @@ const style = StyleSheet.create({
     borderRadius: 10,
   },
   importants: {
-    // height: '100%',
-    width: 185,
+    height: RFPercentage(28),
+    width: RFPercentage(20),
     margin: 4,
     borderRadius: 10,
     backgroundColor: 'white',
@@ -696,9 +765,15 @@ const style = StyleSheet.create({
   },
   projectFound: {
     // height: '100%',
-    // width: '100%',
-    margin: 4,
+    width: RFPercentage(50),
+    marginVertical: RFPercentage(3),
     borderRadius: 10,
-    backgroundColor: 'white',
+  },
+  organizationFound: {
+    // height: '100%',
+    flexShrink: 1,
+    width: '100%',
+    marginVertical: RFPercentage(2),
+    // borderRadius: 10,
   },
 });

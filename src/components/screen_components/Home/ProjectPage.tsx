@@ -24,6 +24,11 @@ import Chevron from '../../../assets/icons/general/chevron-left-1.svg';
 import PencilSquare from '../../../assets/icons/general/pencil-square-1.svg';
 import {CustomButton} from '../../utility/CustomButton';
 import {Colors} from '../../../theme/colors';
+import {Project} from '../../../interfaces/interfaces';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import citmapApi from '../../../api/citmapApi';
+import {HasTag} from '../../../interfaces/appInterfaces';
+import {LoadingScreen} from '../../../screens/LoadingScreen';
 
 const data = [
   require('../../../assets/icons/category/Group-1.png'),
@@ -45,13 +50,39 @@ interface Props extends StackScreenProps<StackParams, 'ProjectPage'> {}
 export const ProjectPage = (props: Props) => {
   //#region estados y referencias
   const [carouselIndex, setCarouselIndex] = useState(0);
+  const [isAllCharged, setIsAllCharged] = useState(false);
 
   const isCarousel = useRef(null);
+
+  const [project, setProject] = useState<Project>();
+  const [hastags, setHastags] = useState<HasTag[]>([]);
   //#endregion
 
   //#region USEEFECT
+  useEffect(() => {
+    getProjectApi();
+  }, []);
 
-  //meter el funcionamiento para coger un project
+  useEffect(() => {
+    // si existe el proyecto
+    if(project){
+      // si no hay hastags en project
+      if(project.hasTag.length <= 0){
+        setIsAllCharged(true);
+      }else{ // si hay hastags en project
+        // si el numero de hastags que hemos guardado coincide con el numero de hastags del project
+        if(hastags.length === project.hasTag.length){
+          setIsAllCharged(true);
+        }
+      }
+    }
+  }, [hastags]);
+
+  useEffect(() => {
+    getHastagApi();
+  }, [project])
+  
+
   //#endregion
 
   //#region METODOS
@@ -88,7 +119,41 @@ export const ProjectPage = (props: Props) => {
     props.navigation.goBack();
   };
 
+  const getProjectApi = async () => {
+    const token = await AsyncStorage.getItem('token');
+    try {
+      const resp = await citmapApi.get<Project>(
+        `/project/${props.route.params.id}`,
+        {
+          headers: {
+            Authorization: token,
+          },
+        },
+      );
+      setProject(resp.data);
+    } catch {}
+  };
+
+  const getHastagApi = async () => {
+    const token = await AsyncStorage.getItem('token');
+    try {
+      const resp = await citmapApi.get<HasTag[]>('/project/hastag/', {
+        headers: {
+          Authorization: token,
+        },
+      });
+      const filteredHashtags = resp.data.filter(hasTag =>
+        project?.hasTag.includes(hasTag.id),
+      );
+      setHastags(filteredHashtags);
+    } catch {}
+  };
+
   //#endregion
+
+  if (!isAllCharged) {
+    return <LoadingScreen />;
+  }
 
   return (
     <SafeAreaView>
@@ -98,11 +163,7 @@ export const ProjectPage = (props: Props) => {
         {/* Ocultar la barra de estado */}
         <StatusBar hidden />
         <View style={styles.textContainer}>
-          <Text style={styles.title}>
-            {
-              'mismotitulomismotitulomismotitulomismotitulomismotitulomismotitulomismotituloweqweqeasdaasdas'
-            }
-          </Text>
+          <Text style={styles.title}>{project?.name}</Text>
         </View>
 
         <View style={{flex: 1}}>
@@ -275,7 +336,7 @@ export const ProjectPage = (props: Props) => {
                       marginBottom: '1%',
                       alignSelf: 'flex-start',
                     }}>
-                    Creado por:{' '}
+                    Creado por:
                   </Text>
                   <Text
                     style={{
@@ -284,7 +345,7 @@ export const ProjectPage = (props: Props) => {
                       alignSelf: 'flex-start',
                       fontWeight: 'bold',
                     }}>
-                    USER NAME
+                    {project?.creator}
                   </Text>
                 </View>
                 <Text
@@ -294,56 +355,36 @@ export const ProjectPage = (props: Props) => {
                     alignSelf: 'flex-start',
                     fontWeight: 'bold',
                   }}>
-                  Project Name
+                  {project?.name}
                 </Text>
+                <View style={{flexDirection:'row'}}>
+                  {hastags.map(x => {
+                    return (
+                      <Text
+                        key={x.id}
+                        style={{
+                          // backgroundColor: 'white',
+                          alignSelf: 'flex-start',
+                          color: Colors.primaryDark,
+                          marginBottom: '4%',
+                        }}>
+                        #{x.hasTag}{'   '}
+                      </Text>
+                    );
+                  })}
+                </View>
                 <Text
                   style={{
                     // backgroundColor: 'white',
                     alignSelf: 'flex-start',
-                    color: Colors.primaryDark,
                     marginBottom: '4%',
                   }}>
-                  #hastags
-                </Text>
-                <Text
-                  style={{
-                    // backgroundColor: 'white',
-                    alignSelf: 'flex-start',
-                    marginBottom: '4%',
-                  }}>
-                  MUCHO textoMUCHO textoMUCHO textoMUCHO textoMUCHO textoMUCHO
-                  textoMUCHO textoMUCHO textoMUCHO textoMUCHO textoMUCHO
-                  textoMUCHO textoMUCHO textoMUCHO textoMUCHO textoMUCHO
-                  textoMUCHO textoMUCHO textoMUCHO textoMUCHO textoMUCHO texto
-                  textoMUCHO textoMUCHO textoMUCHO textoMUCHO textoMUCHO
-                  textoMUCHO textoMUCHO textoMUCHO textoMUCHO textoMUCHO
-                  textoMUCHO textoMUCHO textoMUCHO textoMUCHO textoMUCHO texto
-                  textoMUCHO textoMUCHO textoMUCHO textoMUCHO textoMUCHO
-                  textoMUCHO textoMUCHO textoMUCHO textoMUCHO textoMUCHO
-                  textoMUCHO textoMUCHO textoMUCHO textoMUCHO textoMUCHO texto
-                  textoMUCHO textoMUCHO textoMUCHO textoMUCHO textoMUCHO
-                  textoMUCHO textoMUCHO textoMUCHO textoMUCHO textoMUCHO
-                  textoMUCHO textoMUCHO textoMUCHO textoMUCHO textoMUCHO texto
-                  textoMUCHO textoMUCHO textoMUCHO textoMUCHO textoMUCHO
-                  textoMUCHO textoMUCHO textoMUCHO textoMUCHO textoMUCHO
-                  textoMUCHO textoMUCHO textoMUCHO textoMUCHO textoMUCHO texto
-                  textoMUCHO textoMUCHO textoMUCHO textoMUCHO textoMUCHO
-                  textoMUCHO textoMUCHO textoMUCHO textoMUCHO textoMUCHO
-                  textoMUCHO textoMUCHO textoMUCHO textoMUCHO textoMUCHO texto
-                  textoMUCHO textoMUCHO textoMUCHO textoMUCHO textoMUCHO
-                  textoMUCHO textoMUCHO textoMUCHO textoMUCHO textoMUCHO
-                  textoMUCHO textoMUCHO textoMUCHO textoMUCHO textoMUCHO texto
-                  textoMUCHO textoMUCHO textoMUCHO textoMUCHO textoMUCHO
-                  textoMUCHO textoMUCHO textoMUCHO textoMUCHO textoMUCHO
-                  textoMUCHO textoMUCHO textoMUCHO textoMUCHO textoMUCHO texto
-                  textoMUCHO textoMUCHO textoMUCHO textoMUCHO textoMUCHO
-                  textoMUCHO textoMUCHO textoMUCHO textoMUCHO textoMUCHO
-                  textoMUCHO textoMUCHO textoMUCHO textoMUCHO textoMUCHO texto
+                  {project?.description}
                 </Text>
               </View>
             </View>
           </View>
-          
+
           {/* boton back */}
           <TouchableOpacity style={styles.buttonBack} onPress={onBack}>
             <Chevron

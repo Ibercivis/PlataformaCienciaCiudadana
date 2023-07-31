@@ -7,6 +7,8 @@ import {NewProjectScreen} from '../screens/NewProjectScreen';
 import { OrganisationScreen } from '../screens/OrganisationScreen';
 import { ProjectList } from '../components/screen_components/Home/ProjectList';
 import { ProjectPage } from '../components/screen_components/Home/ProjectPage';
+import { OrganizationList } from '../components/screen_components/Home/OrganizationList';
+import { OrganizationPage } from '../components/screen_components/Home/OrganizationPage';
 
 export type StackParams = {
   HomeScreen: {
@@ -16,7 +18,14 @@ export type StackParams = {
     id?: number;
     // dashboard?: boolean;
   };
+  OrganizationList: {
+    id?: number;
+    // dashboard?: boolean;
+  };
   ProjectPage: {
+    id: number;
+  };
+  OrganizationPage: {
     id: number;
   };
   NewProjectScreen: {
@@ -70,7 +79,9 @@ export function ProjectNavigator() {
       }}>
       <Stack.Screen name="HomeScreen" component={HomeScreen} initialParams={{dashboard: true}} />
       <Stack.Screen name="ProjectList" component={ProjectList} />
+      <Stack.Screen name="OrganizationList" component={OrganizationList} />
       <Stack.Screen name="ProjectPage" component={ProjectPage} />
+      <Stack.Screen name="OrganizationPage" component={OrganizationPage} />
       {/* <Stack.Screen name="NewProjectScreen" component={NewProjectScreen} />
       <Stack.Screen name="Marcador" component={Marcador} />
       <Stack.Screen name="MarcadorExample" component={MarcadorExample} />

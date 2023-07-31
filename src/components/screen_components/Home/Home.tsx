@@ -24,8 +24,9 @@ import {RFPercentage} from 'react-native-responsive-fontsize';
 import {Checkbox} from 'react-native-paper';
 import citmapApi from '../../../api/citmapApi';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Project} from '../../../interfaces/interfaces';
+import {Organization, Project} from '../../../interfaces/interfaces';
 import {useForm} from '../../../hooks/useForm';
+import { LoadingScreen } from '../../../screens/LoadingScreen';
 
 interface Props extends StackScreenProps<any, any> {}
 
@@ -41,14 +42,13 @@ export const Home = ({navigation}: Props) => {
   const [interestingProjectList, setInterestingProjectList] = useState<
     number[]
   >([1, 2, 3, 4, 5, 6, 7, 8]);
-  const [organizationList, setOrganizationList] = useState<number[]>([
-    1, 2, 3, 4, 5, 6, 7, 8,
-  ]);
+  const [organizationList, setOrganizationList] = useState<Organization[]>([]);
 
   const [showCategoryList, setShowCategoryList] = useState(false);
 
   const [onSearch, setOnSearch] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [isAllCharged, setIsAllCharged] = useState(false);
 
   const {onChange, form} = useForm({
     searchText: '',
@@ -69,6 +69,8 @@ export const Home = ({navigation}: Props) => {
   useEffect(() => {
     categoryListApi();
     projectListApi();
+    organizationListApi();
+    setIsAllCharged(true)
   }, []);
 
   useEffect(() => {
@@ -166,9 +168,25 @@ export const Home = ({navigation}: Props) => {
     } catch {}
   };
 
+
+  const organizationListApi = async () => {
+    const token = await AsyncStorage.getItem('token');
+    try {
+      const resp = await citmapApi.get<Organization[]>('/organization/', {
+        headers: {
+          Authorization: token,
+        },
+      });
+      setOrganizationList(resp.data);
+    } catch {}
+  };
   //#endregion
 
   //#endregion
+
+  if (!isAllCharged) {
+    return <LoadingScreen />;
+  }
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
@@ -311,6 +329,7 @@ export const Home = ({navigation}: Props) => {
                             type="newProjects"
                             categoryImage={index}
                             title={item.name}
+                            onPress={() => onProjectPress(item.id)}
                           />
                         );
                       }
@@ -346,38 +365,14 @@ export const Home = ({navigation}: Props) => {
                     Proyectos destacados
                   </Text>
                 </View>
-                {/* <ScrollView
-                  style={HomeStyles.importantProjectScrollView}
-                  horizontal={true}
-                  showsHorizontalScrollIndicator={false}>
-                  {importantProjectList.map((x, index) => {
-                    if (importantProjectList.length - 1 === index) {
-                      return (
-                        <Card
-                          key={index}
-                          type="importantsPlus"
-                          categoryImage={index}
-                        />
-                      );
-                    } else {
-                      return (
-                        <Card
-                          key={index}
-                          type="importants"
-                          categoryImage={index}
-                          boolHelper={true}
-                        />
-                      );
-                    }
-                  })}
-                </ScrollView> */}
+
                 <FlatList
                   style={HomeStyles.importantProjectScrollView}
                   horizontal={true}
                   showsHorizontalScrollIndicator={false}
-                  data={importantProjectList}
+                  data={newProjectList}
                   renderItem={({item, index}) => {
-                    if (importantProjectList.length - 1 === index) {
+                    if (newProjectList.length - 1 === index) {
                       return (
                         <Card
                           key={index}
@@ -396,8 +391,10 @@ export const Home = ({navigation}: Props) => {
                           categoryImage={index}
                           boolHelper={true}
                           onPress={() => {
-                            onProjectPress(item);
+                            onProjectPress(item.id);
                           }}
+                          title={item.name}
+                          description={item.description}
                         />
                       );
                     }
@@ -435,12 +432,12 @@ export const Home = ({navigation}: Props) => {
                   </Text>
                 </View>
                 <ScrollView
-                  style={HomeStyles.importantProjectScrollView}
+                  style={HomeStyles.interestingScrollView}
                   horizontal={true}
                   showsHorizontalScrollIndicator={false}
                   nestedScrollEnabled={true}>
-                  {interestingProjectList.map((x, index) => {
-                    if (interestingProjectList.length - 1 === index) {
+                  {newProjectList.map((x, index) => {
+                    if (newProjectList.length - 1 === index) {
                       return (
                         <Card
                           key={index}
@@ -454,6 +451,7 @@ export const Home = ({navigation}: Props) => {
                           key={index}
                           type="interesting"
                           categoryImage={index}
+                          
                         />
                       );
                     }
@@ -500,6 +498,7 @@ export const Home = ({navigation}: Props) => {
                           key={index}
                           type="organizationPlus"
                           categoryImage={index}
+                          onPress={() => navigation.navigate('OrganizationList')}
                         />
                       );
                     } else {
@@ -508,6 +507,9 @@ export const Home = ({navigation}: Props) => {
                           key={index}
                           type="organization"
                           categoryImage={index}
+                          title={x.principalName}
+                          description={x.description}
+                          onPress={() => navigation.navigate('OrganizationPage', {id: x.id})}
                         />
                       );
                     }
@@ -704,11 +706,11 @@ const HomeStyles = StyleSheet.create({
   importantProjectView: {
     // backgroundColor: 'brown',
     marginBottom: RFPercentage(7),
-    height: RFPercentage(38),
+    height: RFPercentage(40),
   },
   importantProjectScrollView: {
-    marginHorizontal: 24,
-    height: Size.globalHeight / 4,
+    marginHorizontal: RFPercentage(3),
+    height: RFPercentage(50),
   },
   interestingView: {
     // backgroundColor: 'purple',
