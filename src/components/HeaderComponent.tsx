@@ -6,6 +6,7 @@ import {IconTemp} from './IconTemp';
 import {Size} from '../theme/size';
 import {FontSize} from '../theme/fonts';
 import Back from '../assets/icons/general/chevron-left.svg';
+import { RFPercentage } from 'react-native-responsive-fontsize';
 
 interface Props {
   onPressLeft: () => void;
@@ -56,6 +57,7 @@ export const HeaderComponent = ({
                 justifyContent: 'center',
                 flexDirection: 'row',
                 alignItems: 'center',
+                marginLeft:RFPercentage(1)
               }}>
               {/* <IconTemp name="arrow-left" size={Size.iconSizeMedium} /> */}
               <Back
@@ -73,6 +75,7 @@ export const HeaderComponent = ({
             alignSelf: 'center',
             fontWeight: 'bold',
             color: '#2F3061',
+            bottom:RFPercentage(0.3),
             fontSize: FontSize.fontSizeTextSubTitle,
           }}>
           {title}

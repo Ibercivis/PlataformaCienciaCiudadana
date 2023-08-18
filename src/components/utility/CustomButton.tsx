@@ -14,6 +14,7 @@ interface Props {
   iconRight?: string;
   width?: number;
   fontFamily?: string;
+  iconColor?: string;
 }
 
 export const CustomButton = ({
@@ -24,6 +25,7 @@ export const CustomButton = ({
   iconLeft = '',
   iconRight = '',
   width,
+  iconColor = 'black',
   fontFamily= FontFamily.NotoSansDisplayMedium
 }: Props) => {
   const {fontScale} = useWindowDimensions();
@@ -69,6 +71,7 @@ export const CustomButton = ({
             name={iconRight}
             size={Size.iconSizeMin}
             style={{alignSelf: 'center'}}
+            color={iconColor}
           />
         )}
       </View>
@@ -83,7 +86,7 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent:'center',
     height:35,
-    borderRadius: 10,
+    borderRadius: 12,
     // marginBottom: '4%',
     // marginHorizontal: '2%',
     marginTop: '2.5%',

@@ -72,14 +72,37 @@ export const OrganizationPage = (props: Props) => {
           Authorization: token,
         },
       });
-      console.log(props.route.params.id);
-      const filteredProjects = resp.data.filter(project => {
-        const organizationIds = project.organizations.map(org => org.id);
-        return organizationIds.includes(props.route.params.id);
-      });
-      console.log(filteredProjects);
 
-      setProjectList(resp.data);
+      // const filteredProjects = resp.data.filter(project => {
+      //   const organizationIds = project.organizations.map(org => org.id);
+      //   console.log(JSON.stringify(organizationIds))
+      //   console.log(props.route.params.id)
+      //   return organizationIds.includes(props.route.params.id);
+      // });
+
+      // const filteredProjects = resp.data
+      //   .filter(item =>
+      //     item.organizations.some(
+      //       subItem => subItem.id === props.route.params.id,
+      //     ),
+      //   )
+      //   .map(x => ({
+      //     ...x,
+      //     organizations: x.organizations.filter(
+      //       y => y.id === props.route.params.id,
+      //     ),
+      //   }));
+
+      console.log(props.route.params.id)
+      const filteredProjects = resp.data.filter(item => item.organizations.find(x => x === props.route.params.id))
+      // const filteredProjects = resp.data.filter(project => {
+      //   const matchedOrganizations = project.organizations.filter(organization => organization.id === props.route.params.id);
+      //   console.log(`Organization ID: ${project.organizations}, Matched Organizations: `, matchedOrganizations);
+      //   return matchedOrganizations.length > 0;
+      // });
+      // console.log(JSON.stringify(resp.data, null, 2));
+      console.log(JSON.stringify(filteredProjects, null, 2));
+      setProjectList(filteredProjects);
     } catch {}
   };
   //#endregion
@@ -119,7 +142,7 @@ export const OrganizationPage = (props: Props) => {
                 style={{
                   width: '50%',
                   height: '100%',
-                  backgroundColor: 'green',
+                  // backgroundColor: 'green',
                   justifyContent: 'center',
                 }}>
                 <Text
@@ -143,7 +166,7 @@ export const OrganizationPage = (props: Props) => {
                 style={{
                   width: '50%',
                   height: '100%',
-                  backgroundColor: 'grey',
+                  // backgroundColor: 'grey',
                   justifyContent: 'center',
                 }}>
                 <Text
@@ -168,7 +191,7 @@ export const OrganizationPage = (props: Props) => {
               style={{
                 height: '50%',
                 width: '100%',
-                backgroundColor: 'purple',
+                // backgroundColor: 'purple',
                 alignItems: 'center',
                 alignContent: 'center',
                 alignSelf: 'center',
@@ -201,7 +224,26 @@ export const OrganizationPage = (props: Props) => {
 
         {/* contenedor proyectos */}
         <View style={style.projectView}>
-          <FlatList
+          <Text style={{fontSize: FontSize.fontSizeText20, fontWeight: 'bold', color: 'black', marginHorizontal:RFPercentage(3)}} >Proyectos</Text>
+          <ScrollView
+            style={{flex: 1}}
+            contentContainerStyle={{alignItems: 'center'}}>
+            {projectList.map((item, index) => {
+              return (
+                <Card
+                  key={index}
+                  type="projectOrganization"
+                  categoryImage={index}
+                  title={item.name}
+                  description={item.description}
+                  onPress={() =>
+                    props.navigation.navigate('ProjectPage', {id: item.id})
+                  }
+                />
+              );
+            })}
+          </ScrollView>
+          {/* <FlatList
             style={{flex: 1}}
             contentContainerStyle={{alignItems: 'center'}}
             showsVerticalScrollIndicator={false}
@@ -219,7 +261,7 @@ export const OrganizationPage = (props: Props) => {
                 />
               );
             }}
-          />
+          /> */}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -249,20 +291,20 @@ const style = StyleSheet.create({
   },
   organizationContainer: {
     backgroundColor: 'transparent',
-    height: RFPercentage(70),
-    borderBottomWidth: 1,
+    height: RFPercentage(65),
+    // borderBottomWidth: 1,
     alignItems: 'center',
     alignContent: 'center',
   },
   organizationInfoContainer: {
-    backgroundColor: 'yellow',
+    // backgroundColor: 'yellow',
     top: RFPercentage(-67),
     alignItems: 'center',
     alignContent: 'center',
     width: RFPercentage(45),
     height: RFPercentage(25),
   },
-  projectView: {backgroundColor: 'purple'},
+  projectView: {backgroundColor: 'transparent'},
   buttonBack: {
     position: 'absolute',
     top: RFPercentage(5),

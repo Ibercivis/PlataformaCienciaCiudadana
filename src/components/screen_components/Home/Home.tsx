@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -26,7 +26,13 @@ import citmapApi from '../../../api/citmapApi';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Organization, Project} from '../../../interfaces/interfaces';
 import {useForm} from '../../../hooks/useForm';
-import { LoadingScreen } from '../../../screens/LoadingScreen';
+import {LoadingScreen} from '../../../screens/LoadingScreen';
+
+import PeopleFill from '../../../assets/icons/general/people-fill.svg';
+import HeartFill from '../../../assets/icons/general/heart-fill.svg';
+import Stars from '../../../assets/icons/general/stars.svg';
+import Magic from '../../../assets/icons/general/magic.svg';
+import Boockmark from '../../../assets/icons/general/bookmark-star-fill.svg';
 
 interface Props extends StackScreenProps<any, any> {}
 
@@ -36,9 +42,9 @@ export const Home = ({navigation}: Props) => {
   const [categoriesSelected, setCategoriesSelected] = useState<HasTag[]>([]);
   const [newProjectList, setNewProjectList] = useState<Project[]>([]); // partir la lista en 2
 
-  const [importantProjectList, setImportantProjectList] = useState<number[]>([
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
-  ]);
+  const [importantProjectList, setImportantProjectList] = useState<Project[]>(
+    [],
+  );
   const [interestingProjectList, setInterestingProjectList] = useState<
     number[]
   >([1, 2, 3, 4, 5, 6, 7, 8]);
@@ -47,8 +53,11 @@ export const Home = ({navigation}: Props) => {
   const [showCategoryList, setShowCategoryList] = useState(false);
 
   const [onSearch, setOnSearch] = useState(false);
+  // const onSearchCategory = useRef(false);
   const [refreshing, setRefreshing] = useState(false);
   const [isAllCharged, setIsAllCharged] = useState(false);
+  const [categorySelectedId, setCategorySelectedId] = useState<number[]>([]);
+  
 
   const {onChange, form} = useForm({
     searchText: '',
@@ -70,7 +79,8 @@ export const Home = ({navigation}: Props) => {
     categoryListApi();
     projectListApi();
     organizationListApi();
-    setIsAllCharged(true)
+    setCategoriesSelected([]);
+    setIsAllCharged(true);
   }, []);
 
   useEffect(() => {
@@ -78,7 +88,17 @@ export const Home = ({navigation}: Props) => {
     projectListApi();
     setRefreshing(false);
     onSearchText('');
+    setCategoriesSelected([]);
   }, [refreshing]);
+
+  //se usa para que cuando una categoría esté seleccionada, se filtren proyectos si coinciden con la categoría
+  useEffect(() => {
+    categorySelectedFilter();
+    console.log("Añadiendo el nuevo" + JSON.stringify(categorySelectedId))
+    if(categorySelectedId.length <= 0){
+      setOnSearch(false)
+    }
+  }, [categorySelectedId]);
 
   //#endregion
 
@@ -100,12 +120,50 @@ export const Home = ({navigation}: Props) => {
   };
 
   /**
+   * Metodo al que se le pasa la categoría seleccionada y se guarda en un array de categorías seleccionadas para que se pueda filtrar
+   * @param category categoría que se selecciona
+   */
+  const categoryFilter = (id: number) => {
+    console.log("Entra al filter" + JSON.stringify(categorySelectedId))
+    // si ya estaba en la lista se eliminará
+    // si no está en la lista, se añadirá
+    if(categorySelectedId.includes(id)){
+      const ifCategory =  categorySelectedId.filter(x => x !== id);
+      console.log("Los filtrados, si existe en la lista, se borra" + JSON.stringify(ifCategory))
+      setCategorySelectedId([...ifCategory])
+    }else{
+      setCategorySelectedId([...categorySelectedId, id]);
+      
+    }
+  };
+
+  const categorySelectedFilter = () => {
+    //si no hay categorías y estaba mostrandolas, se pone el on search a false
+    if (categorySelectedId.length <= 0 && onSearch) {
+      setCategorySelectedId([]);
+      setOnSearch(false);
+    } else {
+      const filtered = newProjectList.filter(project =>
+        project.hasTag.some(id =>
+          categorySelectedId.some(hasta => hasta === id),
+        ),
+      );
+      setOnSearch(true);
+      setImportantProjectList(filtered);
+    }
+  };
+
+  /**
    * busca y cambia la view
    */
   const onSearchText = (value: string) => {
     if (value.length > 0) {
       onChange(value, 'searchText');
       setOnSearch(true);
+      const filtered = newProjectList.filter(x =>
+        x.name.toLocaleLowerCase().includes(value.toLocaleLowerCase()),
+      );
+      setImportantProjectList(filtered);
     } else {
       onChange('', 'searchText');
       setOnSearch(false);
@@ -117,6 +175,8 @@ export const Home = ({navigation}: Props) => {
    */
   const onRefresh = () => {
     setRefreshing(true);
+    setOnSearch(false);
+    setCategorySelectedId([]);
     categoryListApi();
     projectListApi();
   };
@@ -168,7 +228,6 @@ export const Home = ({navigation}: Props) => {
     } catch {}
   };
 
-
   const organizationListApi = async () => {
     const token = await AsyncStorage.getItem('token');
     try {
@@ -218,55 +277,61 @@ export const Home = ({navigation}: Props) => {
           keyboardShouldPersistTaps="handled"
           // scrollEnabled={!onSearch}
         >
+          {/* view de categoría */}
+          <LinearGradient
+            colors={['rgba(255, 138, 0, 0.42)', '#CB9DA8']}
+            style={HomeStyles.categoryView}
+            start={{x: 0, y: 0.5}}
+            end={{x: 1, y: 0.5}}>
+            <Text
+              style={{
+                height: 54,
+                width: '100%',
+                textAlignVertical: 'center',
+                marginLeft: 24,
+                fontFamily: FontFamily.NotoSansDisplaySemiBold,
+                fontSize: FontSize.fontSizeText18,
+              }}>
+              Categorías
+            </Text>
+            <ScrollView
+              style={HomeStyles.categoryScrollView}
+              horizontal={true}
+              nestedScrollEnabled={true}
+              showsHorizontalScrollIndicator={false}>
+              {categoryList.map((x, index) => {
+                if (categoryList.length - 1 === index) {
+                  return (
+                    <Card
+                      key={index}
+                      type="categoryPlus"
+                      categoryImage={index}
+                      onPress={() => {
+                        onCategoryPress();
+                      }}
+                    />
+                  );
+                } else {
+                  return (
+                    <Card
+                      key={index}
+                      type="category"
+                      categoryImage={index}
+                      title={x.hasTag}
+                      onPress={() => {
+                        categoryFilter(x.id);
+                      }}
+                      pressed={categorySelectedId.includes(x.id)
+                        ? true
+                        : false}
+                    />
+                  );
+                }
+              })}
+            </ScrollView>
+          </LinearGradient>
           {!onSearch && (
             <View>
-              {/* view de categoría */}
-              <LinearGradient
-                colors={['rgba(255, 138, 0, 0.42)', '#CB9DA8']}
-                style={HomeStyles.categoryView}
-                start={{x: 0, y: 0.5}}
-                end={{x: 1, y: 0.5}}>
-                <Text
-                  style={{
-                    height: 54,
-                    width: '100%',
-                    textAlignVertical: 'center',
-                    marginLeft: 24,
-                    fontFamily: FontFamily.NotoSansDisplaySemiBold,
-                    fontSize: FontSize.fontSizeText18,
-                  }}>
-                  Categorías
-                </Text>
-                <ScrollView
-                  style={HomeStyles.categoryScrollView}
-                  horizontal={true}
-                  nestedScrollEnabled={true}
-                  showsHorizontalScrollIndicator={false}>
-                  {categoryList.map((x, index) => {
-                    if (categoryList.length - 1 === index) {
-                      return (
-                        <Card
-                          key={index}
-                          type="categoryPlus"
-                          categoryImage={index}
-                          onPress={() => {
-                            onCategoryPress();
-                          }}
-                        />
-                      );
-                    } else {
-                      return (
-                        <Card
-                          key={index}
-                          type="category"
-                          categoryImage={index}
-                          title={x.hasTag}
-                        />
-                      );
-                    }
-                  })}
-                </ScrollView>
-              </LinearGradient>
               {/* view de nuevos proyectos */}
               <View style={HomeStyles.newProjectView}>
                 <View
@@ -283,7 +348,12 @@ export const Home = ({navigation}: Props) => {
                       justifyContent: 'center',
                       top: 1,
                     }}>
-                    <IconBootstrap name={'stars'} size={20} color={'blue'} />
+                    {/* <IconBootstrap name={'stars'} size={20} color={'blue'} /> */}
+                    <Stars
+                      width={RFPercentage(1.8)}
+                      height={RFPercentage(1.8)}
+                      fill={'#dd4d4d'}
+                    />
                   </View>
                   <Text
                     style={{
@@ -354,7 +424,12 @@ export const Home = ({navigation}: Props) => {
                       justifyContent: 'center',
                       top: 1,
                     }}>
-                    <IconBootstrap name={'stars'} size={20} color={'blue'} />
+                    {/* <IconBootstrap name={'stars'} size={20} color={'blue'} /> */}
+                    <PeopleFill
+                      width={RFPercentage(1.8)}
+                      height={RFPercentage(1.8)}
+                      fill={'#2b4ce0'}
+                    />
                   </View>
                   <Text
                     style={{
@@ -443,6 +518,9 @@ export const Home = ({navigation}: Props) => {
                           key={index}
                           type="interestingPlus"
                           categoryImage={index}
+                          onPress={() => {
+                            navigation.navigate('ProjectList');
+                          }}
                         />
                       );
                     } else {
@@ -451,7 +529,11 @@ export const Home = ({navigation}: Props) => {
                           key={index}
                           type="interesting"
                           categoryImage={index}
-                          
+                          onPress={() => {
+                            onProjectPress(x.id);
+                          }}
+                          title={x.name}
+                          description={x.description}
                         />
                       );
                     }
@@ -498,7 +580,9 @@ export const Home = ({navigation}: Props) => {
                           key={index}
                           type="organizationPlus"
                           categoryImage={index}
-                          onPress={() => navigation.navigate('OrganizationList')}
+                          onPress={() =>
+                            navigation.navigate('OrganizationList')
+                          }
                         />
                       );
                     } else {
@@ -509,7 +593,9 @@ export const Home = ({navigation}: Props) => {
                           categoryImage={index}
                           title={x.principalName}
                           description={x.description}
-                          onPress={() => navigation.navigate('OrganizationPage', {id: x.id})}
+                          onPress={() =>
+                            navigation.navigate('OrganizationPage', {id: x.id})
+                          }
                         />
                       );
                     }
@@ -518,11 +604,10 @@ export const Home = ({navigation}: Props) => {
               </View>
             </View>
           )}
-
           {onSearch && (
             <View
               style={{
-                position: 'absolute',
+                position: 'relative',
                 top: RFPercentage(0),
                 left: 0,
                 right: 0,
@@ -553,6 +638,7 @@ export const Home = ({navigation}: Props) => {
                   Resultados de busqueda
                 </Text>
               </View>
+
               <ScrollView
                 style={{
                   alignSelf: 'center',
@@ -573,7 +659,7 @@ export const Home = ({navigation}: Props) => {
                       key={index}
                       type="projectFound"
                       categoryImage={index}
-                      title={x.toString()}
+                      title={x.name}
                     />
                   );
                   // }
@@ -624,6 +710,22 @@ export const Home = ({navigation}: Props) => {
                 width: '10%',
               }}></TouchableOpacity>
           </View>
+          <View
+            style={{
+              justifyContent: 'space-between',
+              flexDirection: 'row',
+              marginVertical: '4%',
+              marginHorizontal: RFPercentage(4),
+            }}>
+            <View>
+              <Text>Categorías</Text>
+            </View>
+            <View>
+              <TouchableOpacity onPress={() => setShowCategoryList(false)}>
+                <Text style={{color: Colors.lightblue}}>Cerrar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
           <FlatList
             contentContainerStyle={{
               alignItems: 'center',
@@ -642,15 +744,15 @@ export const Home = ({navigation}: Props) => {
                     width: RFPercentage(42),
                     flexDirection: 'row',
                     alignItems: 'center',
-                    justifyContent: 'space-between',
+                    // justifyContent: 'space-between',
                   }}>
-                  <Text>{item.hasTag}</Text>
                   <Checkbox
                     status={'checked'}
                     onPress={() => {
                       console.log(item);
                     }}
                   />
+                  <Text>{item.hasTag}</Text>
                 </View>
               ); //aquí poner el plus
             }}

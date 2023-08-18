@@ -4,19 +4,19 @@ import {AuthContext} from '../context/AuthContext';
 import {LoadingScreen} from '../screens/LoadingScreen';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {ProjectNavigator} from './ProjectNavigator';
-import {SettingsScreen} from '../screens/SettingsScreen';
 import {LoginScreen} from '../screens/LoginScreen';
 import CustomTab from '../components/utility/CustomTab';
 import {Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
+import { ProfileScreen } from '../screens/ProfileScreen';
 
 const Tab = createBottomTabNavigator<StackParams>();
 
 export type StackParams = {
   // NavigatorMap: undefined;
   // NavigatorMapBox: undefined;
-  SettingsScreen: undefined;
+  ProfileScreen: undefined;
   LoginScreen: undefined;
   ProjectNavigator: undefined;
   SelectorTab: undefined;
@@ -87,13 +87,13 @@ export const BottomTabNavigation = () => {
           }}
         />
         <Tab.Screen
-          name="SettingsScreen"
-          component={SettingsScreen}
+          name="ProfileScreen"
+          component={ProfileScreen}
           options={{
             tabBarIcon: ({focused}) => (
               <CustomTab
                 label="Ajustes"
-                route="SettingsScreen"
+                route="ProfileScreen"
                 focused={focused}
                 onPress={() => {}}
                 icon="heart"

@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {View, StyleSheet, Image, ImageBackground} from 'react-native';
+import { View, StyleSheet, Image, ImageBackground, ViewStyle } from 'react-native';
 import {IconBootstrap} from './IconBootstrap';
 import {Text} from 'react-native-paper';
 import {TouchableOpacity} from 'react-native-gesture-handler';
@@ -10,6 +10,7 @@ import HeartFill from '../../assets/icons/general/heart-fill.svg';
 import Plus from '../../assets/icons/general/plus-lg.svg';
 import {FontSize, FontWeight} from '../../theme/fonts';
 import {Colors} from '../../theme/colors';
+import {CustomButton} from './CustomButton';
 
 const categoryIcons = [
   require('../../assets/icons/category/Group-1.png'),
@@ -30,9 +31,11 @@ interface Props {
   categoryImage?: number;
   onPress?: () => void;
   title?: string;
-  description?:string;
-  auxString?:string;
+  description?: string;
+  auxString?: string;
   boolHelper?: boolean;
+  styleProp?: ViewStyle; 
+  pressed?: boolean;
 }
 export const Card = ({
   type,
@@ -42,12 +45,15 @@ export const Card = ({
   description = '',
   auxString = '',
   boolHelper = false,
+  pressed = false,
+  styleProp,
 }: Props) => {
-  const [pressed, setPressed] = useState(false);
+  // const [pressed, setPressed] = useState(false);
+  const [categoryPressed, setCategoryPressed] = useState(false);
   const [heart, setHeart] = useState(false);
 
   const onChangeCategoryPressed = () => {
-    setPressed(!pressed);
+    // setPressed(!pressed);
   };
 
   const cardType = () => {
@@ -56,91 +62,53 @@ export const Card = ({
         return (
           <>
             {/* el primero es si está presionado, el segundo si no */}
-            {boolHelper ? (
-              <TouchableOpacity
-                style={style.categoryPressed}
-                onPress={onChangeCategoryPressed}>
-                <View>
-                  {/* <IconBootstrap name="eye" size={99} color="black" /> */}
-                  <View
-                    style={{
-                      height: '75%',
-                      alignContent: 'center',
-                      alignItems: 'center',
-                      alignSelf: 'center',
-                      padding: '30%',
-                      // backgroundColor: 'blue',
-                    }}>
-                    <Image
-                      style={{alignSelf: 'center'}}
-                      source={categoryIcons[categoryImage]}
-                    />
-                  </View>
-                  <View
-                    style={{
-                      alignContent: 'center',
-                      alignItems: 'center',
-                      alignSelf: 'center',
-                      height: '22%',
-                      flexDirection: 'row',
-                      marginHorizontal: '2%',
-                    }}>
-                    <Text
-                      style={{
-                        textAlign: 'center',
-                        textAlignVertical: 'center',
-                        alignSelf: 'center',
-                        flexWrap: 'wrap',
-                        fontSize: FontSize.fontSizeText10,
-                      }}>
-                      {title}
-                    </Text>
-                  </View>
+            <TouchableOpacity
+              style={{
+                ...style.category,
+                backgroundColor: pressed
+                  ? Colors.contentQuaternaryLight
+                  : 'white',
+              }}
+              // onPressIn={onChangeCategoryPressed}
+              onPress={onPress}>
+              <View>
+                {/* <IconBootstrap name="eye" size={99} color="black" /> */}
+                <View
+                  style={{
+                    height: '75%',
+                    alignContent: 'center',
+                    alignItems: 'center',
+                    alignSelf: 'center',
+                    padding: '30%',
+                  }}>
+                  <Image
+                    style={{alignSelf: 'center'}}
+                    source={categoryIcons[categoryImage]}
+                  />
                 </View>
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity
-                style={style.category}
-                onPress={onChangeCategoryPressed}>
-                <View>
-                  {/* <IconBootstrap name="eye" size={99} color="black" /> */}
-                  <View
+                <View
+                  style={{
+                    alignContent: 'center',
+                    alignItems: 'center',
+                    alignSelf: 'center',
+                    height: '22%',
+                    flexDirection: 'row',
+                    marginHorizontal: '2%',
+                  }}>
+                  <Text
                     style={{
-                      height: '75%',
-                      alignContent: 'center',
-                      alignItems: 'center',
+                      textAlign: 'center',
+                      textAlignVertical: 'center',
                       alignSelf: 'center',
-                      padding: '30%',
-                      // backgroundColor: 'blue',
+                      flexWrap: 'wrap',
+                      fontSize: FontSize.fontSizeText10,
+                      color: pressed ? 'white' : 'black',
                     }}>
-                    <Image
-                      style={{alignSelf: 'center'}}
-                      source={categoryIcons[categoryImage]}
-                    />
-                  </View>
-                  <View
-                    style={{
-                      alignContent: 'center',
-                      alignItems: 'center',
-                      alignSelf: 'center',
-                      height: '22%',
-                      flexDirection: 'row',
-                      marginHorizontal: '2%',
-                    }}>
-                    <Text
-                      style={{
-                        textAlign: 'center',
-                        textAlignVertical: 'center',
-                        alignSelf: 'center',
-                        flexWrap: 'wrap',
-                        fontSize: FontSize.fontSizeText10,
-                      }}>
-                      {title}
-                    </Text>
-                  </View>
+                    {title}
+                  </Text>
                 </View>
-              </TouchableOpacity>
-            )}
+              </View>
+            </TouchableOpacity>
           </>
         );
       case 'categoryPlus':
@@ -250,7 +218,9 @@ export const Card = ({
                     color: 'blue',
                   }}>
                   {/* {description} */}
-                  {description.length > 20 ? description.slice(0, 20) + '...' : description}
+                  {description.length > 20
+                    ? description.slice(0, 20) + '...'
+                    : description}
                 </Text>
                 <View
                   style={{
@@ -334,7 +304,7 @@ export const Card = ({
                       backgroundColor: 'white',
                       alignSelf: 'flex-start',
                     }}>
-                    project name
+                    {title}
                   </Text>
                   <Text
                     style={{
@@ -347,7 +317,9 @@ export const Card = ({
                       alignSelf: 'flex-start',
                       color: 'white',
                     }}>
-                    mas texto
+                    {description.length > 20
+                    ? description.slice(0, 20) + '...'
+                    : description}
                   </Text>
                 </View>
               </ImageBackground>
@@ -457,45 +429,46 @@ export const Card = ({
             activeOpacity={0.5}
             style={style.projectFound}
             onPress={onPress}>
-            <View style={{
-                    paddingHorizontal: RFPercentage(3),
-                    // width:'100%',
-                    // backgroundColor:'green'
-                  }}>
-                <View
+            <View
+              style={{
+                paddingHorizontal: RFPercentage(3),
+                // width:'100%',
+                // backgroundColor:'green'
+              }}>
+              <View
+                style={{
+                  // marginHorizontal: RFPercentage(2),
+                  width: '100%',
+                  marginTop: RFPercentage(2),
+                  marginBottom: 6,
+                }}>
+                <Text
                   style={{
-                    // marginHorizontal: RFPercentage(2),
-                    width:'100%',
-                    marginTop: RFPercentage(2),
-                    marginBottom: 6,
+                    // backgroundColor: 'blue',
+                    marginBottom: '1%',
+                    alignSelf: 'flex-start',
                   }}>
-                  <Text
-                    style={{
-                      // backgroundColor: 'blue',
-                      marginBottom: '1%',
-                      alignSelf: 'flex-start',
-                    }}>
-                    {title}
-                  </Text>
-                  <Text
-                    style={{
-                      // backgroundColor: 'white',
-                      alignSelf: 'flex-start',
-                      color: 'blue',
-                      marginBottom: '2%',
-                    }}>
-                    {auxString}
-                  </Text>
-                  <Text
-                    style={{
-                      // backgroundColor: 'red',
-                      alignSelf: 'flex-start',
-                      marginBottom: '2%',
-                      // padding: RFPercentage(1)
-                    }}>
-                    {description}
-                  </Text>
-                </View>
+                  {title}
+                </Text>
+                <Text
+                  style={{
+                    // backgroundColor: 'white',
+                    alignSelf: 'flex-start',
+                    color: 'blue',
+                    marginBottom: '2%',
+                  }}>
+                  {auxString}
+                </Text>
+                <Text
+                  style={{
+                    // backgroundColor: 'red',
+                    alignSelf: 'flex-start',
+                    marginBottom: '2%',
+                    // padding: RFPercentage(1)
+                  }}>
+                  {description}
+                </Text>
+              </View>
               <ImageBackground
                 // borderRadius={10}
                 // source={require(urii)}
@@ -601,6 +574,7 @@ export const Card = ({
                 style={{
                   marginHorizontal: RFPercentage(1),
                   marginTop: 13,
+                  justifyContent:'center',
                   marginBottom: 6,
                   width: '70%',
                 }}>
@@ -610,7 +584,7 @@ export const Card = ({
                     marginBottom: '1%',
                     alignSelf: 'flex-start',
                     fontWeight: 'bold',
-                    fontSize: FontSize.fontSizeText14
+                    fontSize: FontSize.fontSizeText14,
                   }}>
                   {title}
                 </Text>
@@ -620,15 +594,157 @@ export const Card = ({
                     // backgroundColor: 'white',
                     alignSelf: 'flex-start',
                     marginBottom: '4%',
-                    fontSize: FontSize.fontSizeText13
+                    fontSize: FontSize.fontSizeText13,
                   }}>
-                  {description}
+                  {description.length > 30
+                    ? description.slice(0, 30) + '...'
+                    : description}
+                  
                 </Text>
               </View>
             </View>
           </TouchableOpacity>
         );
+      case 'projectOrganization':
+        return (
+          <>
+            <TouchableOpacity
+              activeOpacity={0.5}
+              style={style.projectOrganization}
+              onPress={onPress}>
+              <View
+                style={{
+                  alignSelf: 'center',
+                  width: '30%',
+                  // alignContent: 'center',
+                  // alignItems: 'center',
+                  // backgroundColor: 'blue',
+                }}>
+                <ImageBackground
+                  // borderRadius={10}
+                  borderBottomLeftRadius={10}
+                  borderTopLeftRadius={10}
+                  // source={require(urii)}
+                  source={require('../../assets/backgrounds/login-background.jpg')}
+                  style={{height: '100%'}}>
+                  <View style={{alignItems: 'stretch', flex: 1}}>
+                    <Text
+                      style={{
+                        // textAlign: 'center',
+                        marginBottom: '1%',
+                        marginLeft: '10%',
+                        marginRight: '10%',
+                        top: RFPercentage(9),
+                        backgroundColor: 'white',
+                        alignSelf: 'flex-start',
+                      }}>
+                      {/* {title} */}
+                      {title.length > 20
+                    ? title.slice(0, 20) + '...'
+                    : title}
+                      {/* titulazo que tiene mas de 20 caracteres y que  */}
+                    </Text>
+                  </View>
+                </ImageBackground>
+              </View>
 
+              <View
+                style={{
+                  // marginHorizontal: RFPercentage(1),
+                  marginTop: RFPercentage(1),
+                  marginBottom: 6,
+                  width: '70%',
+                }}>
+                <Text
+                  style={{
+                    // backgroundColor: 'white',
+                    alignSelf:'stretch',
+                    marginTop: '4%',
+                    marginHorizontal: RFPercentage(2),
+                    fontSize: FontSize.fontSizeText13,
+                  }}>
+                  {description}
+                </Text>
+                <View
+                  style={{
+                    marginTop: RFPercentage(7),
+                    marginHorizontal:RFPercentage(2),
+                    flexDirection: 'row',
+                    alignContent: 'center',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    alignSelf:'stretch',
+                    flex: 1,
+                  }}>
+                  {/* personas */}
+                  <TouchableOpacity
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-around',
+                    }}>
+                    {/* <IconBootstrap name={'plus'} size={20} color={'black'} /> */}
+                    <People
+                      width={RFPercentage(2)}
+                      height={RFPercentage(2)}
+                      color={'#000000'}
+                    />
+                    <Text
+                      style={{
+                        fontSize: FontSize.fontSizeText13,
+                        marginHorizontal: RFPercentage(1),
+                        alignSelf: 'center',
+                      }}>
+                      1500
+                    </Text>
+                  </TouchableOpacity>
+
+                  {/*favorito */}
+                  <TouchableOpacity
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-around',
+                    }}>
+                    <HeartFill
+                      width={RFPercentage(2)}
+                      height={RFPercentage(2)}
+                      color={'#ff0000'}
+                    />
+                    {/* {boolHelper ? (
+                    <HeartFill width={16} height={16} color={'#ff0000'} />
+                  ) : (
+                    <Heart width={16} height={16} color={'#000000'} />
+                  )} */}
+                    <Text
+                      style={{
+                        fontSize: FontSize.fontSizeText13,
+                        marginHorizontal: RFPercentage(1),
+                        alignSelf: 'center',
+                      }}>
+                      120
+                    </Text>
+                  </TouchableOpacity>
+
+                  {/* ver mas */}
+                  <View
+                    style={{
+                      width: RFPercentage(10),
+                      marginHorizontal: RFPercentage(1),
+                      bottom: 2,
+                      borderRadius: 100
+                    }}>
+                    <CustomButton
+                      onPress={() => console.log('pressed')}
+                      label="Ver más "
+                      backgroundColor={Colors.primaryLigth}
+                      iconRight='arrow-right'
+                      iconColor='white'
+                    />
+                  </View>
+                </View>
+              </View>
+            </TouchableOpacity>
+          </>
+        );
       default:
         return <h1>No project match</h1>;
     }
@@ -775,5 +891,24 @@ const style = StyleSheet.create({
     width: '100%',
     marginVertical: RFPercentage(2),
     // borderRadius: 10,
+  },
+  projectOrganization: {
+    width: '95%',
+    height: RFPercentage(17),
+    alignSelf: 'center',
+    // backgroundColor:'green',
+    marginVertical: RFPercentage(3),
+    // marginHorizontal:20,
+    borderRadius: 10,
+    backgroundColor: 'white',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 0.1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 1,
+    flexDirection: 'row',
   },
 });

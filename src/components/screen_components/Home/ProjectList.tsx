@@ -21,6 +21,7 @@ export const ProjectList = (props: Props) => {
   useEffect(() => {
     projectListApi();
   }, []);
+  
   const projectListApi = async () => {
     const token = await AsyncStorage.getItem('token');
     try {

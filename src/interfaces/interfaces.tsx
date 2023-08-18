@@ -2,7 +2,7 @@ export interface Project {
     id:             number;
     hasTag:         number[];
     topic:          number[];
-    organizations:  Organization[];
+    organizations:  number[];
     creator:        number;
     administrators: any[];
     created_at:     Date;
@@ -34,4 +34,12 @@ export interface Type {
 export interface Creator {
     id:       number;
     username: string;
+}
+
+export interface User {
+    pk:         number;
+    username:   string;
+    email:      string;
+    first_name: string;
+    last_name:  string;
 }
