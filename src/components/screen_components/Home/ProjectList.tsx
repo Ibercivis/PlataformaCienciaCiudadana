@@ -1,7 +1,17 @@
 import React, {useEffect, useState} from 'react';
-import {FlatList, ScrollView, View} from 'react-native';
+import {
+  FlatList,
+  ImageBackground,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
-import {Card} from '../../utility/Card';
+import People from '../../../assets/icons/general/people.svg';
+import Heart from '../../../assets/icons/general/heart.svg';
+import HeartFill from '../../../assets/icons/general/heart-fill.svg';
 
 import citmapApi from '../../../api/citmapApi';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -9,19 +19,26 @@ import {Project} from '../../../interfaces/interfaces';
 import {useForm} from '../../../hooks/useForm';
 import {RFPercentage} from 'react-native-responsive-fontsize';
 import {HeaderComponent} from '../../HeaderComponent';
-import {useNavigation} from '@react-navigation/native';
-import { StackParams } from '../../../navigation/ProjectNavigator';
-import { StackScreenProps } from '@react-navigation/stack';
+import {StackParams} from '../../../navigation/HomeNavigator';
+import {StackScreenProps} from '@react-navigation/stack';
+import {HasTag} from '../../../interfaces/appInterfaces';
+import {FontSize} from '../../../theme/fonts';
 
 interface Props extends StackScreenProps<StackParams, 'ProjectList'> {}
 
 export const ProjectList = (props: Props) => {
   const [projectList, setProjectList] = useState<Project[]>([]); // partir la lista en 2
 
+  const [hastags, setHastags] = useState<HasTag[]>([]);
+
+  useEffect(() => {
+    getHastagApi();
+  }, []);
+
   useEffect(() => {
     projectListApi();
-  }, []);
-  
+  }, [hastags]);
+
   const projectListApi = async () => {
     const token = await AsyncStorage.getItem('token');
     try {
@@ -31,6 +48,18 @@ export const ProjectList = (props: Props) => {
         },
       });
       setProjectList(resp.data);
+    } catch {}
+  };
+
+  const getHastagApi = async () => {
+    const token = await AsyncStorage.getItem('token');
+    try {
+      const resp = await citmapApi.get<HasTag[]>('/project/hastag/', {
+        headers: {
+          Authorization: token,
+        },
+      });
+      setHastags(resp.data);
     } catch {}
   };
 
@@ -50,17 +79,163 @@ export const ProjectList = (props: Props) => {
         data={projectList}
         renderItem={({item, index}) => {
           return (
-            <Card
+            // <Card
+            //   key={index}
+            //   type="projectFound"
+            //   categoryImage={index}
+            //   title={item.name}
+            //   description={item.description}
+            //   onPress={() => props.navigation.navigate('ProjectPage', {id: item.id})}
+            // />
+
+            <TouchableOpacity
               key={index}
-              type="projectFound"
-              categoryImage={index}
-              title={item.name}
-              description={item.description}
-              onPress={() => props.navigation.navigate('ProjectPage', {id: item.id})}
-            />
+              activeOpacity={0.5}
+              style={style.projectFound}
+              onPress={() =>
+                props.navigation.navigate('ProjectPage', {id: item.id})
+              }>
+              <View
+                style={{
+                  paddingHorizontal: RFPercentage(3),
+                  // width:'100%',
+                  // backgroundColor:'green'
+                }}>
+                <View
+                  style={{
+                    // marginHorizontal: RFPercentage(2),
+                    width: '100%',
+                    marginTop: RFPercentage(2),
+                    marginBottom: 6,
+                  }}>
+                  <Text
+                    style={{
+                      // backgroundColor: 'blue',
+                      color: 'black',
+                      fontWeight: 'bold',
+                      marginBottom: '1%',
+                      alignSelf: 'flex-start',
+                    }}>
+                    {item.name}
+                  </Text>
+                  <View style={{flexDirection: 'row'}}>
+                    {item.hasTag.map((x, index) => {
+                      const matchingHastag = hastags.find(
+                        hastag => hastag.id === x,
+                      );
+                      if (matchingHastag) {
+                        return (
+                          <Text
+                            key={index}
+                            style={{
+                              // backgroundColor: 'white',
+                              alignSelf: 'flex-start',
+                              color: 'blue',
+                              marginBottom: '2%',
+                            }}>
+                            #{matchingHastag.hasTag}
+                            {'  '}
+                          </Text>
+                        );
+                      }
+                    })}
+                  </View>
+                  <Text
+                    style={{
+                      alignSelf: 'flex-start',
+                      marginBottom: '2%',
+                    }}>
+                    {item.description}
+                  </Text>
+                </View>
+                <ImageBackground
+                  source={require('../../../assets/backgrounds/login-background.jpg')}
+                  style={{
+                    ...style.imageBackground,
+                    width: '100%',
+                    height: RFPercentage(23),
+                  }}>
+                  <View
+                    style={{
+                      position: 'absolute',
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      alignSelf: 'center',
+                      bottom: 2,
+                      left: 0,
+                      right: 0,
+                      justifyContent: 'space-between',
+                      // marginHorizontal: RFPercentage(1),
+                      width: '100%',
+                    }}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        backgroundColor: 'white',
+                        borderRadius: 15,
+                        margin: '2%',
+                        paddingHorizontal: '3%',
+                        paddingVertical: '2%',
+                      }}>
+                      <People width={16} height={16} color={'#000000'} />
+                      <Text
+                        style={{
+                          fontSize: FontSize.fontSizeText13,
+                          marginHorizontal: RFPercentage(1),
+                        }}>
+                        1500
+                      </Text>
+                      {/* <IconBootstrap name={'plus'} size={20} color={'black'} /> */}
+                      {true ? (
+                        <HeartFill width={16} height={16} color={'#ff0000'} />
+                      ) : (
+                        <Heart width={16} height={16} color={'#000000'} />
+                      )}
+                      <Text
+                        style={{
+                          fontSize: FontSize.fontSizeText13,
+                          marginHorizontal: RFPercentage(1),
+                        }}>
+                        120
+                      </Text>
+                    </View>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        backgroundColor: 'white',
+                        borderRadius: 15,
+                        margin: '2%',
+                        paddingHorizontal: '3%',
+                        paddingVertical: '2%',
+                      }}>
+                      <Text
+                        style={{
+                          fontSize: FontSize.fontSizeText13,
+                          marginHorizontal: RFPercentage(1),
+                        }}>
+                        120
+                      </Text>
+                      <Heart width={16} height={16} color={'#000000'} />
+                    </View>
+                  </View>
+                </ImageBackground>
+              </View>
+            </TouchableOpacity>
           );
         }}
       />
     </View>
   );
 };
+
+const style = StyleSheet.create({
+  projectFound: {
+    width: RFPercentage(50),
+    marginVertical: RFPercentage(3),
+    borderRadius: 10,
+  },
+  imageBackground: {
+    height: '100%',
+    borderRadius: 10,
+  },
+});

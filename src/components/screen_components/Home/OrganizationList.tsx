@@ -10,7 +10,7 @@ import {useForm} from '../../../hooks/useForm';
 import {RFPercentage} from 'react-native-responsive-fontsize';
 import {HeaderComponent} from '../../HeaderComponent';
 import {useNavigation} from '@react-navigation/native';
-import {StackParams} from '../../../navigation/ProjectNavigator';
+import {StackParams} from '../../../navigation/HomeNavigator';
 import {StackScreenProps} from '@react-navigation/stack';
 
 interface Props extends StackScreenProps<StackParams, 'OrganizationList'> {}

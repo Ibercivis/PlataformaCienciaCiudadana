@@ -3,13 +3,25 @@ import {PermissionsContext} from '../context/PermissionsContext';
 import {AuthContext} from '../context/AuthContext';
 import {LoadingScreen} from '../screens/LoadingScreen';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {ProjectNavigator} from './ProjectNavigator';
-import {LoginScreen} from '../screens/LoginScreen';
+import {HomeNavigator} from './HomeNavigator';
 import CustomTab from '../components/utility/CustomTab';
-import {Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  ImageBackground,
+  Modal,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { useNavigation } from '@react-navigation/native';
-import { ProfileScreen } from '../screens/ProfileScreen';
+import {useNavigation} from '@react-navigation/native';
+import {ProfileScreen} from '../screens/ProfileScreen';
+import {RFPercentage} from 'react-native-responsive-fontsize';
+// import Plus from '../assets/icons/general/plus-lg1.svg';
+import {Colors} from '../theme/colors';
+import {FontSize} from '../theme/fonts';
+import PlusSquare from '../assets/icons/general/plus-square.svg';
 
 const Tab = createBottomTabNavigator<StackParams>();
 
@@ -20,6 +32,147 @@ export type StackParams = {
   LoginScreen: undefined;
   ProjectNavigator: undefined;
   SelectorTab: undefined;
+  CenterButtonTab: undefined;
+};
+
+const CenterButtonTab = () => {
+  // Navigation
+  const navigation = useNavigation();
+
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const openCategoryModal = () => {
+    setModalVisible(true);
+  };
+
+  const closeCategoryModal = () => {
+    setModalVisible(false);
+  };
+
+  const navigateTo = (route: string) => {
+    navigation.navigate(route as never);
+    closeCategoryModal();
+  };
+
+  return (
+    <TouchableOpacity
+      onPress={openCategoryModal}
+      style={{
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignSelf: 'center',
+        // width: RFPercentage(5),
+        // height: RFPercentage(5),
+        // borderRadius: 35,
+        backgroundColor: 'transparent', // Customize the button color
+        marginVertical: RFPercentage(1),
+      }}>
+      <PlusSquare
+        width={RFPercentage(4)}
+        height={RFPercentage(4)}
+        fill={'#000000'}
+      />
+      {/* <Text style={{color: 'white'}}>Botón</Text> */}
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={closeCategoryModal}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalViewContainer}>
+            <View style={styles.modalHeader}>
+              <View style={{flexDirection: 'row'}}>
+                <View style={{justifyContent:'center', marginRight:'5%'}}>
+                  <PlusSquare
+                    width={RFPercentage(2)}
+                    height={RFPercentage(2)}
+                    fill={'#0055b6'}
+                  />
+                </View>
+
+                <Text
+                  style={{
+                    color: 'black',
+                    fontSize: FontSize.fontSizeText18,
+                    fontWeight: 'bold',
+                    textAlignVertical:'center',
+                  }}>
+                  ¿Qué desea hacer?
+                </Text>
+              </View>
+              <TouchableOpacity onPress={closeCategoryModal}>
+                <Text style={{color: 'blue'}}>Cerrar</Text>
+              </TouchableOpacity>
+            </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                height: '85%',
+                justifyContent: 'space-around',
+              }}>
+              <TouchableOpacity
+                style={styles.cards}
+                onPress={() => navigateTo('CreateProject')}>
+                <View style={{flex: 1}}>
+                  <ImageBackground
+                    borderRadius={10}
+                    // source={require(urii)}
+                    source={require('../assets/backgrounds/nuevoproyecto.jpg')}
+                    style={{borderRadius: 10, height: '100%'}}>
+                    <View
+                      style={{alignItems: 'stretch', flex: 1, borderRadius: 5}}>
+                      <Text
+                        style={{
+                          textAlign: 'center',
+                          marginBottom: '5%',
+                          marginLeft: '10%',
+                          marginRight: '10%',
+                          marginTop: RFPercentage(8),
+                          backgroundColor: 'white',
+                          alignSelf: 'center',
+                          padding: '2%',
+                          borderRadius: 7,
+                        }}>
+                        Crear un nuevo proyecto
+                      </Text>
+                    </View>
+                  </ImageBackground>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.cards} onPress={() => {}}>
+                <View style={{flex: 1}}>
+                  <ImageBackground
+                    borderRadius={10}
+                    // source={require(urii)}
+                    source={require('../assets/backgrounds/nuevaorganizacion.jpg')}
+                    style={{borderRadius: 10, height: '100%'}}>
+                    <View style={{alignItems: 'stretch', flex: 1}}>
+                      <Text
+                        style={{
+                          textAlign: 'center',
+                          marginBottom: '5%',
+                          marginLeft: '10%',
+                          marginRight: '10%',
+                          marginTop: RFPercentage(8),
+                          backgroundColor: 'white',
+                          alignSelf: 'center',
+                          padding: '2%',
+                          borderRadius: 7,
+                        }}>
+                        Crear una nueva organización
+                      </Text>
+                    </View>
+                  </ImageBackground>
+                </View>
+              </TouchableOpacity>
+            </View>
+            {/* Aquí puedes agregar el contenido de categorías */}
+          </View>
+        </View>
+      </Modal>
+    </TouchableOpacity>
+  );
 };
 
 export const BottomTabNavigation = () => {
@@ -36,14 +189,13 @@ export const BottomTabNavigation = () => {
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'transparent'}}>
       <Tab.Navigator
-
         screenOptions={{
           headerShown: false,
           tabBarShowLabel: false,
           tabBarStyle: {backgroundColor: 'transparent'},
           tabBarBackground() {
             return (
-              <View style={{ flex: 1, backgroundColor: 'white' }}>
+              <View style={{flex: 1, backgroundColor: 'white'}}>
                 <LinearGradient
                   colors={['transparent', '#fff']}
                   style={{flex: 1}}
@@ -53,11 +205,47 @@ export const BottomTabNavigation = () => {
               </View>
             );
           },
-        }}>
+        }}
+        tabBar={({state, descriptors, navigation}) => (
+          <View style={styles.tabBarContainer}>
+            {state.routes.map((route, index) => {
+              const {options} = descriptors[route.key];
+
+              if (route.name === 'CenterButtonTab') {
+                return <CenterButtonTab key={route.key} />;
+              }
+
+              const label =
+                route.name === 'ProjectNavigator' ? 'Home' : 'Ajustes';
+
+              return (
+                <CustomTab
+                  key={route.key}
+                  label={label.toString()}
+                  icon={route.name === 'ProjectNavigator' ? 'home' : 'heart'}
+                  route={route.name}
+                  focused={state.index === index}
+                  onPress={() => {
+                    const event = navigation.emit({
+                      type: 'tabPress',
+                      target: route.key,
+                      canPreventDefault: true,
+                    });
+
+                    if (!event.defaultPrevented) {
+                      navigation.navigate(route.name);
+                    }
+                  }}
+                  // Add other CustomTab props as needed
+                />
+              );
+            })}
+          </View>
+        )}>
         {/* esto sería cambiarlo a que lleve a homeScreem o a otro donde se incluya para ver los proyectos */}
         <Tab.Screen
           name="ProjectNavigator"
-          component={ProjectNavigator}
+          component={HomeNavigator}
           options={{
             tabBarIcon: ({focused}) => (
               <CustomTab
@@ -68,10 +256,11 @@ export const BottomTabNavigation = () => {
                 icon="home"
               />
             ),
+            unmountOnBlur: true,
           }}
         />
         {/* aquí iría una navegación que contendría la creación de las cosas */}
-        <Tab.Screen
+        {/* <Tab.Screen
           name="LoginScreen"
           component={LoginScreen}
           options={{
@@ -82,10 +271,13 @@ export const BottomTabNavigation = () => {
                 focused={focused}
                 onPress={() => {}}
                 icon="plus"
+                isCenter={true}
               />
             ),
+            unmountOnBlur: true,
           }}
-        />
+        /> */}
+        <Tab.Screen name="CenterButtonTab" component={CenterButtonTab} />
         <Tab.Screen
           name="ProfileScreen"
           component={ProfileScreen}
@@ -99,9 +291,71 @@ export const BottomTabNavigation = () => {
                 icon="heart"
               />
             ),
+            unmountOnBlur: true,
           }}
         />
       </Tab.Navigator>
-     </SafeAreaView>
+    </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  tabBarContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: 'transparent', // Customize the tab bar background color
+  },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 100,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'blue',
+  },
+  buttonText: {
+    color: 'white',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalViewContainer: {
+    backgroundColor: 'white',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    height: '42%',
+    paddingHorizontal: RFPercentage(5),
+    paddingVertical: RFPercentage(5),
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginHorizontal: '3%',
+    marginBottom: RFPercentage(2),
+  },
+
+  cards: {
+    height: '95%',
+    width: RFPercentage(18),
+    margin: 4,
+    borderRadius: 10,
+    backgroundColor: 'white',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 5.41,
+    elevation: 2,
+  },
+});

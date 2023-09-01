@@ -128,4 +128,22 @@ export const globalStyles = StyleSheet.create({
     paddingVertical: 10,
     alignItems: 'center',
   },
+  inputContainer: {
+    flexDirection: 'row',
+    alignContent: 'center',
+    borderColor: 'white',
+    borderRadius: 10,
+    borderWidth: 1.2,
+    marginTop: '2.5%',
+    overflow: 'hidden',
+    shadowColor: 'rgba(0,0,0,0.25)',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 4,
+
+    elevation: 1.25,
+  },
 });

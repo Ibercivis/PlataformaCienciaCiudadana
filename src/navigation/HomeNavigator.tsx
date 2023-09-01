@@ -9,6 +9,7 @@ import { ProjectList } from '../components/screen_components/Home/ProjectList';
 import { ProjectPage } from '../components/screen_components/Home/ProjectPage';
 import { OrganizationList } from '../components/screen_components/Home/OrganizationList';
 import { OrganizationPage } from '../components/screen_components/Home/OrganizationPage';
+import { CreateProject } from '../components/screen_components/Project/CreateProject';
 
 export type StackParams = {
   HomeScreen: {
@@ -28,6 +29,7 @@ export type StackParams = {
   OrganizationPage: {
     id: number;
   };
+  CreateProject: undefined;
   NewProjectScreen: {
     projectName?: string;
     description?: string;
@@ -67,7 +69,7 @@ export type StackParams = {
 
 const Stack = createStackNavigator<StackParams>();
 
-export function ProjectNavigator() {
+export function HomeNavigator() {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -82,6 +84,7 @@ export function ProjectNavigator() {
       <Stack.Screen name="OrganizationList" component={OrganizationList} />
       <Stack.Screen name="ProjectPage" component={ProjectPage} />
       <Stack.Screen name="OrganizationPage" component={OrganizationPage} />
+      <Stack.Screen name="CreateProject" component={CreateProject} />
       {/* <Stack.Screen name="NewProjectScreen" component={NewProjectScreen} />
       <Stack.Screen name="Marcador" component={Marcador} />
       <Stack.Screen name="MarcadorExample" component={MarcadorExample} />

@@ -27,7 +27,7 @@ import {useAnimation} from '../../hooks/useAnimation';
 import citmapApi from '../../api/citmapApi';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {StackParams} from '../../navigation/ProjectNavigator';
+import {StackParams} from '../../navigation/HomeNavigator';
 import {Project, Mark, HasTag, Topic} from '../../interfaces/appInterfaces';
 
 import {globalStyles} from '../../theme/theme';

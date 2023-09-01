@@ -25,7 +25,7 @@ import {
   useNavigation,
   StackActions,
 } from '@react-navigation/native';
-import {StackParams} from '../../navigation/ProjectNavigator';
+import {StackParams} from '../../navigation/HomeNavigator';
 import {Colors} from '../../theme/colors';
 import {fonts, FontSize} from '../../theme/fonts';
 import translate from '../../theme/es.json';

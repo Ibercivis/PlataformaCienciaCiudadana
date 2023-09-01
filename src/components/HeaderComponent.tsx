@@ -6,14 +6,15 @@ import {IconTemp} from './IconTemp';
 import {Size} from '../theme/size';
 import {FontSize} from '../theme/fonts';
 import Back from '../assets/icons/general/chevron-left.svg';
-import { RFPercentage } from 'react-native-responsive-fontsize';
+import {RFPercentage} from 'react-native-responsive-fontsize';
 
 interface Props {
   onPressLeft: () => void;
-  onPressRight: () => void;
+  onPressRight?: () => void;
   title: string;
   backgroundColor?: string;
   rightIcon?: boolean;
+  renderRight?: () => React.ReactNode;
 }
 
 export const HeaderComponent = ({
@@ -22,6 +23,7 @@ export const HeaderComponent = ({
   onPressRight,
   backgroundColor = 'white',
   rightIcon = true,
+  renderRight,
 }: Props) => {
   const renderRightIcon = () => {
     if (rightIcon) {
@@ -57,7 +59,7 @@ export const HeaderComponent = ({
                 justifyContent: 'center',
                 flexDirection: 'row',
                 alignItems: 'center',
-                marginLeft:RFPercentage(1)
+                marginLeft: RFPercentage(1),
               }}>
               {/* <IconTemp name="arrow-left" size={Size.iconSizeMedium} /> */}
               <Back
@@ -72,16 +74,16 @@ export const HeaderComponent = ({
       centerComponent={
         <Text
           style={{
-            alignSelf: 'center',
+            alignSelf: 'flex-start',
             fontWeight: 'bold',
-            color: '#2F3061',
-            bottom:RFPercentage(0.3),
+            color: '#000000',
+            bottom: RFPercentage(0.2),
             fontSize: FontSize.fontSizeTextSubTitle,
           }}>
           {title}
         </Text>
       }
-      rightComponent={renderRightIcon()}
+      rightComponent={ renderRight ? (<>{renderRight()}</>) : (<></>)}
     />
   );
 };

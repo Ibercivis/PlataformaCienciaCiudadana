@@ -26,7 +26,7 @@ import {
 import {globalStyles} from '../../theme/theme';
 import {useForm} from '../../hooks/useForm';
 import {Mark} from '../../interfaces/appInterfaces';
-import {StackParams} from '../../navigation/ProjectNavigator';
+import {StackParams} from '../../navigation/HomeNavigator';
 import {Colors} from '../../theme/colors';
 import {fonts, FontSize} from '../../theme/fonts';
 import {Size} from '../../theme/size';

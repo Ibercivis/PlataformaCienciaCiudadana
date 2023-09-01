@@ -13,6 +13,7 @@ import {FontFamily, FontSize} from '../../theme/fonts';
 import {useTogglePasswordVisibility} from '../../hooks/useTogglePasswordVisibility';
 import {IconBootstrap} from './IconBootstrap';
 import {TextInput} from 'react-native-paper';
+import { globalStyles } from '../../theme/theme';
 
 const window = Dimensions.get('window');
 
@@ -30,29 +31,36 @@ const window = Dimensions.get('window');
 interface Props {
   label: string;
   iconLeft?: string;
+  iconRight?: string;
   inputType?: boolean;
   keyboardType?: KeyboardTypeOptions;
   fieldButtonLabel?: string;
   fieldButtonFunction?: () => void;
   onChangeText: (value: any) => void;
   multiline: boolean;
-  numOfLines: number;
+  numOfLines?: number;
   iconColor?: string;
   value?: string;
   marginBottom?: string | number;
   maxLength?: number;
+  isSecureText?:boolean;
+  ref?: any;
 }
 export const InputText = ({
   label,
   iconLeft,
+  iconRight,
   inputType,
   keyboardType,
+  fieldButtonFunction,
   onChangeText,
   multiline,
   numOfLines,
   iconColor = '#666',
   value,
   maxLength = 100,
+  isSecureText = false,
+  ref,
 }: Props) => {
   // variable que establece por defecto el color del input cuando no es presionado y que al ser presionado, cambiará
   const [onBlurInput, setOnBlurInput] = useState('transparent');
@@ -80,7 +88,7 @@ export const InputText = ({
 
   return (
     // <View style={styles.container}>
-    <View style={{...styles.inputContainer, borderColor: onBlurInput}}>
+    <View style={{...globalStyles.inputContainer, borderColor: onBlurInput}}>
       {iconLeft && (
         <View
           style={{
@@ -103,8 +111,9 @@ export const InputText = ({
           color: 'black',
           alignSelf: 'center',
           backgroundColor: 'transparent',
-          height: window.width > 500 ? 35 : 35,
+          height: multiline ? 0 : (window.height * 0.04),
         }}
+        ref={ref}
         placeholderTextColor={onBlurTextInput}
         mode="flat"
         underlineColor="transparent"
@@ -112,7 +121,7 @@ export const InputText = ({
         textAlignVertical="center"
         autoCapitalize="none"
         outlineStyle={{borderWidth: 0}}
-        secureTextEntry={passwordVisibility}
+        secureTextEntry={isSecureText ? passwordVisibility: false}
         placeholder={label}
         keyboardType={keyboardType}
         multiline={multiline}
@@ -124,7 +133,7 @@ export const InputText = ({
         onBlur={customBlurColor}
         onFocus={customFocus}
       />
-      {inputType && (
+      {inputType && !iconRight && (
         <TouchableOpacity
           activeOpacity={1}
           onPress={handlePasswordVisibility}
@@ -146,6 +155,21 @@ export const InputText = ({
           <IconBootstrap name={rightIcon} size={20} color={iconColorFocus} />
         </TouchableOpacity>
       )}
+      {iconRight && !inputType && (
+        <TouchableOpacity
+          activeOpacity={1}
+          onPress={fieldButtonFunction}
+          style={{
+            marginRight: '1%',
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            top: '1%',
+          }}>
+          
+          <IconBootstrap name={iconRight} size={20} color={'black'} />
+        </TouchableOpacity>
+      )}
     </View>
     // </View>
   );
@@ -156,29 +180,5 @@ const styles = StyleSheet.create({
     // backgroundColor: 'white',
     // alignItems: 'center',
   },
-  inputContainer: {
-    width: '100%',
-    height: 'auto',
-    // backgroundColor: 'cyan',
-    // backgroundColor: 'transparent',
-    flexDirection: 'row',
-    // alignItems: 'center',
-    alignContent: 'center',
-    // justifyContent: 'center',
-    // textAlignVertical:'center',
-    borderColor: 'white',
-    borderRadius: 10,
-    borderWidth: 1.2,
-    marginTop: '2.5%',
-    overflow: 'hidden',
-    shadowColor: 'rgba(0,0,0,0.25)',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 1,
-    shadowRadius: 4,
 
-    elevation: 1.25,
-  },
 });

@@ -13,7 +13,7 @@ import {Text} from 'react-native-paper';
 import {RFPercentage} from 'react-native-responsive-fontsize';
 import {Size} from '../../../theme/size';
 import {StackScreenProps} from '@react-navigation/stack';
-import {StackParams} from '../../../navigation/ProjectNavigator';
+import {StackParams} from '../../../navigation/HomeNavigator';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import {ScrollView} from 'react-native';
 import {FontSize} from '../../../theme/fonts';
@@ -22,6 +22,7 @@ import ShareIcon from '../../../assets/icons/general/share.svg';
 import People from '../../../assets/icons/general/people.svg';
 import Chevron from '../../../assets/icons/general/chevron-left-1.svg';
 import PencilSquare from '../../../assets/icons/general/pencil-square-1.svg';
+import Download from '../../../assets/icons/general/Vector-1.svg';
 import {CustomButton} from '../../utility/CustomButton';
 import {Colors} from '../../../theme/colors';
 import {Project} from '../../../interfaces/interfaces';
@@ -113,6 +114,13 @@ export const ProjectPage = (props: Props) => {
   };
 
   /**
+   * Metodo para descargar el proyecto
+   */
+  const onDownload = async () => {
+    
+  }
+
+  /**
    * Metodo para volver atrás
    */
   const onBack = () => {
@@ -188,7 +196,7 @@ export const ProjectPage = (props: Props) => {
                   </View>
                 );
               }}
-              itemWidth={Size.window.width}
+              itemWidth={Size.window.width+2}
               sliderWidth={Size.window.height / 2}
               layout="default"
               onSnapToItem={index => setCarouselIndex(index)}
@@ -401,6 +409,14 @@ export const ProjectPage = (props: Props) => {
               color={'#000000'}
             />
           </TouchableOpacity>
+          {/* boton download */}
+          <TouchableOpacity style={styles.buttonDownload}>
+            <Download
+              width={RFPercentage(2.5)}
+              height={RFPercentage(2.5)}
+              color={'#000000'}
+            />
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -446,6 +462,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: RFPercentage(4),
     right: RFPercentage(2),
+    zIndex: 999,
+  },
+  buttonDownload: {
+    position: 'absolute',
+    top: RFPercentage(4),
+    right: RFPercentage(7),
     zIndex: 999,
   },
 });

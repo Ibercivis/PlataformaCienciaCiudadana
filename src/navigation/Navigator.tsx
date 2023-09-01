@@ -9,6 +9,7 @@ import {ForgotPassword} from '../screens/ForgotPassword';
 import {LoadingScreen} from '../screens/LoadingScreen';
 import { BottomTabNavigation } from './BottomTabNavigation';
 import { BackgroundLayerStyle } from '@rnmapbox/maps';
+import { MultipleNavigator } from './MultipleNavigator';
 
 const Stack = createStackNavigator();
 
@@ -32,7 +33,7 @@ export const Navigator = () => {
         },
         headerTransparent: true
       }}>
-      {status !== 'authenticated' ? (
+      {status === 'authenticated' ? (
         <>
           <Stack.Screen
             name="LoginScreen"
@@ -115,7 +116,8 @@ export const Navigator = () => {
         </>
       ) : (
         // <Stack.Screen name="DrawerNavigation" component={DrawerNavigation} />
-        <Stack.Screen name="BottomTabNavigation" component={BottomTabNavigation} />
+        // <Stack.Screen name="BottomTabNavigation" component={BottomTabNavigation} />
+        <Stack.Screen name="MultipleNavigator" component={MultipleNavigator} />
       )}
 
       {/* {permissions.locationStatus === 'granted' ? (

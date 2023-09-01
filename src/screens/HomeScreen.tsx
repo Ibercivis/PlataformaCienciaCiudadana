@@ -3,7 +3,7 @@ import {StackScreenProps} from '@react-navigation/stack';
 import {SafeAreaView, View} from 'react-native';
 
 import {Home} from '../components/screen_components/Home/Home';
-import { StackParams } from '../navigation/ProjectNavigator';
+import { StackParams } from '../navigation/HomeNavigator';
 import { MyProjects } from '../components/screen_components/MyProjects';
 
 interface Props extends StackScreenProps<StackParams, 'HomeScreen'> {}

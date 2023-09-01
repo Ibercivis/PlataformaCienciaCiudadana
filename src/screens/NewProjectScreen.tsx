@@ -1,7 +1,7 @@
 import {StackScreenProps} from '@react-navigation/stack';
 import React, { useState } from 'react';
 import {NewProject} from '../components/screen_components/NewProject';
-import {StackParams} from '../navigation/ProjectNavigator';
+import {StackParams} from '../navigation/HomeNavigator';
 
 interface Props extends StackScreenProps<StackParams, 'NewProjectScreen'> {}
 

@@ -10,7 +10,7 @@ import {
   FlatList,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {StackParams} from '../../../navigation/ProjectNavigator';
+import {StackParams} from '../../../navigation/HomeNavigator';
 import {StackScreenProps} from '@react-navigation/stack';
 import {RFPercentage} from 'react-native-responsive-fontsize';
 import Chevron from '../../../assets/icons/general/chevron-left-1.svg';
@@ -72,36 +72,7 @@ export const OrganizationPage = (props: Props) => {
           Authorization: token,
         },
       });
-
-      // const filteredProjects = resp.data.filter(project => {
-      //   const organizationIds = project.organizations.map(org => org.id);
-      //   console.log(JSON.stringify(organizationIds))
-      //   console.log(props.route.params.id)
-      //   return organizationIds.includes(props.route.params.id);
-      // });
-
-      // const filteredProjects = resp.data
-      //   .filter(item =>
-      //     item.organizations.some(
-      //       subItem => subItem.id === props.route.params.id,
-      //     ),
-      //   )
-      //   .map(x => ({
-      //     ...x,
-      //     organizations: x.organizations.filter(
-      //       y => y.id === props.route.params.id,
-      //     ),
-      //   }));
-
-      console.log(props.route.params.id)
       const filteredProjects = resp.data.filter(item => item.organizations.find(x => x === props.route.params.id))
-      // const filteredProjects = resp.data.filter(project => {
-      //   const matchedOrganizations = project.organizations.filter(organization => organization.id === props.route.params.id);
-      //   console.log(`Organization ID: ${project.organizations}, Matched Organizations: `, matchedOrganizations);
-      //   return matchedOrganizations.length > 0;
-      // });
-      // console.log(JSON.stringify(resp.data, null, 2));
-      console.log(JSON.stringify(filteredProjects, null, 2));
       setProjectList(filteredProjects);
     } catch {}
   };

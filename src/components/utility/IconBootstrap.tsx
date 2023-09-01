@@ -10,6 +10,11 @@ import PersonHearts from 'react-native-bootstrap-icons/icons/person';
 import Magic from 'react-native-bootstrap-icons/icons/map';
 import Plus from 'react-native-bootstrap-icons/icons/plus-lg';
 import Home from 'react-native-bootstrap-icons/icons/hourglass';
+import CaretDown from 'react-native-bootstrap-icons/icons/caret-down';
+import Info from 'react-native-bootstrap-icons/icons/info-circle';
+import Bookmark from 'react-native-bootstrap-icons/icons/bookmark';
+import CheckCircle from 'react-native-bootstrap-icons/icons/check-circle-fill';
+import PlusSquare from 'react-native-bootstrap-icons/icons/plus-square';
 import {Colors} from '../../theme/colors';
 
 interface Props {
@@ -40,12 +45,20 @@ export const IconBootstrap = ({
       return <PersonHearts  width={size} height={size} fill={color} />;
     case 'stars':
       return <Magic width={size} height={size} fill={color} />;
-    case 'stars':
-    //   return <Stars width={size} height={size} fill={color} />;
     case 'plus':
       return <Plus width={size} height={size} fill={color} />;
+    case 'PlusSquare':
+      return <PlusSquare width={size} height={size} fill={color} />;
     case 'Home':
       return <Home width={size} height={size} fill={color} />;
+    case 'CaretDown':
+      return <CaretDown width={size} height={size} fill={color} />;
+    case 'Info':
+      return <Info width={size} height={size} fill={color} />;
+    case 'BookMark':
+      return <Bookmark width={size} height={size} fill={color} />;
+    case 'CheckCircle':
+      return <CheckCircle width={size} height={size} fill={color} />;
 
     default:
       return <Dice1 width={size} height={size} fill={color} />;

@@ -15,6 +15,7 @@ interface Props {
   width?: number;
   fontFamily?: string;
   iconColor?: string;
+  outlineColor?:string;
 }
 
 export const CustomButton = ({
@@ -26,7 +27,8 @@ export const CustomButton = ({
   iconRight = '',
   width,
   iconColor = 'black',
-  fontFamily= FontFamily.NotoSansDisplayMedium
+  fontFamily= FontFamily.NotoSansDisplayMedium,
+  outlineColor
 }: Props) => {
   const {fontScale} = useWindowDimensions();
   return (
@@ -36,7 +38,8 @@ export const CustomButton = ({
       style={{
         ...styles.touchable,
         backgroundColor: backgroundColor,
-       
+        borderColor: outlineColor,
+        borderWidth: outlineColor ? 1 : 0
       }}>
       <View
         style={{

@@ -136,4 +136,8 @@ anterior version de react native reanimated = 2.14.4, modificada para que pueda 
 - npm install react-navigation @react-navigation/native react-native-dropdown-picker  (quitada)
 - npm install react native elements
 
+- npm install react-native-keyboard-aware-scroll-view borrarlos
+
+- https://github.com/ivpusic/react-native-image-crop-picker para multiples imagenes
+
 

@@ -103,7 +103,7 @@ export const AuthProvider = ({children}: any) => {
         });
 
         let key = 'Token ' + resp.data.key;
-        //cuando se loggea, hay que cuardar el token como "Token (token)"
+        //cuando se loggea, hay que guardar el token como "Token (token)"
         await AsyncStorage.setItem('token', key);
       }else{
         action({

@@ -994,6 +994,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                   inputType={true}
                   multiline={false}
                   numOfLines={1}
+                  isSecureText={true}
                   onChangeText={value => onChangeRegister(value, 'password1')}
                 />
               </View>
@@ -1044,6 +1045,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                   inputType={true}
                   multiline={false}
                   numOfLines={1}
+                  isSecureText={true}
                   onChangeText={value => onChangeRegister(value, 'password2')}
                 />
               </View>
@@ -1419,6 +1421,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                         inputType={true}
                         multiline={false}
                         numOfLines={1}
+                        isSecureText={true}
                         onChangeText={value => onChange(value, 'password')}
                       />
                       {false ? (

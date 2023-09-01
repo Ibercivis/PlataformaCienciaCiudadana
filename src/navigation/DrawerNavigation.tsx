@@ -12,7 +12,7 @@ import {globalStyles} from '../theme/theme';
 import {LoginScreen} from '../screens/LoginScreen';
 import {AuthContext} from '../context/AuthContext';
 import {NavigatorMapBox} from './NavigatorMapBox';
-import {ProjectNavigator} from './ProjectNavigator';
+import {HomeNavigator} from './HomeNavigator';
 import {Colors} from '../theme/colors';
 import {
   GoogleSignin,
@@ -49,7 +49,7 @@ export const DrawerNavigation = () => {
       // drawerContent={props => <DrawerPaperCollapsedNavigation/>}
     >
       {/* <Drawer.Screen name="HomeScreen" component={HomeScreen} /> */}
-      <Drawer.Screen name="ProjectNavigator" component={ProjectNavigator} />
+      <Drawer.Screen name="ProjectNavigator" component={HomeNavigator} />
       {/* <Drawer.Screen name="NewProjectScreen" component={NewProjectScreen} />
       <Drawer.Screen name="Marcador" component={Marcador} />
       <Drawer.Screen name="MarcadorExample" component={MarcadorExample} /> */}

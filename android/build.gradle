@@ -65,6 +65,15 @@ allprojects {
             }
         }
         google()
+
+        // estos 2 pertenecen a la librería de react native image crop picker, tbn hay que hacerlo en ios
+        /*
+        In Xcode open Info.plist and add string key NSPhotoLibraryUsageDescription with value that describes 
+        why you need access to user photos. More info here https://forums.developer.apple.com/thread/62229. 
+        Depending on what features you use, you also may need NSCameraUsageDescription and NSMicrophoneUsageDescription keys.
+        */
+        maven { url 'https://maven.google.com' }
+        maven { url "https://www.jitpack.io" }
         
     }
 }

@@ -12,7 +12,7 @@ import {
 import {useForm} from '../../hooks/useForm';
 
 import {StackScreenProps} from '@react-navigation/stack';
-import {StackParams} from '../../navigation/ProjectNavigator';
+import {StackParams} from '../../navigation/HomeNavigator';
 
 import {
   Button,

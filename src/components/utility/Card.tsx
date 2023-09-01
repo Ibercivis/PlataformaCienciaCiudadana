@@ -1,5 +1,11 @@
 import React, {useState} from 'react';
-import { View, StyleSheet, Image, ImageBackground, ViewStyle } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Image,
+  ImageBackground,
+  ViewStyle,
+} from 'react-native';
 import {IconBootstrap} from './IconBootstrap';
 import {Text} from 'react-native-paper';
 import {TouchableOpacity} from 'react-native-gesture-handler';
@@ -11,6 +17,7 @@ import Plus from '../../assets/icons/general/plus-lg.svg';
 import {FontSize, FontWeight} from '../../theme/fonts';
 import {Colors} from '../../theme/colors';
 import {CustomButton} from './CustomButton';
+import { SvgIcons } from './SvgIcons';
 
 const categoryIcons = [
   require('../../assets/icons/category/Group-1.png'),
@@ -34,7 +41,7 @@ interface Props {
   description?: string;
   auxString?: string;
   boolHelper?: boolean;
-  styleProp?: ViewStyle; 
+  styleProp?: ViewStyle;
   pressed?: boolean;
 }
 export const Card = ({
@@ -48,14 +55,6 @@ export const Card = ({
   pressed = false,
   styleProp,
 }: Props) => {
-  // const [pressed, setPressed] = useState(false);
-  const [categoryPressed, setCategoryPressed] = useState(false);
-  const [heart, setHeart] = useState(false);
-
-  const onChangeCategoryPressed = () => {
-    // setPressed(!pressed);
-  };
-
   const cardType = () => {
     switch (type) {
       case 'category':
@@ -75,15 +74,20 @@ export const Card = ({
                 {/* <IconBootstrap name="eye" size={99} color="black" /> */}
                 <View
                   style={{
-                    height: '75%',
+                    height: '70%',
                     alignContent: 'center',
                     alignItems: 'center',
                     alignSelf: 'center',
                     padding: '30%',
                   }}>
-                  <Image
+                  {/* <Image
                     style={{alignSelf: 'center'}}
                     source={categoryIcons[categoryImage]}
+                  /> */}
+                  <SvgIcons id={categoryImage} color={pressed
+                  ? '#fff'
+                  : '#000'}
+                  size={RFPercentage(7)}
                   />
                 </View>
                 <View
@@ -94,6 +98,7 @@ export const Card = ({
                     height: '22%',
                     flexDirection: 'row',
                     marginHorizontal: '2%',
+                    marginVertical: '2%',
                   }}>
                   <Text
                     style={{
@@ -155,6 +160,7 @@ export const Card = ({
                       marginTop: RFPercentage(4),
                       backgroundColor: 'white',
                       alignSelf: 'flex-start',
+                      paddingHorizontal: RFPercentage(0.5)
                     }}>
                     {title}
                   </Text>
@@ -227,31 +233,35 @@ export const Card = ({
                     marginTop: '15%',
                     flexDirection: 'row',
                     alignContent: 'center',
-                    // justifyContent: 'space-between',
+                    justifyContent: 'space-between',
                     // backgroundColor:'red'
                   }}>
                   {/* <IconBootstrap name={'plus'} size={20} color={'black'} /> */}
-                  <People width={16} height={16} color={'#000000'} />
-                  <Text
-                    style={{
-                      fontSize: FontSize.fontSizeText13,
-                      marginHorizontal: RFPercentage(1),
-                    }}>
-                    1500
-                  </Text>
-                  {/* <IconBootstrap name={'plus'} size={20} color={'black'} /> */}
-                  {boolHelper ? (
-                    <HeartFill width={16} height={16} color={'#ff0000'} />
-                  ) : (
-                    <Heart width={16} height={16} color={'#000000'} />
-                  )}
-                  <Text
-                    style={{
-                      fontSize: FontSize.fontSizeText13,
-                      marginHorizontal: RFPercentage(1),
-                    }}>
-                    120
-                  </Text>
+                  <View style={{flexDirection: 'row'}}>
+                    <People width={16} height={16} color={'#000000'} />
+                    <Text
+                      style={{
+                        fontSize: FontSize.fontSizeText13,
+                        marginHorizontal: RFPercentage(1),
+                      }}>
+                      1500
+                    </Text>
+                  </View>
+                  <View style={{flexDirection: 'row'}}>
+                    {/* <IconBootstrap name={'plus'} size={20} color={'black'} /> */}
+                    {boolHelper ? (
+                      <HeartFill width={16} height={16} color={'#ff0000'} />
+                    ) : (
+                      <Heart width={16} height={16} color={'#000000'} />
+                    )}
+                    <Text
+                      style={{
+                        fontSize: FontSize.fontSizeText13,
+                        marginHorizontal: RFPercentage(1),
+                      }}>
+                      120
+                    </Text>
+                  </View>
                 </View>
               </View>
             </View>
@@ -263,10 +273,11 @@ export const Card = ({
             <View style={{alignItems: 'center'}}>
               <View
                 style={{
-                  height: '75%',
+                  // height: '70%',
                   alignSelf: 'center',
                   padding: '30%',
                   backgroundColor: 'transparent',
+                  marginHorizontal: 14, marginTop: 0, marginBottom: RFPercentage(0.6)
                 }}>
                 <Plus height={60} width={60} />
               </View>
@@ -318,8 +329,8 @@ export const Card = ({
                       color: 'white',
                     }}>
                     {description.length > 20
-                    ? description.slice(0, 20) + '...'
-                    : description}
+                      ? description.slice(0, 20) + '...'
+                      : description}
                   </Text>
                 </View>
               </ImageBackground>
@@ -574,7 +585,7 @@ export const Card = ({
                 style={{
                   marginHorizontal: RFPercentage(1),
                   marginTop: 13,
-                  justifyContent:'center',
+                  justifyContent: 'center',
                   marginBottom: 6,
                   width: '70%',
                 }}>
@@ -599,7 +610,6 @@ export const Card = ({
                   {description.length > 30
                     ? description.slice(0, 30) + '...'
                     : description}
-                  
                 </Text>
               </View>
             </View>
@@ -639,9 +649,7 @@ export const Card = ({
                         alignSelf: 'flex-start',
                       }}>
                       {/* {title} */}
-                      {title.length > 20
-                    ? title.slice(0, 20) + '...'
-                    : title}
+                      {title.length > 20 ? title.slice(0, 20) + '...' : title}
                       {/* titulazo que tiene mas de 20 caracteres y que  */}
                     </Text>
                   </View>
@@ -652,29 +660,30 @@ export const Card = ({
                 style={{
                   // marginHorizontal: RFPercentage(1),
                   marginTop: RFPercentage(1),
-                  marginBottom: 6,
+                  // marginBottom: 6,
                   width: '70%',
                 }}>
                 <Text
                   style={{
                     // backgroundColor: 'white',
-                    alignSelf:'stretch',
+                    alignSelf: 'stretch',
                     marginTop: '4%',
                     marginHorizontal: RFPercentage(2),
                     fontSize: FontSize.fontSizeText13,
+                    height: '60%',
                   }}>
                   {description}
                 </Text>
                 <View
                   style={{
-                    marginTop: RFPercentage(7),
-                    marginHorizontal:RFPercentage(2),
+                    marginBottom: RFPercentage(0),
+                    marginHorizontal: RFPercentage(2),
                     flexDirection: 'row',
                     alignContent: 'center',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    alignSelf:'stretch',
-                    flex: 1,
+                    alignSelf: 'stretch',
+                    height: '30%',
                   }}>
                   {/* personas */}
                   <TouchableOpacity
@@ -728,16 +737,16 @@ export const Card = ({
                   <View
                     style={{
                       width: RFPercentage(10),
-                      marginHorizontal: RFPercentage(1),
+                      marginHorizontal: RFPercentage(0),
                       bottom: 2,
-                      borderRadius: 100
+                      borderRadius: 100,
                     }}>
                     <CustomButton
                       onPress={() => console.log('pressed')}
                       label="Ver más "
                       backgroundColor={Colors.primaryLigth}
-                      iconRight='arrow-right'
-                      iconColor='white'
+                      iconRight="arrow-right"
+                      iconColor="white"
                     />
                   </View>
                 </View>
@@ -760,8 +769,8 @@ export const Card = ({
 const style = StyleSheet.create({
   container: {},
   category: {
-    height: RFPercentage(13),
-    width: 90,
+    height: RFPercentage(15),
+    width: RFPercentage(11.5),
     marginHorizontal: 4,
     marginVertical: 4,
     backgroundColor: 'white',
@@ -777,27 +786,9 @@ const style = StyleSheet.create({
     shadowRadius: 1.41,
     elevation: 2,
   },
-  categoryPressed: {
-    height: RFPercentage(13),
-    width: 90,
-    marginHorizontal: 4,
-    marginVertical: 4,
-    backgroundColor: Colors.backgrounSecondaryDark,
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
-    borderBottomRightRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.41,
-    elevation: 2,
-  },
   newProject: {
-    height: 90,
-    width: 150,
+    height: RFPercentage(13),
+    width: RFPercentage(19),
     margin: 4,
     borderRadius: 10,
     backgroundColor: 'white',
@@ -815,8 +806,9 @@ const style = StyleSheet.create({
     borderRadius: 10,
   },
   importants: {
-    height: RFPercentage(28),
-    width: RFPercentage(20),
+    // height: RFPercentage(30),
+    // height: '100%',
+    width: RFPercentage(23),
     margin: 4,
     borderRadius: 10,
     backgroundColor: 'white',
@@ -865,7 +857,7 @@ const style = StyleSheet.create({
     padding: '30%',
   },
   touchableOrganization: {
-    height: '90%',
+    // height: '100%',
     width: RFPercentage(18),
     margin: 4,
     borderRadius: 10,

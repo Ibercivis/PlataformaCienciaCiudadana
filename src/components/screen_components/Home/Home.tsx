@@ -252,7 +252,7 @@ export const Home = ({navigation}: Props) => {
       <View style={{flex: 1}} onTouchEnd={onClickExit}>
         {/* titulo */}
         <View style={HomeStyles.titleView}>
-          <Text style={HomeStyles.title}>HOME</Text>
+          <Text style={HomeStyles.title}>GEONITY</Text>
         </View>
         {/* barra de busqueda */}
         <View style={HomeStyles.searchView}>
@@ -305,7 +305,7 @@ export const Home = ({navigation}: Props) => {
                     <Card
                       key={index}
                       type="categoryPlus"
-                      categoryImage={index}
+                      categoryImage={0}
                       onPress={() => {
                         onCategoryPress();
                       }}
@@ -316,12 +316,12 @@ export const Home = ({navigation}: Props) => {
                     <Card
                       key={index}
                       type="category"
-                      categoryImage={index}
+                      categoryImage={x.id}
                       title={x.hasTag}
                       onPress={() => {
                         categoryFilter(x.id);
                       }}
-                      pressed={categorySelectedId.includes(x.id)
+                      pressed={categorySelectedId.includes(x.id)//si tiene el id en la lista de seleccionados
                         ? true
                         : false}
                     />
@@ -352,14 +352,14 @@ export const Home = ({navigation}: Props) => {
                     <Stars
                       width={RFPercentage(1.8)}
                       height={RFPercentage(1.8)}
-                      fill={'#dd4d4d'}
+                      fill={'#2b4ce0'}
                     />
                   </View>
                   <Text
                     style={{
                       textAlignVertical: 'center',
                       fontFamily: FontFamily.NotoSansDisplaySemiBold,
-                      fontSize: FontSize.fontSizeText18,
+                      fontSize: FontSize.fontSizeText18,marginLeft:RFPercentage(2)
                     }}>
                     Nuevos proyectos
                   </Text>
@@ -413,7 +413,7 @@ export const Home = ({navigation}: Props) => {
                 <View
                   style={{
                     flexDirection: 'row',
-                    height: 54,
+                    height: RFPercentage(7),
                     width: '100%',
                     marginLeft: 24,
                     marginBottom: RFPercentage(2),
@@ -435,7 +435,7 @@ export const Home = ({navigation}: Props) => {
                     style={{
                       textAlignVertical: 'center',
                       fontFamily: FontFamily.NotoSansDisplaySemiBold,
-                      fontSize: FontSize.fontSizeText18,
+                      fontSize: FontSize.fontSizeText18,marginLeft:RFPercentage(2)
                     }}>
                     Proyectos destacados
                   </Text>
@@ -495,13 +495,17 @@ export const Home = ({navigation}: Props) => {
                       justifyContent: 'center',
                       top: 1,
                     }}>
-                    <IconBootstrap name={'stars'} size={20} color={'red'} />
+                    <Magic
+                      width={RFPercentage(1.8)}
+                      height={RFPercentage(1.8)}
+                      fill={'#2b4ce0'}
+                    />
                   </View>
                   <Text
                     style={{
                       textAlignVertical: 'center',
                       fontFamily: FontFamily.NotoSansDisplaySemiBold,
-                      fontSize: FontSize.fontSizeText18,
+                      fontSize: FontSize.fontSizeText18,marginLeft:RFPercentage(2)
                     }}>
                     Te puede interesar...
                   </Text>
@@ -557,13 +561,18 @@ export const Home = ({navigation}: Props) => {
                       justifyContent: 'center',
                       top: 1,
                     }}>
-                    <IconBootstrap name={'stars'} size={20} color={'red'} />
+                    <Boockmark
+                      width={RFPercentage(1.8)}
+                      height={RFPercentage(1.8)}
+                      fill={'#2b4ce0'}
+                    />
                   </View>
                   <Text
                     style={{
                       textAlignVertical: 'center',
                       fontFamily: FontFamily.NotoSansDisplaySemiBold,
                       fontSize: FontSize.fontSizeText18,
+                      marginLeft:RFPercentage(2)
                     }}>
                     Organizaciones destacadas
                   </Text>
@@ -765,7 +774,8 @@ export const Home = ({navigation}: Props) => {
 
 const HomeStyles = StyleSheet.create({
   scrollParent: {
-    flexGrow: 1,
+    flex: 1,
+    // backgroundColor: 'blue',
   },
   title: {
     alignSelf: 'center',
@@ -789,7 +799,7 @@ const HomeStyles = StyleSheet.create({
   categoryView: {
     // backgroundColor: 'cyan',
     flexDirection: 'column',
-    height: RFPercentage(22),
+    height: RFPercentage(24),
     marginBottom: 38,
   },
   categoryScrollView: {
@@ -799,7 +809,8 @@ const HomeStyles = StyleSheet.create({
   newProjectView: {
     // backgroundColor: 'yellow',
     marginBottom: '9%',
-    height: RFPercentage(29),
+    // height: RFPercentage(35),
+    // height: '20%',
   },
   newProjectScrollView: {
     marginHorizontal: 24,
@@ -807,17 +818,18 @@ const HomeStyles = StyleSheet.create({
   },
   importantProjectView: {
     // backgroundColor: 'brown',
-    marginBottom: RFPercentage(7),
-    height: RFPercentage(40),
+    marginBottom: RFPercentage(3),
+    // height: RFPercentage(40),
+    height: '27%',
   },
   importantProjectScrollView: {
     marginHorizontal: RFPercentage(3),
-    height: RFPercentage(50),
+    // height: RFPercentage(50),
   },
   interestingView: {
     // backgroundColor: 'purple',
-    marginBottom: RFPercentage(5),
-    height: RFPercentage(37),
+    marginBottom: RFPercentage(3),
+    height: '20%',
   },
   interestingScrollView: {
     marginHorizontal: 24,
@@ -826,10 +838,12 @@ const HomeStyles = StyleSheet.create({
   importantOrganizationView: {
     // backgroundColor: 'grey',
     marginBottom: RFPercentage(1),
-    height: RFPercentage(30),
+    // height: '25%',
+    height: RFPercentage(30)
   },
   importantOrganizationScrollView: {
     marginHorizontal: 24,
+    // height: '25%',
   },
 
   showCategoryView: {
