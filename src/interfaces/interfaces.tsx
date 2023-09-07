@@ -43,3 +43,9 @@ export interface User {
     first_name: string;
     last_name:  string;
 }
+
+export interface Question {
+    id?:            number;
+    question_text: string;
+    answer_type:   string;
+}

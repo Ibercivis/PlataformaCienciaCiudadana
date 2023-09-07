@@ -16,6 +16,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
+  useWindowDimensions,
 } from 'react-native';
 import {Colors} from '../../../theme/colors';
 import {StackParams} from '../../../navigation/MultipleNavigator';
@@ -23,22 +24,27 @@ import {CustomButton} from '../../utility/CustomButton';
 import {RFPercentage} from 'react-native-responsive-fontsize';
 import {InputText} from '../../utility/InputText';
 import {HasTag} from '../../../interfaces/appInterfaces';
-import {Organization} from '../../../interfaces/interfaces';
+import {Organization, Question} from '../../../interfaces/interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import citmapApi from '../../../api/citmapApi';
 import {Checkbox, IconButton, Switch} from 'react-native-paper';
 import Hashtag from '../../../assets/icons/general/Hashtag.svg';
-import {FontSize} from '../../../theme/fonts';
+import {FontFamily, FontSize} from '../../../theme/fonts';
 import {Size} from '../../../theme/size';
 import ImagePicker from 'react-native-image-crop-picker';
 import {GeometryForms} from '../../utility/GeometryForms';
 import PlusSquare from '../../../assets/icons/general/plus-square.svg';
+import PlusImg from '../../../assets/icons/general/Plus-img.svg';
+import {QuestionCard} from '../../utility/QuestionCard';
+import {IconTemp} from '../../IconTemp';
+import {useForm} from '../../../hooks/useForm';
 
 interface Props extends StackScreenProps<StackParams, 'CreateProject'> {}
 
 export const CreateProject = ({navigation}: Props) => {
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 3;
+  const {fontScale} = useWindowDimensions();
 
   //#region FIRST
   const [categoryList, setCategoryList] = useState<HasTag[]>([]);
@@ -62,6 +68,55 @@ export const CreateProject = ({navigation}: Props) => {
   const [isSwitchOnDataBaseProject, setIsSwitchOnDataBaseProject] =
     useState(false);
   const [isSwitchOnProject, setIsSwitchOnProject] = useState(false);
+  //#endregion
+
+  //#region  THIRD
+  const [questions, setQuestions] = useState<Question[]>([
+    {question_text: 'Cual es algo?', answer_type: 'STR'},
+    {question_text: 'Cual es algo xd?', answer_type: 'NUM'},
+  ]);
+
+  /**
+   * BOOLEAN que controla si se muestra o no el modal
+   */
+  const [showAnswerTypeList, setShowAnswerTypeList] = useState(false);
+
+  /**
+   *  index de la card que está seleccionada
+   */
+  const [isSelectedCardAnswer, setIsSelectedCardAnswer] = useState(-1);
+
+  /**
+   * OBJETO de tipo Question. Es el seleccionado
+   */
+  const [selectedQuestion, setSelectedQuestion] = useState<Question>({
+    question_text: '',
+    answer_type: '',
+  });
+  /**
+   * contiene el index del "tipo de respuesta" seleccionado
+   */
+  const [responseSelected, setResponseSelected] = useState(-1);
+
+  const answerType = [
+    // {id: 1, type: 'STR', name: 'Ubicación', icon: 'map-marker'},
+    // {id: 2, type: 'STR', name: 'Respuesta corta', icon: 'text'},
+    // {id: 3, type: 'STR', name: 'Respuesta larga', icon: 'text-long'},
+    // {id: 4, type: 'STR', name: 'Única opción', icon: 'format-list-numbered'},
+    // {id: 5, type: 'STR', name: 'Varias opciones', icon: 'format-list-bulleted'},
+    // {id: 6, type: 'NUM', name: 'Escala lineal', icon: 'tune'},
+    // {id: 7, type: 'IMG', name: 'Foto', icon: 'camera-outline'},
+    // {id: 8, type: 'STR', name: 'Fecha', icon: 'calendar-range'},
+    // {id: 9, type: 'STR', name: 'Hora', icon: 'clock-time-four-outline'},
+    {id: 10, type: 'STR', name: 'Tipo texto', icon: 'text'},
+    {id: 11, type: 'NUM', name: 'Tipo numérico', icon: 'numeric'},
+    {id: 12, type: 'IMG', name: 'Tipo imagen', icon: 'camera-outline'},
+  ];
+
+  const {form, onChange} = useForm<Question>({
+    question_text: '',
+    answer_type: '',
+  });
   //#endregion
 
   useEffect(() => {
@@ -127,11 +182,6 @@ export const CreateProject = ({navigation}: Props) => {
   //#endregion
 
   //#region METHODS
-
-  //control de inputs
-  const handlePressOutside = () => {
-    Keyboard.dismiss();
-  };
 
   //#region FIRST
 
@@ -215,6 +265,114 @@ export const CreateProject = ({navigation}: Props) => {
   const onToggleSwitchDataBaseProject = () =>
     setIsSwitchOnDataBaseProject(!isSwitchOnDataBaseProject);
   const onToggleSwitchProject = () => setIsSwitchOnProject(!isSwitchOnProject);
+  //#endregion
+
+  //#region THIRD
+
+  /**
+   * Sirve para seleccionar una card
+   * tiene que guardar el index que pertenece al answerType
+   * @param i index de las cards para seleccionar una
+   * @param  index de las cards para seleccionar una
+   */
+  const onSelectedCard = (i: number, item : Question) => {
+    setIsSelectedCardAnswer(i);
+    const indiceAmswerType = knowAnswerType(item)
+    setResponseSelected(indiceAmswerType);
+    // const temp = questions.find((x, index) => index === i);
+    // if (temp) setSelectedQuestion(temp);
+    setSelectedQuestion(item)
+  };
+
+  const onResponseSelected = (response: number) => {
+    setResponseSelected(response);
+  };
+
+  const createAnswer = () => {
+    setQuestions([...questions, {question_text: '', answer_type: ''}]);
+  };
+
+  const onDelete = (item: Question) => {
+    const arrayCopy = [...questions];
+    const index = questions.indexOf(item);
+    if (index !== -1) {
+      arrayCopy.splice(index, 1);
+      setQuestions(arrayCopy);
+    }
+  };
+
+  const duplicate = (item: Question) => {
+    setQuestions([...questions, item]);
+  };
+
+  /**
+   * guarda el indice de la card
+   * @param index indice
+   */
+  const onEditResponseType = (index: number, item : Question) => {
+    onSelectedCard(index, item);
+    setShowAnswerTypeList(true);
+  };
+
+  /**
+   *  funciona por dentro
+   * @param x id del asnwerType
+   */
+  const onSelectResponseTypeModal = (type: string, index: number) => {
+    console.log(index + ' ' + type)
+    setQuestions(prevQuestions => {
+      return prevQuestions.map((question, i) => {
+        if (question === selectedQuestion) {
+          return {...selectedQuestion, ['answer_type']: type};
+        }
+        return question;
+      });
+    });
+    // setResponseType(type)
+  };
+
+  const showData = () => {
+    questions.map(x => {
+      console.log(JSON.stringify(x, null, 2));
+    });
+  };
+
+  // Función para manejar cambios en las tarjetas
+  // CAMBIA EL TEXTO DEL INPUT
+  const handleQuestionChange = (
+    index: number,
+    fieldName: string,
+    value: any,
+  ) => {
+    // Encuentra la tarjeta por su ID y actualiza los datos
+    setQuestions(prevQuestions => {
+      return prevQuestions.map((question, i) => {
+        if (i === index) {
+          return {...question, [fieldName]: value};
+        }
+        return question;
+      });
+    });
+  };
+
+  const setAnswerType = (type: string) => {
+    const temp = answerType.find(
+      x => x.type.toLocaleLowerCase() === type.toLocaleLowerCase(),
+    )?.name;
+    // console.log(temp);
+    return temp;
+  };
+
+  /**
+   * 
+   * @param item este valor es el item que se envía para saber su answer type
+   * @returns devuelve el answer type que corresponda
+   */
+  const knowAnswerType = (item: Question) => {
+    const temp = answerType.findIndex((x)=> x.type.toLowerCase() === item.answer_type.toLowerCase());
+    return temp;
+  };
+
   //#endregion
 
   //#endregion
@@ -331,9 +489,7 @@ export const CreateProject = ({navigation}: Props) => {
                     bottom: RFPercentage(-2),
                     left: RFPercentage(18),
                     zIndex: 999,
-                  }}
-                  
-                  >
+                  }}>
                   {/* <IconButton
                     icon="image-album"
                     iconColor="#5F4B66"
@@ -570,6 +726,7 @@ export const CreateProject = ({navigation}: Props) => {
       </KeyboardAvoidingView>
     );
   };
+
   const secondScreen = () => {
     return (
       <>
@@ -577,7 +734,11 @@ export const CreateProject = ({navigation}: Props) => {
           <View
             style={{
               alignItems: 'center',
+              justifyContent: 'center',
+              alignSelf: 'center',
               width: RFPercentage(41),
+              marginHorizontal: RFPercentage(2),
+              //   backgroundColor: 'red',
             }}>
             <View
               style={{
@@ -596,26 +757,26 @@ export const CreateProject = ({navigation}: Props) => {
                   alignItems: 'center',
                   marginVertical: RFPercentage(1),
                 }}>
-                <Text style={{color: 'black'}}>Visibilidad del perfil</Text>
-                <Switch
-                  value={isSwitchOnCreator}
-                  onValueChange={onToggleSwitchCreator}
-                />
-              </View>
-              <View
-                style={{
-                  width: '100%',
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginVertical: RFPercentage(1),
-                }}>
-                <Text style={{color: 'black'}}>Visibilidad del perfil</Text>
+                <Text style={{color: 'black'}}>
+                  Privacidad base de datos del proyecto
+                </Text>
                 <Switch
                   value={isSwitchOnDataBaseProject}
                   onValueChange={onToggleSwitchDataBaseProject}
                 />
               </View>
+              <Text
+                style={{
+                  color: Colors.contentQuaternaryDark,
+                  fontSize: FontSize.fontSizeText13,
+                  width: '80%',
+                  alignSelf: 'flex-start',
+                  marginLeft: '3%',
+                  //   backgroundColor:'green'
+                }}>
+                Si lo activas, bla bla bla balbla bla bla balbla bla bla balbla
+                bla bla balbla bla bla balbla bla bla balbla bla bla bal
+              </Text>
               <View
                 style={{
                   width: '100%',
@@ -624,29 +785,54 @@ export const CreateProject = ({navigation}: Props) => {
                   alignItems: 'center',
                   marginVertical: RFPercentage(1),
                 }}>
-                <Text style={{color: 'black'}}>Visibilidad del perfil</Text>
+                <Text style={{color: 'black'}}>Privacidad del proyecto</Text>
                 <Switch
                   value={isSwitchOnProject}
                   onValueChange={onToggleSwitchProject}
                 />
               </View>
+              <Text
+                style={{
+                  color: Colors.contentQuaternaryDark,
+                  fontSize: FontSize.fontSizeText13,
+                  width: '80%',
+                  alignSelf: 'flex-start',
+                  marginLeft: '3%',
+                  //   backgroundColor:'green'
+                }}>
+                Si lo activas, bla bla bla balbla bla bla balbla bla bla balbla
+                bla bla balbla bla bla balbla bla bla balbla bla bla bal
+              </Text>
+            </View>
+          </View>
+          <View
+            style={{
+              width: '100%',
+              height: 'auto',
+              alignSelf: 'center',
+              //   backgroundColor:'green'
+            }}>
+            <View style={{}}>
               {isSwitchOnProject && (
                 <>
                   {/* password */}
                   <View
                     style={{
-                      width: '100%',
+                      //   width: '80%',
                       flexDirection: 'row',
                       alignItems: 'center',
+                      flex: 1,
                     }}>
                     <View
                       style={{
                         // left: '-5%',
-                        marginLeft: -20,
+                        marginLeft: -RFPercentage(3),
                         top: '50%',
                         alignSelf: 'center',
                         // justifyContent: 'center',
                         position: 'absolute',
+                        paddingLeft: RFPercentage(1),
+                        // backgroundColor:'green'
                       }}>
                       {true ? (
                         <GeometryForms
@@ -658,30 +844,36 @@ export const CreateProject = ({navigation}: Props) => {
                         <></>
                       )}
                     </View>
-                    <InputText
-                      // isInputText={() => setIsInputText(!isInputText)}
-                      label={'Escriba la contraseña'}
-                      inputType={true}
-                      multiline={false}
-                      numOfLines={1}
-                      isSecureText={true}
-                      onChangeText={value => console.log('password')}
-                    />
+                    <View
+                      style={{
+                        width: RFPercentage(41),
+                      }}>
+                      <InputText
+                        // isInputText={() => setIsInputText(!isInputText)}
+                        label={'Escriba la contraseña'}
+                        inputType={true}
+                        multiline={false}
+                        numOfLines={1}
+                        isSecureText={true}
+                        onChangeText={value => console.log('password')}
+                      />
+                    </View>
                   </View>
                   {/* password repeat */}
                   <View
                     style={{
-                      width: '80%',
+                      width: RFPercentage(41),
                       flexDirection: 'row',
                       alignItems: 'center',
                     }}>
                     <View
                       style={{
-                        left: '-5%',
+                        marginLeft: -RFPercentage(3),
                         top: '50%',
                         alignSelf: 'center',
                         justifyContent: 'center',
                         position: 'absolute',
+                        paddingLeft: RFPercentage(1),
                       }}>
                       {true ? (
                         <GeometryForms
@@ -711,8 +903,56 @@ export const CreateProject = ({navigation}: Props) => {
       </>
     );
   };
+
   const thirdScreen = () => {
-    return <></>;
+    return (
+      <>
+        <KeyboardAvoidingView>
+          <View
+            style={{
+              alignItems: 'center',
+              justifyContent: 'center',
+              alignSelf: 'center',
+              width: '100%',
+              marginHorizontal: RFPercentage(1),
+            }}>
+            <ScrollView>
+              {questions.map((item, index) => (
+                <QuestionCard
+                  onPress={() => onSelectedCard(index, item)}
+                  onEdit={() => onEditResponseType(index, item)}
+                  onDelete={() => onDelete(item)}
+                  onDuplicate={() => duplicate(item)}
+                  onFocus={() => onSelectedCard(index, item)}
+                  key={index}
+                  index={index + 1}
+                  selected={index === isSelectedCardAnswer}
+                  form={item}
+                  onChangeText={(fieldName, value) =>
+                    handleQuestionChange(index, fieldName, value)
+                  }
+                  responseType={item.answer_type}
+                />
+              ))}
+              <TouchableOpacity
+                style={{width: RFPercentage(4), alignSelf: 'center'}}
+                onPress={createAnswer}>
+                <PlusImg
+                  style={{
+                    position: 'relative',
+                    alignSelf: 'center',
+                    marginVertical: RFPercentage(3),
+                  }}
+                  height={RFPercentage(4)}
+                  width={RFPercentage(4)}
+                  fill={'black'}
+                />
+              </TouchableOpacity>
+            </ScrollView>
+          </View>
+        </KeyboardAvoidingView>
+      </>
+    );
   };
 
   //#endregion
@@ -771,6 +1011,13 @@ export const CreateProject = ({navigation}: Props) => {
                   backgroundColor={Colors.primaryDark}
                   label={'Continuar'}
                   onPress={handleNextStep}
+                />
+              )}
+              {currentStep === 3 && (
+                <CustomButton
+                  backgroundColor={Colors.primaryDark}
+                  label={'Crear y continuar'}
+                  onPress={() => showData()}
                 />
               )}
             </View>
@@ -839,6 +1086,185 @@ export const CreateProject = ({navigation}: Props) => {
                       <Text>{item.hasTag}</Text>
                     </View>
                   ); //aquí poner el plus
+                }}
+              />
+            </View>
+          )}
+          {showAnswerTypeList && (
+            <View style={styles.showCategoryView}>
+              <View
+                style={{
+                  width: '100%',
+                  alignItems: 'center',
+                  backgroundColor: 'white',
+                  height: 10,
+                  marginBottom: '2%',
+                }}>
+                <TouchableOpacity
+                  style={{
+                    borderRadius: 50,
+                    backgroundColor: 'grey',
+                    height: 8,
+                    width: '10%',
+                  }}></TouchableOpacity>
+              </View>
+              <View
+                style={{
+                  justifyContent: 'space-between',
+                  flexDirection: 'row',
+                  marginVertical: '4%',
+                  marginHorizontal: RFPercentage(4),
+                }}>
+                <View>
+                  <Text
+                    style={{
+                      fontSize: FontSize.fontSizeText14,
+                      fontWeight: 'bold',
+                      color: 'black',
+                    }}>
+                    Tipo de respuesta
+                  </Text>
+                </View>
+                <View>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setShowAnswerTypeList(false),
+                        setResponseSelected(-1),
+                        setSelectedQuestion({
+                          question_text: '',
+                          answer_type: '',
+                        });
+                    }}>
+                    <Text style={{color: Colors.lightblue}}>Cerrar</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+              <FlatList
+                contentContainerStyle={{
+                  alignItems: 'center',
+                  alignSelf: 'center',
+                  justifyContent: 'center',
+                  width: '90%',
+                }}
+                numColumns={1}
+                showsVerticalScrollIndicator={false}
+                showsHorizontalScrollIndicator={false}
+                data={answerType}
+                renderItem={({item, index}) => {
+                  const isChecked = index === responseSelected ? true : false; //solo sirve para marcar el que está seleccionado
+                  return (
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'flex-start',
+                        width: RFPercentage(42),
+                      }}>
+                      {isChecked ? (
+                        <View style={{width: RFPercentage(30)}}>
+                          <TouchableOpacity
+                            activeOpacity={0.6}
+                            onPress={() => setResponseSelected(-1)}
+                            // onPress={() => setResponseSelectedObject(item)}
+                            // onPress={() => onSelectResponseTypeModal(-1)}
+                            style={{
+                              width: '100%',
+                              justifyContent: 'center',
+                              height: 35,
+                              borderRadius: 12,
+                              marginTop: '2.5%',
+                              backgroundColor: Colors.primaryDark,
+                            }}>
+                            <View
+                              style={{
+                                flexDirection: 'row', // Coloca el icono y el texto en una fila
+                                alignItems: 'center', // Centra verticalmente el contenido
+                                justifyContent: 'flex-start', // Alinea el contenido al principio (izquierda)
+                                paddingHorizontal: RFPercentage(5), // Añade espaciado horizontal al contenido
+                                backgroundColor: 'transparent',
+                              }}>
+                              <View
+                                style={{
+                                  marginRight: 'auto',
+                                  marginLeft: RFPercentage(1),
+                                }}>
+                                <IconTemp
+                                  name={item.icon}
+                                  size={Size.iconSizeMin}
+                                  style={{alignSelf: 'center'}}
+                                />
+                              </View>
+
+                              <Text
+                                style={{
+                                  flex: 1, // Permite que el texto ocupe el espacio restante
+                                  textAlign: 'center', // Centra horizontalmente el texto
+                                  fontWeight: '500',
+                                  fontSize: FontSize.fontSizeText14 / fontScale,
+                                  alignSelf: 'center',
+                                  fontFamily: FontFamily.NotoSansDisplayMedium,
+                                  color: '#fff',
+                                }}>
+                                {item.name}
+                              </Text>
+                            </View>
+                          </TouchableOpacity>
+                        </View>
+                      ) : (
+                        <View style={{width: RFPercentage(22)}}>
+                          <TouchableOpacity
+                            activeOpacity={0.6}
+                            onPress={() => {
+                                onResponseSelected(index), //se guarda el index del type
+                                onSelectResponseTypeModal(item.type, index), // se modifica la question para que cambie su type
+                                setShowAnswerTypeList(false); // se cierra el modal
+                            }}
+                            style={{
+                              width: '100%',
+                              justifyContent: 'center',
+                              height: 35,
+                              borderRadius: 12,
+                              marginTop: '2.5%',
+                              backgroundColor: Colors.contentSecondaryDark,
+                            }}>
+                            <View
+                              style={{
+                                flexDirection: 'row', // Coloca el icono y el texto en una fila
+                                alignItems: 'center', // Centra verticalmente el contenido
+                                justifyContent: 'flex-start', // Alinea el contenido al principio (izquierda)
+                                paddingHorizontal: RFPercentage(1), // Añade espaciado horizontal al contenido
+                                backgroundColor: 'transparent',
+                              }}>
+                              <View
+                                style={{
+                                  marginRight: 'auto',
+                                  marginLeft: RFPercentage(1),
+                                }}>
+                                <IconTemp
+                                  name={item.icon}
+                                  size={Size.iconSizeMin}
+                                  style={{alignSelf: 'center'}}
+                                />
+                              </View>
+
+                              <Text
+                                style={{
+                                  flex: 1,
+                                  textAlign: 'left',
+                                  fontWeight: '500',
+                                  fontSize: FontSize.fontSizeText14 / fontScale,
+                                  alignSelf: 'center',
+                                  fontFamily: FontFamily.NotoSansDisplayMedium,
+                                  color: '#000000',
+                                  marginLeft: '15%',
+                                }}>
+                                {item.name}
+                              </Text>
+                            </View>
+                          </TouchableOpacity>
+                        </View>
+                      )}
+                    </View>
+                  );
                 }}
               />
             </View>
