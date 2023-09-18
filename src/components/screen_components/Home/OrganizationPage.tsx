@@ -19,6 +19,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import citmapApi from '../../../api/citmapApi';
 import {Organization, Project} from '../../../interfaces/interfaces';
 import {Card} from '../../utility/Card';
+import { SaveProyectModal } from '../../utility/Modals';
+import { Colors } from '../../../theme/colors';
 
 interface Props extends StackScreenProps<StackParams, 'OrganizationPage'> {}
 
@@ -26,10 +28,19 @@ export const OrganizationPage = (props: Props) => {
   //#region CONST
   const [organization, setOrganization] = useState<Organization>();
   const [projectList, setProjectList] = useState<Project[]>([]);
+    /**
+   * Elementos del modal
+   */
+    const [saveModal, setSaveModal] = useState(false);
+    const showModalSave = () => setSaveModal(true);
+    const hideModalSave = () => setSaveModal(false);
   //#endregion
 
   //#region USE EFFECTS
   useEffect(() => {
+    if (props.route.params.isNew) {
+      showModalSave();
+    }
     getOrganizationApi();
   }, []);
 
@@ -214,6 +225,16 @@ export const OrganizationPage = (props: Props) => {
               );
             })}
           </ScrollView>
+          <SaveProyectModal
+          visible={saveModal}
+          hideModal={hideModalSave}
+          onPress={hideModalSave}
+          size={RFPercentage(6)}
+          color={Colors.semanticSuccessLight}
+          label='¡Proyecto creado!'
+          subLabel='No olvides compartir tu proyecto para obtener una mayor
+          participación'
+        />
           {/* <FlatList
             style={{flex: 1}}
             contentContainerStyle={{alignItems: 'center'}}

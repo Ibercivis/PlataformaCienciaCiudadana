@@ -63,7 +63,7 @@ export const HeaderComponent = ({
               }}>
               {/* <IconTemp name="arrow-left" size={Size.iconSizeMedium} /> */}
               <Back
-                width={Size.iconSizeMedium}
+                width={Size.iconSizeMin}
                 height={Size.iconSizeMedium}
                 color={'#000000'}
               />
@@ -72,18 +72,21 @@ export const HeaderComponent = ({
         </View>
       }
       centerComponent={
-        <Text
-          style={{
-            alignSelf: 'flex-start',
-            fontWeight: 'bold',
-            color: '#000000',
-            bottom: RFPercentage(0.2),
-            fontSize: FontSize.fontSizeTextSubTitle,
-          }}>
-          {title}
-        </Text>
+        
+          <Text
+            numberOfLines={1}
+            style={{
+              alignSelf: 'center',
+              fontWeight: 'bold',
+              color: '#000000',
+              top: RFPercentage(0.2),
+              fontSize: FontSize.fontSizeText20,
+              flexWrap: 'wrap',
+            }}>
+            {title}
+          </Text>
       }
-      rightComponent={ renderRight ? (<>{renderRight()}</>) : (<></>)}
+      rightComponent={renderRight ? <>{renderRight()}</> : <></>}
     />
   );
 };

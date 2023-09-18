@@ -49,3 +49,24 @@ export interface Question {
     question_text: string;
     answer_type:   string;
 }
+
+export interface UserInfo {
+    id:       number;
+    username: string;
+    profile:  Profile;
+}
+
+export interface Profile {
+    biography:             string;
+    visibility:            boolean;
+    country:               string;
+    participated_projects: any[];
+    created_projects:      CreatedProject[];
+    liked_projects:        any[];
+}
+
+export interface CreatedProject {
+    id:          number;
+    name:        string;
+    description: string;
+}

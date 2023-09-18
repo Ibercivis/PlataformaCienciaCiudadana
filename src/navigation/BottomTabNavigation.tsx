@@ -30,7 +30,7 @@ export type StackParams = {
   // NavigatorMapBox: undefined;
   ProfileScreen: undefined;
   LoginScreen: undefined;
-  ProjectNavigator: undefined;
+  HomeNavigator: undefined;
   SelectorTab: undefined;
   CenterButtonTab: undefined;
 };
@@ -140,7 +140,7 @@ const CenterButtonTab = () => {
                   </ImageBackground>
                 </View>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.cards} onPress={() => {}}>
+              <TouchableOpacity style={styles.cards} onPress={() => navigateTo('CreateOrganization')}>
                 <View style={{flex: 1}}>
                   <ImageBackground
                     borderRadius={10}
@@ -216,7 +216,7 @@ export const BottomTabNavigation = () => {
               }
 
               const label =
-                route.name === 'ProjectNavigator' ? 'Home' : 'Ajustes';
+                route.name === 'HomeNavigator' ? 'Home' : 'Ajustes';
 
               return (
                 <CustomTab
@@ -244,13 +244,13 @@ export const BottomTabNavigation = () => {
         )}>
         {/* esto sería cambiarlo a que lleve a homeScreem o a otro donde se incluya para ver los proyectos */}
         <Tab.Screen
-          name="ProjectNavigator"
+          name="HomeNavigator"
           component={HomeNavigator}
           options={{
             tabBarIcon: ({focused}) => (
               <CustomTab
                 label="Home"
-                route="ProjectNavigator"
+                route="HomeNavigator"
                 focused={focused}
                 onPress={() => {}}
                 icon="home"
@@ -259,24 +259,6 @@ export const BottomTabNavigation = () => {
             unmountOnBlur: true,
           }}
         />
-        {/* aquí iría una navegación que contendría la creación de las cosas */}
-        {/* <Tab.Screen
-          name="LoginScreen"
-          component={LoginScreen}
-          options={{
-            tabBarIcon: ({focused}) => (
-              <CustomTab
-                label=""
-                route="LoginScreen"
-                focused={focused}
-                onPress={() => {}}
-                icon="plus"
-                isCenter={true}
-              />
-            ),
-            unmountOnBlur: true,
-          }}
-        /> */}
         <Tab.Screen name="CenterButtonTab" component={CenterButtonTab} />
         <Tab.Screen
           name="ProfileScreen"

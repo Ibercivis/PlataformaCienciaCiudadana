@@ -7,6 +7,7 @@ import {NavigationContainer, DefaultTheme} from '@react-navigation/native';
 import {Navigator} from './src/navigation/Navigator';
 import {AuthProvider} from './src/context/AuthContext';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
+import {ModalProvider} from './src/context/ModalContext';
 
 const App = () => {
   const tema = DefaultTheme;
@@ -16,9 +17,11 @@ const App = () => {
       <AppState>
         <SafeAreaProvider>
           <PaperProvider>
-            <NavigationContainer theme={tema}>
-              <Navigator />
-            </NavigationContainer>
+            <ModalProvider>
+              <NavigationContainer theme={tema}>
+                <Navigator />
+              </NavigationContainer>
+            </ModalProvider>
           </PaperProvider>
         </SafeAreaProvider>
       </AppState>

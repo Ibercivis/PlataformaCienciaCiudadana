@@ -1,11 +1,9 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {HeaderComponent} from '../../HeaderComponent';
 import {StackScreenProps} from '@react-navigation/stack';
 import {
-  Button,
   FlatList,
   Image,
-  Keyboard,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
@@ -14,7 +12,6 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   View,
   useWindowDimensions,
 } from 'react-native';
@@ -38,11 +35,14 @@ import PlusImg from '../../../assets/icons/general/Plus-img.svg';
 import {QuestionCard} from '../../utility/QuestionCard';
 import {IconTemp} from '../../IconTemp';
 import {useForm} from '../../../hooks/useForm';
+import {CommonActions} from '@react-navigation/native';
+import {SaveProyectModal} from '../../utility/Modals';
 
 interface Props extends StackScreenProps<StackParams, 'CreateProject'> {}
 
 export const CreateProject = ({navigation}: Props) => {
   const [currentStep, setCurrentStep] = useState(1);
+  const [isSaved, setIsSaved] = useState(false);
   const totalSteps = 3;
   const {fontScale} = useWindowDimensions();
 
@@ -98,6 +98,14 @@ export const CreateProject = ({navigation}: Props) => {
    */
   const [responseSelected, setResponseSelected] = useState(-1);
 
+  /**
+   * Elementos del modal
+   */
+  const [saveModal, setSaveModal] = useState(false);
+  const showModalSave = () => setSaveModal(true);
+  const hideModalSave = () => setSaveModal(false);
+  // const { modalVisible, setModalVisible, changeVisibility} = useModal();
+
   const answerType = [
     // {id: 1, type: 'STR', name: 'Ubicación', icon: 'map-marker'},
     // {id: 2, type: 'STR', name: 'Respuesta corta', icon: 'text'},
@@ -131,7 +139,7 @@ export const CreateProject = ({navigation}: Props) => {
   }, [inputValueOrganization]);
 
   useEffect(() => {
-    console.log(JSON.stringify(images));
+    // console.log(JSON.stringify(images));
   }, [images]);
 
   //#region CONTROLAR STEPPER
@@ -275,13 +283,13 @@ export const CreateProject = ({navigation}: Props) => {
    * @param i index de las cards para seleccionar una
    * @param  index de las cards para seleccionar una
    */
-  const onSelectedCard = (i: number, item : Question) => {
+  const onSelectedCard = (i: number, item: Question) => {
     setIsSelectedCardAnswer(i);
-    const indiceAmswerType = knowAnswerType(item)
+    const indiceAmswerType = knowAnswerType(item);
     setResponseSelected(indiceAmswerType);
     // const temp = questions.find((x, index) => index === i);
     // if (temp) setSelectedQuestion(temp);
-    setSelectedQuestion(item)
+    setSelectedQuestion(item);
   };
 
   const onResponseSelected = (response: number) => {
@@ -309,7 +317,7 @@ export const CreateProject = ({navigation}: Props) => {
    * guarda el indice de la card
    * @param index indice
    */
-  const onEditResponseType = (index: number, item : Question) => {
+  const onEditResponseType = (index: number, item: Question) => {
     onSelectedCard(index, item);
     setShowAnswerTypeList(true);
   };
@@ -319,7 +327,7 @@ export const CreateProject = ({navigation}: Props) => {
    * @param x id del asnwerType
    */
   const onSelectResponseTypeModal = (type: string, index: number) => {
-    console.log(index + ' ' + type)
+    console.log(index + ' ' + type);
     setQuestions(prevQuestions => {
       return prevQuestions.map((question, i) => {
         if (question === selectedQuestion) {
@@ -332,9 +340,23 @@ export const CreateProject = ({navigation}: Props) => {
   };
 
   const showData = () => {
-    questions.map(x => {
-      console.log(JSON.stringify(x, null, 2));
-    });
+    // showModalSave();
+    // navigation.navigate('')
+    // navigation.navigate('ModalScreen')
+    if (isSaved) {
+      navigation.dispatch(
+        CommonActions.navigate({
+          name: 'ProjectPage',
+          params: {id: 1, isNew: true},
+        }),
+      );
+    } else {
+      showModalSave();
+    }
+
+    // questions.map(x => {
+    //    console.log(JSON.stringify(x, null, 2));
+    // });
   };
 
   // Función para manejar cambios en las tarjetas
@@ -364,12 +386,14 @@ export const CreateProject = ({navigation}: Props) => {
   };
 
   /**
-   * 
+   *
    * @param item este valor es el item que se envía para saber su answer type
    * @returns devuelve el answer type que corresponda
    */
   const knowAnswerType = (item: Question) => {
-    const temp = answerType.findIndex((x)=> x.type.toLowerCase() === item.answer_type.toLowerCase());
+    const temp = answerType.findIndex(
+      x => x.type.toLowerCase() === item.answer_type.toLowerCase(),
+    );
     return temp;
   };
 
@@ -523,7 +547,7 @@ export const CreateProject = ({navigation}: Props) => {
               keyboardType="default"
               multiline={false}
               numOfLines={1}
-              onChangeText={value => console.log(value)}
+              onChangeText={value => console.log(value)} //faltan poner los values
             />
           </View>
           {/* descripcion del proyecto */}
@@ -1021,6 +1045,16 @@ export const CreateProject = ({navigation}: Props) => {
                 />
               )}
             </View>
+            {/* modal save proyect */}
+            <SaveProyectModal
+              visible={saveModal}
+              hideModal={hideModalSave}
+              onPress={hideModalSave}
+              size={RFPercentage(4)}
+              color={Colors.semanticWarningDark}
+              label='Ha surgido un problema, vuelva a intentarlo.'
+              helper={false}
+            />
           </ScrollView>
           {showCategoryList && (
             <View style={styles.showCategoryView}>
@@ -1214,7 +1248,7 @@ export const CreateProject = ({navigation}: Props) => {
                           <TouchableOpacity
                             activeOpacity={0.6}
                             onPress={() => {
-                                onResponseSelected(index), //se guarda el index del type
+                              onResponseSelected(index), //se guarda el index del type
                                 onSelectResponseTypeModal(item.type, index), // se modifica la question para que cambie su type
                                 setShowAnswerTypeList(false); // se cierra el modal
                             }}

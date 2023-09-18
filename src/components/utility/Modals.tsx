@@ -1,17 +1,31 @@
 import React, {useState} from 'react';
-import {Modal, View, StyleSheet, Text} from 'react-native';
+import {
+  Modal,
+  View,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import {Button, Divider, List, Portal, Provider} from 'react-native-paper';
 import Animales from '../../assets/icons/category/Animales.svg';
+import CheckCircle from '../../assets/icons/general/check-circle-fill.svg';
+import {useModal} from '../../context/ModalContext';
+import {FontSize, FontWeight} from '../../theme/fonts';
+import {RFPercentage} from 'react-native-responsive-fontsize';
+import {Colors} from '../../theme/colors';
 
 interface Props {
   label?: string;
+  subLabel?: string;
   onPress?: () => void;
   visible: boolean;
+  helper?: boolean;
   hideModal: () => void;
-  selected: string;
-  setSelected: (value: any) => void;
+  selected?: string;
+  setSelected?: (value: any) => void;
   icon?: string;
-  size?: string;
+  size?: number;
   color?: string;
 }
 
@@ -45,7 +59,7 @@ export const GenderSelectorModal = ({
                   <List.Item
                     key={index}
                     title={gender}
-                    onPress={() => setSelected(gender)}
+                    onPress={() => setSelected!(gender)}
                     left={() => (
                       <List.Icon
                         icon={
@@ -97,7 +111,7 @@ export const VisibilityOrganizationModal = ({
                   <List.Item
                     key={index}
                     title={visibility}
-                    onPress={() => setSelected(visibility)}
+                    onPress={() => setSelected!(visibility)}
                     left={() => (
                       <List.Icon
                         icon={
@@ -150,6 +164,168 @@ export const SaveModal = ({
               <Animales width={size} height={size} fill={color} />
             </View>
           </View>
+        </Modal>
+      </Portal>
+    </Provider>
+  );
+};
+
+export const SaveProyectModal = ({
+  onPress,
+  visible,
+  hideModal,
+  label,
+  subLabel,
+  icon,
+  size,
+  color,
+  helper = true,
+}: Props) => {
+  // const { modalVisible, setModalVisible, changeVisibility } = useModal();
+  //TODO pasar esto a una screen y llamarla desde el navigator para hacer como si fuera un modal global en la app
+  return (
+    <Provider>
+      <Portal>
+        <Modal visible={visible} transparent>
+          <TouchableWithoutFeedback onPress={hideModal}>
+            <View style={{...styles.modalContainer}}>
+              <View
+                style={{
+                  ...styles.modalContent,
+                  alignItems: 'center',
+                  height: '35%',
+                  width: '60%',
+                  justifyContent: 'center',
+                  paddingHorizontal: '11%',
+                }}>
+                {helper === true ? (
+                  <>
+                    <Text
+                      style={{
+                        fontSize: FontSize.fontSizeText20,
+                        color: 'black',
+                        marginVertical: '4%',
+                        fontWeight: '600',
+                      }}>
+                      {label}
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: FontSize.fontSizeText14,
+                        color: 'black',
+                        textAlign: 'center',
+                        marginTop: '5%',
+                      }}>
+                      {subLabel}
+                    </Text>
+                    <View style={{marginTop: RFPercentage(4)}}>
+                      <CheckCircle width={size} height={size} fill={color} />
+                    </View>
+                  </>
+                ) : (
+                  <>
+                    <Text
+                      style={{
+                        fontSize: FontSize.fontSizeText20,
+                        color: 'black',
+                        marginVertical: '4%',
+                        fontWeight: '600',
+                        textAlign: 'center',
+                      }}>
+                      {label}
+                    </Text>
+
+                    <View style={{marginTop: RFPercentage(4)}}>
+                      <CheckCircle width={size} height={size} fill={color} />
+                    </View>
+                  </>
+                )}
+
+                {/* <TouchableOpacity
+                  activeOpacity={0.9}
+                  style={{backgroundColor: 'transparent', marginTop: 10}}
+                  onPress={() => hideModal()}>
+                  <Text>Cerrar</Text>
+                </TouchableOpacity> */}
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
+        </Modal>
+      </Portal>
+    </Provider>
+  );
+};
+export const InfoModal = ({
+  onPress,
+  visible,
+  hideModal,
+  label,
+  subLabel,
+  icon,
+  size,
+  color,
+  helper = true,
+}: Props) => {
+  return (
+    <Provider>
+      <Portal>
+        <Modal visible={visible} transparent>
+          <TouchableWithoutFeedback onPress={hideModal}>
+            <View style={{...styles.modalContainer}}>
+              <View
+                style={{
+                  ...styles.modalContent,
+                  alignItems: 'center',
+                  height: '40%',
+                  width: '70%',
+                  // justifyContent: 'center',
+                  // paddingHorizontal: '11%',
+                }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    width: '60%',
+                    height: '20%',
+                    alignItems: 'center',
+                    // justifyContent: 'center',
+                  }}>
+                  <View style={{marginRight: '4%'}}>
+                    <CheckCircle width={size} height={size} fill={color} />
+                  </View>
+                  <View>
+                    <Text
+                      style={{
+                        color: Colors.primaryDark,
+                        textAlign: 'center',
+                        fontSize: FontSize.fontSizeText18 - 1,
+                      }}>
+                      {label}
+                    </Text>
+                  </View>
+                </View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    width: '80%',
+                    height: 'auto',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                  <Text style={{marginTop: '10%'}}>{subLabel}</Text>
+                </View>
+
+                <TouchableOpacity
+                  activeOpacity={0.9}
+                  style={{backgroundColor: 'transparent', marginTop: '20%'}}
+                  onPress={() => hideModal()}>
+                  <Text
+                    style={{color: 'black', fontSize: FontSize.fontSizeText18}}>
+                    Aceptar
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
         </Modal>
       </Portal>
     </Provider>

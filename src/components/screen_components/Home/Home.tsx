@@ -38,9 +38,11 @@ interface Props extends StackScreenProps<any, any> {}
 
 export const Home = ({navigation}: Props) => {
   //#region Variables/const
+  const NUM_SLICE_NEW_PROJECT_LIST = 10;
   const [categoryList, setCategoryList] = useState<HasTag[]>([]); //clonar para que la que se muestre solo tenga X registros siendo la ultima el +
   const [categoriesSelected, setCategoriesSelected] = useState<HasTag[]>([]);
   const [newProjectList, setNewProjectList] = useState<Project[]>([]); // partir la lista en 2
+  const [newProjectListSliced, setNewProjectListSliced] = useState<Project[]>([]); // partir la lista en 2
 
   const [importantProjectList, setImportantProjectList] = useState<Project[]>(
     [],
@@ -57,7 +59,6 @@ export const Home = ({navigation}: Props) => {
   const [refreshing, setRefreshing] = useState(false);
   const [isAllCharged, setIsAllCharged] = useState(false);
   const [categorySelectedId, setCategorySelectedId] = useState<number[]>([]);
-  
 
   const {onChange, form} = useForm({
     searchText: '',
@@ -94,9 +95,9 @@ export const Home = ({navigation}: Props) => {
   //se usa para que cuando una categoría esté seleccionada, se filtren proyectos si coinciden con la categoría
   useEffect(() => {
     categorySelectedFilter();
-    console.log("Añadiendo el nuevo" + JSON.stringify(categorySelectedId))
-    if(categorySelectedId.length <= 0){
-      setOnSearch(false)
+    // console.log("Añadiendo el nuevo" + JSON.stringify(categorySelectedId))
+    if (categorySelectedId.length <= 0) {
+      setOnSearch(false);
     }
   }, [categorySelectedId]);
 
@@ -124,16 +125,18 @@ export const Home = ({navigation}: Props) => {
    * @param category categoría que se selecciona
    */
   const categoryFilter = (id: number) => {
-    console.log("Entra al filter" + JSON.stringify(categorySelectedId))
+    console.log('Entra al filter' + JSON.stringify(categorySelectedId));
     // si ya estaba en la lista se eliminará
     // si no está en la lista, se añadirá
-    if(categorySelectedId.includes(id)){
-      const ifCategory =  categorySelectedId.filter(x => x !== id);
-      console.log("Los filtrados, si existe en la lista, se borra" + JSON.stringify(ifCategory))
-      setCategorySelectedId([...ifCategory])
-    }else{
+    if (categorySelectedId.includes(id)) {
+      const ifCategory = categorySelectedId.filter(x => x !== id);
+      console.log(
+        'Los filtrados, si existe en la lista, se borra' +
+          JSON.stringify(ifCategory),
+      );
+      setCategorySelectedId([...ifCategory]);
+    } else {
       setCategorySelectedId([...categorySelectedId, id]);
-      
     }
   };
 
@@ -201,6 +204,10 @@ export const Home = ({navigation}: Props) => {
 
   const rows = splitDataIntoRows(newProjectList, 2);
 
+  const chunkArray = (list: Project[], chunkSize: number) => {
+    setNewProjectListSliced(list.slice(0, chunkSize))
+  };
+
   //#region ApiCalls
 
   const categoryListApi = async () => {
@@ -225,6 +232,7 @@ export const Home = ({navigation}: Props) => {
       });
       // console.log(JSON.stringify(resp.data));
       setNewProjectList(resp.data);
+      chunkArray(resp.data, NUM_SLICE_NEW_PROJECT_LIST)
     } catch {}
   };
 
@@ -273,7 +281,8 @@ export const Home = ({navigation}: Props) => {
           style={HomeStyles.scrollParent}
           onTouchEnd={onClickExit}
           nestedScrollEnabled={true}
-          contentContainerStyle={{flexGrow: 1}}
+          // contentContainerStyle={{flexGrow: 1}}
+          contentContainerStyle={{paddingBottom: '20%'}}
           keyboardShouldPersistTaps="handled"
           // scrollEnabled={!onSearch}
         >
@@ -321,9 +330,11 @@ export const Home = ({navigation}: Props) => {
                       onPress={() => {
                         categoryFilter(x.id);
                       }}
-                      pressed={categorySelectedId.includes(x.id)//si tiene el id en la lista de seleccionados
-                        ? true
-                        : false}
+                      pressed={
+                        categorySelectedId.includes(x.id) //si tiene el id en la lista de seleccionados
+                          ? true
+                          : false
+                      }
                     />
                   );
                 }
@@ -359,7 +370,8 @@ export const Home = ({navigation}: Props) => {
                     style={{
                       textAlignVertical: 'center',
                       fontFamily: FontFamily.NotoSansDisplaySemiBold,
-                      fontSize: FontSize.fontSizeText18,marginLeft:RFPercentage(2)
+                      fontSize: FontSize.fontSizeText18,
+                      marginLeft: RFPercentage(2),
                     }}>
                     Nuevos proyectos
                   </Text>
@@ -376,11 +388,11 @@ export const Home = ({navigation}: Props) => {
                     showsVerticalScrollIndicator={false}
                     showsHorizontalScrollIndicator={false}
                     // scrollEnabled={false}
-                    data={newProjectList}
+                    data={newProjectListSliced}
                     renderItem={({item, index}) => {
                       if (
-                        newProjectList.length - 1 === index &&
-                        newProjectList.length > 1
+                        newProjectListSliced.length - 1 === index &&
+                        newProjectListSliced.length > 1
                       ) {
                         return (
                           <Card
@@ -435,7 +447,8 @@ export const Home = ({navigation}: Props) => {
                     style={{
                       textAlignVertical: 'center',
                       fontFamily: FontFamily.NotoSansDisplaySemiBold,
-                      fontSize: FontSize.fontSizeText18,marginLeft:RFPercentage(2)
+                      fontSize: FontSize.fontSizeText18,
+                      marginLeft: RFPercentage(2),
                     }}>
                     Proyectos destacados
                   </Text>
@@ -505,7 +518,8 @@ export const Home = ({navigation}: Props) => {
                     style={{
                       textAlignVertical: 'center',
                       fontFamily: FontFamily.NotoSansDisplaySemiBold,
-                      fontSize: FontSize.fontSizeText18,marginLeft:RFPercentage(2)
+                      fontSize: FontSize.fontSizeText18,
+                      marginLeft: RFPercentage(2),
                     }}>
                     Te puede interesar...
                   </Text>
@@ -572,7 +586,7 @@ export const Home = ({navigation}: Props) => {
                       textAlignVertical: 'center',
                       fontFamily: FontFamily.NotoSansDisplaySemiBold,
                       fontSize: FontSize.fontSizeText18,
-                      marginLeft:RFPercentage(2)
+                      marginLeft: RFPercentage(2),
                     }}>
                     Organizaciones destacadas
                   </Text>
@@ -818,7 +832,7 @@ const HomeStyles = StyleSheet.create({
   },
   importantProjectView: {
     // backgroundColor: 'brown',
-    marginBottom: RFPercentage(3),
+    marginBottom: RFPercentage(0),
     // height: RFPercentage(40),
     height: '27%',
   },
@@ -839,11 +853,12 @@ const HomeStyles = StyleSheet.create({
     // backgroundColor: 'grey',
     marginBottom: RFPercentage(1),
     // height: '25%',
-    height: RFPercentage(30)
+    // height: RFPercentage(30)
+    // , backgroundColor: 'red',
   },
   importantOrganizationScrollView: {
     marginHorizontal: 24,
-    // height: '25%',
+    height: '25%',
   },
 
   showCategoryView: {

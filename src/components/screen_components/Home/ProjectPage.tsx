@@ -30,6 +30,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import citmapApi from '../../../api/citmapApi';
 import {HasTag} from '../../../interfaces/appInterfaces';
 import {LoadingScreen} from '../../../screens/LoadingScreen';
+import {SaveProyectModal} from '../../utility/Modals';
 
 const data = [
   require('../../../assets/icons/category/Group-1.png'),
@@ -57,22 +58,38 @@ export const ProjectPage = (props: Props) => {
 
   const [project, setProject] = useState<Project>();
   const [hastags, setHastags] = useState<HasTag[]>([]);
+
+  //#region MODAL NEW
+  /**
+   * Elementos del modal
+   */
+  const [saveModal, setSaveModal] = useState(false);
+  const showModalSave = () => setSaveModal(true);
+  const hideModalSave = () => setSaveModal(false);
+  //#endregion
+
   //#endregion
 
   //#region USEEFECT
+
   useEffect(() => {
+    //si entra nada mas crear un project
+    if (props.route.params.isNew) {
+      showModalSave();
+    }
     getProjectApi();
   }, []);
 
   useEffect(() => {
     // si existe el proyecto
-    if(project){
+    if (project) {
       // si no hay hastags en project
-      if(project.hasTag.length <= 0){
+      if (project.hasTag.length <= 0) {
         setIsAllCharged(true);
-      }else{ // si hay hastags en project
+      } else {
+        // si hay hastags en project
         // si el numero de hastags que hemos guardado coincide con el numero de hastags del project
-        if(hastags.length === project.hasTag.length){
+        if (hastags.length === project.hasTag.length) {
           setIsAllCharged(true);
         }
       }
@@ -81,8 +98,7 @@ export const ProjectPage = (props: Props) => {
 
   useEffect(() => {
     getHastagApi();
-  }, [project])
-  
+  }, [project]);
 
   //#endregion
 
@@ -116,9 +132,7 @@ export const ProjectPage = (props: Props) => {
   /**
    * Metodo para descargar el proyecto
    */
-  const onDownload = async () => {
-    
-  }
+  const onDownload = async () => {};
 
   /**
    * Metodo para volver atrás
@@ -159,7 +173,7 @@ export const ProjectPage = (props: Props) => {
 
   //#endregion
 
-  if (!isAllCharged) {
+  if (isAllCharged) {
     return <LoadingScreen />;
   }
 
@@ -167,6 +181,7 @@ export const ProjectPage = (props: Props) => {
     <SafeAreaView>
       <ScrollView
         // contentContainerStyle={{flexGrow: 1}}
+        onTouchCancel={() => hideModalSave()}
         keyboardShouldPersistTaps="handled">
         {/* Ocultar la barra de estado */}
         <StatusBar hidden />
@@ -196,7 +211,7 @@ export const ProjectPage = (props: Props) => {
                   </View>
                 );
               }}
-              itemWidth={Size.window.width+2}
+              itemWidth={Size.window.width + 2}
               sliderWidth={Size.window.height / 2}
               layout="default"
               onSnapToItem={index => setCarouselIndex(index)}
@@ -365,7 +380,7 @@ export const ProjectPage = (props: Props) => {
                   }}>
                   {project?.name}
                 </Text>
-                <View style={{flexDirection:'row'}}>
+                <View style={{flexDirection: 'row'}}>
                   {hastags.map(x => {
                     return (
                       <Text
@@ -376,7 +391,8 @@ export const ProjectPage = (props: Props) => {
                           color: Colors.primaryDark,
                           marginBottom: '4%',
                         }}>
-                        #{x.hasTag}{'   '}
+                        #{x.hasTag}
+                        {'   '}
                       </Text>
                     );
                   })}
@@ -418,6 +434,16 @@ export const ProjectPage = (props: Props) => {
             />
           </TouchableOpacity>
         </View>
+        <SaveProyectModal
+          visible={saveModal}
+          hideModal={hideModalSave}
+          onPress={hideModalSave}
+          size={RFPercentage(6)}
+          color={Colors.semanticSuccessLight}
+          label='¡Proyecto creado!'
+          subLabel='No olvides compartir tu proyecto para obtener una mayor
+          participación'
+        />
       </ScrollView>
     </SafeAreaView>
   );
