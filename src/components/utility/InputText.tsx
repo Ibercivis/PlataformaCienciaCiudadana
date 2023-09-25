@@ -3,17 +3,20 @@ import {
   Dimensions,
   KeyboardTypeOptions,
   Pressable,
+  StyleProp,
   StyleSheet,
+  TextStyle,
   TouchableOpacity,
   View,
+  ViewStyle,
   useWindowDimensions,
 } from 'react-native';
 import {Colors} from '../../theme/colors';
-import {FontFamily, FontSize} from '../../theme/fonts';
+import { FontFamily, FontSize, fonts } from '../../theme/fonts';
 import {useTogglePasswordVisibility} from '../../hooks/useTogglePasswordVisibility';
 import {IconBootstrap} from './IconBootstrap';
 import {TextInput} from 'react-native-paper';
-import { globalStyles } from '../../theme/theme';
+import {globalStyles} from '../../theme/theme';
 
 const window = Dimensions.get('window');
 
@@ -43,8 +46,9 @@ interface Props {
   value?: string;
   marginBottom?: string | number;
   maxLength?: number;
-  isSecureText?:boolean;
+  isSecureText?: boolean;
   ref?: any;
+  isValid?: boolean;
 }
 export const InputText = ({
   label,
@@ -61,6 +65,7 @@ export const InputText = ({
   maxLength = 100,
   isSecureText = false,
   ref,
+  isValid = true,
 }: Props) => {
   // variable que establece por defecto el color del input cuando no es presionado y que al ser presionado, cambiará
   const [onBlurInput, setOnBlurInput] = useState('transparent');
@@ -88,7 +93,7 @@ export const InputText = ({
 
   return (
     // <View style={styles.container}>
-    <View style={{...globalStyles.inputContainer, borderColor: onBlurInput}}>
+    <View style={{...globalStyles.inputContainer, borderColor: isValid ? onBlurInput : Colors.semanticWarningDark }}>
       {iconLeft && (
         <View
           style={{
@@ -96,22 +101,26 @@ export const InputText = ({
             marginHorizontal: '5%',
             // alignItems: 'center',
             justifyContent: 'center',
-            top:1,
+            top: 1,
           }}>
           <IconBootstrap name={iconLeft} size={20} color={iconColorFocus} />
         </View>
       )}
       <TextInput
+      theme={{
+        fonts: {FontFamily: FontFamily.NotoSansDisplayLight},
+      }}
         style={{
           width: '80%',
           // marginLeft: '1%',
-          fontSize: FontSize.fontSizeText13 / fontScale,
+          fontSize: FontSize.fontSizeText13,
           fontFamily: FontFamily.NotoSansDisplayLight,
+          
           fontWeight: '300',
-          color: 'black',
+          // color: 'green',
           alignSelf: 'center',
           backgroundColor: 'transparent',
-          height: multiline ? 0 : (window.height * 0.04),
+          height: multiline ? 0 : window.height * 0.04,
         }}
         ref={ref}
         placeholderTextColor={onBlurTextInput}
@@ -121,7 +130,7 @@ export const InputText = ({
         textAlignVertical="center"
         autoCapitalize="none"
         outlineStyle={{borderWidth: 0}}
-        secureTextEntry={isSecureText ? passwordVisibility: false}
+        secureTextEntry={isSecureText ? passwordVisibility : false}
         placeholder={label}
         keyboardType={keyboardType}
         multiline={multiline}
@@ -166,7 +175,6 @@ export const InputText = ({
             justifyContent: 'center',
             top: '1%',
           }}>
-          
           <IconBootstrap name={iconRight} size={20} color={'black'} />
         </TouchableOpacity>
       )}
@@ -174,11 +182,3 @@ export const InputText = ({
     // </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    // backgroundColor: 'white',
-    // alignItems: 'center',
-  },
-
-});

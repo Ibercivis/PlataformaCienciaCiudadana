@@ -68,8 +68,8 @@ const CenterButtonTab = () => {
         marginVertical: RFPercentage(1),
       }}>
       <PlusSquare
-        width={RFPercentage(4)}
-        height={RFPercentage(4)}
+        width={RFPercentage(3)}
+        height={RFPercentage(3)}
         fill={'#000000'}
       />
       {/* <Text style={{color: 'white'}}>Botón</Text> */}
@@ -83,10 +83,10 @@ const CenterButtonTab = () => {
           <View style={styles.modalViewContainer}>
             <View style={styles.modalHeader}>
               <View style={{flexDirection: 'row'}}>
-                <View style={{justifyContent:'center', marginRight:'5%'}}>
+                <View style={{justifyContent:'center', marginRight:'5%', top: RFPercentage(0.2)}}>
                   <PlusSquare
-                    width={RFPercentage(2)}
-                    height={RFPercentage(2)}
+                    width={RFPercentage(2.2)}
+                    height={RFPercentage(2.2)}
                     fill={'#0055b6'}
                   />
                 </View>
@@ -94,9 +94,10 @@ const CenterButtonTab = () => {
                 <Text
                   style={{
                     color: 'black',
-                    fontSize: FontSize.fontSizeText18,
+                    fontSize: FontSize.fontSizeText20,
                     fontWeight: 'bold',
                     textAlignVertical:'center',
+                    marginLeft: '3%'
                   }}>
                   ¿Qué desea hacer?
                 </Text>
@@ -107,9 +108,12 @@ const CenterButtonTab = () => {
             </View>
             <View
               style={{
+                marginTop:'4%',
                 flexDirection: 'row',
                 height: '85%',
-                justifyContent: 'space-around',
+                justifyContent: 'space-between',
+                width:'95%'
+                
               }}>
               <TouchableOpacity
                 style={styles.cards}
@@ -121,14 +125,14 @@ const CenterButtonTab = () => {
                     source={require('../assets/backgrounds/nuevoproyecto.jpg')}
                     style={{borderRadius: 10, height: '100%'}}>
                     <View
-                      style={{alignItems: 'stretch', flex: 1, borderRadius: 5}}>
+                      style={{alignItems: 'stretch', flex: 1, borderRadius: 5, justifyContent:'center'}}>
                       <Text
                         style={{
                           textAlign: 'center',
-                          marginBottom: '5%',
+                          // marginBottom: '5%',
                           marginLeft: '10%',
                           marginRight: '10%',
-                          marginTop: RFPercentage(8),
+                          // marginTop: RFPercentage(8),
                           backgroundColor: 'white',
                           alignSelf: 'center',
                           padding: '2%',
@@ -147,14 +151,14 @@ const CenterButtonTab = () => {
                     // source={require(urii)}
                     source={require('../assets/backgrounds/nuevaorganizacion.jpg')}
                     style={{borderRadius: 10, height: '100%'}}>
-                    <View style={{alignItems: 'stretch', flex: 1}}>
+                    <View style={{alignItems: 'stretch', flex: 1, justifyContent:'center'}}>
                       <Text
                         style={{
                           textAlign: 'center',
-                          marginBottom: '5%',
+                          // marginBottom: '5%',
                           marginLeft: '10%',
                           marginRight: '10%',
-                          marginTop: RFPercentage(8),
+                          // marginTop: RFPercentage(8),
                           backgroundColor: 'white',
                           alignSelf: 'center',
                           padding: '2%',
@@ -216,13 +220,13 @@ export const BottomTabNavigation = () => {
               }
 
               const label =
-                route.name === 'HomeNavigator' ? 'Home' : 'Ajustes';
+                route.name === 'HomeNavigator' ? 'Home' : 'Perfil';
 
               return (
                 <CustomTab
                   key={route.key}
                   label={label.toString()}
-                  icon={route.name === 'ProjectNavigator' ? 'home' : 'heart'}
+                  icon={route.name === 'HomeNavigator' ? 'home' : 'Ajustes'}
                   route={route.name}
                   focused={state.index === index}
                   onPress={() => {
@@ -266,11 +270,11 @@ export const BottomTabNavigation = () => {
           options={{
             tabBarIcon: ({focused}) => (
               <CustomTab
-                label="Ajustes"
+                label="Perfil"
                 route="ProfileScreen"
                 focused={focused}
                 onPress={() => {}}
-                icon="heart"
+                icon="Profile"
               />
             ),
             unmountOnBlur: true,
@@ -327,7 +331,8 @@ const styles = StyleSheet.create({
 
   cards: {
     height: '95%',
-    width: RFPercentage(18),
+    // width: RFPercentage(18),
+    width:'50%',
     margin: 4,
     borderRadius: 10,
     backgroundColor: 'white',

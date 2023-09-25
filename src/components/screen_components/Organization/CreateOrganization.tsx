@@ -20,12 +20,14 @@ import {CustomButton} from '../../utility/CustomButton';
 import {Colors} from '../../../theme/colors';
 import {InfoModal, SaveProyectModal} from '../../utility/Modals';
 import PlusImg from '../../../assets/icons/general/Plus-img.svg';
+import Person from '../../../assets/icons/general/person.svg';
+import FrontPage from '../../../assets/icons/project/image.svg';
 import {Size} from '../../../theme/size';
 import {IconButton} from 'react-native-paper';
 import {InputText} from '../../utility/InputText';
 import ImagePicker from 'react-native-image-crop-picker';
 import {FontSize} from '../../../theme/fonts';
-import {UserInfo} from '../../../interfaces/interfaces';
+import {NewOrganization, User, UserInfo} from '../../../interfaces/interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import citmapApi from '../../../api/citmapApi';
 import {CustomButtonOutline} from '../../utility/CustomButtonOutline';
@@ -44,12 +46,31 @@ export const CreateOrganization = ({navigation}: Props) => {
   const [suggestionsSelected, setSuggestionsSelected] = useState<UserInfo[]>(
     [],
   );
+  const [arrayAdminId, setArrayAdminId] = useState<number[]>([]);
+  const [arrayMembersId, setArrayMembersId] = useState<number[]>([]);
   const [userList, setUserList] = useState<UserInfo[]>([]);
   const [inputValueUser, setInputValueUser] = useState('');
   const scrollViewRef = useRef<ScrollView | null>(null);
-  const {form, onChange} = useForm({});
+  const {form, onChange} = useForm<NewOrganization>({
+    type: [],
+    creator: 0,
+    administrators: [],
+    members: [],
+    principalName: '',
+    url: '',
+    description: '',
+    contactName: '',
+    contactMail: '',
+    logo: '',
+    cover: '',
+  });
   const [isOk, setIsOk] = useState(false);
 
+  /**
+   * Llama a la lista de usuarios.
+   * TODO además, cuando se entre en edición, se llamará a la organización y se
+   * seteará el form y se guardará el id para luego guardarla
+   */
   useEffect(() => {
     UserListApi();
   }, []);
@@ -61,6 +82,17 @@ export const CreateOrganization = ({navigation}: Props) => {
   }, [inputValueUser]);
 
   /**
+   * Se usa para que cuando el arrayAdminId cambie su estado, el form se rellene
+   */
+  useEffect(() => {
+    form.administrators = arrayAdminId;
+  }, [arrayAdminId]);
+
+  useEffect(() => {
+    form.members = arrayMembersId;
+  }, [arrayMembersId]);
+
+  /**
    * controla que cuando haya algo que mostrar en la busqueda, la pantalla evite el teclado
    */
   useEffect(() => {
@@ -68,11 +100,11 @@ export const CreateOrganization = ({navigation}: Props) => {
 
     if (suggestions.length == 1) {
       // count = (suggestions.length - 1) * 12;
-      count = suggestions.length * 12;
+      count = suggestions.length * 13;
     } else if (suggestions.length === 2) {
-      count = 19;
+      count = 20;
     } else if (suggestions.length >= 3) {
-      count = 26;
+      count = 27;
       // count = (suggestions.length - 1) * 12;
     } else {
       // count = suggestions.length * 12;
@@ -88,12 +120,18 @@ export const CreateOrganization = ({navigation}: Props) => {
    * Elementos del modal
    */
   const [saveModal, setSaveModal] = useState(false);
-  const [infoModal, setInfoModal] = useState(false);
   const showModalSave = () => setSaveModal(true);
-  const showModalInfo = () => setInfoModal(true);
   const hideModalSave = () => setSaveModal(false);
+  const [infoModal, setInfoModal] = useState(false);
+  const showModalInfo = () => setInfoModal(true);
   const hideModalInfo = () => setInfoModal(false);
 
+  /**
+   * Llama para saber los usuarios que hay para añadir a integrantes
+   * Además, setea el array de ids de los administradores a lo que tiene en form
+   * ( como es crear, estará vacío pero si edita, estará lleno)
+   * lo mismo com members
+   */
   const UserListApi = async () => {
     const token = await AsyncStorage.getItem('token');
     try {
@@ -103,6 +141,8 @@ export const CreateOrganization = ({navigation}: Props) => {
         },
       });
       setUserList(resp.data);
+      setArrayAdminId(form.administrators);
+      setArrayMembersId(form.members);
     } catch {}
   };
 
@@ -119,6 +159,7 @@ export const CreateOrganization = ({navigation}: Props) => {
       if (response && response.data) {
         const newImage = response.data;
         setProfileImage([newImage]);
+        form.logo = newImage;
       }
     });
   };
@@ -136,6 +177,7 @@ export const CreateOrganization = ({navigation}: Props) => {
       if (response && response.data) {
         const newImage = response.data;
         setOrganizationImage([newImage]);
+        form.cover = newImage;
       }
     });
   };
@@ -155,11 +197,8 @@ export const CreateOrganization = ({navigation}: Props) => {
    */
   const setUsersSelected = (selected: UserInfo, index: number) => {
     // Verifica si el elemento ya está en suggestionsSelected
-    console.log(JSON.stringify(selected, null, 2));
-    console.log('SEPARADOR');
-    console.log(JSON.stringify(suggestionsSelected, null, 2));
+
     if (suggestionsSelected.includes(selected)) {
-      console.log('entra en el return');
       return;
     }
 
@@ -174,6 +213,8 @@ export const CreateOrganization = ({navigation}: Props) => {
     setSuggestionsSelected([...suggestionsSelected, selected]);
 
     setInputValueUser('');
+
+    addToMembers(selected.id);
   };
 
   /**
@@ -201,30 +242,132 @@ export const CreateOrganization = ({navigation}: Props) => {
     if (suggestions.includes(itemToMove)) {
       return;
     }
-    // Crea una nueva lista sin el elemento
-    // const newSelected = [...suggestionsSelected];
-    // console.log(newSelected)
-    // newSelected.splice(index, 1);
-    // setSuggestionsSelected(newSelected);
-
     // Agrega el elemento a suggestions
     setSuggestions([...suggestions, itemToMove]);
   };
 
+  /**
+   * Añade a la lista de miembros
+   * @param id id del usuario
+   */
+  const addToMembers = (id: number) => {
+    // Busca si existe en la lista arrayMembersId el id que se le pasa
+    const index = arrayMembersId.indexOf(id);
+
+    if (index === -1) {
+      // Si no existe, se agrega
+      setArrayMembersId([...arrayMembersId, id]);
+    } else {
+      // Si existe, se borra
+      const updatedArray = arrayMembersId.filter(memberId => memberId !== id);
+      setArrayMembersId(updatedArray);
+    }
+  };
+
+  /**
+   * Cambia el miembro a Administrador
+   * @param id id del usuario
+   */
+  const changeToAdmin = (id: number) => {
+    // Busca si existe en la lista arrayAdminId el id que se le pasa
+    const indexInAdmin = arrayAdminId.indexOf(id);
+    // Busca si existe en la lista arrayMembersId el id que se le pasa
+    const indexInMembers = arrayMembersId.indexOf(id);
+
+    if (indexInAdmin === -1) {
+      // Si no existe en arrayAdminId, se agrega y se elimina de arrayMembersId si existe
+      setArrayAdminId([...arrayAdminId, id]);
+
+      if (indexInMembers !== -1) {
+        const updatedMembersArray = arrayMembersId.filter(
+          memberId => memberId !== id,
+        );
+        setArrayMembersId(updatedMembersArray);
+      }
+    } else {
+      // Si existe en arrayAdminId, se borra y se agrega a arrayMembersId si no existe
+      const updatedAdminArray = arrayAdminId.filter(adminId => adminId !== id);
+      setArrayAdminId(updatedAdminArray);
+
+      if (indexInMembers === -1) {
+        setArrayMembersId([...arrayMembersId, id]);
+      }
+    }
+  };
+
+  const compruebaAdmin = (id: number) => {
+    const index = arrayAdminId.indexOf(id);
+    if (index === -1) return false;
+    else return true;
+  };
+
   //#region CREATE
 
-  const onCreate = () => {
-    console.log(JSON.stringify(form, null, 2));
+  const onCreate = async () => {
+    let valid = true;
+    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i; // validación correo
+    const token = await AsyncStorage.getItem('token');
+    console.log(token);
+
+    //hace una llamada para saber qué usuario es el que está creando
+    // si está editando, se puede hacer una validación para que no entre aquí
+    try {
+      const userInfo = await citmapApi.get<User>(
+        '/users/authentication/user/',
+        {
+          headers: {
+            Authorization: token,
+          },
+        },
+      );
+      form.creator = userInfo.data.pk;
+    } catch (err) {
+      console.log(err);
+    }
+
+    if (form.principalName.length <= 0) {
+      valid = false;
+    }
+
+    if (form.contactMail.length <= 0) {
+      valid = false;
+    } else if (!emailRegex.test(form.contactMail)) {
+      valid = false;
+    }
+
+    if (form.description.length <= 0) {
+      valid = false;
+    }
+
+    if (form.members.length <= 0) {
+      valid = false;
+    }
+
+    // console.log(JSON.stringify(form, null, 2));
+
     //comprobar que todo está bien antes de crear
-    if (!isOk) {
+    if (!valid) {
       showModalSave();
     } else {
-      navigation.dispatch(
-        CommonActions.navigate({
-          name: 'OrganizationPage',
-          params: {id: 1, isNew: true},
-        }),
-      );
+      try {
+        const organizationCreated = await citmapApi.post(
+          '/organization/create/',form,
+          {
+            headers: {
+              Authorization: token,
+            },
+          }
+        );
+
+        navigation.dispatch(
+          CommonActions.navigate({
+            name: 'OrganizationPage',
+            params: {id: organizationCreated.data.id, isNew: true},
+          }),
+        );
+      } catch (err) {
+        console.log(err)
+      }
     }
   };
 
@@ -275,11 +418,19 @@ export const CreateOrganization = ({navigation}: Props) => {
                     style={{
                       marginVertical: RFPercentage(1),
                       alignItems: 'center',
+                      marginTop: '5%',
                       //   marginHorizontal: RFPercentage(1),
-                      // backgroundColor:'purple',
-                      width: '40%',
+                      width: '42%',
                     }}>
-                    <Text style={{color: 'black', marginBottom: '2%'}}>
+                    <Text
+                      style={{
+                        color: 'black',
+                        marginBottom: '2%',
+                        flexWrap: 'wrap',
+                        fontSize: FontSize.fontSizeText13,
+                      }}
+                      minimumFontScale={0.5}
+                      adjustsFontSizeToFit={true}>
                       Imagenes del perfil
                     </Text>
                     {!profileImage && (
@@ -290,17 +441,34 @@ export const CreateOrganization = ({navigation}: Props) => {
                           marginTop: '4%',
                           justifyContent: 'center',
                           alignItems: 'center',
-                          backgroundColor: Colors.contentTertiaryLight,
+                          backgroundColor: Colors.secondaryBackground,
                           borderRadius: 100,
                           padding: '2%',
                         }}>
                         {/* TODO cambiar el icono por un touchable */}
-                        <IconButton
-                          icon="account-outline"
-                          iconColor="#000000"
-                          size={Size.iconSizeLarge}
+                        <TouchableOpacity onPress={() => openProfilePhoto()}>
+                          <Person
+                            fill={'black'}
+                            height={RFPercentage(7)}
+                            width={RFPercentage(7)}
+                          />
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
                           onPress={() => openProfilePhoto()}
-                        />
+                          style={{
+                            width: RFPercentage(4),
+                            position: 'absolute',
+                            bottom: RFPercentage(-1),
+                            left: RFPercentage(7),
+                            zIndex: 999,
+                          }}>
+                          <PlusImg
+                            width={RFPercentage(4)}
+                            height={RFPercentage(4)}
+                            fill={'#0059ff'}
+                          />
+                        </TouchableOpacity>
                       </View>
                     )}
                     {profileImage && (
@@ -333,12 +501,12 @@ export const CreateOrganization = ({navigation}: Props) => {
                             width: RFPercentage(4),
                             position: 'absolute',
                             bottom: RFPercentage(-1),
-                            left: RFPercentage(6.2),
+                            left: RFPercentage(7),
                             zIndex: 999,
                           }}>
                           <PlusImg
-                            width={RFPercentage(3)}
-                            height={RFPercentage(3)}
+                            width={RFPercentage(4)}
+                            height={RFPercentage(4)}
                             fill={'#0059ff'}
                           />
                         </TouchableOpacity>
@@ -350,9 +518,16 @@ export const CreateOrganization = ({navigation}: Props) => {
                     style={{
                       marginVertical: RFPercentage(1),
                       alignItems: 'center',
+                      marginTop: '5%',
                       width: '60%',
                     }}>
-                    <Text style={{color: 'black', marginBottom: '2%'}}>
+                    <Text
+                      style={{
+                        color: 'black',
+                        marginBottom: '2%',
+                        flexWrap: 'wrap',
+                        fontSize: FontSize.fontSizeText13,
+                      }}>
                       Imagenes de portada
                     </Text>
                     {!organizationImage && (
@@ -363,17 +538,32 @@ export const CreateOrganization = ({navigation}: Props) => {
                           marginTop: '4%',
                           justifyContent: 'center',
                           alignItems: 'center',
-                          backgroundColor: Colors.contentTertiaryLight,
+                          backgroundColor: Colors.secondaryBackground,
                           borderRadius: 10,
                           padding: '2%',
                           //   paddingBottom: '2%'
                         }}>
-                        <IconButton
-                          icon="image-album"
-                          iconColor="#000000"
-                          size={Size.iconSizeLarge}
-                          onPress={() => openPortadaPhoto()}
-                        />
+                        <TouchableOpacity onPress={() => openPortadaPhoto()}>
+                          <FrontPage
+                            fill={'#000'}
+                            width={RFPercentage(7)}
+                            height={RFPercentage(7)}
+                          />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          style={{
+                            width: RFPercentage(4),
+                            position: 'absolute',
+                            bottom: RFPercentage(-1),
+                            left: RFPercentage(17),
+                            zIndex: 999,
+                          }}>
+                          <PlusImg
+                            width={RFPercentage(4)}
+                            height={RFPercentage(4)}
+                            fill={'#0059ff'}
+                          />
+                        </TouchableOpacity>
                       </View>
                     )}
                     {organizationImage && (
@@ -405,12 +595,12 @@ export const CreateOrganization = ({navigation}: Props) => {
                             width: RFPercentage(4),
                             position: 'absolute',
                             bottom: RFPercentage(-1),
-                            left: RFPercentage(18),
+                            left: RFPercentage(17),
                             zIndex: 999,
                           }}>
                           <PlusImg
-                            width={RFPercentage(3)}
-                            height={RFPercentage(3)}
+                            width={RFPercentage(4)}
+                            height={RFPercentage(4)}
                             fill={'#0059ff'}
                           />
                         </TouchableOpacity>
@@ -433,9 +623,25 @@ export const CreateOrganization = ({navigation}: Props) => {
                     keyboardType="default"
                     multiline={false}
                     numOfLines={1}
-                    onChangeText={value =>
-                      onChange(value, 'principalName' as never)
-                    } //faltan poner los values
+                    onChangeText={value => onChange(value, 'principalName')}
+                    value={form.principalName}
+                  />
+                </View>
+                {/* Email de contacto */}
+                <View
+                  style={{
+                    width: '100%',
+                    marginVertical: RFPercentage(1),
+                  }}>
+                  <Text style={{color: 'black'}}>Email de contacto</Text>
+                  <InputText
+                    // isInputText={() => setIsInputText(!isInputText)}
+                    label={'Mail de contacto'}
+                    keyboardType="email-address"
+                    multiline={false}
+                    numOfLines={1}
+                    onChangeText={value => onChange(value, 'contactMail')}
+                    value={form.contactMail}
                   />
                 </View>
                 {/* biografia */}
@@ -452,9 +658,8 @@ export const CreateOrganization = ({navigation}: Props) => {
                     multiline={true}
                     maxLength={300}
                     numOfLines={5}
-                    onChangeText={value =>
-                      onChange(value, 'biography' as never)
-                    }
+                    onChangeText={value => onChange(value, 'description')}
+                    value={form.description}
                   />
                 </View>
                 {/* integrantes */}
@@ -472,23 +677,29 @@ export const CreateOrganization = ({navigation}: Props) => {
                       marginBottom: RFPercentage(4),
                     }}>
                     <TextInput
-                      placeholder="Buscar..."
+                      placeholder="Buscar integrantes..."
                       value={inputValueUser}
                       onChangeText={text => {
                         handleInputChangeUser(text);
                       }}
                       style={styles.input}
                     />
-                    <TouchableOpacity onPress={() => showModalInfo()}>
-                      <Text
-                        style={{
-                          color: Colors.primaryDark,
-                          marginHorizontal: '2%',
-                          marginTop: '1%',
-                        }}>
-                        ¿Cómo añadir integrantes?
-                      </Text>
-                    </TouchableOpacity>
+                    {inputValueUser.length <= 0 ? (
+                      <TouchableOpacity onPress={() => showModalInfo()}>
+                        <Text
+                          style={{
+                            color: Colors.semanticInfoDark,
+                            fontSize: FontSize.fontSizeText13,
+                            marginHorizontal: '2%',
+                            marginTop: '1%',
+                          }}>
+                          ¿Cómo añadir integrantes?
+                        </Text>
+                      </TouchableOpacity>
+                    ) : (
+                      <></>
+                    )}
+
                     {suggestions.length > 0 &&
                       suggestions.map((item, index) => (
                         <TouchableOpacity
@@ -518,63 +729,72 @@ export const CreateOrganization = ({navigation}: Props) => {
                       </Text>
                     )}
                     {suggestionsSelected.length > 0 &&
-                      suggestionsSelected.map((item, index) => (
-                        <View
-                          style={{
-                            width: RFPercentage(41),
-                            marginVertical: '4%',
-                            flexDirection: 'row',
-                          }}
-                          key={index + 1}>
-                          {/* sustituir por avatar */}
+                      suggestionsSelected.map((item, index) => {
+                        const isAdmin = compruebaAdmin(item.id);
+
+                        return (
                           <View
                             style={{
-                              backgroundColor: 'red',
-                              width: '10%',
-                              marginRight: '5%',
-                              borderRadius: 50,
-                            }}></View>
-                          {/* sustituir texto de abajo por el que sea */}
-                          <View
-                            style={{
-                              flexDirection: 'column',
-                              justifyContent: 'space-between',
-                              width: '60%',
-                            }}>
-                            <Text
+                              width: RFPercentage(41),
+                              marginVertical: '4%',
+                              flexDirection: 'row',
+                            }}
+                            key={index + 1}>
+                            {/* sustituir por avatar */}
+                            <View
                               style={{
-                                fontSize: FontSize.fontSizeText14,
-                                color: 'black',
-                              }}>
-                              {item.username}
-                            </Text>
-                            <Text
+                                backgroundColor: 'red',
+                                width: '10%',
+                                marginRight: '5%',
+                                borderRadius: 50,
+                              }}></View>
+                            {/* sustituir texto de abajo por el que sea */}
+                            <View
                               style={{
-                                fontSize: FontSize.fontSizeText13,
-                                color: Colors.contentQuaternaryLight,
+                                flexDirection: 'column',
+                                justifyContent: 'space-between',
+                                width: '60%',
                               }}>
-                              {item.username}
-                            </Text>
+                              <Text
+                                style={{
+                                  fontSize: FontSize.fontSizeText14,
+                                  color: 'black',
+                                }}>
+                                {item.username}
+                              </Text>
+                              <TouchableOpacity
+                                onPress={() => changeToAdmin(item.id)}>
+                                <Text
+                                  style={{
+                                    fontSize: FontSize.fontSizeText13,
+                                    color: Colors.contentQuaternaryLight,
+                                  }}>
+                                  {isAdmin === true
+                                    ? 'Administrador'
+                                    : 'Miembro'}
+                                </Text>
+                              </TouchableOpacity>
+                            </View>
+                            {/* que elimine de la lista */}
+                            <View style={{width: '20%', marginLeft: '5%'}}>
+                              <CustomButton
+                                onPress={() => moveItemToSuggestions(index)}
+                                backgroundColor="transparen"
+                                fontColor="red"
+                                label="Eliminar"
+                                outlineColor="red"
+                              />
+                            </View>
                           </View>
-                          {/* que elimine de la lista */}
-                          <View style={{width: '20%', marginLeft: '5%'}}>
-                            <CustomButton
-                              onPress={() => moveItemToSuggestions(index)}
-                              backgroundColor="transparen"
-                              fontColor="red"
-                              label="Eliminar"
-                              outlineColor="red"
-                            />
-                          </View>
-                        </View>
-                      ))}
+                        );
+                      })}
                   </View>
                 </View>
               </View>
               {/* boton crear */}
               <View style={styles.buttonContainer}>
                 <CustomButton
-                  backgroundColor={Colors.contentTertiaryLight}
+                  backgroundColor={Colors.primaryLigth}
                   label={'Crear organización'}
                   onPress={() => onCreate()}
                 />
@@ -585,7 +805,7 @@ export const CreateOrganization = ({navigation}: Props) => {
                 visible={saveModal}
                 hideModal={hideModalSave}
                 onPress={hideModalSave}
-                size={RFPercentage(4)}
+                size={RFPercentage(8)}
                 color={Colors.semanticWarningDark}
                 label="Ha surgido un problema, vuelva a intentarlo."
                 helper={false}
@@ -598,7 +818,7 @@ export const CreateOrganization = ({navigation}: Props) => {
                 color={Colors.primaryLigth}
                 label="¿Cómo añadir integrantes?"
                 subLabel="Debes de escribir el nombre de usuario del integrante al que quieres añadir,
-                 automáticamente se le enviará una solicitud para unirse a la organización.
+                automáticamente se le enviará una solicitud para unirse a la organización.
                 Una vez el usuario la acepte, pasará a ser integrante de la organización."
                 helper={false}
               />
@@ -626,11 +846,12 @@ const styles = StyleSheet.create({
     fontSize: FontSize.fontSizeText13,
     // marginBottom: 10,
     width: RFPercentage(41),
-    height: RFPercentage(4.5),
+    height: RFPercentage(5),
     borderColor: 'grey',
     borderWidth: 1,
     borderRadius: 10,
     paddingHorizontal: RFPercentage(1.4),
+    paddingVertical: RFPercentage(0.4),
   },
   suggestionsList: {
     position: 'relative',

@@ -5,16 +5,20 @@ import {CreateProject} from '../components/screen_components/Project/CreateProje
 import {NavigationContainer} from '@react-navigation/native';
 import { ModalScreen } from '../screens/ModalScreen';
 import { CreateOrganization } from '../components/screen_components/Organization/CreateOrganization';
+import { ParticipateMap } from '../components/screen_components/Project/ParticipateMap';
 
 export type StackParams = {
   BottomTabNavigation: undefined;
   ModalScreen: undefined;
   CreateProject: {
-    id?: string;
+    id?: number;
   };
   CreateOrganization: {
-    id?: string;
+    id?: number;
   };
+  ParticipateMap:{
+    id: number;
+  }
 };
 const Stack = createStackNavigator<StackParams>();
 
@@ -35,7 +39,7 @@ export function MultipleNavigator() {
         />
         <Stack.Screen name="CreateProject" component={CreateProject} />
         <Stack.Screen name="CreateOrganization" component={CreateOrganization} />
-        {/* <Stack.Screen name="ModalScreen" component={ModalScreen}/> */}
+        <Stack.Screen name="ParticipateMap" component={ParticipateMap} /> 
       </Stack.Navigator>
     // </NavigationContainer>
   );

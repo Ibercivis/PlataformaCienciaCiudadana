@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {HeaderComponent} from '../../HeaderComponent';
 import {StackScreenProps} from '@react-navigation/stack';
 import {
@@ -20,8 +20,14 @@ import {StackParams} from '../../../navigation/MultipleNavigator';
 import {CustomButton} from '../../utility/CustomButton';
 import {RFPercentage} from 'react-native-responsive-fontsize';
 import {InputText} from '../../utility/InputText';
-import {HasTag} from '../../../interfaces/appInterfaces';
-import {Organization, Question} from '../../../interfaces/interfaces';
+import {Topic} from '../../../interfaces/appInterfaces';
+import {
+  Organization,
+  Project,
+  Question,
+  FieldForm,
+  User,
+} from '../../../interfaces/interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import citmapApi from '../../../api/citmapApi';
 import {Checkbox, IconButton, Switch} from 'react-native-paper';
@@ -36,7 +42,7 @@ import {QuestionCard} from '../../utility/QuestionCard';
 import {IconTemp} from '../../IconTemp';
 import {useForm} from '../../../hooks/useForm';
 import {CommonActions} from '@react-navigation/native';
-import {SaveProyectModal} from '../../utility/Modals';
+import {InfoModal, SaveProyectModal} from '../../utility/Modals';
 
 interface Props extends StackScreenProps<StackParams, 'CreateProject'> {}
 
@@ -45,10 +51,25 @@ export const CreateProject = ({navigation}: Props) => {
   const [isSaved, setIsSaved] = useState(false);
   const totalSteps = 3;
   const {fontScale} = useWindowDimensions();
+  const {form, onChange} = useForm<Project>({
+    id: 0,
+    hasTag: [],
+    topic: [],
+    organizations_write: [],
+    creator: 0,
+    administrators: [],
+    name: '',
+    description: '',
+    field_form: {
+      questions: [],
+    },
+    is_private: false,
+    raw_password: '',
+  });
 
   //#region FIRST
-  const [categoryList, setCategoryList] = useState<HasTag[]>([]);
-  const [userCategories, setUserCategories] = useState<HasTag[]>([]);
+  const [categoryList, setCategoryList] = useState<Topic[]>([]);
+  const [userCategories, setUserCategories] = useState<Topic[]>([]);
   const [organizationList, setOrganizationList] = useState<Organization[]>([]);
   const [showCategoryList, setShowCategoryList] = useState(false); //boolean que controla que se pueda ver la lista de categorias
   const [inputValueOrganization, setInputValueOrganization] = useState(''); //para buscar organizacion
@@ -61,19 +82,44 @@ export const CreateProject = ({navigation}: Props) => {
   const [images, setImages] = useState<string[]>();
   const [isImageCarged, setIsImageCarged] = useState<boolean>(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+
+  //modales informativos
+  const [infoModal, setInfoModal] = useState(false);
+  const showModalInfo = () => setInfoModal(true);
+  const hideModalInfo = () => setInfoModal(false);
+
+  //controla el estado del scroll
+  const scrollViewRef = useRef<ScrollView | null>(null);
+
+  /**
+   * validación primera pantalla
+   */
+  const [nameValidate, setNameValidate] = useState(true);
+  const [descriptionValidate, setDescriptionValidate] = useState(true);
+
   //#endregion
 
   //#region SECOND
   const [isSwitchOnCreator, setIsSwitchOnCreator] = useState(false);
   const [isSwitchOnDataBaseProject, setIsSwitchOnDataBaseProject] =
     useState(false);
+  const [errPass, setErrPass] = useState(true);
   const [isSwitchOnProject, setIsSwitchOnProject] = useState(false);
+  const [rawPassword, setRawPassword] = useState('');
+
+  const [errorPAss, setErrorPass] = useState(false);
+  const showModalErrorPass = () => setErrorPass(true);
+  const hideModalErrorPass = () => setErrorPass(false);
+
+  useEffect(() => {
+    onChange(isSwitchOnProject, 'is_private');
+  }, [isSwitchOnProject]);
+
   //#endregion
 
   //#region  THIRD
   const [questions, setQuestions] = useState<Question[]>([
-    {question_text: 'Cual es algo?', answer_type: 'STR'},
-    {question_text: 'Cual es algo xd?', answer_type: 'NUM'},
+    {question_text: '', answer_type: 'STR'},
   ]);
 
   /**
@@ -106,6 +152,11 @@ export const CreateProject = ({navigation}: Props) => {
   const hideModalSave = () => setSaveModal(false);
   // const { modalVisible, setModalVisible, changeVisibility} = useModal();
 
+  /**
+   * validación
+   */
+  const [validateX, setValidateX] = useState(false);
+
   const answerType = [
     // {id: 1, type: 'STR', name: 'Ubicación', icon: 'map-marker'},
     // {id: 2, type: 'STR', name: 'Respuesta corta', icon: 'text'},
@@ -121,10 +172,6 @@ export const CreateProject = ({navigation}: Props) => {
     {id: 12, type: 'IMG', name: 'Tipo imagen', icon: 'camera-outline'},
   ];
 
-  const {form, onChange} = useForm<Question>({
-    question_text: '',
-    answer_type: '',
-  });
   //#endregion
 
   useEffect(() => {
@@ -142,14 +189,80 @@ export const CreateProject = ({navigation}: Props) => {
     // console.log(JSON.stringify(images));
   }, [images]);
 
+  useEffect(() => {
+    let count = 0;
+
+    if (suggestions.length == 1) {
+      // count = (suggestions.length - 1) * 12;
+      count = suggestions.length * 13;
+    } else if (suggestions.length === 2) {
+      count = 20;
+    } else if (suggestions.length >= 3) {
+      count = 27;
+      // count = (suggestions.length - 1) * 12;
+    } else {
+      // count = suggestions.length * 12;
+      count = 24;
+    }
+
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollTo({y: RFPercentage(count), animated: true});
+    }
+  }, [suggestions]);
+
   //#region CONTROLAR STEPPER
+  //cada vez que le das a next, hace una validación
   const handleNextStep = () => {
-    if (currentStep < totalSteps) {
-      setCurrentStep(currentStep + 1);
+    // valida, si está todo ok, pasa
+    let isValid = true;
+
+    switch (currentStep) {
+      case 1: // en la primera pantalla valida el nombre, descripción, si hay categorias y las organizaciones vinculadas
+        const idsCategory = userCategories.map(x => x.id);
+        const idsOrganization = suggestionsSelected.map(x => x.id);
+
+        if (idsCategory.length <= 0) {
+          form.topic = [];
+        } else {
+          form.topic = idsCategory;
+        }
+
+        if (idsOrganization.length <= 0) {
+          form.organizations_write = [];
+        } else {
+          form.organizations_write = idsOrganization;
+        }
+
+        if (form.name.length <= 0) {
+          isValid = false;
+          setNameValidate(false);
+        }
+        if (form.description.length <= 0) {
+          isValid = false;
+          setDescriptionValidate(false);
+        }
+        break;
+      case 2:
+        if (!errPass) {
+          showModalErrorPass();
+          isValid = false;
+        }
+
+        break;
+      case 3:
+        break;
+    }
+
+    if (isValid) {
+      if (currentStep < totalSteps) {
+        setCurrentStep(currentStep + 1);
+      }
     }
   };
 
+  // hay que controlar cuando se vuelve atrás que los datos del onChange que se modifiquen en handleNextStep estén vacíos de nuevo
   const handlePrevStep = () => {
+    onChange([], 'hasTag');
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
@@ -160,7 +273,7 @@ export const CreateProject = ({navigation}: Props) => {
   const categoryListApi = async () => {
     const token = await AsyncStorage.getItem('token');
     try {
-      const resp = await citmapApi.get<HasTag[]>('/project/hastag/', {
+      const resp = await citmapApi.get<Topic[]>('/project/topics/', {
         headers: {
           Authorization: token,
         },
@@ -198,7 +311,7 @@ export const CreateProject = ({navigation}: Props) => {
    * seleccionadas
    * @param item categoria
    */
-  const setCheckCategories = (item: HasTag) => {
+  const setCheckCategories = (item: Topic) => {
     // Verificar si el elemento ya está seleccionado
     if (userCategories.includes(item)) {
       setUserCategories(
@@ -220,22 +333,58 @@ export const CreateProject = ({navigation}: Props) => {
     );
   };
 
+  /**
+   * Carga segun lo que se escribe en el input, las diferentes organizaciones
+   * @param suggestion organización
+   * @returns
+   */
   const handleSuggestionPress = (suggestion: Organization) => {
     // Keyboard.dismiss();
-    setInputValueOrganization(suggestion.principalName);
-    setSuggestions([]);
-    console.log(JSON.stringify(suggestion));
-    // if (!suggestionsSelected.includes(suggestion)) {
-    //   setSuggestionsSelected([...suggestionsSelected, suggestion]);
-    //   console.log('entra en handleSugestion y entra dentro si incluye o no');
-    // }
+    if (suggestionsSelected.includes(suggestion)) {
+      return;
+    }
+
+    // Crea una nueva lista de sugerencias excluyendo selected
+    const newSuggestions = suggestions.filter(item => item !== suggestion);
+    // const newSuggestions = suggestions.splice(index, 1);
+
+    // Establece la nueva lista de sugerencias como estado
+    setSuggestions(newSuggestions);
+
+    // Agrega el elemento a suggestionsSelected
+    setSuggestionsSelected([...suggestionsSelected, suggestion]);
+
+    setInputValueOrganization('');
   };
 
-  const handleInputBlur = () => {
-    // Si el input está en blanco o se pierde el foco, limpiar las sugerencias
-    clearSuggestions();
-    if (!inputValueOrganization.trim()) {
+  /**
+   * Elimina de la lista de organizaciones.
+   * Una vez hecho, le pasa ese usuario de nuevo a la lista de busqueda
+   * @param item UserInfo a borrar de la lista
+   * @returns
+   */
+  const moveItemToSuggestions = (index: number) => {
+    if (index < 0 || index >= suggestionsSelected.length) {
+      return; // Verifica si el índice está dentro de los límites válidos
     }
+
+    // Obtiene el elemento a mover de suggestionsSelected
+    const itemToMove = suggestionsSelected[index];
+
+    // si existe, le hace el slice
+    if (!itemToMove) {
+      return;
+    }
+    const newSugSelected = suggestionsSelected.filter((x, i) => i !== index);
+
+    setSuggestionsSelected(newSugSelected);
+    //si lo incluye, no se copia, sino si
+    if (suggestions.includes(itemToMove)) {
+      return;
+    }
+
+    // Agrega el elemento a suggestions
+    // setSuggestions([...suggestions, itemToMove]);
   };
 
   const clearSuggestions = () => {
@@ -261,18 +410,24 @@ export const CreateProject = ({navigation}: Props) => {
     });
   };
 
-  const deleteImage = () => {
-    setIsImageCarged(false);
-    setImages(undefined);
-  };
-
   //#endregion
 
   //#region SECOND
   const onToggleSwitchCreator = () => setIsSwitchOnCreator(!isSwitchOnCreator);
   const onToggleSwitchDataBaseProject = () =>
     setIsSwitchOnDataBaseProject(!isSwitchOnDataBaseProject);
-  const onToggleSwitchProject = () => setIsSwitchOnProject(!isSwitchOnProject);
+  const onToggleSwitchProject = () => {
+    setIsSwitchOnProject(!isSwitchOnProject);
+  };
+
+  const validatePassword = (value: any) => {
+    if (value === rawPassword) {
+      onChange(value, 'raw_password');
+      setErrPass(true);
+    } else {
+      setErrPass(false);
+    }
+  };
   //#endregion
 
   //#region THIRD
@@ -310,7 +465,12 @@ export const CreateProject = ({navigation}: Props) => {
   };
 
   const duplicate = (item: Question) => {
-    setQuestions([...questions, item]);
+    const newItem: Question = {
+      answer_type: item.answer_type,
+      question_text: item.question_text,
+      mandatory: item.mandatory,
+    };
+    setQuestions([...questions, newItem]);
   };
 
   /**
@@ -327,7 +487,6 @@ export const CreateProject = ({navigation}: Props) => {
    * @param x id del asnwerType
    */
   const onSelectResponseTypeModal = (type: string, index: number) => {
-    console.log(index + ' ' + type);
     setQuestions(prevQuestions => {
       return prevQuestions.map((question, i) => {
         if (question === selectedQuestion) {
@@ -339,17 +498,44 @@ export const CreateProject = ({navigation}: Props) => {
     // setResponseType(type)
   };
 
-  const showData = () => {
-    // showModalSave();
-    // navigation.navigate('')
-    // navigation.navigate('ModalScreen')
-    if (isSaved) {
-      navigation.dispatch(
-        CommonActions.navigate({
-          name: 'ProjectPage',
-          params: {id: 1, isNew: true},
-        }),
+  // TODO cambiar nombre añadir id user
+  /**
+   * Metodo para guardar el proyecto
+   */
+  const showData = async () => {
+    let correct = true;
+    const token = await AsyncStorage.getItem('token');
+    questions.map(x => {
+      if (x.question_text.length <= 0) {
+        // setIsSaved(false)
+        correct = false;
+      }
+    });
+
+    form.field_form.questions = questions;
+
+    try {
+      console.log(JSON.stringify(form, null, 2));
+      const userInfo = await citmapApi.get<User>(
+        '/users/authentication/user/',
+        {
+          headers: {
+            Authorization: token,
+          },
+        },
       );
+      form.creator = userInfo.data.pk;
+    } catch (err) {
+      console.log(err);
+    }
+
+    if (correct) {
+      // navigation.dispatch(
+      //   CommonActions.navigate({
+      //     name: 'ProjectPage',
+      //     params: {id: 6, isNew: true},
+      //   }),
+      // );
     } else {
       showModalSave();
     }
@@ -375,14 +561,6 @@ export const CreateProject = ({navigation}: Props) => {
         return question;
       });
     });
-  };
-
-  const setAnswerType = (type: string) => {
-    const temp = answerType.find(
-      x => x.type.toLocaleLowerCase() === type.toLocaleLowerCase(),
-    )?.name;
-    // console.log(temp);
-    return temp;
   };
 
   /**
@@ -543,11 +721,15 @@ export const CreateProject = ({navigation}: Props) => {
             <Text style={{color: 'black'}}>Nombre del proyecto</Text>
             <InputText
               // isInputText={() => setIsInputText(!isInputText)}
+              isValid={nameValidate}
               label={'Nombre del proyecto'}
               keyboardType="default"
               multiline={false}
               numOfLines={1}
-              onChangeText={value => console.log(value)} //faltan poner los values
+              onChangeText={value => {
+                onChange(value, 'name'), setNameValidate(true);
+              }}
+              value={form.name}
             />
           </View>
           {/* descripcion del proyecto */}
@@ -558,13 +740,16 @@ export const CreateProject = ({navigation}: Props) => {
             }}>
             <Text style={{color: 'black'}}>Descripción del proyecto</Text>
             <InputText
-              // isInputText={() => setIsInputText(!isInputText)}
+              isValid={descriptionValidate}
               label={'Escribe la descripción'}
               keyboardType="default"
               multiline={true}
               maxLength={300}
               numOfLines={5}
-              onChangeText={value => console.log(value)}
+              onChangeText={value => {
+                onChange(value, 'description'), setDescriptionValidate(true);
+              }}
+              value={form.description}
             />
           </View>
           {/* add categories */}
@@ -610,7 +795,7 @@ export const CreateProject = ({navigation}: Props) => {
                           justifyContent: 'flex-start',
                           marginHorizontal: RFPercentage(2),
                         }}>
-                        {x.hasTag}
+                        {x.topic}
                       </Text>
                     </View>
 
@@ -629,90 +814,6 @@ export const CreateProject = ({navigation}: Props) => {
             </>
           )}
           {/* add organizaciones */}
-          {/* <View
-            style={{
-              width: '100%',
-              marginVertical: RFPercentage(1),
-            }}>
-            <Text style={{color: 'black', marginBottom: '2%'}}>
-              Añadir organizaciones al proyeto
-            </Text>
-            <View
-              style={{width: RFPercentage(41), marginBottom: RFPercentage(4)}}>
-              <View style={styles.container}>
-                <TextInput
-                  // ref={inputRefs.inputOrganization}
-                  onBlur={handleInputBlur}
-                  style={styles.input}
-                  placeholder="Escribe el nombre de la organización"
-                  value={inputValueOrganization}
-                  onChangeText={handleInputChangeOrganization}
-                />
-                {suggestions.length > 0 &&
-                  suggestions.map(item => (
-                    <TouchableOpacity
-                      key={item.id}
-                      style={styles.suggestionsList}
-                      //   onBlur={handleInputBlur}
-                      onPress={() => handleSuggestionPress(item)}>
-                      <Text style={styles.suggestionItem}>
-                        {item.principalName}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-              </View>
-            </View> */}
-
-          {/* lista de organizaciones */}
-          {/* {suggestionsSelected && (
-              <>
-                {suggestionsSelected.map(x => {
-                  return (
-                    <View
-                      key={x.id}
-                      style={{
-                        width: RFPercentage(41),
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        marginVertical: RFPercentage(1),
-                      }}>
-                      <View
-                        style={{flexDirection: 'row', alignItems: 'center'}}>
-                        <View style={{}}>
-                          <Hashtag
-                            fill={'black'}
-                            width={RFPercentage(4)}
-                            height={RFPercentage(4)}
-                          />
-                        </View>
-                        <Text
-                          style={{
-                            alignItems: 'flex-start',
-                            justifyContent: 'flex-start',
-                            marginHorizontal: RFPercentage(2),
-                          }}>
-                          {x.principalName}
-                        </Text>
-                      </View>
-
-                      <View style={{width: RFPercentage(8)}}>
-                        <CustomButton
-                          backgroundColor={'transparent'}
-                          label={'Eliminar'}
-                          onPress={() => console.log()}
-                          fontColor="red"
-                          outlineColor="red"
-                        />
-                      </View>
-                    </View>
-                  );
-                })}
-              </>
-            )}
-          </View> */}
-
-          {/* testeo organizacinoes */}
           <View
             style={{
               width: '100%',
@@ -729,20 +830,102 @@ export const CreateProject = ({navigation}: Props) => {
               <TextInput
                 placeholder="Search..."
                 value={inputValueOrganization}
-                onChangeText={handleInputChangeOrganization}
+                onChangeText={value => handleInputChangeOrganization(value)}
                 style={styles.input}
               />
+              {inputValueOrganization.length <= 0 ? (
+                <TouchableOpacity onPress={() => showModalInfo()}>
+                  <Text
+                    style={{
+                      color: Colors.primaryDark,
+                      marginHorizontal: '2%',
+                      marginTop: '1%',
+                    }}>
+                    ¿Cómo añadir organizaciones?
+                  </Text>
+                </TouchableOpacity>
+              ) : (
+                <></>
+              )}
+
               {suggestions.length > 0 &&
-                suggestions.map(item => (
+                suggestions.map((item, index) => (
                   <TouchableOpacity
                     key={item.id}
-                    style={styles.suggestionsList}
-                    //   onBlur={handleInputBlur}
+                    style={{
+                      ...styles.suggestionsList,
+                      borderBottomLeftRadius:
+                        index === suggestions.length - 1 ? 10 : 0,
+                      borderBottomRightRadius:
+                        index === suggestions.length - 1 ? 10 : 0,
+                    }}
                     onPress={() => handleSuggestionPress(item)}>
                     <Text style={styles.suggestionItem}>
                       {item.principalName}
                     </Text>
                   </TouchableOpacity>
+                ))}
+              {suggestionsSelected.length > 0 && (
+                <Text
+                  style={{
+                    fontSize: FontSize.fontSizeText14 + 1,
+                    color: 'black',
+                    marginTop: '10%',
+                    marginBottom: '3%',
+                  }}>
+                  Lista de organizaciones
+                </Text>
+              )}
+              {suggestionsSelected.length > 0 &&
+                suggestionsSelected.map((item, index) => (
+                  <View
+                    style={{
+                      width: RFPercentage(41),
+                      marginVertical: '4%',
+                      flexDirection: 'row',
+                    }}
+                    key={index + 1}>
+                    {/* sustituir por avatar */}
+                    <View
+                      style={{
+                        backgroundColor: 'red',
+                        width: '10%',
+                        marginRight: '5%',
+                        borderRadius: 50,
+                      }}></View>
+                    {/* sustituir texto de abajo por el que sea */}
+                    <View
+                      style={{
+                        flexDirection: 'column',
+                        justifyContent: 'space-between',
+                        width: '60%',
+                      }}>
+                      <Text
+                        style={{
+                          fontSize: FontSize.fontSizeText14,
+                          color: 'black',
+                        }}>
+                        {item.principalName}
+                      </Text>
+                      <Text
+                        style={{
+                          fontSize: FontSize.fontSizeText13,
+                          color: Colors.contentQuaternaryLight,
+                        }}>
+                        {item.contactMail}
+                      </Text>
+                    </View>
+                    {/* que elimine de la lista */}
+                    <View style={{width: '20%', marginLeft: '5%'}}>
+                      <CustomButton
+                        onPress={() => moveItemToSuggestions(index)}
+                        backgroundColor="transparen"
+                        fontColor="red"
+                        label="Eliminar"
+                        outlineColor="red"
+                      />
+                    </View>
+                  </View>
                 ))}
             </View>
           </View>
@@ -813,6 +996,7 @@ export const CreateProject = ({navigation}: Props) => {
                 <Switch
                   value={isSwitchOnProject}
                   onValueChange={onToggleSwitchProject}
+                  // onValueChange={value => onChange(value, 'is_private')}
                 />
               </View>
               <Text
@@ -879,7 +1063,7 @@ export const CreateProject = ({navigation}: Props) => {
                         multiline={false}
                         numOfLines={1}
                         isSecureText={true}
-                        onChangeText={value => console.log('password')}
+                        onChangeText={value => setRawPassword(value)}
                       />
                     </View>
                   </View>
@@ -916,7 +1100,7 @@ export const CreateProject = ({navigation}: Props) => {
                       multiline={false}
                       numOfLines={1}
                       isSecureText={true}
-                      onChangeText={value => console.log('password')}
+                      onChangeText={value => validatePassword(value)}
                     />
                   </View>
                 </>
@@ -948,6 +1132,10 @@ export const CreateProject = ({navigation}: Props) => {
                   onDelete={() => onDelete(item)}
                   onDuplicate={() => duplicate(item)}
                   onFocus={() => onSelectedCard(index, item)}
+                  onCheck={() => {
+                    item.mandatory = !item.mandatory;
+                  }}
+                  checkbox={item.mandatory}
                   key={index}
                   index={index + 1}
                   selected={index === isSelectedCardAnswer}
@@ -1009,6 +1197,7 @@ export const CreateProject = ({navigation}: Props) => {
           </View>
           {/* cada elemento de aquí dentro contendrá cada vista de la creación del proyecto. Dentro habrá un scrollview para cada elemento? */}
           <ScrollView
+            keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{
               alignItems: 'center',
@@ -1017,29 +1206,28 @@ export const CreateProject = ({navigation}: Props) => {
               // height: 'auto',
             }}
             style={{}}
-            //   keyboardShouldPersistTaps="handled"
-          >
+            ref={scrollViewRef}>
             {currentStep === 1 && firstScreen()}
             {currentStep === 2 && secondScreen()}
             {currentStep === 3 && thirdScreen()}
             <View style={styles.buttonContainer}>
               {currentStep > 1 && (
                 <CustomButton
-                  backgroundColor={Colors.secondaryDark}
+                  backgroundColor={Colors.primaryLigth}
                   label={'Volver'}
                   onPress={handlePrevStep}
                 />
               )}
               {currentStep < totalSteps && (
                 <CustomButton
-                  backgroundColor={Colors.primaryDark}
+                  backgroundColor={Colors.primaryLigth}
                   label={'Continuar'}
                   onPress={handleNextStep}
                 />
               )}
               {currentStep === 3 && (
                 <CustomButton
-                  backgroundColor={Colors.primaryDark}
+                  backgroundColor={Colors.primaryLigth}
                   label={'Crear y continuar'}
                   onPress={() => showData()}
                 />
@@ -1052,7 +1240,29 @@ export const CreateProject = ({navigation}: Props) => {
               onPress={hideModalSave}
               size={RFPercentage(4)}
               color={Colors.semanticWarningDark}
-              label='Ha surgido un problema, vuelva a intentarlo.'
+              label="Ha surgido un problema, vuelva a intentarlo."
+              helper={false}
+            />
+            <SaveProyectModal
+              visible={saveModal}
+              hideModal={hideModalSave}
+              onPress={hideModalSave}
+              size={RFPercentage(4)}
+              color={Colors.semanticWarningDark}
+              label="Ha surgido un problema, vuelva a intentarlo."
+              helper={false}
+            />
+            <InfoModal
+              visible={infoModal}
+              hideModal={hideModalInfo}
+              onPress={hideModalInfo}
+              size={RFPercentage(4)}
+              color={Colors.primaryLigth}
+              label="¿Cómo añadir organizaciones?"
+              subLabel="Debes de escribir el nombre de la organización que quieres añadir al proyecto, automáticamente se le enviará una
+              solicitud al administrador.
+              Una vez el administrador acepte, se agregará la organización al proyecto
+              "
               helper={false}
             />
           </ScrollView>
@@ -1117,7 +1327,7 @@ export const CreateProject = ({navigation}: Props) => {
                           setCheckCategories(item);
                         }}
                       />
-                      <Text>{item.hasTag}</Text>
+                      <Text>{item.topic}</Text>
                     </View>
                   ); //aquí poner el plus
                 }}
@@ -1338,7 +1548,7 @@ const styles = StyleSheet.create({
   showCategoryView: {
     position: 'absolute',
     backgroundColor: 'white',
-    // height: RFPercentage(80),
+    height: RFPercentage(60),
     width: '100%',
     zIndex: 200,
     bottom: 0,
@@ -1361,7 +1571,7 @@ const styles = StyleSheet.create({
 
   input: {
     fontSize: FontSize.fontSizeText13,
-    marginBottom: 10,
+    // marginBottom: 10,
     width: RFPercentage(41),
     height: RFPercentage(4.5),
     borderColor: 'grey',
@@ -1370,18 +1580,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: RFPercentage(1.4),
   },
   suggestionsList: {
-    position: 'absolute',
-    top: 40,
-    // left: 0,
-    // right: 0,
+    position: 'relative',
+    top: 0,
     backgroundColor: 'white',
     borderWidth: 1,
     borderColor: 'gray',
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
-    zIndex: 999,
-    width: RFPercentage(38),
-    // height: RFPercentage(6),
+    // borderBottomLeftRadius: 10,
+    // borderBottomRightRadius: 10,
+    // zIndex: 999,
+    width: RFPercentage(39),
+    alignSelf: 'center',
   },
   suggestionItem: {
     padding: 10,

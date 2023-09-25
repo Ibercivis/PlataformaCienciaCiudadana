@@ -95,10 +95,10 @@ export const Card = ({
                     alignContent: 'center',
                     alignItems: 'center',
                     alignSelf: 'center',
-                    height: '22%',
+                    height: '26%',
                     flexDirection: 'row',
                     marginHorizontal: '2%',
-                    marginVertical: '2%',
+                    marginBottom: '3%',
                   }}>
                   <Text
                     style={{
@@ -108,6 +108,7 @@ export const Card = ({
                       flexWrap: 'wrap',
                       fontSize: FontSize.fontSizeText10,
                       color: pressed ? 'white' : 'black',
+                      marginBottom: '2%',
                     }}>
                     {title}
                   </Text>

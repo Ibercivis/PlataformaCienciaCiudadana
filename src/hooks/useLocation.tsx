@@ -31,19 +31,18 @@ export const useLocation = () => {
   }, []);
 
   useEffect(() => {
-    getCurrentLocation().then(location => {
-      if (!isMounted.current) return;
-      setInitialPosition(location);
-      setInitialPositionArray([location.longitude, location.latitude]);
-      setUserLocation(location);
-      setRouteLines(routes => [...routes, location]);
-      setHasLocation(true);
-     
-    });
+    if (!hasLocation) {
+      // getCurrLocation();
+      getCurrentLocation().then(location => {
+        if (!isMounted.current) return;
+        setInitialPosition(location);
+        setInitialPositionArray([location.longitude, location.latitude]);
+        setUserLocation(location);
+        setRouteLines(routes => [...routes, location]);
+        setHasLocation(true);
+      });
+    }
   }, []);
-
-  useEffect(() => {
-  }, [userLocation]);
 
   const getCurrentLocation = (): Promise<Location> => {
     return new Promise((resolve, reject) => {
@@ -55,9 +54,16 @@ export const useLocation = () => {
           });
         },
         err => {
+          if (err.code === 1) {
+            console.log("Permiso denegado");
+          } else if (err.code === 2) {
+            console.log("Ubicación no disponible");
+          } else if (err.code === 3) {
+            console.log("Tiempo de espera agotado");
+          }
           reject({err}),
             {
-              enableHighAccuracy: true,
+              enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 
             };
         },
       );
@@ -81,6 +87,7 @@ export const useLocation = () => {
       {
         enableHighAccuracy: true,
         distanceFilter: 5, //metros para que te notifique
+        timeout: 20000, maximumAge: 1000 
       },
     );
   };

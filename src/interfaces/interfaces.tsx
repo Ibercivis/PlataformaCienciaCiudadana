@@ -1,29 +1,67 @@
 export interface Project {
     id:             number;
+    creator:        number;
+    administrators: number[];
+    name:           string;
+    description:    string;
+    topic:          number[];
+    hasTag:         number[];
+    organizations_write:  number[];
+    field_form:     FieldForm;
+    cover?:         string[];
+    is_private?:  boolean;
+    raw_password?:  string;
+}
+
+export interface ShowProject {
+    id:             number;
     hasTag:         number[];
     topic:          number[];
     organizations:  number[];
     creator:        number;
-    administrators: any[];
-    created_at:     Date;
-    updated_at:     Date;
+    administrators: number[];
+    created_at?:    Date;
+    updated_at?:    Date;
     name:           string;
     description:    string;
+    field_form:     FieldForm;
+    is_private?:    boolean;
+    is_liked_by_user?: boolean;
+    total_likes?:   number;
+    contributions?: number;
+    cover?:         string[];
+}
+
+export interface FieldForm {
+    questions: Question[];
 }
 
 export interface Organization {
     id:             number;
     type:           Type[];
     creator:        Creator;
-    administrators: any[];
-    members:        any[];
+    administrators: number[];
+    members:        number[];
     principalName:  string;
     url:            string;
     description:    string;
     contactName:    string;
     contactMail:    string;
     logo:           string;
-    creditLogo:     string;
+    cover:          string;
+}
+export interface NewOrganization {
+    type:           number[];
+    creator:        number;
+    administrators: number[];
+    members:        number[];
+    principalName:  string;
+    url:            string;
+    description:    string;
+    contactName:    string;
+    contactMail:    string;
+    logo:           any;
+    cover:          any;
 }
 
 export interface Type {
@@ -46,8 +84,9 @@ export interface User {
 
 export interface Question {
     id?:            number;
-    question_text: string;
-    answer_type:   string;
+    question_text:  string;
+    answer_type:    string;
+    mandatory?:     boolean;
 }
 
 export interface UserInfo {

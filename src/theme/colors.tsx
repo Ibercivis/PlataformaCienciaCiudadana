@@ -18,6 +18,7 @@ export const Colors = {
     secondaryPressedLigth:'#4C4C4C',
     secondaryDark:'#000000',
     secondaryPressedDark:'#767575',
+    secondaryBackground:'#D9D9D9',
 
     contentPrimaryLigth:'#000000',
     contentSecondaryLigth:'#3E3E3E',

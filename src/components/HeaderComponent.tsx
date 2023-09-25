@@ -1,10 +1,10 @@
 import React from 'react';
 
 import {Header} from '@rneui/base';
-import {Text, TouchableOpacity, View} from 'react-native';
+import {Dimensions, Text, TouchableOpacity, View} from 'react-native';
 import {IconTemp} from './IconTemp';
 import {Size} from '../theme/size';
-import {FontSize} from '../theme/fonts';
+import {FontFamily, FontSize} from '../theme/fonts';
 import Back from '../assets/icons/general/chevron-left.svg';
 import {RFPercentage} from 'react-native-responsive-fontsize';
 
@@ -46,11 +46,16 @@ export const HeaderComponent = ({
     }
   };
 
+  const screenWidth = Dimensions.get('window').width;
+  const fontSize = screenWidth * 0.04;
   return (
     <Header
-      barStyle={'default'}
-      containerStyle={{backgroundColor: backgroundColor, marginVertical: '2%'}}
+      barStyle={'dark-content'}
+      containerStyle={{backgroundColor: backgroundColor, marginVertical: '1%', width:'100%',marginTop: '4%'}}
       statusBarProps={{backgroundColor: backgroundColor}}
+      leftContainerStyle={{width:'5%', marginRight: '4%'}}
+      centerContainerStyle={{flex:7}}
+      rightContainerStyle={{flex: 2}}
       leftComponent={
         <View>
           <TouchableOpacity activeOpacity={0.5} onPress={onPressLeft}>
@@ -63,8 +68,8 @@ export const HeaderComponent = ({
               }}>
               {/* <IconTemp name="arrow-left" size={Size.iconSizeMedium} /> */}
               <Back
-                width={Size.iconSizeMin}
-                height={Size.iconSizeMedium}
+                width={RFPercentage(3)}
+                height={RFPercentage(3)}
                 color={'#000000'}
               />
             </View>
@@ -72,19 +77,20 @@ export const HeaderComponent = ({
         </View>
       }
       centerComponent={
-        
-          <Text
-            numberOfLines={1}
-            style={{
-              alignSelf: 'center',
-              fontWeight: 'bold',
-              color: '#000000',
-              top: RFPercentage(0.2),
-              fontSize: FontSize.fontSizeText20,
-              flexWrap: 'wrap',
-            }}>
-            {title}
-          </Text>
+        <Text
+          numberOfLines={1}
+          style={{
+            alignSelf: 'flex-start',
+            // fontWeight: 'bold',
+            color: '#000000',
+            // top: RFPercentage(0.3),
+            width:'100%',
+            fontSize: FontSize.fontSizeText18,
+            fontFamily: FontFamily.NotoSansDisplaySemiBold,
+            flexWrap: 'wrap',
+          }}>
+          {title}
+        </Text>
       }
       rightComponent={renderRight ? <>{renderRight()}</> : <></>}
     />

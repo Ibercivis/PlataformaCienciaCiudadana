@@ -31,13 +31,14 @@ import citmapApi from '../../../api/citmapApi';
 import {HasTag} from '../../../interfaces/appInterfaces';
 import {LoadingScreen} from '../../../screens/LoadingScreen';
 import {SaveProyectModal} from '../../utility/Modals';
+import { CommonActions } from '@react-navigation/native';
 
 const data = [
   require('../../../assets/icons/category/Group-1.png'),
   require('../../../assets/icons/category/Group-2.png'),
   require('../../../assets/icons/category/Group-3.png'),
   require('../../../assets/icons/category/Group-4.png'),
-  require('../../../assets/icons/category/Group-5.png'),
+  // require('../../../assets/icons/category/Group-5.png'),
   // require('../../../assets/icons/category/Group-6.png'),
   // require('../../../assets/icons/category/Group-7.png'),
   // require('../../../assets/icons/category/Group-8.png'),
@@ -74,9 +75,7 @@ export const ProjectPage = (props: Props) => {
 
   useEffect(() => {
     //si entra nada mas crear un project
-    if (props.route.params.isNew) {
-      showModalSave();
-    }
+    
     getProjectApi();
   }, []);
 
@@ -141,6 +140,18 @@ export const ProjectPage = (props: Props) => {
     props.navigation.goBack();
   };
 
+  /**
+   * metodo para ir al mapa
+   */
+  const navigateToMap = () => {
+    props.navigation.dispatch(
+      CommonActions.navigate({
+        name: 'ParticipateMap',
+        params: {id: 6},
+      }),
+    );
+  }
+
   const getProjectApi = async () => {
     const token = await AsyncStorage.getItem('token');
     try {
@@ -153,6 +164,13 @@ export const ProjectPage = (props: Props) => {
         },
       );
       setProject(resp.data);
+      if(resp.data.hasTag.length <= 0){
+        console.log("entra en hastag length")
+        setIsAllCharged(true);
+      }
+      if (props.route.params.isNew) {
+        showModalSave();
+      }
     } catch {}
   };
 
@@ -173,7 +191,7 @@ export const ProjectPage = (props: Props) => {
 
   //#endregion
 
-  if (isAllCharged) {
+  if (!isAllCharged) {
     return <LoadingScreen />;
   }
 
@@ -212,7 +230,7 @@ export const ProjectPage = (props: Props) => {
                 );
               }}
               itemWidth={Size.window.width + 2}
-              sliderWidth={Size.window.height / 2}
+              sliderWidth={Size.window.height}
               layout="default"
               onSnapToItem={index => setCarouselIndex(index)}
               useScrollView={true}
@@ -337,7 +355,7 @@ export const ProjectPage = (props: Props) => {
                 bottom: 2,
               }}>
               <CustomButton
-                onPress={() => console.log('pressed')}
+                onPress={() => navigateToMap()}
                 label="¡Participar!"
                 backgroundColor={Colors.primaryLigth}
               />

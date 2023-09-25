@@ -14,7 +14,7 @@ import {Size} from '../../../theme/size';
 import {Colors} from '../../../theme/colors';
 import LinearGradient from 'react-native-linear-gradient';
 import translate from '../../../theme/es.json';
-import {HasTag, Projects} from '../../../interfaces/appInterfaces';
+import {HasTag, Projects, Topic} from '../../../interfaces/appInterfaces';
 import SplashScreen from 'react-native-splash-screen';
 import {Card} from '../../utility/Card';
 import {InputText} from '../../utility/InputText';
@@ -39,8 +39,8 @@ interface Props extends StackScreenProps<any, any> {}
 export const Home = ({navigation}: Props) => {
   //#region Variables/const
   const NUM_SLICE_NEW_PROJECT_LIST = 10;
-  const [categoryList, setCategoryList] = useState<HasTag[]>([]); //clonar para que la que se muestre solo tenga X registros siendo la ultima el +
-  const [categoriesSelected, setCategoriesSelected] = useState<HasTag[]>([]);
+  const [categoryList, setCategoryList] = useState<Topic[]>([]); //clonar para que la que se muestre solo tenga X registros siendo la ultima el +
+  const [categoriesSelected, setCategoriesSelected] = useState<Topic[]>([]);
   const [newProjectList, setNewProjectList] = useState<Project[]>([]); // partir la lista en 2
   const [newProjectListSliced, setNewProjectListSliced] = useState<Project[]>([]); // partir la lista en 2
 
@@ -81,7 +81,7 @@ export const Home = ({navigation}: Props) => {
     projectListApi();
     organizationListApi();
     setCategoriesSelected([]);
-    setIsAllCharged(true);
+    //aquí estaba el setIsAllCharged(true);
   }, []);
 
   useEffect(() => {
@@ -213,7 +213,7 @@ export const Home = ({navigation}: Props) => {
   const categoryListApi = async () => {
     const token = await AsyncStorage.getItem('token');
     try {
-      const resp = await citmapApi.get<HasTag[]>('/project/hastag/', {
+      const resp = await citmapApi.get<Topic[]>('/project/topics/', {
         headers: {
           Authorization: token,
         },
@@ -245,6 +245,7 @@ export const Home = ({navigation}: Props) => {
         },
       });
       setOrganizationList(resp.data);
+      setIsAllCharged(true);
     } catch {}
   };
   //#endregion
@@ -308,8 +309,8 @@ export const Home = ({navigation}: Props) => {
               horizontal={true}
               nestedScrollEnabled={true}
               showsHorizontalScrollIndicator={false}>
-              {categoryList.map((x, index) => {
-                if (categoryList.length - 1 === index) {
+              {categoryList.slice(0, 5).map((x, index) => {
+                if (categoryList.slice(0, 5).length - 1 === index) {
                   return (
                     <Card
                       key={index}
@@ -326,7 +327,7 @@ export const Home = ({navigation}: Props) => {
                       key={index}
                       type="category"
                       categoryImage={x.id}
-                      title={x.hasTag}
+                      title={x.topic}
                       onPress={() => {
                         categoryFilter(x.id);
                       }}
@@ -775,7 +776,7 @@ export const Home = ({navigation}: Props) => {
                       console.log(item);
                     }}
                   />
-                  <Text>{item.hasTag}</Text>
+                  <Text>{item.topic}</Text>
                 </View>
               ); //aquí poner el plus
             }}
@@ -813,7 +814,7 @@ const HomeStyles = StyleSheet.create({
   categoryView: {
     // backgroundColor: 'cyan',
     flexDirection: 'column',
-    height: RFPercentage(24),
+    height: RFPercentage(25),
     marginBottom: 38,
   },
   categoryScrollView: {
@@ -852,7 +853,7 @@ const HomeStyles = StyleSheet.create({
   importantOrganizationView: {
     // backgroundColor: 'grey',
     marginBottom: RFPercentage(1),
-    // height: '25%',
+    height: '25%',
     // height: RFPercentage(30)
     // , backgroundColor: 'red',
   },

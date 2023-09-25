@@ -54,12 +54,10 @@ export const QuestionCard = ({
 
   useEffect(() => {
     setLocalResponseType(responseType);
-    console.log(localResponseTypeText)
   }, [responseType]);
 
   useEffect(() => {
     onSelectResponseTypeModal();
-    console.log(localResponseTypeText)
   }, [localResponseType]);
 
   const onSelectResponseTypeModal = () => {
@@ -130,13 +128,13 @@ export const QuestionCard = ({
               justifyContent: 'space-between',
               alignItems: 'center',
             }}>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               style={{
                 marginHorizontal: RFPercentage(0.5),
               }}
               onPress={onDuplicate}>
               <Paperclip height={RFPercentage(1.8)} width={RFPercentage(1.8)} />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <TouchableOpacity
               style={{
                 marginHorizontal: RFPercentage(0.5),

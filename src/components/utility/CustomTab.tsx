@@ -10,8 +10,10 @@ import {useNavigation} from '@react-navigation/native';
 import {Colors} from '../../theme/colors';
 import {IconBootstrap} from './IconBootstrap';
 import {RFPercentage} from 'react-native-responsive-fontsize';
-import Plus from '../../assets/icons/general/plus-lg1.svg';
-import {FontSize} from '../../theme/fonts';
+import Plus from '../../assets/icons/general/plus-square.svg';
+import Home from '../../assets/icons/general/home.svg';
+import Profile from '../../assets/icons/general/person.svg';
+import { FontSize } from '../../theme/fonts';
 
 interface Props {
   label: string;
@@ -36,16 +38,20 @@ const CustomTab = ({
     // Estilos personalizados
     backgroundColor: focused ? Colors.primaryLigth : 'transparent',
     borderRadius: 20,
-    padding: RFPercentage(1),
-    height: RFPercentage(4),
-    marginTop: RFPercentage(0.6),
+    padding: RFPercentage(1.5),
+    height: RFPercentage(5),
+    marginTop: RFPercentage(0.4),
+    marginBottom: RFPercentage(0.4),
+    width: RFPercentage(15)
   };
 
   const textStyle = {
     // Estilos de texto personalizados
     color: focused ? '#FFFFFF' : '#000000',
-    fontSize: RFPercentage(1.6),
+    fontSize: FontSize.fontSizeText14,
     marginHorizontal: RFPercentage(1),
+    bottom:RFPercentage(0.45),
+    // alignItems: 'center',
     // fontWeight: 'bold',
   };
 
@@ -71,25 +77,36 @@ const CustomTab = ({
                 style={{
                   marginHorizontal: '1%',
                   justifyContent: 'center',
-                  top: RFPercentage(0.18),
+                  // top: RFPercentage(0.18),
                   alignSelf: 'center',
                   alignContent: 'center',
                   alignItems: 'center',
                   left: RFPercentage(0.1),
+                  bottom: RFPercentage(0.2)
                 }}>
-                <IconBootstrap
+                  {/* TODO cambiar iconos  */}
+
+                {
+                  icon.toLocaleLowerCase() === 'home' ? (
+                    <Home width={RFPercentage(3)} height={RFPercentage(3)} fill={focused ? '#FFFFFF' : '#000000'} />
+                  ) : (
+                    <Profile width={RFPercentage(3)} height={RFPercentage(3)} fill={focused ? '#FFFFFF' : '#000000'} />
+                  )
+                }
+
+                {/* <IconBootstrap
                   name={icon}
                   size={RFPercentage(2.2)}
                   color={focused ? '#FFFFFF' : '#000000'}
-                />
+                /> */}
               </View>
               {focused ? <Text style={textStyle}>{label}</Text> : <></>}
             </>
           ) : (
             <View style={{alignSelf: 'center', justifyContent: 'center'}}>
               <Plus
-                width={RFPercentage(3)}
-                height={RFPercentage(3)}
+                width={RFPercentage(2)}
+                height={RFPercentage(2)}
                 fill={'black'}
               />
             </View>

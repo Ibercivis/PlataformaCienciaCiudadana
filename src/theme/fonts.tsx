@@ -20,7 +20,7 @@ export const FontSize = {
   fontSizeText14: 14,
   // fontSizeText14: RFPercentage(1.9),
   fontSizeText18: 18,
-  // fontSizeText18: RFPercentage(2.3),
+  fontSizeText17: RFPercentage(2.3),
   fontSizeText20: 20,
   // fontSizeText20: RFPercentage(2.7),
 };

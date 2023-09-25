@@ -19,14 +19,16 @@ import citmapApi from '../../../api/citmapApi';
 import {HeaderComponent} from '../../HeaderComponent';
 import {useForm} from '../../../hooks/useForm';
 import {RFPercentage} from 'react-native-responsive-fontsize';
-import Stars from 'react-native-bootstrap-icons/icons/stars';
+// import Stars from 'react-native-bootstrap-icons/icons/stars';
+import Geo from '../../../assets/icons/general/geo-alt-fill.svg';
+import Bookmark from '../../../assets/icons/general/bookmark-fill.svg';
 import People from '../../../assets/icons/general/people.svg';
 import Heart from '../../../assets/icons/general/heart.svg';
 import HeartFill from '../../../assets/icons/general/heart-fill.svg';
 import PencilSquare from '../../../assets/icons/general/pencil-square-1.svg';
 import {HasTag} from '../../../interfaces/appInterfaces';
 import {LoadingScreen} from '../../../screens/LoadingScreen';
-import {FontFamily, FontSize} from '../../../theme/fonts';
+import {FontFamily, FontSize, fonts} from '../../../theme/fonts';
 import {Switch} from 'react-native-paper';
 import {InputText} from '../../utility/InputText';
 import {TextInput} from 'react-native-paper';
@@ -34,7 +36,21 @@ import {globalStyles} from '../../../theme/theme';
 import {IconBootstrap} from '../../utility/IconBootstrap';
 import {Size} from '../../../theme/size';
 import {Colors} from '../../../theme/colors';
-import {GenderSelectorModal, VisibilityOrganizationModal} from '../../utility/Modals';
+import PlusImg from '../../../assets/icons/general/Plus-img.svg';
+import Person from '../../../assets/icons/general/person.svg';
+import ImagePicker from 'react-native-image-crop-picker';
+import {
+  GenderSelectorModal,
+  InfoModal,
+  VisibilityBirthday,
+  VisibilityOrganizationModal,
+} from '../../utility/Modals';
+import Lock from '../../../assets/icons/general/lock-fill.svg';
+import Card from '../../../assets/icons/general/card-fill.svg';
+import World from '../../../assets/icons/general/world-fill.svg';
+import NotContribution from '../../../assets/icons/profile/No hay contribuciones.svg';
+import NotCreated from '../../../assets/icons/profile/No hay creados.svg';
+import NotLiked from '../../../assets/icons/profile/No hay me gusta.svg';
 
 interface Props extends StackScreenProps<any, any> {}
 
@@ -42,9 +58,9 @@ export const Profile = ({navigation}: Props) => {
   //#region Variables
   const [index, setIndex] = useState(0);
   const [routes] = useState([
-    {key: 'one', title: 'Contribution'},
-    {key: 'two', title: 'Created'},
-    {key: 'three', title: 'Liked'},
+    {key: 'one', title: 'Contribuciones'},
+    {key: 'two', title: 'Me gustan'},
+    {key: 'three', title: 'Creados'},
   ]);
 
   const [isAllCharged, setIsAllCharged] = useState(false);
@@ -70,167 +86,557 @@ export const Profile = ({navigation}: Props) => {
   const onToggleSwitch = () => setIsSwitchOn(!isSwitchOn);
 
   const [modalVisibleGenre, setModalVisibleGenre] = useState(false);
-  const [modalVisibleOrganization, setModalVisibleOrganization] = useState(false);
+  const [modalVisibleOrganization, setModalVisibleOrganization] =
+    useState(false);
+  const [modalVisibleUbicacion, setModalVisibleUbicacion] = useState(false);
+  const [modalVisibleBirth, setModalVisibleBirth] = useState(false);
   const [modalVisibleSave, setModalVisibleSave] = useState(false);
   const [genre, setGenre] = useState('');
   const [visibilityOrganization, setVisibilityOrganization] = useState('');
+  const [visibilityUbicacion, setVisibilityUbicacion] = useState('');
+  const [visibilityBirth, setVisibilityBirth] = useState('');
   const [saveAll, setSaveAll] = useState(false);
+
+  const [infoModal, setInfoModal] = useState(false);
+  const showModalInfo = () => setInfoModal(true);
+  const hideModalInfo = () => setInfoModal(false);
 
   //#endregion
 
   //#region tabs
   const Contribution = () => (
-    <View style={{flex: 1, backgroundColor: 'transparent'}} />
-  );
-
-  const Created = () => (
-    <FlatList
-      style={{flex: 1}}
-      contentContainerStyle={{alignItems: 'center'}}
-      showsVerticalScrollIndicator={false}
-      showsHorizontalScrollIndicator={false}
-      data={createdProjects}
-      renderItem={({item, index}) => {
-        return (
-          <TouchableOpacity
-            key={index}
-            activeOpacity={0.5}
-            style={styles.projectFound}
-            onPress={() => navigation.navigate('ProjectPage', {id: item.id})}>
-            <View
+    <>
+      {createdProjects.length <= 0 ? (
+        <>
+          <View style={{alignItems: 'center', marginTop: '7%'}}>
+            <Text
               style={{
-                paddingHorizontal: RFPercentage(3),
+                color: 'black',
+                fontSize: FontSize.fontSizeText20,
+                fontFamily: FontFamily.NotoSansDisplayRegular,
+                fontWeight: '700',
               }}>
-              <View
-                style={{
-                  width: '100%',
-                  marginTop: RFPercentage(2),
-                  marginBottom: 6,
-                }}>
-                <Text
-                  style={{
-                    color: 'black',
-                    fontWeight: 'bold',
-                    marginBottom: '1%',
-                    alignSelf: 'flex-start',
-                  }}>
-                  {item.name}
-                </Text>
-                <View style={{flexDirection: 'row'}}>
-                  {item.hasTag.map((x, index) => {
-                    const matchingHastag = hastags.find(
-                      hastag => hastag.id === x,
-                    );
-                    if (matchingHastag) {
-                      return (
-                        <Text
-                          key={index}
-                          style={{
-                            alignSelf: 'flex-start',
-                            color: 'blue',
-                            marginBottom: '2%',
-                          }}>
-                          #{matchingHastag.hasTag}
-                          {'  '}
-                        </Text>
-                      );
-                    }
-                  })}
-                </View>
-                <Text
-                  style={{
-                    alignSelf: 'flex-start',
-                    marginBottom: '2%',
-                  }}>
-                  {item.description}
-                </Text>
-              </View>
-              <ImageBackground
-                source={require('../../../assets/backgrounds/login-background.jpg')}
-                style={{
-                  ...styles.imageBackground,
-                  width: '100%',
-                  height: RFPercentage(23),
-                }}>
+              No has participado...
+            </Text>
+            <Text
+              style={{
+                width:'65%',
+                textAlign:'center',
+                color: 'black',
+                fontSize: FontSize.fontSizeText13,
+                fontFamily: FontFamily.NotoSansDisplayMedium,
+                fontWeight: '600',
+                marginTop: '3%',
+              }}>
+              ¡Participa! Y todos los proyectos en los que contribuyas
+              aparecerán aquí.
+            </Text>
+            <View style={{alignItems: 'center'}}>
+              <NotContribution width={RFPercentage(28)} height={RFPercentage(28)} />
+            </View>
+          </View>
+        </>
+      ) : (
+        <FlatList
+          style={{flex: 1}}
+          contentContainerStyle={{alignItems: 'center'}}
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+          data={createdProjects}
+          renderItem={({item, index}) => {
+            return (
+              <TouchableOpacity
+                key={index}
+                activeOpacity={0.5}
+                style={styles.projectFound}
+                onPress={() =>
+                  navigation.navigate('ProjectPage', {id: item.id})
+                }>
                 <View
                   style={{
-                    position: 'absolute',
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    alignSelf: 'center',
-                    bottom: 2,
-                    left: 0,
-                    right: 0,
-                    justifyContent: 'space-between',
-                    // marginHorizontal: RFPercentage(1),
-                    width: '100%',
+                    paddingHorizontal: RFPercentage(3),
                   }}>
                   <View
                     style={{
-                      flexDirection: 'row',
-                      backgroundColor: 'white',
-                      borderRadius: 15,
-                      margin: '2%',
-                      paddingHorizontal: '3%',
-                      paddingVertical: '2%',
+                      width: '100%',
+                      marginTop: RFPercentage(2),
+                      marginBottom: 6,
                     }}>
-                    <People width={16} height={16} color={'#000000'} />
                     <Text
                       style={{
-                        fontSize: FontSize.fontSizeText13,
-                        marginHorizontal: RFPercentage(1),
+                        color: 'black',
+                        fontWeight: 'bold',
+                        marginBottom: '1%',
+                        alignSelf: 'flex-start',
                       }}>
-                      1500
+                      {item.name}
                     </Text>
-                    {/* <IconBootstrap name={'plus'} size={20} color={'black'} /> */}
-                    {true ? (
-                      <HeartFill width={16} height={16} color={'#ff0000'} />
-                    ) : (
-                      <Heart width={16} height={16} color={'#000000'} />
-                    )}
+                    <View style={{flexDirection: 'row'}}>
+                      {item.hasTag.map((x, i) => {
+                        const matchingHastag = hastags.find(
+                          hastag => hastag.id === x,
+                        );
+                        if (matchingHastag) {
+                          return (
+                            <Text
+                              key={i}
+                              style={{
+                                alignSelf: 'flex-start',
+                                color: 'blue',
+                                marginBottom: '2%',
+                              }}>
+                              #{matchingHastag.hasTag}
+                              {'  '}
+                            </Text>
+                          );
+                        }
+                      })}
+                    </View>
                     <Text
                       style={{
-                        fontSize: FontSize.fontSizeText13,
-                        marginHorizontal: RFPercentage(1),
+                        alignSelf: 'flex-start',
+                        marginBottom: '2%',
                       }}>
-                      120
+                      {item.description}
                     </Text>
                   </View>
+                  <ImageBackground
+                    source={require('../../../assets/backgrounds/login-background.jpg')}
+                    style={{
+                      ...styles.imageBackground,
+                      width: '100%',
+                      height: RFPercentage(23),
+                    }}>
+                    <View
+                      style={{
+                        position: 'absolute',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        alignSelf: 'center',
+                        bottom: 2,
+                        left: 0,
+                        right: 0,
+                        justifyContent: 'space-between',
+                        // marginHorizontal: RFPercentage(1),
+                        width: '100%',
+                      }}>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          backgroundColor: 'white',
+                          borderRadius: 15,
+                          margin: '2%',
+                          paddingHorizontal: '3%',
+                          paddingVertical: '2%',
+                        }}>
+                        <People width={16} height={16} color={'#000000'} />
+                        <Text
+                          style={{
+                            fontSize: FontSize.fontSizeText13,
+                            marginHorizontal: RFPercentage(1),
+                          }}>
+                          1500
+                        </Text>
+                        {/* <IconBootstrap name={'plus'} size={20} color={'black'} /> */}
+                        {true ? (
+                          <HeartFill width={16} height={16} color={'#ff0000'} />
+                        ) : (
+                          <Heart width={16} height={16} color={'#000000'} />
+                        )}
+                        <Text
+                          style={{
+                            fontSize: FontSize.fontSizeText13,
+                            marginHorizontal: RFPercentage(1),
+                          }}>
+                          120
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          backgroundColor: 'white',
+                          borderRadius: 15,
+                          margin: '2%',
+                          paddingHorizontal: '3%',
+                          paddingVertical: '2%',
+                        }}>
+                        <Text
+                          style={{
+                            fontSize: FontSize.fontSizeText13,
+                            marginHorizontal: RFPercentage(1),
+                          }}>
+                          120
+                        </Text>
+                        <Heart width={16} height={16} color={'#000000'} />
+                      </View>
+                    </View>
+                  </ImageBackground>
+                </View>
+              </TouchableOpacity>
+            );
+          }}
+        />
+      )}
+    </>
+  );
+  const Liked = () => (
+    <>
+      {createdProjects.length <= 0 ? (
+        <>
+          <View style={{alignItems: 'center', marginTop: '7%'}}>
+            <Text
+              style={{
+                width:'65%',
+                textAlign:'center',
+                color: 'black',
+                fontSize: FontSize.fontSizeText20,
+                fontFamily: FontFamily.NotoSansDisplayRegular,
+                fontWeight: '700',
+              }}>
+              No tienes proyectos favoritos
+            </Text>
+            <Text
+              style={{
+                width:'65%',
+                textAlign:'center',
+                color: 'black',
+                fontSize: FontSize.fontSizeText13,
+                fontFamily: FontFamily.NotoSansDisplayMedium,
+                fontWeight: '600',
+                marginTop: '3%',
+              }}>
+              Dale "me gusta" a los proyectos que te interesan y se guardarán
+              aquí
+            </Text>
+            <View style={{alignItems: 'center'}}>
+              <NotLiked width={RFPercentage(28)} height={RFPercentage(28)} />
+            </View>
+          </View>
+        </>
+      ) : (
+        <FlatList
+          style={{flex: 1}}
+          contentContainerStyle={{alignItems: 'center'}}
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+          data={createdProjects}
+          renderItem={({item, index}) => {
+            return (
+              <TouchableOpacity
+                key={index}
+                activeOpacity={0.5}
+                style={styles.projectFound}
+                onPress={() =>
+                  navigation.navigate('ProjectPage', {id: item.id})
+                }>
+                <View
+                  style={{
+                    paddingHorizontal: RFPercentage(3),
+                  }}>
                   <View
                     style={{
-                      flexDirection: 'row',
-                      backgroundColor: 'white',
-                      borderRadius: 15,
-                      margin: '2%',
-                      paddingHorizontal: '3%',
-                      paddingVertical: '2%',
+                      width: '100%',
+                      marginTop: RFPercentage(2),
+                      marginBottom: 6,
                     }}>
                     <Text
                       style={{
-                        fontSize: FontSize.fontSizeText13,
-                        marginHorizontal: RFPercentage(1),
+                        color: 'black',
+                        fontWeight: 'bold',
+                        marginBottom: '1%',
+                        alignSelf: 'flex-start',
                       }}>
-                      120
+                      {item.name}
                     </Text>
-                    <Heart width={16} height={16} color={'#000000'} />
+                    <View style={{flexDirection: 'row'}}>
+                      {item.hasTag.map((x, i) => {
+                        const matchingHastag = hastags.find(
+                          hastag => hastag.id === x,
+                        );
+                        if (matchingHastag) {
+                          return (
+                            <Text
+                              key={i}
+                              style={{
+                                alignSelf: 'flex-start',
+                                color: 'blue',
+                                marginBottom: '2%',
+                              }}>
+                              #{matchingHastag.hasTag}
+                              {'  '}
+                            </Text>
+                          );
+                        }
+                      })}
+                    </View>
+                    <Text
+                      style={{
+                        alignSelf: 'flex-start',
+                        marginBottom: '2%',
+                      }}>
+                      {item.description}
+                    </Text>
                   </View>
+                  <ImageBackground
+                    source={require('../../../assets/backgrounds/login-background.jpg')}
+                    style={{
+                      ...styles.imageBackground,
+                      width: '100%',
+                      height: RFPercentage(23),
+                    }}>
+                    <View
+                      style={{
+                        position: 'absolute',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        alignSelf: 'center',
+                        bottom: 2,
+                        left: 0,
+                        right: 0,
+                        justifyContent: 'space-between',
+                        // marginHorizontal: RFPercentage(1),
+                        width: '100%',
+                      }}>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          backgroundColor: 'white',
+                          borderRadius: 15,
+                          margin: '2%',
+                          paddingHorizontal: '3%',
+                          paddingVertical: '2%',
+                        }}>
+                        <People width={16} height={16} color={'#000000'} />
+                        <Text
+                          style={{
+                            fontSize: FontSize.fontSizeText13,
+                            marginHorizontal: RFPercentage(1),
+                          }}>
+                          1500
+                        </Text>
+                        {/* <IconBootstrap name={'plus'} size={20} color={'black'} /> */}
+                        {true ? (
+                          <HeartFill width={16} height={16} color={'#ff0000'} />
+                        ) : (
+                          <Heart width={16} height={16} color={'#000000'} />
+                        )}
+                        <Text
+                          style={{
+                            fontSize: FontSize.fontSizeText13,
+                            marginHorizontal: RFPercentage(1),
+                          }}>
+                          120
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          backgroundColor: 'white',
+                          borderRadius: 15,
+                          margin: '2%',
+                          paddingHorizontal: '3%',
+                          paddingVertical: '2%',
+                        }}>
+                        <Text
+                          style={{
+                            fontSize: FontSize.fontSizeText13,
+                            marginHorizontal: RFPercentage(1),
+                          }}>
+                          120
+                        </Text>
+                        <Heart width={16} height={16} color={'#000000'} />
+                      </View>
+                    </View>
+                  </ImageBackground>
                 </View>
-              </ImageBackground>
-            </View>
-          </TouchableOpacity>
-        );
-      }}
-    />
+              </TouchableOpacity>
+            );
+          }}
+        />
+      )}
+    </>
   );
-
-  const Liked = () => (
-    <View style={{flex: 1, backgroundColor: 'transparent'}} />
+  const Created = () => (
+    <>
+      {createdProjects.length <= 0 ? (
+        <>
+          <View style={{alignItems: 'center', marginTop: '7%'}}>
+            <Text
+              style={{
+                width:'65%',
+                textAlign:'center',
+                color: 'black',
+                fontSize: FontSize.fontSizeText20,
+                fontFamily: FontFamily.NotoSansDisplayRegular,
+                fontWeight: '700',
+              }}>
+              Aún no se han creado proyectos...
+            </Text>
+            <Text
+              style={{
+                width:'65%',
+                textAlign:'center',
+                color: 'black',
+                fontSize: FontSize.fontSizeText13,
+                fontFamily: FontFamily.NotoSansDisplayMedium,
+                fontWeight: '600',
+                marginTop: '3%',
+              }}>
+              Crea tus propios proyectos y aparecerán aquí
+            </Text>
+            <View style={{alignItems: 'center'}}>
+              <NotCreated width={RFPercentage(28)} height={RFPercentage(28)} />
+            </View>
+          </View>
+        </>
+      ) : (
+        <FlatList
+          style={{flex: 1}}
+          contentContainerStyle={{alignItems: 'center'}}
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+          data={createdProjects}
+          renderItem={({item, index}) => {
+            return (
+              <TouchableOpacity
+                key={index}
+                activeOpacity={0.5}
+                style={styles.projectFound}
+                onPress={() =>
+                  navigation.navigate('ProjectPage', {id: item.id})
+                }>
+                <View
+                  style={{
+                    paddingHorizontal: RFPercentage(3),
+                  }}>
+                  <View
+                    style={{
+                      width: '100%',
+                      marginTop: RFPercentage(2),
+                      marginBottom: 6,
+                    }}>
+                    <Text
+                      style={{
+                        color: 'black',
+                        fontWeight: 'bold',
+                        marginBottom: '1%',
+                        alignSelf: 'flex-start',
+                      }}>
+                      {item.name}
+                    </Text>
+                    <View style={{flexDirection: 'row'}}>
+                      {item.hasTag.map((x, i) => {
+                        const matchingHastag = hastags.find(
+                          hastag => hastag.id === x,
+                        );
+                        if (matchingHastag) {
+                          return (
+                            <Text
+                              key={i}
+                              style={{
+                                alignSelf: 'flex-start',
+                                color: 'blue',
+                                marginBottom: '2%',
+                              }}>
+                              #{matchingHastag.hasTag}
+                              {'  '}
+                            </Text>
+                          );
+                        }
+                      })}
+                    </View>
+                    <Text
+                      style={{
+                        alignSelf: 'flex-start',
+                        marginBottom: '2%',
+                      }}>
+                      {item.description}
+                    </Text>
+                  </View>
+                  <ImageBackground
+                    source={require('../../../assets/backgrounds/login-background.jpg')}
+                    style={{
+                      ...styles.imageBackground,
+                      width: '100%',
+                      height: RFPercentage(23),
+                    }}>
+                    <View
+                      style={{
+                        position: 'absolute',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        alignSelf: 'center',
+                        bottom: 2,
+                        left: 0,
+                        right: 0,
+                        justifyContent: 'space-between',
+                        // marginHorizontal: RFPercentage(1),
+                        width: '100%',
+                      }}>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          backgroundColor: 'white',
+                          borderRadius: 15,
+                          margin: '2%',
+                          paddingHorizontal: '3%',
+                          paddingVertical: '2%',
+                        }}>
+                        <People width={16} height={16} color={'#000000'} />
+                        <Text
+                          style={{
+                            fontSize: FontSize.fontSizeText13,
+                            marginHorizontal: RFPercentage(1),
+                          }}>
+                          1500
+                        </Text>
+                        {/* <IconBootstrap name={'plus'} size={20} color={'black'} /> */}
+                        {true ? (
+                          <HeartFill width={16} height={16} color={'#ff0000'} />
+                        ) : (
+                          <Heart width={16} height={16} color={'#000000'} />
+                        )}
+                        <Text
+                          style={{
+                            fontSize: FontSize.fontSizeText13,
+                            marginHorizontal: RFPercentage(1),
+                          }}>
+                          120
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          backgroundColor: 'white',
+                          borderRadius: 15,
+                          margin: '2%',
+                          paddingHorizontal: '3%',
+                          paddingVertical: '2%',
+                        }}>
+                        <Text
+                          style={{
+                            fontSize: FontSize.fontSizeText13,
+                            marginHorizontal: RFPercentage(1),
+                          }}>
+                          120
+                        </Text>
+                        <Heart width={16} height={16} color={'#000000'} />
+                      </View>
+                    </View>
+                  </ImageBackground>
+                </View>
+              </TouchableOpacity>
+            );
+          }}
+        />
+      )}
+    </>
   );
 
   const renderScene = SceneMap({
     one: Contribution,
-    two: Created,
-    three: Liked,
+    two: Liked,
+    three: Created,
   });
 
   const _renderTabBar = (props: {
@@ -245,16 +651,23 @@ export const Profile = ({navigation}: Props) => {
           const opacity = props.position.interpolate({
             inputRange,
             outputRange: inputRange.map(inputIndex =>
-              inputIndex === i ? 1 : 0.5,
+              inputIndex === i ? 1 : 0.25,
             ),
           });
-          const fontWeight = i ? 'bold' : '500';
+          const fontWeight = '500';
 
           return (
             <TouchableOpacity
               style={styles.tabItem}
               onPress={() => setIndex(i)}>
-              <Animated.Text style={{opacity, fontWeight, color: 'black'}}>
+              <Animated.Text
+                style={{
+                  opacity,
+                  fontWeight,
+                  color: 'black',
+                  fontSize: FontSize.fontSizeText14,
+                  fontFamily: FontFamily.NotoSansDisplayMedium,
+                }}>
                 {route.title}
               </Animated.Text>
               <View
@@ -400,11 +813,15 @@ export const Profile = ({navigation}: Props) => {
   };
 
   const showModalGenre = () => setModalVisibleGenre(true);
-  const showModalOrganization = () => setModalVisibleOrganization(true);
   const showModalSave = () => setModalVisibleSave(true);
-  const hideModalGenre = () => setModalVisibleGenre(false);
-  const hideModalOrganization = () => setModalVisibleOrganization(false);
   const hideModalSave = () => setModalVisibleSave(false);
+  const hideModalGenre = () => setModalVisibleGenre(false);
+  const showModalOrganization = () => setModalVisibleOrganization(true);
+  const hideModalOrganization = () => setModalVisibleOrganization(false);
+  const showModalBirth = () => setModalVisibleBirth(true);
+  const hideModalBirth = () => setModalVisibleBirth(false);
+  const showModalLocation = () => setModalVisibleUbicacion(true);
+  const hideModalLocation = () => setModalVisibleUbicacion(false);
 
   const setSelectedGenreMethod = (gender: string) => {
     setGenre(gender); // Guarda el género seleccionado en el estado
@@ -412,12 +829,73 @@ export const Profile = ({navigation}: Props) => {
   };
 
   const setSelectedOrganizationVisibilityMethod = (state: string) => {
-    setVisibilityOrganization(state); // Guarda el género seleccionado en el estado
+    setVisibilityOrganization(state);
+    // hideModalOrganization(); // Cierra el modal
+  };
+  const setSelectedBirthVisibilityMethod = (state: string) => {
+    setVisibilityBirth(state);
+    // hideModalOrganization(); // Cierra el modal
+  };
+
+  const setSelectedLocationVisibilityMethod = (state: string) => {
+    setVisibilityUbicacion(state);
     // hideModalOrganization(); // Cierra el modal
   };
 
   const setSelectedSaveMethod = (state: string) => {
-    setVisibilityOrganization(state); 
+    setVisibilityOrganization(state);
+  };
+
+  const openProfilePhoto = () => {
+    ImagePicker.openPicker({
+      mediaType: 'photo',
+      multiple: false,
+      quality: 1,
+      maxWidth: 300,
+      maxHeight: 300,
+      includeBase64: true,
+    }).then(response => {
+      //   console.log(JSON.stringify(response[0].sourceURL));
+      if (response && response.data) {
+        const newImage = response.data;
+        // setProfileImage([newImage]);
+      }
+    });
+  };
+
+  const iconVisibility = (text: String) => {
+    switch (
+      text
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLocaleLowerCase()
+    ) {
+      case 'solo tu':
+        return (
+          <Lock
+            width={RFPercentage(1.4)}
+            height={RFPercentage(2)}
+            fill={Colors.contentTertiaryLight}
+          />
+        );
+
+      case 'solo tu y proyectos':
+        return (
+          <Card
+            width={RFPercentage(1.4)}
+            height={RFPercentage(2)}
+            fill={Colors.contentTertiaryLight}
+          />
+        );
+      case 'publico':
+        return (
+          <World
+            width={RFPercentage(1.4)}
+            height={RFPercentage(2)}
+            fill={Colors.contentTertiaryLight}
+          />
+        );
+    }
   };
 
   //#endregion
@@ -429,7 +907,7 @@ export const Profile = ({navigation}: Props) => {
   return (
     <>
       <HeaderComponent
-        title={!userEdit ? form.email : 'Editar perfil'}
+        title={!userEdit ? 'Perfil muñeco' : 'Editar perfil'}
         onPressLeft={() => navigation.goBack()}
         onPressRight={() => setUserEdit(!userEdit)}
         rightIcon={canEdit ? true : false}
@@ -459,20 +937,33 @@ export const Profile = ({navigation}: Props) => {
                     height: '100%', // Mantén la altura igual a la del contenedor
                     justifyContent: 'center',
                     alignItems: 'center',
+                    backgroundColor: Colors.secondaryBackground,
+                    borderRadius: 10,
                     // backgroundColor: 'green',
                   }}>
-                  <ImageBackground
-                    borderRadius={10}
-                    // source={require(urii)}
-                    source={require('../../../assets/backgrounds/login-background.jpg')}
+                  <TouchableOpacity onPress={() => openProfilePhoto()}>
+                    <Person
+                      fill={'black'}
+                      height={RFPercentage(7)}
+                      width={RFPercentage(7)}
+                    />
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() => openProfilePhoto()}
                     style={{
-                      width: '100%', // Aquí también establece el ancho al 100% para que sea un cuadrado
-                      height: '100%',
-                      borderRadius: 10,
-                      // backgroundColor: 'yellow',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    }}></ImageBackground>
+                      width: RFPercentage(4),
+                      position: 'absolute',
+                      bottom: RFPercentage(-1),
+                      left: RFPercentage(12.4),
+                      zIndex: 999,
+                    }}>
+                    <PlusImg
+                      width={RFPercentage(4)}
+                      height={RFPercentage(4)}
+                      fill={'#0059ff'}
+                    />
+                  </TouchableOpacity>
                 </View>
               </View>
 
@@ -492,7 +983,11 @@ export const Profile = ({navigation}: Props) => {
                     marginVertical: RFPercentage(1),
                   }}>
                   <Text style={{color: 'black'}}>Visibilidad del perfil</Text>
-                  <Switch value={isSwitchOn} onValueChange={onToggleSwitch} />
+                  <Switch
+                    value={isSwitchOn}
+                    onValueChange={onToggleSwitch}
+                    color={Colors.semanticSuccessLight}
+                  />
                 </View>
 
                 {/* descripción de visibilidad  */}
@@ -505,7 +1000,7 @@ export const Profile = ({navigation}: Props) => {
                     alignItems: 'center',
                     marginVertical: RFPercentage(1),
                   }}>
-                  <Text>
+                  <Text style={{}}>
                     Si lo activas tu perfil pasará a estar oculto para los demás
                     usuarios de Geonity, pero podrás seguir creando proyectos y
                     participando en ellos
@@ -611,13 +1106,18 @@ export const Profile = ({navigation}: Props) => {
                   }}>
                   <Text style={{color: 'black'}}>Organización</Text>
 
-                  <TouchableOpacity>
+                  <TouchableOpacity
+                    style={{backgroundColor: 'transparent'}}
+                    activeOpacity={0.8}
+                    onPress={showModalInfo}>
                     <View
                       style={{
                         ...globalStyles.inputContainer,
                         backgroundColor: organization
                           ? Colors.semanticSuccessLight
-                          : Colors.primaryLigth,
+                          : Colors.semanticInfoLight,
+                        // height: '30%'
+                        borderWidth: 0,
                       }}>
                       <View
                         style={{
@@ -633,17 +1133,24 @@ export const Profile = ({navigation}: Props) => {
                             color={'white'}
                           />
                         ) : (
-                          <IconBootstrap
-                            name={'Info'}
-                            size={RFPercentage(2)}
-                            color={'white'}
-                          />
+                          <View
+                            style={{
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              top: RFPercentage(0.4),
+                            }}>
+                            <IconBootstrap
+                              name={'Info'}
+                              size={RFPercentage(3)}
+                              color={'white'}
+                            />
+                          </View>
                         )}
                       </View>
                       <Text
                         style={{
                           width: '80%',
-                          fontSize: FontSize.fontSizeText13,
+                          fontSize: FontSize.fontSizeText14,
                           fontFamily: FontFamily.NotoSansDisplayLight,
                           fontWeight: '300',
                           color: 'white',
@@ -671,21 +1178,34 @@ export const Profile = ({navigation}: Props) => {
                         </View>
                       )}
                     </View>
-                    <TouchableOpacity
-                      onPress={() => showModalOrganization()}
-                      style={{
-                        flexDirection: 'row',
-                        marginVertical: RFPercentage(1),
-                      }}>
+                  </TouchableOpacity>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      marginVertical: RFPercentage(1),
+                    }}>
+                    <TouchableOpacity onPress={() => showModalOrganization()}>
                       <Text
                         style={{
-                          color: Colors.contentQuaternaryDark,
-                          fontSize: FontSize.fontSizeText10,
+                          color: Colors.semanticInfoDark,
+                          fontSize: FontSize.fontSizeText13,
+                          marginRight: '2%',
                         }}>
                         ¿Quién puede ver esto?
                       </Text>
                     </TouchableOpacity>
-                  </TouchableOpacity>
+                    {visibilityOrganization.length > 0 &&
+                      iconVisibility(visibilityOrganization)}
+                    <Text
+                      style={{
+                        color: Colors.contentTertiaryLight,
+                        fontSize: FontSize.fontSizeText13,
+                        fontFamily: FontFamily.NotoSansDisplayLight,
+                        marginLeft: '2%',
+                      }}>
+                      {visibilityOrganization}
+                    </Text>
+                  </View>
                 </View>
 
                 {/* ubicacion */}
@@ -703,20 +1223,30 @@ export const Profile = ({navigation}: Props) => {
                     numOfLines={1}
                     onChangeText={value => onChange(value, 'first_name')}
                   />
-                  <TouchableOpacity
-                    onPress={() => console.log('abrir modal visibilidad')}
+                  <View
                     style={{
                       flexDirection: 'row',
                       marginVertical: RFPercentage(1),
                     }}>
+                    <TouchableOpacity onPress={() => showModalLocation()}>
+                      <Text
+                        style={{
+                          color: Colors.semanticInfoDark,
+                          fontSize: FontSize.fontSizeText13,
+                        }}>
+                        ¿Quién puede ver esto?
+                      </Text>
+                    </TouchableOpacity>
                     <Text
                       style={{
-                        color: Colors.contentQuaternaryDark,
-                        fontSize: FontSize.fontSizeText10,
+                        color: Colors.contentTertiaryLight,
+                        fontSize: FontSize.fontSizeText13,
+                        fontFamily: FontFamily.NotoSansDisplayLight,
+                        marginLeft: '5%',
                       }}>
-                      ¿Quién puede ver esto?
+                      {visibilityUbicacion}
                     </Text>
-                  </TouchableOpacity>
+                  </View>
                 </View>
 
                 {/* fecha nacimiento */}
@@ -734,24 +1264,34 @@ export const Profile = ({navigation}: Props) => {
                     numOfLines={1}
                     onChangeText={value => onChange(value, 'first_name')}
                   />
-                  <TouchableOpacity
-                    onPress={() => console.log('abrir modal visibilidad')}
+                  <View
                     style={{
                       flexDirection: 'row',
                       marginVertical: RFPercentage(1),
                     }}>
+                    <TouchableOpacity onPress={() => showModalBirth()}>
+                      <Text
+                        style={{
+                          color: Colors.semanticInfoDark,
+                          fontSize: FontSize.fontSizeText13,
+                        }}>
+                        ¿Quién puede ver esto?
+                      </Text>
+                    </TouchableOpacity>
                     <Text
                       style={{
-                        color: Colors.contentQuaternaryDark,
-                        fontSize: FontSize.fontSizeText10,
+                        color: Colors.contentTertiaryLight,
+                        fontSize: FontSize.fontSizeText13,
+                        fontFamily: FontFamily.NotoSansDisplayLight,
+                        marginLeft: '5%',
                       }}>
-                      ¿Quién puede ver esto?
+                      {visibilityBirth}
                     </Text>
-                  </TouchableOpacity>
+                  </View>
                 </View>
 
                 {/* sexo genero */}
-                <View
+                {/* <View
                   style={{
                     width: '80%',
                     marginVertical: RFPercentage(1),
@@ -816,19 +1356,7 @@ export const Profile = ({navigation}: Props) => {
                       ¿Quién puede ver esto?
                     </Text>
                   </TouchableOpacity>
-
-                  {/* <InputText
-                    // isInputText={() => setIsInputText(!isInputText)}
-                    label={genre}
-                    keyboardType="default"
-                    fieldButtonFunction={() => showModalGenre()}
-                    iconRight='CaretDown'
-                    multiline={false}
-                    numOfLines={1}
-                    onChangeText={value => onChange(value, 'first_name')}
-                    inputType={false}
-                  /> */}
-                </View>
+                </View> */}
               </View>
 
               {/* modal genero */}
@@ -847,9 +1375,40 @@ export const Profile = ({navigation}: Props) => {
                 onPress={hideModalOrganization}
                 setSelected={setSelectedOrganizationVisibilityMethod}
                 selected={visibilityOrganization}
-                label='¿Quién puede ver tu organizacion?'
+                label="¿Quién puede ver tu organizacion?"
+              />
+              {/* modal visibilidad ubicacion */}
+              <VisibilityOrganizationModal
+                visible={modalVisibleUbicacion}
+                hideModal={hideModalLocation}
+                onPress={hideModalLocation}
+                setSelected={setSelectedLocationVisibilityMethod}
+                selected={visibilityUbicacion}
+                label="¿Quién puede ver tu ubicación?"
+              />
+              {/* modal visibilidad nacimiento */}
+              <VisibilityBirthday
+                visible={modalVisibleBirth}
+                hideModal={hideModalBirth}
+                onPress={hideModalBirth}
+                setSelected={setSelectedBirthVisibilityMethod}
+                selected={visibilityBirth}
+                label="¿Quién puede ver tu fecha de nacimiento?"
               />
             </ScrollView>
+            <InfoModal
+              visible={infoModal}
+              hideModal={hideModalInfo}
+              onPress={hideModalInfo}
+              size={RFPercentage(4)}
+              color={Colors.primaryLigth}
+              label="¿Perteneces a una organización?"
+              subLabel="Si perteneces a una organización existente en Geonity, 
+              ponte en contacto con el admin de la organización para que te invite o te añada como integrante.
+              "
+              subLabel2="Una vez hayas aceptado la solicitud, podrás añadir la organzación a tu biografía."
+              helper={false}
+            />
           </SafeAreaView>
         </>
       ) : (
@@ -864,15 +1423,16 @@ export const Profile = ({navigation}: Props) => {
             {/* info de arriba */}
             <View
               style={{
-                height: RFPercentage(14),
+                height: RFPercentage(15),
                 flexDirection: 'row',
                 marginTop: RFPercentage(3),
               }}>
               {/* foto de perfil */}
               <View
                 style={{
-                  width: '30%',
-                  height: '100%',
+                  width: RFPercentage(14),
+                  // height: '100%',
+                  height: RFPercentage(14),
                   marginRight: RFPercentage(1),
                 }}>
                 <ImageBackground
@@ -885,7 +1445,7 @@ export const Profile = ({navigation}: Props) => {
               <View
                 style={{
                   width: '70%',
-                  height: '80%',
+                  height: '28%',
                   flexDirection: 'column',
                 }}>
                 {/* contribuciones creados */}
@@ -893,7 +1453,7 @@ export const Profile = ({navigation}: Props) => {
                   style={{
                     width: '100%',
                     flexDirection: 'column',
-                    marginVertical: RFPercentage(1),
+                    // marginVertical: RFPercentage(1),
                   }}>
                   <View
                     style={{
@@ -902,12 +1462,22 @@ export const Profile = ({navigation}: Props) => {
                       justifyContent: 'space-around',
                     }}>
                     <View style={styles.viewDataProfile}>
-                      <Text style={{fontWeight: 'bold', color: 'black'}}>
+                      <Text
+                        style={{
+                          fontFamily: FontFamily.NotoSansDisplayMedium,
+                          color: 'black',
+                          fontSize: FontSize.fontSizeText18,
+                        }}>
                         180
                       </Text>
                     </View>
                     <View style={styles.viewDataProfile}>
-                      <Text style={{fontWeight: 'bold', color: 'black'}}>
+                      <Text
+                        style={{
+                          fontFamily: FontFamily.NotoSansDisplayMedium,
+                          color: 'black',
+                          fontSize: FontSize.fontSizeText18,
+                        }}>
                         10
                       </Text>
                     </View>
@@ -919,12 +1489,13 @@ export const Profile = ({navigation}: Props) => {
                       justifyContent: 'space-around',
                       alignItems: 'center',
                       alignSelf: 'center',
+                      marginTop: '2%',
                     }}>
                     <View style={styles.viewDataProfile}>
-                      <Text>contribuciones</Text>
+                      <Text>Contribuciones</Text>
                     </View>
                     <View style={styles.viewDataProfile}>
-                      <Text>creados</Text>
+                      <Text>Creados</Text>
                     </View>
                   </View>
                 </View>
@@ -942,18 +1513,22 @@ export const Profile = ({navigation}: Props) => {
                       marginVertical: RFPercentage(1),
                       flexDirection: 'row',
                     }}>
-                    <Stars
+                    <Bookmark
                       width={RFPercentage(1.8)}
                       height={RFPercentage(1.8)}
                       fill={'#3a53e2'}
                     />
                     <Text
                       style={{
-                        fontWeight: 'bold',
+                        // fontWeight: 'bold',
+                        height: '100%',
                         color: 'black',
                         alignSelf: 'center',
                         marginLeft: RFPercentage(0.5),
                         bottom: RFPercentage(0.1),
+                        fontSize: FontSize.fontSizeText13,
+                        fontFamily: FontFamily.NotoSansDisplayRegular,
+                        // backgroundColor:'red'
                       }}>
                       Organization.name
                     </Text>
@@ -964,18 +1539,21 @@ export const Profile = ({navigation}: Props) => {
                       marginHorizontal: RFPercentage(3),
                       flexDirection: 'row',
                     }}>
-                    <Stars
+                    <Geo
                       width={RFPercentage(1.8)}
                       height={RFPercentage(1.8)}
                       fill={'#3a53e2'}
                     />
                     <Text
                       style={{
-                        fontWeight: 'bold',
+                        // fontWeight: 'bold',
+                        height: '100%',
                         color: 'black',
                         alignSelf: 'center',
                         marginLeft: RFPercentage(0.5),
                         bottom: RFPercentage(0.1),
+                        fontSize: FontSize.fontSizeText13,
+                        fontFamily: FontFamily.NotoSansDisplayRegular,
                       }}>
                       Country.city
                     </Text>
@@ -988,15 +1566,20 @@ export const Profile = ({navigation}: Props) => {
               style={{
                 //   height: '60%',
                 // flex: 1,
+                alignSelf: 'center',
+                // backgroundColor:'red',
                 marginHorizontal: RFPercentage(3),
-                marginVertical: RFPercentage(2),
+                marginVertical: RFPercentage(4),
+                width: '100%',
               }}>
               <Text
                 style={{
                   fontWeight: 'normal',
                   color: 'black',
-                  fontSize: FontSize.fontSizeText13,
+                  fontSize: FontSize.fontSizeText14,
                   lineHeight: RFPercentage(2),
+                  fontFamily: FontFamily.NotoSansDisplayLight,
+                  textAlign: 'left',
                 }}>
                 Alguna descriocionAlguna descriocionAlguna descriocion Alguna
                 descriocionAlguna descriocionAlguna descriocion Alguna
@@ -1037,6 +1620,8 @@ const styles = StyleSheet.create({
     width: '50%',
     alignItems: 'center',
     alignSelf: 'center',
+    fontSize: FontSize.fontSizeText13,
+    fontFamily: FontFamily.NotoSansDisplayLight,
   },
   tabBar: {
     flexDirection: 'row',
@@ -1054,7 +1639,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: 4,
+    height: 2.2,
   },
   buttonEdit: {
     // position: 'absolute',

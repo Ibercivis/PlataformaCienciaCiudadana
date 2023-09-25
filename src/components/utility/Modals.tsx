@@ -10,14 +10,21 @@ import {
 import {Button, Divider, List, Portal, Provider} from 'react-native-paper';
 import Animales from '../../assets/icons/category/Animales.svg';
 import CheckCircle from '../../assets/icons/general/check-circle-fill.svg';
+import Xcircle from '../../assets/icons/general/x-circle.svg';
+import Info from '../../assets/icons/general/info-circle.svg';
+import Lock from '../../assets/icons/general/lock-fill.svg';
+import Card from '../../assets/icons/general/card-fill.svg';
+import World from '../../assets/icons/general/world-fill.svg';
+import Incognito from '../../assets/icons/general/incognito.svg';
 import {useModal} from '../../context/ModalContext';
-import {FontSize, FontWeight} from '../../theme/fonts';
+import {FontSize, FontWeight, FontFamily} from '../../theme/fonts';
 import {RFPercentage} from 'react-native-responsive-fontsize';
 import {Colors} from '../../theme/colors';
 
 interface Props {
   label?: string;
   subLabel?: string;
+  subLabel2?: string;
   onPress?: () => void;
   visible: boolean;
   helper?: boolean;
@@ -92,7 +99,7 @@ export const VisibilityOrganizationModal = ({
   onPress,
   visible,
   hideModal,
-  selected,
+  selected = '',
   setSelected,
   label,
 }: Props) => {
@@ -105,33 +112,313 @@ export const VisibilityOrganizationModal = ({
         <Modal visible={visible} onRequestClose={hideModal} transparent>
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
-              <List.Section>
-                <List.Subheader>{label}</List.Subheader>
-                {visibility.map((visibility, index) => (
-                  <List.Item
-                    key={index}
-                    title={visibility}
-                    onPress={() => setSelected!(visibility)}
-                    left={() => (
-                      <List.Icon
-                        icon={
-                          selected === visibility
-                            ? 'check'
-                            : 'checkbox-blank-outline'
-                        }
-                      />
-                    )}
+              <View
+                style={{
+                  flexDirection: 'row',
+                  width: '100%',
+                  // height: '20%',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                <View style={{marginRight: '9%'}}>
+                  <Incognito
+                    width={RFPercentage(5)}
+                    height={RFPercentage(5)}
+                    fill={Colors.semanticInfoPressedLight}
                   />
-                ))}
+                </View>
+
+                <View style={{width: '60%'}}>
+                  <Text
+                    style={{
+                      color: Colors.semanticInfoLight,
+                      textAlign: 'left',
+                      fontSize: FontSize.fontSizeText17,
+                    }}>
+                    {label}
+                  </Text>
+                </View>
+              </View>
+              <List.Section
+                style={{
+                  flexDirection: 'column',
+                  width: '95%',
+                  // height: 'auto',
+                  marginTop: '10%',
+                  marginHorizontal: '5%',
+                }}>
+                <List.Item
+                  key={0}
+                  titleStyle={{
+                    fontFamily: FontFamily.NotoSansDisplayRegular,
+                    fontSize: FontSize.fontSizeText14,
+                    color: 'black',
+                    top: '2%',
+                  }}
+                  style={{height: RFPercentage(6), justifyContent: 'center'}}
+                  title={visibility[0]}
+                  onPress={() => setSelected!(visibility[0])}
+                  left={() => (
+                    <Lock
+                      width={RFPercentage(2.3)}
+                      height={RFPercentage(5)}
+                      fill={Colors.backgroundPrimaryDark}
+                    />
+                  )}
+                  right={() =>
+                    selected?.toLocaleLowerCase() ===
+                    visibility[0].toLocaleLowerCase() ? (
+                      <CheckCircle
+                        width={RFPercentage(2)}
+                        height={RFPercentage(5)}
+                        fill={Colors.semanticSuccessLight}
+                      />
+                    ) : (
+                      <></>
+                    )
+                  }
+                />
+                <List.Item
+                  key={1}
+                  titleStyle={{
+                    fontFamily: FontFamily.NotoSansDisplayRegular,
+                    fontSize: FontSize.fontSizeText14,
+                    color: 'black',
+                    top: '2%',
+                  }}
+                  style={{height: RFPercentage(6), justifyContent: 'center'}}
+                  title={visibility[1]}
+                  onPress={() => setSelected!(visibility[1])}
+                  left={() => (
+                    <>
+                      <Card
+                        width={RFPercentage(2.3)}
+                        height={RFPercentage(5)}
+                        fill={Colors.backgroundPrimaryDark}
+                      />
+                    </>
+                  )}
+                  right={() =>
+                    selected?.toLocaleLowerCase() ===
+                    visibility[1].toLocaleLowerCase() ? (
+                      <CheckCircle
+                        width={RFPercentage(2)}
+                        height={RFPercentage(5)}
+                        fill={Colors.semanticSuccessLight}
+                      />
+                    ) : (
+                      <></>
+                    )
+                  }
+                />
+                <List.Item
+                  key={2}
+                  titleStyle={{
+                    fontFamily: FontFamily.NotoSansDisplayRegular,
+                    fontSize: FontSize.fontSizeText14,
+                    color: 'black',
+                    top: '2%',
+                  }}
+                  style={{height: RFPercentage(6), justifyContent: 'center'}}
+                  title={visibility[2]}
+                  onPress={() => setSelected!(visibility[2])}
+                  left={() => (
+                    <World
+                      width={RFPercentage(2.3)}
+                      height={RFPercentage(5)}
+                      fill={Colors.backgroundPrimaryDark}
+                    />
+                  )}
+                  right={() =>
+                    selected?.toLocaleLowerCase() ===
+                    visibility[2].toLocaleLowerCase() ? (
+                      <CheckCircle
+                        width={RFPercentage(2)}
+                        height={RFPercentage(5)}
+                        fill={Colors.semanticSuccessLight}
+                      />
+                    ) : (
+                      <></>
+                    )
+                  }
+                />
               </List.Section>
-              <Divider />
-              <Button
-                mode="outlined"
-                onPress={onPress}
-                style={styles.acceptButton}
-                labelStyle={styles.buttonLabel}>
-                Aceptar
-              </Button>
+              {/* <Divider /> */}
+              <TouchableOpacity
+                activeOpacity={0.9}
+                style={{
+                  backgroundColor: 'transparent',
+                  marginTop: '15%',
+                  marginBottom: '4%',
+                  borderWidth: 1,
+                  borderRadius: 10,
+                  paddingHorizontal: RFPercentage(3),
+                  paddingVertical: RFPercentage(1),
+                  width: '45%',
+                  alignItems: 'center',
+                  alignSelf: 'center',
+                }}
+                onPress={() => hideModal()}>
+                <Text
+                  style={{
+                    color: 'black',
+                    fontSize: FontSize.fontSizeText13,
+                    justifyContent: 'center',
+                    fontFamily: FontFamily.NotoSansDisplayRegular,
+                  }}>
+                  Aceptar
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      </Portal>
+    </Provider>
+  );
+};
+export const VisibilityBirthday = ({
+  onPress,
+  visible,
+  hideModal,
+  selected = '',
+  setSelected,
+  label,
+}: Props) => {
+  const visibility = ['Solo tú', 'Solo tú y proyectos'];
+  //TODO esto cambiarlo por un objeto que tenga clave valor
+
+  return (
+    <Provider>
+      <Portal>
+        <Modal visible={visible} onRequestClose={hideModal} transparent>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  width: '100%',
+                  // height: '20%',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                <View style={{marginRight: '9%'}}>
+                  <Incognito
+                    width={RFPercentage(5)}
+                    height={RFPercentage(5)}
+                    fill={Colors.semanticInfoPressedLight}
+                  />
+                </View>
+
+                <View style={{width: '70%'}}>
+                  <Text
+                    style={{
+                      color: Colors.semanticInfoLight,
+                      textAlign: 'left',
+                      fontSize: FontSize.fontSizeText17,
+                    }}>
+                    {label}
+                  </Text>
+                </View>
+              </View>
+              <List.Section
+                style={{
+                  flexDirection: 'column',
+                  width: '95%',
+                  // height: 'auto',
+                  marginTop: '10%',
+                  marginHorizontal: '5%',
+                }}>
+                <List.Item
+                  key={0}
+                  titleStyle={{
+                    fontFamily: FontFamily.NotoSansDisplayRegular,
+                    fontSize: FontSize.fontSizeText14,
+                    color: 'black',
+                    top: '2%',
+                  }}
+                  style={{height: RFPercentage(6), justifyContent: 'center'}}
+                  title={visibility[0]}
+                  onPress={() => setSelected!(visibility[0])}
+                  left={() => (
+                    <Lock
+                      width={RFPercentage(2.3)}
+                      height={RFPercentage(5)}
+                      fill={Colors.backgroundPrimaryDark}
+                    />
+                  )}
+                  right={() =>
+                    selected?.toLocaleLowerCase() ===
+                    visibility[0].toLocaleLowerCase() ? (
+                      <CheckCircle
+                        width={RFPercentage(2)}
+                        height={RFPercentage(5)}
+                        fill={Colors.semanticSuccessLight}
+                      />
+                    ) : (
+                      <></>
+                    )
+                  }
+                />
+                <List.Item
+                  key={1}
+                  titleStyle={{
+                    fontFamily: FontFamily.NotoSansDisplayRegular,
+                    fontSize: FontSize.fontSizeText14,
+                    color: 'black',
+                    top: '2%',
+                  }}
+                  style={{height: RFPercentage(6), justifyContent: 'center'}}
+                  title={visibility[1]}
+                  onPress={() => setSelected!(visibility[1])}
+                  left={() => (
+                    <>
+                      <Card
+                        width={RFPercentage(2.3)}
+                        height={RFPercentage(5)}
+                        fill={Colors.backgroundPrimaryDark}
+                      />
+                    </>
+                  )}
+                  right={() =>
+                    selected?.toLocaleLowerCase() ===
+                    visibility[1].toLocaleLowerCase() ? (
+                      <CheckCircle
+                        width={RFPercentage(2)}
+                        height={RFPercentage(5)}
+                        fill={Colors.semanticSuccessLight}
+                      />
+                    ) : (
+                      <></>
+                    )
+                  }
+                />
+              </List.Section>
+              {/* <Divider /> */}
+              <TouchableOpacity
+                activeOpacity={0.9}
+                style={{
+                  backgroundColor: 'transparent',
+                  marginTop: '15%',
+                  marginBottom: '4%',
+                  borderWidth: 1,
+                  borderRadius: 10,
+                  paddingHorizontal: RFPercentage(3),
+                  paddingVertical: RFPercentage(1),
+                  width: '45%',
+                  alignItems: 'center',
+                  alignSelf: 'center',
+                }}
+                onPress={() => hideModal()}>
+                <Text
+                  style={{
+                    color: 'black',
+                    fontSize: FontSize.fontSizeText13,
+                    justifyContent: 'center',
+                    fontFamily: FontFamily.NotoSansDisplayRegular,
+                  }}>
+                  Aceptar
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
         </Modal>
@@ -226,17 +513,22 @@ export const SaveProyectModal = ({
                   <>
                     <Text
                       style={{
-                        fontSize: FontSize.fontSizeText20,
+                        fontSize: FontSize.fontSizeText18,
                         color: 'black',
                         marginVertical: '4%',
                         fontWeight: '600',
                         textAlign: 'center',
+                        fontFamily: FontFamily.NotoSansDisplayRegular,
                       }}>
                       {label}
                     </Text>
 
                     <View style={{marginTop: RFPercentage(4)}}>
-                      <CheckCircle width={size} height={size} fill={color} />
+                      <Xcircle
+                        width={RFPercentage(8)}
+                        height={RFPercentage(8)}
+                        fill={color}
+                      />
                     </View>
                   </>
                 )}
@@ -261,6 +553,7 @@ export const InfoModal = ({
   hideModal,
   label,
   subLabel,
+  subLabel2,
   icon,
   size,
   color,
@@ -276,28 +569,28 @@ export const InfoModal = ({
                 style={{
                   ...styles.modalContent,
                   alignItems: 'center',
-                  height: '40%',
-                  width: '70%',
+                  height: '46%',
+                  width: '75%',
                   // justifyContent: 'center',
                   // paddingHorizontal: '11%',
                 }}>
                 <View
                   style={{
                     flexDirection: 'row',
-                    width: '60%',
+                    width: '100%',
                     height: '20%',
                     alignItems: 'center',
-                    // justifyContent: 'center',
+                    justifyContent: 'center',
                   }}>
-                  <View style={{marginRight: '4%'}}>
-                    <CheckCircle width={size} height={size} fill={color} />
+                  <View style={{marginRight: '9%'}}>
+                    <Info width={size} height={size} fill={color} />
                   </View>
-                  <View>
+                  <View style={{width: '60%'}}>
                     <Text
                       style={{
-                        color: Colors.primaryDark,
-                        textAlign: 'center',
-                        fontSize: FontSize.fontSizeText18 - 1,
+                        color: Colors.semanticInfoLight,
+                        textAlign: 'left',
+                        fontSize: FontSize.fontSizeText17,
                       }}>
                       {label}
                     </Text>
@@ -305,21 +598,143 @@ export const InfoModal = ({
                 </View>
                 <View
                   style={{
-                    flexDirection: 'row',
-                    width: '80%',
+                    flexDirection: 'column',
+                    width: '95%',
                     height: 'auto',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                  }}>
+                  <Text style={{marginTop: '10%'}}>
+                    {subLabel}
+                    {'\n\n'}
+                    {subLabel2}
+                  </Text>
+                  <TouchableOpacity
+                    activeOpacity={0.9}
+                    style={{
+                      backgroundColor: 'transparent',
+                      marginTop: '15%',
+                      borderWidth: 1,
+                      borderRadius: 10,
+                      paddingHorizontal: RFPercentage(3),
+                      paddingVertical: RFPercentage(1),
+                    }}
+                    onPress={() => hideModal()}>
+                    <Text
+                      style={{
+                        color: 'black',
+                        fontSize: FontSize.fontSizeText13,
+                        justifyContent: 'center',
+                        fontFamily: FontFamily.NotoSansDisplayRegular,
+                      }}>
+                      Aceptar
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
+        </Modal>
+      </Portal>
+    </Provider>
+  );
+};
+export const InfoModalMap = ({
+  onPress,
+  visible,
+  hideModal,
+  label,
+  subLabel,
+  subLabel2,
+  icon,
+  size,
+  color,
+  helper = true,
+}: Props) => {
+  return (
+    <Provider>
+      <Portal>
+        <Modal visible={visible} transparent>
+          <TouchableWithoutFeedback onPress={hideModal}>
+            <View style={{...styles.modalContainer}}>
+              <View
+                style={{
+                  ...styles.modalContent,
+                  alignItems: 'center',
+                  height: '0%',
+                  width: '75%',
+                  // justifyContent: 'center',
+                  // paddingHorizontal: '11%',
+                }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    width: '100%',
+                    height: '20%',
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}>
-                  <Text style={{marginTop: '10%'}}>{subLabel}</Text>
+                  <View style={{marginRight: '9%'}}>
+                    <Info width={size} height={size} fill={color} />
+                  </View>
+                  <View style={{width: '60%'}}>
+                    <Text
+                      style={{
+                        color: Colors.semanticInfoLight,
+                        textAlign: 'left',
+                        fontSize: FontSize.fontSizeText17,
+                      }}>
+                      {label}
+                    </Text>
+                  </View>
+                </View>
+                <View
+                  style={{
+                    flexDirection: 'column',
+                    width: '95%',
+                    height: 'auto',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                  }}>
+                  <Text style={{marginTop: '5%', alignSelf: 'flex-start'}}>
+                    Tienes dos opciones:
+                  </Text>
+                  <Text style={{marginTop: '5%'}}>
+                    1.{' '}
+                    <Text style={{fontWeight: 'bold'}}>
+                      Mantener presionada{' '}
+                    </Text>
+                    la pantalla en el punto exacto del mapa donde se quiera
+                    colocar el marcador
+                    {'\n\n'}
+                    2.{' '}
+                    <Text style={{fontWeight: 'bold'}}>
+                      Presiona el botón "+"{' '}
+                    </Text>
+                    se añadirá automáticamente un marcador vinculado a tu
+                    posición actual. (El botón está situado en la parte inferior
+                    derecha del mapa).
+                  </Text>
                 </View>
 
                 <TouchableOpacity
                   activeOpacity={0.9}
-                  style={{backgroundColor: 'transparent', marginTop: '20%'}}
+                  style={{
+                    backgroundColor: 'transparent',
+                    marginTop: '15%',
+                    borderWidth: 1,
+                    borderRadius: 10,
+                    paddingHorizontal: RFPercentage(3),
+                    paddingVertical: RFPercentage(1),
+                  }}
                   onPress={() => hideModal()}>
                   <Text
-                    style={{color: 'black', fontSize: FontSize.fontSizeText18}}>
+                    style={{
+                      color: 'black',
+                      fontSize: FontSize.fontSizeText13,
+                      justifyContent: 'center',
+                      fontFamily: FontFamily.NotoSansDisplayRegular,
+                    }}>
                     Aceptar
                   </Text>
                 </TouchableOpacity>
@@ -351,11 +766,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 10,
     padding: 20,
-    width: '80%',
+    width: '70%',
   },
   acceptButton: {
-    marginTop: 20,
+    marginTop: '18%',
     borderRadius: 10,
+    width: '50%',
+    alignSelf: 'center',
   },
   buttonLabel: {
     fontWeight: 'bold',
