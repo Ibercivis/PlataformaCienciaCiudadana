@@ -53,6 +53,7 @@ export const OrganizationList = (props: Props) => {
               key={index}
               type="organizationFound"
               categoryImage={index}
+              cover={item.logo}
               title={item.principalName}
               description={item.description}
               onPress={() =>

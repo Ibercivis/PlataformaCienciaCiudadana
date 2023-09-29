@@ -29,7 +29,11 @@ export interface ShowProject {
     is_liked_by_user?: boolean;
     total_likes?:   number;
     contributions?: number;
-    cover?:         string[];
+    cover?:         Image[];
+}
+
+export interface Image {
+    image: string;
 }
 
 export interface FieldForm {
@@ -60,8 +64,8 @@ export interface NewOrganization {
     description:    string;
     contactName:    string;
     contactMail:    string;
-    logo:           any;
-    cover:          any;
+    logo?:           any;
+    cover?:          any;
 }
 
 export interface Type {
@@ -92,16 +96,16 @@ export interface Question {
 export interface UserInfo {
     id:       number;
     username: string;
-    profile:  Profile;
+    profile:  UserProfile;
 }
 
-export interface Profile {
+export interface UserProfile {
     biography:             string;
     visibility:            boolean;
     country:               string;
-    participated_projects: any[];
+    participated_projects: CreatedProject[];
     created_projects:      CreatedProject[];
-    liked_projects:        any[];
+    liked_projects:        CreatedProject[];
 }
 
 export interface CreatedProject {
@@ -109,3 +113,9 @@ export interface CreatedProject {
     name:        string;
     description: string;
 }
+
+export interface CountryData {
+    abbreviation: string; 
+    name: string; 
+  }
+

@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  ScrollView,
 } from 'react-native';
 import {Button, Divider, List, Portal, Provider} from 'react-native-paper';
 import Animales from '../../assets/icons/category/Animales.svg';
@@ -20,6 +21,7 @@ import {useModal} from '../../context/ModalContext';
 import {FontSize, FontWeight, FontFamily} from '../../theme/fonts';
 import {RFPercentage} from 'react-native-responsive-fontsize';
 import {Colors} from '../../theme/colors';
+import {InputText} from './InputText';
 
 interface Props {
   label?: string;
@@ -31,6 +33,7 @@ interface Props {
   hideModal: () => void;
   selected?: string;
   setSelected?: (value: any) => void;
+  setPass?: (value: any) => void;
   icon?: string;
   size?: number;
   color?: string;
@@ -547,6 +550,7 @@ export const SaveProyectModal = ({
     </Provider>
   );
 };
+
 export const InfoModal = ({
   onPress,
   visible,
@@ -738,6 +742,113 @@ export const InfoModalMap = ({
                     Aceptar
                   </Text>
                 </TouchableOpacity>
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
+        </Modal>
+      </Portal>
+    </Provider>
+  );
+};
+
+export const PassModal = ({
+  onPress,
+  visible,
+  hideModal,
+  label,
+  setPass,
+  size,
+  color,
+  helper = true,
+}: Props) => {
+  const [password, setPassword] = useState('');
+
+  return (
+    <Provider>
+      <Portal>
+        <Modal visible={visible} transparent>
+          <TouchableWithoutFeedback onPress={hideModal}>
+            <View style={{...styles.modalContainer}}>
+              <View
+                style={{
+                  ...styles.modalContent,
+                  alignItems: 'center',
+                  height: RFPercentage(34),
+                  width: '85%',
+                  // justifyContent: 'center',
+                  // paddingHorizontal: '11%',
+                }}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      width: '100%',
+                      height: '20%',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                    <View style={{marginRight: '9%'}}>
+                      <Info width={size} height={size} fill={color} />
+                    </View>
+                    <View style={{width: '60%'}}>
+                      <Text
+                        style={{
+                          color: Colors.semanticInfoLight,
+                          textAlign: 'left',
+                          fontSize: FontSize.fontSizeText17,
+                        }}>
+                        {label}
+                      </Text>
+                    </View>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: 'column',
+                      width: '95%',
+                      height: '100%',
+                      alignItems: 'center',
+                      justifyContent: 'flex-start',
+                      marginTop: '10%',
+                    }}>
+                    <View
+                      style={{
+                        width: '100%',
+                        marginVertical: RFPercentage(1),
+                      }}>
+                      <Text style={{color: 'black'}}>Password </Text>
+                      <InputText
+                        // isInputText={() => setIsInputText(!isInputText)}
+                        label={'Escriba la contraseña'}
+                        inputType={true}
+                        multiline={false}
+                        numOfLines={1}
+                        isSecureText={true}
+                        onChangeText={value => setPassword(value)}
+                      />
+                    </View>
+                    <TouchableOpacity
+                      activeOpacity={0.9}
+                      style={{
+                        backgroundColor: 'transparent',
+                        marginTop: '4%',
+                        borderWidth: 1,
+                        borderRadius: 10,
+                        paddingHorizontal: RFPercentage(3),
+                        paddingVertical: RFPercentage(1),
+                      }}
+                      onPress={() => {
+                        hideModal(), setPass!(password);
+                      }}>
+                      <Text
+                        style={{
+                          color: 'black',
+                          fontSize: FontSize.fontSizeText13,
+                          justifyContent: 'center',
+                          fontFamily: FontFamily.NotoSansDisplayRegular,
+                        }}>
+                        Aceptar
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
               </View>
             </View>
           </TouchableWithoutFeedback>

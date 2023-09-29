@@ -3,6 +3,7 @@ import React, {useEffect, useState} from 'react';
 import {
   Animated,
   FlatList,
+  Image,
   ImageBackground,
   SafeAreaView,
   ScrollView,
@@ -13,13 +14,19 @@ import {
   View,
 } from 'react-native';
 import {TabView, SceneMap} from 'react-native-tab-view';
-import {Organization, Project, User} from '../../../interfaces/interfaces';
+import {
+  Organization,
+  UserProfile,
+  ShowProject,
+  User,
+  UserInfo,
+  CountryData,
+} from '../../../interfaces/interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import citmapApi from '../../../api/citmapApi';
+import citmapApi, {imageUrl} from '../../../api/citmapApi';
 import {HeaderComponent} from '../../HeaderComponent';
 import {useForm} from '../../../hooks/useForm';
 import {RFPercentage} from 'react-native-responsive-fontsize';
-// import Stars from 'react-native-bootstrap-icons/icons/stars';
 import Geo from '../../../assets/icons/general/geo-alt-fill.svg';
 import Bookmark from '../../../assets/icons/general/bookmark-fill.svg';
 import People from '../../../assets/icons/general/people.svg';
@@ -31,7 +38,7 @@ import {LoadingScreen} from '../../../screens/LoadingScreen';
 import {FontFamily, FontSize, fonts} from '../../../theme/fonts';
 import {Switch} from 'react-native-paper';
 import {InputText} from '../../utility/InputText';
-import {TextInput} from 'react-native-paper';
+import {Picker} from '@react-native-picker/picker';
 import {globalStyles} from '../../../theme/theme';
 import {IconBootstrap} from '../../utility/IconBootstrap';
 import {Size} from '../../../theme/size';
@@ -42,6 +49,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 import {
   GenderSelectorModal,
   InfoModal,
+  SaveProyectModal,
   VisibilityBirthday,
   VisibilityOrganizationModal,
 } from '../../utility/Modals';
@@ -51,11 +59,13 @@ import World from '../../../assets/icons/general/world-fill.svg';
 import NotContribution from '../../../assets/icons/profile/No hay contribuciones.svg';
 import NotCreated from '../../../assets/icons/profile/No hay creados.svg';
 import NotLiked from '../../../assets/icons/profile/No hay me gusta.svg';
+import {CommonActions, useNavigation} from '@react-navigation/native';
 
 interface Props extends StackScreenProps<any, any> {}
 
 export const Profile = ({navigation}: Props) => {
   //#region Variables
+  // const navigation = useNavigation();
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     {key: 'one', title: 'Contribuciones'},
@@ -67,11 +77,18 @@ export const Profile = ({navigation}: Props) => {
   const [userEdit, setUserEdit] = useState(false);
   const [canEdit, setCanEdit] = useState(true);
 
-  const [projectList, setProjectList] = useState<Project[]>([]);
-  const [createdProjects, setCreatedProject] = useState<Project[]>([]);
-  const [contributionProject, setContributionProject] = useState<Project[]>([]);
-  const [organization, setOrganization] = useState<Organization>();
+  const [projectList, setProjectList] = useState<ShowProject[]>([]);
+  const [createdProjects, setCreatedProject] = useState<ShowProject[]>([]);
+  const [contributionProject, setContributionProject] = useState<ShowProject[]>(
+    [],
+  );
+  const [likedProject, setLikedProject] = useState<ShowProject[]>([]);
+  const [organization, setOrganization] = useState<Organization[]>([]);
+  const [countries, setCountries] = useState<[]>([]);
   const [hastags, setHastags] = useState<HasTag[]>([]);
+
+  const [profileImage, setProfileImage] = useState<any>();
+  const [profileImageBlob, setProfileImageBlob] = useState<any>();
 
   const [user, setUser] = useState<User>({
     pk: 0,
@@ -80,10 +97,21 @@ export const Profile = ({navigation}: Props) => {
     first_name: '',
     last_name: '',
   });
-  const {form, onChange, setObject} = useForm<User>(user);
-  const [isSwitchOn, setIsSwitchOn] = React.useState(false);
+  const [userProfile, setUserProfile] = useState<UserProfile>({
+    biography: '',
+    visibility: false,
+    country: '',
+    participated_projects: [],
+    created_projects: [],
+    liked_projects: [],
+  });
+  const {form, onChange, setObject} = useForm<UserProfile>(userProfile);
+  const [isSwitchOn, setIsSwitchOn] = useState(false);
 
-  const onToggleSwitch = () => setIsSwitchOn(!isSwitchOn);
+  const onToggleSwitch = () => {
+    setIsSwitchOn(!isSwitchOn);
+    // form.visibility = !form.visibility
+  };
 
   const [modalVisibleGenre, setModalVisibleGenre] = useState(false);
   const [modalVisibleOrganization, setModalVisibleOrganization] =
@@ -101,12 +129,14 @@ export const Profile = ({navigation}: Props) => {
   const showModalInfo = () => setInfoModal(true);
   const hideModalInfo = () => setInfoModal(false);
 
+  const [selectedCountry, setSelectedCountry] = useState([]);
+
   //#endregion
 
   //#region tabs
   const Contribution = () => (
     <>
-      {createdProjects.length <= 0 ? (
+      {contributionProject.length <= 0 ? (
         <>
           <View style={{alignItems: 'center', marginTop: '7%'}}>
             <Text
@@ -120,8 +150,8 @@ export const Profile = ({navigation}: Props) => {
             </Text>
             <Text
               style={{
-                width:'65%',
-                textAlign:'center',
+                width: '65%',
+                textAlign: 'center',
                 color: 'black',
                 fontSize: FontSize.fontSizeText13,
                 fontFamily: FontFamily.NotoSansDisplayMedium,
@@ -132,7 +162,10 @@ export const Profile = ({navigation}: Props) => {
               aparecerán aquí.
             </Text>
             <View style={{alignItems: 'center'}}>
-              <NotContribution width={RFPercentage(28)} height={RFPercentage(28)} />
+              <NotContribution
+                width={RFPercentage(28)}
+                height={RFPercentage(28)}
+              />
             </View>
           </View>
         </>
@@ -142,16 +175,14 @@ export const Profile = ({navigation}: Props) => {
           contentContainerStyle={{alignItems: 'center'}}
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}
-          data={createdProjects}
+          data={contributionProject}
           renderItem={({item, index}) => {
             return (
               <TouchableOpacity
-                key={index}
+                key={item.id}
                 activeOpacity={0.5}
                 style={styles.projectFound}
-                onPress={() =>
-                  navigation.navigate('ProjectPage', {id: item.id})
-                }>
+                onPress={() => navigateTo(item.id)}>
                 <View
                   style={{
                     paddingHorizontal: RFPercentage(3),
@@ -200,8 +231,14 @@ export const Profile = ({navigation}: Props) => {
                       {item.description}
                     </Text>
                   </View>
+
                   <ImageBackground
-                    source={require('../../../assets/backgrounds/login-background.jpg')}
+                    // source={require('../../../assets/backgrounds/login-background.jpg')}
+                    source={
+                      item.cover && item.cover[0]
+                        ? {uri: imageUrl + item.cover[0].image}
+                        : require('../../../assets/backgrounds/nuevoproyecto.jpg')
+                    }
                     style={{
                       ...styles.imageBackground,
                       width: '100%',
@@ -238,11 +275,16 @@ export const Profile = ({navigation}: Props) => {
                           1500
                         </Text>
                         {/* <IconBootstrap name={'plus'} size={20} color={'black'} /> */}
-                        {true ? (
-                          <HeartFill width={16} height={16} color={'#ff0000'} />
-                        ) : (
-                          <Heart width={16} height={16} color={'#000000'} />
-                        )}
+                        {/* {true ? (
+                            <HeartFill
+                              width={16}
+                              height={16}
+                              color={'#ff0000'}
+                            />
+                          ) : (
+                            <Heart width={16} height={16} color={'#000000'} />
+                          )} */}
+                        <Heart width={16} height={16} color={'#000000'} />
                         <Text
                           style={{
                             fontSize: FontSize.fontSizeText13,
@@ -267,7 +309,11 @@ export const Profile = ({navigation}: Props) => {
                           }}>
                           120
                         </Text>
-                        <Heart width={16} height={16} color={'#000000'} />
+                        {item.is_liked_by_user ? (
+                          <HeartFill width={16} height={16} color={'#ff0000'} />
+                        ) : (
+                          <Heart width={16} height={16} color={'#000000'} />
+                        )}
                       </View>
                     </View>
                   </ImageBackground>
@@ -281,13 +327,13 @@ export const Profile = ({navigation}: Props) => {
   );
   const Liked = () => (
     <>
-      {createdProjects.length <= 0 ? (
+      {likedProject.length <= 0 ? (
         <>
           <View style={{alignItems: 'center', marginTop: '7%'}}>
             <Text
               style={{
-                width:'65%',
-                textAlign:'center',
+                width: '65%',
+                textAlign: 'center',
                 color: 'black',
                 fontSize: FontSize.fontSizeText20,
                 fontFamily: FontFamily.NotoSansDisplayRegular,
@@ -297,8 +343,8 @@ export const Profile = ({navigation}: Props) => {
             </Text>
             <Text
               style={{
-                width:'65%',
-                textAlign:'center',
+                width: '65%',
+                textAlign: 'center',
                 color: 'black',
                 fontSize: FontSize.fontSizeText13,
                 fontFamily: FontFamily.NotoSansDisplayMedium,
@@ -319,16 +365,14 @@ export const Profile = ({navigation}: Props) => {
           contentContainerStyle={{alignItems: 'center'}}
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}
-          data={createdProjects}
+          data={likedProject}
           renderItem={({item, index}) => {
             return (
               <TouchableOpacity
-                key={index}
+                key={item.id}
                 activeOpacity={0.5}
                 style={styles.projectFound}
-                onPress={() =>
-                  navigation.navigate('ProjectPage', {id: item.id})
-                }>
+                onPress={() => navigateTo(item.id)}>
                 <View
                   style={{
                     paddingHorizontal: RFPercentage(3),
@@ -378,7 +422,12 @@ export const Profile = ({navigation}: Props) => {
                     </Text>
                   </View>
                   <ImageBackground
-                    source={require('../../../assets/backgrounds/login-background.jpg')}
+                    // source={require('../../../assets/backgrounds/login-background.jpg')}
+                    source={
+                      item.cover && item.cover[0]
+                        ? {uri: imageUrl + item.cover[0].image}
+                        : require('../../../assets/backgrounds/nuevoproyecto.jpg')
+                    }
                     style={{
                       ...styles.imageBackground,
                       width: '100%',
@@ -415,7 +464,7 @@ export const Profile = ({navigation}: Props) => {
                           1500
                         </Text>
                         {/* <IconBootstrap name={'plus'} size={20} color={'black'} /> */}
-                        {true ? (
+                        {false ? (
                           <HeartFill width={16} height={16} color={'#ff0000'} />
                         ) : (
                           <Heart width={16} height={16} color={'#000000'} />
@@ -442,9 +491,14 @@ export const Profile = ({navigation}: Props) => {
                             fontSize: FontSize.fontSizeText13,
                             marginHorizontal: RFPercentage(1),
                           }}>
-                          120
+                          {item.total_likes}
                         </Text>
-                        <Heart width={16} height={16} color={'#000000'} />
+                        {/* <Heart width={16} height={16} color={'#000000'} /> */}
+                        {item.is_liked_by_user ? (
+                          <HeartFill width={16} height={16} color={'#ff0000'} />
+                        ) : (
+                          <Heart width={16} height={16} color={'#000000'} />
+                        )}
                       </View>
                     </View>
                   </ImageBackground>
@@ -463,8 +517,8 @@ export const Profile = ({navigation}: Props) => {
           <View style={{alignItems: 'center', marginTop: '7%'}}>
             <Text
               style={{
-                width:'65%',
-                textAlign:'center',
+                width: '65%',
+                textAlign: 'center',
                 color: 'black',
                 fontSize: FontSize.fontSizeText20,
                 fontFamily: FontFamily.NotoSansDisplayRegular,
@@ -474,8 +528,8 @@ export const Profile = ({navigation}: Props) => {
             </Text>
             <Text
               style={{
-                width:'65%',
-                textAlign:'center',
+                width: '65%',
+                textAlign: 'center',
                 color: 'black',
                 fontSize: FontSize.fontSizeText13,
                 fontFamily: FontFamily.NotoSansDisplayMedium,
@@ -499,12 +553,10 @@ export const Profile = ({navigation}: Props) => {
           renderItem={({item, index}) => {
             return (
               <TouchableOpacity
-                key={index}
+                key={item.id}
                 activeOpacity={0.5}
                 style={styles.projectFound}
-                onPress={() =>
-                  navigation.navigate('ProjectPage', {id: item.id})
-                }>
+                onPress={() => navigateTo(item.id)}>
                 <View
                   style={{
                     paddingHorizontal: RFPercentage(3),
@@ -554,7 +606,12 @@ export const Profile = ({navigation}: Props) => {
                     </Text>
                   </View>
                   <ImageBackground
-                    source={require('../../../assets/backgrounds/login-background.jpg')}
+                    // source={require('../../../assets/backgrounds/login-background.jpg')}
+                    source={
+                      item.cover && item.cover[0]
+                        ? {uri: imageUrl + item.cover[0].image}
+                        : require('../../../assets/backgrounds/nuevoproyecto.jpg')
+                    }
                     style={{
                       ...styles.imageBackground,
                       width: '100%',
@@ -618,9 +675,14 @@ export const Profile = ({navigation}: Props) => {
                             fontSize: FontSize.fontSizeText13,
                             marginHorizontal: RFPercentage(1),
                           }}>
-                          120
+                          {item.total_likes}
                         </Text>
-                        <Heart width={16} height={16} color={'#000000'} />
+                        {/* <Heart width={16} height={16} color={'#000000'} /> */}
+                        {item.is_liked_by_user ? (
+                          <HeartFill width={16} height={16} color={'#ff0000'} />
+                        ) : (
+                          <Heart width={16} height={16} color={'#000000'} />
+                        )}
                       </View>
                     </View>
                   </ImageBackground>
@@ -692,9 +754,9 @@ export const Profile = ({navigation}: Props) => {
     // projectListApi(); //este habrá que moverlo a dentro del userDataApi para que cargue en el futuro los proyectos que el tiene favs y demás
   }, []);
 
-  useEffect(() => {
-    setObject(user);
-  }, [user]);
+  // useEffect(() => {
+  //   setObject(profile);
+  // }, [userProfile]);
 
   useEffect(() => {
     getHastagApi();
@@ -702,11 +764,8 @@ export const Profile = ({navigation}: Props) => {
 
   useEffect(() => {
     projectListApi();
-  }, [hastags]);
-
-  useEffect(() => {
-    createdProjectFilter();
-  }, [projectList]);
+    getOrganizationApi();
+  }, [userProfile]);
 
   useEffect(() => {
     setIsAllCharged(true);
@@ -718,12 +777,15 @@ export const Profile = ({navigation}: Props) => {
   const projectListApi = async () => {
     const token = await AsyncStorage.getItem('token');
     try {
-      const resp = await citmapApi.get<Project[]>('/project/', {
+      const resp = await citmapApi.get<ShowProject[]>('/project/', {
         headers: {
           Authorization: token,
         },
       });
       setProjectList(resp.data);
+      setLikedProject(resp.data.filter(x => x.is_liked_by_user === true));
+      setContributionProject(resp.data);
+      setCreatedProject(resp.data.filter(x => x.creator === user.pk));
     } catch {}
   };
 
@@ -736,6 +798,15 @@ export const Profile = ({navigation}: Props) => {
         },
       });
       setUser(resp.data);
+      const profile = await citmapApi.get<UserInfo>(`/users/${resp.data.pk}/`, {
+        headers: {
+          Authorization: token,
+        },
+      });
+      setUserProfile(profile.data.profile);
+      setIsSwitchOn(profile.data.profile.visibility);
+      getCountriesApi();
+      // console.log(JSON.stringify(profile.data.profile, null, 2))
     } catch {}
   };
 
@@ -754,24 +825,39 @@ export const Profile = ({navigation}: Props) => {
   const getOrganizationApi = async () => {
     const token = await AsyncStorage.getItem('token');
     try {
-      const resp = await citmapApi.get<Organization>('/project/hastag/', {
+      const resp = await citmapApi.get<Organization[]>('/organization/', {
         headers: {
           Authorization: token,
         },
       });
+      setOrganization(resp.data);
     } catch {}
   };
+
+  const getCountriesApi = async () => {
+    const token = await AsyncStorage.getItem('token');
+    try {
+      const resp = await citmapApi.get<[]>('/users/countries/', {
+        headers: {
+          Authorization: token,
+        },
+      });
+      setCountries(resp.data);
+      if(userProfile.country){
+        const country = resp.data.find(x => x[1] === userProfile.country)
+        if(country){
+          setSelectedCountry(country)
+        }
+      }
+    } catch {}
+  };
+
   //#endregion
 
   //#region Methods
 
-  const createdProjectFilter = () => {
-    const filtered = projectList.filter(x => x.creator === user.pk);
-    setCreatedProject(filtered);
-  };
-
   const writeForm = () => {
-    setObject(user);
+    setObject(userProfile);
   };
 
   const rightRenderIconHeader = () => {
@@ -822,6 +908,9 @@ export const Profile = ({navigation}: Props) => {
   const hideModalBirth = () => setModalVisibleBirth(false);
   const showModalLocation = () => setModalVisibleUbicacion(true);
   const hideModalLocation = () => setModalVisibleUbicacion(false);
+  const [controlSizeImage, setControlSizeImage] = useState(false);
+  const showModalControlSizeImage = () => setControlSizeImage(true);
+  const hideModalControlSizeImage = () => setControlSizeImage(false);
 
   const setSelectedGenreMethod = (gender: string) => {
     setGenre(gender); // Guarda el género seleccionado en el estado
@@ -846,6 +935,31 @@ export const Profile = ({navigation}: Props) => {
     setVisibilityOrganization(state);
   };
 
+  //metodo para poder navegar entre 
+  const navigateTo = (projectId: number) => {
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes:[
+          {
+            name: 'HomeNavigator',
+            state:{
+              routes:[
+                {
+                  name:'ProjectPage',
+                  params:{
+                    id: projectId, isNew: false
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      })
+    )
+
+  };
+
   const openProfilePhoto = () => {
     ImagePicker.openPicker({
       mediaType: 'photo',
@@ -855,10 +969,18 @@ export const Profile = ({navigation}: Props) => {
       maxHeight: 300,
       includeBase64: true,
     }).then(response => {
-      //   console.log(JSON.stringify(response[0].sourceURL));
       if (response && response.data) {
-        const newImage = response.data;
-        // setProfileImage([newImage]);
+        if (response.size < 4 * 1024 * 1024) {
+          const newImage = response;
+          setProfileImage(response);
+          setProfileImageBlob({
+            uri: newImage.path, // Debes ajustar esto según la estructura de response
+            type: newImage.mime, // Tipo MIME de la imagen
+            name: 'cover.jpg', // Nombre de archivo de la imagen (puedes cambiarlo)
+          });
+        } else {
+          showModalControlSizeImage();
+        }
       }
     });
   };
@@ -898,6 +1020,30 @@ export const Profile = ({navigation}: Props) => {
     }
   };
 
+  //se usará para dar o quitar likes en el perfil
+  const toggleLike = async (idProject: number) => {
+    const token = await AsyncStorage.getItem('token');
+    try {
+      const resp = await citmapApi.post(
+        `/projects/${idProject}/toggle-like/`,
+        {},
+        {
+          headers: {
+            Authorization: token,
+          },
+        },
+      );
+      // onRefresh();
+    } catch (err) {}
+  };
+
+  const saveProfile = async () => {
+    try {
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   //#endregion
 
   if (!isAllCharged) {
@@ -907,7 +1053,7 @@ export const Profile = ({navigation}: Props) => {
   return (
     <>
       <HeaderComponent
-        title={!userEdit ? 'Perfil muñeco' : 'Editar perfil'}
+        title={!userEdit ? user.username : 'Editar perfil'}
         onPressLeft={() => navigation.goBack()}
         onPressRight={() => setUserEdit(!userEdit)}
         rightIcon={canEdit ? true : false}
@@ -941,13 +1087,31 @@ export const Profile = ({navigation}: Props) => {
                     borderRadius: 10,
                     // backgroundColor: 'green',
                   }}>
-                  <TouchableOpacity onPress={() => openProfilePhoto()}>
-                    <Person
-                      fill={'black'}
-                      height={RFPercentage(7)}
-                      width={RFPercentage(7)}
-                    />
-                  </TouchableOpacity>
+                  {profileImage ? (
+                    <>
+                      <Image
+                        source={{
+                          uri: 'data:image/jpeg;base64,' + profileImage.data,
+                        }}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          // borderRadius: 50,
+                          resizeMode: 'cover',
+                        }}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <TouchableOpacity onPress={() => openProfilePhoto()}>
+                        <Person
+                          fill={'black'}
+                          height={RFPercentage(7)}
+                          width={RFPercentage(7)}
+                        />
+                      </TouchableOpacity>
+                    </>
+                  )}
 
                   <TouchableOpacity
                     onPress={() => openProfilePhoto()}
@@ -1020,7 +1184,8 @@ export const Profile = ({navigation}: Props) => {
                     keyboardType="default"
                     multiline={false}
                     numOfLines={1}
-                    onChangeText={value => onChange(value, 'first_name')}
+                    onChangeText={value => console.log(value)}
+                    value={user.username}
                   />
                 </View>
 
@@ -1039,7 +1204,8 @@ export const Profile = ({navigation}: Props) => {
                     multiline={true}
                     maxLength={300}
                     numOfLines={5}
-                    onChangeText={value => onChange(value, 'first_name')}
+                    onChangeText={value => onChange(value, 'biography')}
+                    value={form.biography}
                   />
                 </View>
 
@@ -1056,7 +1222,8 @@ export const Profile = ({navigation}: Props) => {
                     keyboardType="email-address"
                     multiline={false}
                     numOfLines={1}
-                    onChangeText={value => onChange(value, 'first_name')}
+                    onChangeText={value => console.log(value)}
+                    value={user.email}
                   />
                 </View>
 
@@ -1074,7 +1241,7 @@ export const Profile = ({navigation}: Props) => {
                     multiline={false}
                     numOfLines={1}
                     isSecureText={true}
-                    onChangeText={value => onChange(value, 'first_name')}
+                    onChangeText={value => console.log()}
                   />
                 </View>
 
@@ -1094,7 +1261,7 @@ export const Profile = ({navigation}: Props) => {
                     multiline={false}
                     numOfLines={1}
                     isSecureText={true}
-                    onChangeText={value => onChange(value, 'first_name')}
+                    onChangeText={value => console.log()}
                   />
                 </View>
 
@@ -1215,14 +1382,32 @@ export const Profile = ({navigation}: Props) => {
                     marginVertical: RFPercentage(1),
                   }}>
                   <Text style={{color: 'black'}}>Ubicacion</Text>
-                  <InputText
+                  {/* <InputText
                     // isInputText={() => setIsInputText(!isInputText)}
                     label={'Di tu ubicación'}
                     keyboardType="email-address"
                     multiline={false}
                     numOfLines={1}
-                    onChangeText={value => onChange(value, 'first_name')}
-                  />
+                    onChangeText={value => console.log()}
+                    value={form.country}
+                  /> */}
+                  <Picker
+                    selectedValue={selectedCountry[0]}
+                    onValueChange={(itemValue, itemIndex) => {
+                      // Aquí puedes manejar el valor seleccionado, por ejemplo, actualizando form.country
+                      // En este ejemplo, simplemente imprimimos el valor seleccionado.
+                      setSelectedCountry(itemValue)
+                      onChange(itemValue, 'country')
+                    }}
+                    style={{width: RFPercentage(41)}}>
+                    {countries.map((pais, index) => (
+                      <Picker.Item
+                        key={index}
+                        label={pais[1]}
+                        value={pais[1]}
+                      />
+                    ))}
+                  </Picker>
                   <View
                     style={{
                       flexDirection: 'row',
@@ -1250,7 +1435,7 @@ export const Profile = ({navigation}: Props) => {
                 </View>
 
                 {/* fecha nacimiento */}
-                <View
+                {/* <View
                   style={{
                     width: '80%',
                     marginVertical: RFPercentage(1),
@@ -1288,7 +1473,7 @@ export const Profile = ({navigation}: Props) => {
                       {visibilityBirth}
                     </Text>
                   </View>
-                </View>
+                </View> */}
 
                 {/* sexo genero */}
                 {/* <View
@@ -1409,6 +1594,15 @@ export const Profile = ({navigation}: Props) => {
               subLabel2="Una vez hayas aceptado la solicitud, podrás añadir la organzación a tu biografía."
               helper={false}
             />
+            <SaveProyectModal
+              visible={controlSizeImage}
+              hideModal={hideModalControlSizeImage}
+              onPress={hideModalControlSizeImage}
+              size={RFPercentage(8)}
+              color={Colors.semanticWarningDark}
+              label="La imagen no puede pesar mas de 4 Mb"
+              helper={false}
+            />
           </SafeAreaView>
         </>
       ) : (
@@ -1430,16 +1624,41 @@ export const Profile = ({navigation}: Props) => {
               {/* foto de perfil */}
               <View
                 style={{
-                  width: RFPercentage(14),
+                  width: RFPercentage(15),
                   // height: '100%',
-                  height: RFPercentage(14),
+                  height: RFPercentage(14.4),
                   marginRight: RFPercentage(1),
                 }}>
-                <ImageBackground
-                  borderRadius={10}
-                  // source={require(urii)}
-                  source={require('../../../assets/backgrounds/login-background.jpg')}
-                  style={{height: '100%', borderRadius: 10}}></ImageBackground>
+                {/* TODO aquí cambiar a la imagen que viene de base de datos */}
+                {profileImage ? (
+                  <>
+                    <Image
+                      source={{
+                        uri: 'data:image/jpeg;base64,' + profileImage.data,
+                      }}
+                      style={{
+                        height: '100%',
+                        maxWidth: RFPercentage(14),
+                        borderRadius: 10,
+                        // borderRadius: 50,
+                        resizeMode: 'cover',
+                      }}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <Image
+                      borderRadius={10}
+                      // source={require(urii)}
+                      source={require('../../../assets/backgrounds/login-background.jpg')}
+                      style={{
+                        height: '100%',
+                        maxWidth: RFPercentage(14),
+                        borderRadius: 10,
+                      }}
+                    />
+                  </>
+                )}
               </View>
               {/* datos derecha */}
               <View
@@ -1468,7 +1687,7 @@ export const Profile = ({navigation}: Props) => {
                           color: 'black',
                           fontSize: FontSize.fontSizeText18,
                         }}>
-                        180
+                        {userProfile.participated_projects.length}
                       </Text>
                     </View>
                     <View style={styles.viewDataProfile}>
@@ -1478,7 +1697,7 @@ export const Profile = ({navigation}: Props) => {
                           color: 'black',
                           fontSize: FontSize.fontSizeText18,
                         }}>
-                        10
+                        {userProfile.created_projects.length}
                       </Text>
                     </View>
                   </View>
@@ -1530,7 +1749,7 @@ export const Profile = ({navigation}: Props) => {
                         fontFamily: FontFamily.NotoSansDisplayRegular,
                         // backgroundColor:'red'
                       }}>
-                      Organization.name
+                      {}
                     </Text>
                   </View>
                   <View
@@ -1555,7 +1774,7 @@ export const Profile = ({navigation}: Props) => {
                         fontSize: FontSize.fontSizeText13,
                         fontFamily: FontFamily.NotoSansDisplayRegular,
                       }}>
-                      Country.city
+                      {userProfile.country}
                     </Text>
                   </View>
                 </View>
@@ -1581,14 +1800,7 @@ export const Profile = ({navigation}: Props) => {
                   fontFamily: FontFamily.NotoSansDisplayLight,
                   textAlign: 'left',
                 }}>
-                Alguna descriocionAlguna descriocionAlguna descriocion Alguna
-                descriocionAlguna descriocionAlguna descriocion Alguna
-                descriocionAlguna descriocionAlguna descriocion Alguna
-                descriocionAlguna descriocionAlguna descriocion Alguna
-                descriocionAlguna descriocionAlguna descriocion Alguna
-                descriocionAlguna descriocionAlguna descriocion Alguna
-                descriocionAlguna descriocionAlguna descriocion Alguna
-                descriocionAlguna descriocionAlguna descriocion
+                {userProfile.biography}
               </Text>
             </View>
           </View>

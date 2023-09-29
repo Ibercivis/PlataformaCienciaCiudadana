@@ -141,3 +141,5 @@ anterior version de react native reanimated = 2.14.4, modificada para que pueda 
 - https://github.com/ivpusic/react-native-image-crop-picker para multiples imagenes
 
 
+- npm install base-64 npm i --save-dev @types/base-64  para pasar base64 a blob npm i --save-dev @types/react-native-fetch-blob
+

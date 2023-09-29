@@ -86,11 +86,6 @@ export function HomeNavigator() {
       <Stack.Screen name="OrganizationList" component={OrganizationList} />
       <Stack.Screen name="ProjectPage" component={ProjectPage} />
       <Stack.Screen name="OrganizationPage" component={OrganizationPage} />
-      {/* <Stack.Screen name="CreateProject" component={CreateProject} /> */}
-      {/* <Stack.Screen name="NewProjectScreen" component={NewProjectScreen} />
-      <Stack.Screen name="Marcador" component={Marcador} />
-      <Stack.Screen name="MarcadorExample" component={MarcadorExample} />
-      <Stack.Screen name="OrganisationScreen" component={OrganisationScreen} /> */}
     </Stack.Navigator>
   );
 }

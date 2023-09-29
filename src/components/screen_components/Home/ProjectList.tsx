@@ -13,9 +13,9 @@ import People from '../../../assets/icons/general/people.svg';
 import Heart from '../../../assets/icons/general/heart.svg';
 import HeartFill from '../../../assets/icons/general/heart-fill.svg';
 
-import citmapApi from '../../../api/citmapApi';
+import citmapApi, { imageUrl } from '../../../api/citmapApi';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Project} from '../../../interfaces/interfaces';
+import {Project, ShowProject} from '../../../interfaces/interfaces';
 import {useForm} from '../../../hooks/useForm';
 import {RFPercentage} from 'react-native-responsive-fontsize';
 import {HeaderComponent} from '../../HeaderComponent';
@@ -27,7 +27,7 @@ import {FontSize} from '../../../theme/fonts';
 interface Props extends StackScreenProps<StackParams, 'ProjectList'> {}
 
 export const ProjectList = (props: Props) => {
-  const [projectList, setProjectList] = useState<Project[]>([]); // partir la lista en 2
+  const [projectList, setProjectList] = useState<ShowProject[]>([]); // partir la lista en 2
 
   const [hastags, setHastags] = useState<HasTag[]>([]);
 
@@ -42,7 +42,7 @@ export const ProjectList = (props: Props) => {
   const projectListApi = async () => {
     const token = await AsyncStorage.getItem('token');
     try {
-      const resp = await citmapApi.get<Project[]>('/project/', {
+      const resp = await citmapApi.get<ShowProject[]>('/project/', {
         headers: {
           Authorization: token,
         },
@@ -78,16 +78,8 @@ export const ProjectList = (props: Props) => {
         showsHorizontalScrollIndicator={false}
         data={projectList}
         renderItem={({item, index}) => {
+          if(item.cover && item.cover[0]) console.log(imageUrl +item.cover[0].image)
           return (
-            // <Card
-            //   key={index}
-            //   type="projectFound"
-            //   categoryImage={index}
-            //   title={item.name}
-            //   description={item.description}
-            //   onPress={() => props.navigation.navigate('ProjectPage', {id: item.id})}
-            // />
-
             <TouchableOpacity
               key={index}
               activeOpacity={0.5}
@@ -149,11 +141,12 @@ export const ProjectList = (props: Props) => {
                   </Text>
                 </View>
                 <ImageBackground
-                  source={require('../../../assets/backgrounds/login-background.jpg')}
+                  source={item.cover && item.cover[0] ? {uri: imageUrl + item.cover[0].image}: require('../../../assets/backgrounds/nuevoproyecto.jpg')}
                   style={{
                     ...style.imageBackground,
                     width: '100%',
                     height: RFPercentage(23),
+                    backgroundColor:item.cover ? 'transparent' : 'grey'
                   }}>
                   <View
                     style={{

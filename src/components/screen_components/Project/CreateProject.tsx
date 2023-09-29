@@ -4,6 +4,7 @@ import {StackScreenProps} from '@react-navigation/stack';
 import {
   FlatList,
   Image,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
@@ -38,11 +39,12 @@ import ImagePicker from 'react-native-image-crop-picker';
 import {GeometryForms} from '../../utility/GeometryForms';
 import PlusSquare from '../../../assets/icons/general/plus-square.svg';
 import PlusImg from '../../../assets/icons/general/Plus-img.svg';
+import PlusBlue from '../../../assets/icons/project/plus-circle-blue.svg';
 import {QuestionCard} from '../../utility/QuestionCard';
 import {IconTemp} from '../../IconTemp';
 import {useForm} from '../../../hooks/useForm';
-import {CommonActions} from '@react-navigation/native';
 import {InfoModal, SaveProyectModal} from '../../utility/Modals';
+import {CommonActions} from '@react-navigation/native';
 
 interface Props extends StackScreenProps<StackParams, 'CreateProject'> {}
 
@@ -79,8 +81,9 @@ export const CreateProject = ({navigation}: Props) => {
   const [suggestions, setSuggestions] = useState<Organization[]>([]); //las organizaciones sugeridas
 
   // variables que controlan las imagenes
-  const [images, setImages] = useState<string[]>();
+  const [images, setImages] = useState<any[]>([]);
   const [isImageCarged, setIsImageCarged] = useState<boolean>(false);
+  const [imageBlob, setImageBlob] = useState<any[]>([]);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
   //modales informativos
@@ -119,7 +122,7 @@ export const CreateProject = ({navigation}: Props) => {
 
   //#region  THIRD
   const [questions, setQuestions] = useState<Question[]>([
-    {question_text: '', answer_type: 'STR'},
+    {question_text: '', answer_type: 'STR', mandatory: false},
   ]);
 
   /**
@@ -155,7 +158,7 @@ export const CreateProject = ({navigation}: Props) => {
   /**
    * validación
    */
-  const [validateX, setValidateX] = useState(false);
+  const [obligatorioIdList, setObligatorioIdList] = useState<boolean[]>([]);
 
   const answerType = [
     // {id: 1, type: 'STR', name: 'Ubicación', icon: 'map-marker'},
@@ -194,15 +197,15 @@ export const CreateProject = ({navigation}: Props) => {
 
     if (suggestions.length == 1) {
       // count = (suggestions.length - 1) * 12;
-      count = suggestions.length * 13;
+      count = suggestions.length * 20;
     } else if (suggestions.length === 2) {
-      count = 20;
+      count = 25;
     } else if (suggestions.length >= 3) {
-      count = 27;
+      count = 34;
       // count = (suggestions.length - 1) * 12;
     } else {
       // count = suggestions.length * 12;
-      count = 24;
+      count = 35;
     }
 
     if (scrollViewRef.current) {
@@ -312,6 +315,7 @@ export const CreateProject = ({navigation}: Props) => {
    * @param item categoria
    */
   const setCheckCategories = (item: Topic) => {
+    Keyboard.dismiss();
     // Verificar si el elemento ya está seleccionado
     if (userCategories.includes(item)) {
       setUserCategories(
@@ -392,6 +396,8 @@ export const CreateProject = ({navigation}: Props) => {
   };
 
   const selectImage = () => {
+    setImageBlob([]);
+    setImages([]);
     ImagePicker.openPicker({
       mediaType: 'photo',
       multiple: true,
@@ -401,12 +407,28 @@ export const CreateProject = ({navigation}: Props) => {
       includeBase64: true,
     }).then(response => {
       //   console.log(JSON.stringify(response[0].sourceURL));
-      if (response && response[0].data) {
-        const newImage = response[0].data;
-        setImages([newImage]);
+      const numOfImages = response.length;
+      console.log(numOfImages);
+      if (response && numOfImages > 0) {
+        for (let i = 0; i <= numOfImages; i++) {
+          const newImage = response[i];
+          if (newImage) {
+            setImages(prevImages => [...prevImages, newImage]);
+            setImageBlob(prevImageBlob => [
+              ...prevImageBlob,
+              {
+                uri: newImage.path,
+                type: newImage.mime,
+                name: i + 'cover.jpg',
+              },
+            ]);
+          }
+        }
         setActiveImageIndex(0);
         setIsImageCarged(true);
       }
+      console.log(imageBlob);
+      // setImageBlob()
     });
   };
 
@@ -442,8 +464,6 @@ export const CreateProject = ({navigation}: Props) => {
     setIsSelectedCardAnswer(i);
     const indiceAmswerType = knowAnswerType(item);
     setResponseSelected(indiceAmswerType);
-    // const temp = questions.find((x, index) => index === i);
-    // if (temp) setSelectedQuestion(temp);
     setSelectedQuestion(item);
   };
 
@@ -452,7 +472,10 @@ export const CreateProject = ({navigation}: Props) => {
   };
 
   const createAnswer = () => {
-    setQuestions([...questions, {question_text: '', answer_type: ''}]);
+    setQuestions([
+      ...questions,
+      {question_text: '', answer_type: '', mandatory: false},
+    ]);
   };
 
   const onDelete = (item: Question) => {
@@ -495,7 +518,6 @@ export const CreateProject = ({navigation}: Props) => {
         return question;
       });
     });
-    // setResponseType(type)
   };
 
   // TODO cambiar nombre añadir id user
@@ -505,14 +527,14 @@ export const CreateProject = ({navigation}: Props) => {
   const showData = async () => {
     let correct = true;
     const token = await AsyncStorage.getItem('token');
-    questions.map(x => {
+    const updatedQuestions = [...questions];
+    updatedQuestions.map(x => {
       if (x.question_text.length <= 0) {
-        // setIsSaved(false)
         correct = false;
       }
     });
 
-    form.field_form.questions = questions;
+    form.field_form.questions = updatedQuestions;
 
     try {
       console.log(JSON.stringify(form, null, 2));
@@ -526,23 +548,62 @@ export const CreateProject = ({navigation}: Props) => {
       );
       form.creator = userInfo.data.pk;
     } catch (err) {
+      console.log('error en coger el creator');
       console.log(err);
     }
-
-    if (correct) {
-      // navigation.dispatch(
-      //   CommonActions.navigate({
-      //     name: 'ProjectPage',
-      //     params: {id: 6, isNew: true},
-      //   }),
-      // );
-    } else {
-      showModalSave();
+    try {
+      const formData = new FormData();
+      formData.append('creator', form.creator);
+      formData.append('name', form.name);
+      // formData.append('administrators', form.administrators);
+      formData.append('description', form.description);
+      formData.append('topic', form.topic);
+      formData.append('hasTag', form.hasTag);
+      formData.append('organizations_write', form.organizations_write);
+      formData.append('is_private', form.is_private);
+      formData.append('raw_password', form.raw_password);
+      formData.append('field_form', form.field_form);
+      // if (imageBlob) {
+      //   formData.append('cover', imageBlob);
+      // }
+      console.log(JSON.stringify(formData, null, 2));
+      if (correct) {
+        const projectCreated = await citmapApi.post(
+          '/project/create/',
+          {formData},
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              Authorization: token,
+            },
+          },
+        );
+        console.log(JSON.stringify(projectCreated.data, null, 2));
+        navigation.dispatch(
+          CommonActions.navigate({
+            name: 'ProjectPage',
+            params: {id: projectCreated.data.id, isNew: true},
+          }),
+        );
+      } else {
+        showModalSave();
+      }
+    } catch (error) {
+      if (error.response) {
+        // El servidor respondió con un estado de error (por ejemplo, 4xx, 5xx)
+        console.error('Error de respuesta del servidor:', error.response.data);
+        console.error(
+          'Estado de respuesta del servidor:',
+          error.response.status,
+        );
+      } else if (error.request) {
+        // La solicitud se hizo pero no se recibió una respuesta (por ejemplo, no hay conexión)
+        console.error('Error de solicitud:', error.request);
+      } else {
+        // Se produjo un error en la configuración de la solicitud
+        console.error('Error de configuración de la solicitud:', error.message);
+      }
     }
-
-    // questions.map(x => {
-    //    console.log(JSON.stringify(x, null, 2));
-    // });
   };
 
   // Función para manejar cambios en las tarjetas
@@ -596,7 +657,7 @@ export const CreateProject = ({navigation}: Props) => {
               //   backgroundColor: 'red',
             }}>
             <Text style={{color: 'black'}}>Imagenes del proyecto</Text>
-            {!images && (
+            {images.length <= 0 && (
               <View style={{width: RFPercentage(41), justifyContent: 'center'}}>
                 <IconButton
                   icon="image-album"
@@ -606,7 +667,7 @@ export const CreateProject = ({navigation}: Props) => {
                 />
               </View>
             )}
-            {images && (
+            {images.length > 0 && (
               <View
                 style={{
                   //   alignItems: 'center',
@@ -618,87 +679,163 @@ export const CreateProject = ({navigation}: Props) => {
                   padding: 10,
                   flexDirection: 'row',
                 }}>
-                <Image
-                  source={{
-                    uri: 'data:image/jpeg;base64,' + images[0],
-                  }}
-                  style={{
-                    position: 'absolute',
-                    height: RFPercentage(15),
-                    width: RFPercentage(13),
-                    backgroundColor: 'white',
-                    // alignSelf: 'flex-start',
-                    borderRadius: 10,
-                    zIndex: 1,
-                    left: RFPercentage(4),
-                    borderColor: 'white',
-                    borderWidth: 4,
-                  }}
-                />
-                <Image
-                  source={{
-                    uri: 'data:image/jpeg;base64,' + images[0],
-                  }}
-                  style={{
-                    position: 'absolute',
-                    height: RFPercentage(15),
-                    width: RFPercentage(13),
-                    borderRadius: 10,
-                    zIndex: 0,
-                    left: RFPercentage(10),
-                    borderColor: 'white',
-                    borderWidth: 4,
-                  }}
-                />
-                <Image
-                  source={{
-                    uri: 'data:image/jpeg;base64,' + images[0],
-                  }}
-                  style={{
-                    position: 'absolute',
-                    height: RFPercentage(15),
-                    width: RFPercentage(13),
-                    backgroundColor: 'green',
-                    // alignSelf: 'center',
-                    borderRadius: 10,
-                    zIndex: -1,
-                    left: RFPercentage(16),
-                    borderColor: 'white',
-                    borderWidth: 4,
-                  }}
-                />
-                <Image
-                  source={{
-                    uri: 'data:image/jpeg;base64,' + images[0],
-                  }}
-                  style={{
-                    position: 'absolute',
-                    height: RFPercentage(15),
-                    width: RFPercentage(13),
-                    backgroundColor: 'green',
-                    // alignSelf: 'center',
-                    borderRadius: 10,
-                    zIndex: -2,
-                    left: RFPercentage(22),
-                    borderColor: 'white',
-                    borderWidth: 4,
-                  }}
-                />
+                {images[0] ? (
+                  <Image
+                    source={{
+                      uri: 'data:image/jpeg;base64,' + images[0].data,
+                    }}
+                    style={{
+                      position: 'absolute',
+                      height: RFPercentage(15),
+                      width: RFPercentage(13),
+                      backgroundColor: 'transparent',
+                      // alignSelf: 'flex-start',
+                      borderRadius: 10,
+                      zIndex: 1,
+                      left: RFPercentage(4),
+                      borderColor: 'white',
+                      borderWidth: 4,
+                    }}
+                  />
+                ) : (
+                  <>
+                    <View
+                      style={{
+                        position: 'absolute',
+                        height: RFPercentage(15),
+                        width: RFPercentage(13),
+                        backgroundColor: 'transparent',
+                        // alignSelf: 'flex-start',
+                        borderRadius: 10,
+                        zIndex: 1,
+                        left: RFPercentage(4),
+                        borderColor: 'white',
+                        borderWidth: 4,
+                      }}></View>
+                  </>
+                )}
+
+                {images[1] ? (
+                  <Image
+                    source={{
+                      uri: 'data:image/jpeg;base64,' + images[1].data,
+                    }}
+                    style={{
+                      position: 'absolute',
+                      height: RFPercentage(15),
+                      width: RFPercentage(13),
+                      borderRadius: 10,
+                      zIndex: 0,
+                      left: RFPercentage(10),
+                      borderColor: 'white',
+                      borderWidth: 4,
+                    }}
+                  />
+                ) : (
+                  <>
+                    <View
+                      style={{
+                        position: 'absolute',
+                        height: RFPercentage(15),
+                        width: RFPercentage(13),
+                        borderRadius: 10,
+                        zIndex: 0,
+                        left: RFPercentage(10),
+                        borderColor: 'white',
+                        borderWidth: 4,
+                        backgroundColor: 'grey',
+                      }}></View>
+                  </>
+                )}
+
+                {images[2] ? (
+                  <Image
+                    source={{
+                      uri: 'data:image/jpeg;base64,' + images[2].data,
+                    }}
+                    style={{
+                      position: 'absolute',
+                      height: RFPercentage(15),
+                      width: RFPercentage(13),
+                      backgroundColor: 'grey',
+                      // alignSelf: 'center',
+                      borderRadius: 10,
+                      zIndex: -1,
+                      left: RFPercentage(16),
+                      borderColor: 'white',
+                      borderWidth: 4,
+                    }}
+                  />
+                ) : (
+                  <>
+                    <View
+                      style={{
+                        position: 'absolute',
+                        height: RFPercentage(15),
+                        width: RFPercentage(13),
+                        backgroundColor: 'grey',
+                        // alignSelf: 'center',
+                        borderRadius: 10,
+                        zIndex: -1,
+                        left: RFPercentage(16),
+                        borderColor: 'white',
+                        borderWidth: 4,
+                      }}></View>
+                  </>
+                )}
+
+                {images[3] ? (
+                  <Image
+                    source={{
+                      uri: 'data:image/jpeg;base64,' + images[3].data,
+                    }}
+                    style={{
+                      position: 'absolute',
+                      height: RFPercentage(15),
+                      width: RFPercentage(13),
+                      backgroundColor: 'grey',
+                      // alignSelf: 'center',
+                      borderRadius: 10,
+                      zIndex: -2,
+                      left: RFPercentage(22),
+                      borderColor: 'white',
+                      borderWidth: 4,
+                    }}
+                  />
+                ) : (
+                  <>
+                    <View
+                      style={{
+                        position: 'absolute',
+                        height: RFPercentage(15),
+                        width: RFPercentage(13),
+                        backgroundColor: 'grey',
+                        // alignSelf: 'center',
+                        borderRadius: 10,
+                        zIndex: -2,
+                        left: RFPercentage(22),
+                        borderColor: 'white',
+                        borderWidth: 4,
+                      }}></View>
+                  </>
+                )}
+
                 <TouchableOpacity
                   style={{
                     width: RFPercentage(5),
                     position: 'absolute',
-                    bottom: RFPercentage(-2),
+                    bottom: RFPercentage(-1),
                     left: RFPercentage(18),
                     zIndex: 999,
-                  }}>
+                  }}
+                  onPress={() => selectImage()}>
                   {/* <IconButton
                     icon="image-album"
                     iconColor="#5F4B66"
                     size={Size.iconSizeLarge}
                     onPress={() => selectImage()}
                   /> */}
-                  <PlusSquare
+                  <PlusBlue
                     width={RFPercentage(4)}
                     height={RFPercentage(4)}
                     fill={'#0059ff'}
@@ -1133,7 +1270,10 @@ export const CreateProject = ({navigation}: Props) => {
                   onDuplicate={() => duplicate(item)}
                   onFocus={() => onSelectedCard(index, item)}
                   onCheck={() => {
-                    item.mandatory = !item.mandatory;
+                    const updatedQuestions = [...questions];
+                    updatedQuestions[index].mandatory =
+                      !updatedQuestions[index].mandatory;
+                    setQuestions(updatedQuestions);
                   }}
                   checkbox={item.mandatory}
                   key={index}

@@ -8,19 +8,21 @@ import {
   TouchableOpacity,
   Text,
   FlatList,
+  Image,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {StackParams} from '../../../navigation/HomeNavigator';
 import {StackScreenProps} from '@react-navigation/stack';
 import {RFPercentage} from 'react-native-responsive-fontsize';
 import Chevron from '../../../assets/icons/general/chevron-left-1.svg';
-import {FontSize, FontWeight} from '../../../theme/fonts';
+import {FontFamily, FontSize, FontWeight} from '../../../theme/fonts';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import citmapApi from '../../../api/citmapApi';
 import {Organization, Project} from '../../../interfaces/interfaces';
 import {Card} from '../../utility/Card';
-import { SaveProyectModal } from '../../utility/Modals';
-import { Colors } from '../../../theme/colors';
+import {SaveProyectModal} from '../../utility/Modals';
+import {Colors} from '../../../theme/colors';
+import NotContribution from '../../../assets/icons/profile/No hay contribuciones.svg';
 
 interface Props extends StackScreenProps<StackParams, 'OrganizationPage'> {}
 
@@ -28,12 +30,12 @@ export const OrganizationPage = (props: Props) => {
   //#region CONST
   const [organization, setOrganization] = useState<Organization>();
   const [projectList, setProjectList] = useState<Project[]>([]);
-    /**
+  /**
    * Elementos del modal
    */
-    const [saveModal, setSaveModal] = useState(false);
-    const showModalSave = () => setSaveModal(true);
-    const hideModalSave = () => setSaveModal(false);
+  const [saveModal, setSaveModal] = useState(false);
+  const showModalSave = () => setSaveModal(true);
+  const hideModalSave = () => setSaveModal(false);
   //#endregion
 
   //#region USE EFFECTS
@@ -72,6 +74,7 @@ export const OrganizationPage = (props: Props) => {
       );
       setOrganization(resp.data);
       projectListApi();
+      console.log(resp.data.logo)
     } catch {}
   };
 
@@ -83,7 +86,9 @@ export const OrganizationPage = (props: Props) => {
           Authorization: token,
         },
       });
-      const filteredProjects = resp.data.filter(item => item.organizations.find(x => x === props.route.params.id))
+      const filteredProjects = resp.data.filter(item =>
+        item.organizations_write.find(x => x === props.route.params.id),
+      );
       setProjectList(filteredProjects);
     } catch {}
   };
@@ -98,7 +103,22 @@ export const OrganizationPage = (props: Props) => {
         {/* contenedor datos organizacion */}
         <View style={style.organizationContainer}>
           {/* vista que da efecto de curva */}
-          <View style={style.curvedView}></View>
+          <View
+            style={{
+              ...style.curvedView,
+              backgroundColor: organization?.cover ? 'transparent' : 'grey',
+            }}>
+            <Image
+              source={{
+                uri: organization?.cover,
+              }}
+              style={{
+                width: '100%',
+                height: '100%',
+                // resizeMode: 'cover',
+              }}
+            />
+          </View>
           {/* boton back */}
           <TouchableOpacity style={style.buttonBack} onPress={onBack}>
             <Chevron
@@ -191,23 +211,93 @@ export const OrganizationPage = (props: Props) => {
             </View>
           </View>
           {/* vista que contiene  el avatar */}
-          <View style={style.organizationAvatar}>
+          <View style={{...style.organizationAvatar}}>
             <ImageBackground
               borderRadius={100}
               // source={require(urii)}
-              source={require('../../../assets/backgrounds/login-background.jpg')}
+              source={{
+                uri: organization?.logo,
+              }}
               style={{
                 height: RFPercentage(17),
                 width: RFPercentage(17),
                 zIndex: 1,
-              }}></ImageBackground>
+                borderWidth: organization?.logo ? 0 : 1,
+                borderRadius: organization?.logo ? 0 : 100,
+                backgroundColor: organization?.logo ? 'transparent' : Colors.contentPrimaryDark,
+              }}
+            />
+            {/* {!organization?.logo === null ? (
+              <ImageBackground
+                borderRadius={100}
+                // source={require(urii)}
+                source={{
+                  uri: organization?.logo,
+                }}
+                style={{
+                  height: RFPercentage(17),
+                  width: RFPercentage(17),
+                  zIndex: 1,
+                }}
+              />
+            ) : (
+              <ImageBackground
+                borderRadius={100}
+                // source={require(urii)}
+                source={require('../../../assets/backgrounds/login-background.jpg')}
+                style={{
+                  height: RFPercentage(17),
+                  width: RFPercentage(17),
+                  zIndex: 1,
+                }}
+              />
+            )} */}
           </View>
         </View>
 
         {/* contenedor proyectos */}
         <View style={style.projectView}>
-          <Text style={{fontSize: FontSize.fontSizeText20, fontWeight: 'bold', color: 'black', marginHorizontal:RFPercentage(3)}} >Proyectos</Text>
-          <ScrollView
+          <Text
+            style={{
+              fontSize: FontSize.fontSizeText20,
+              fontWeight: 'bold',
+              color: 'black',
+              marginHorizontal: RFPercentage(3),
+            }}>
+            Proyectos
+          </Text>
+          {
+            projectList.length <= 0 ? (
+              <>
+          <View style={{alignItems: 'center', marginTop: '7%'}}>
+            <Text
+              style={{
+                color: 'black',
+                fontSize: FontSize.fontSizeText20,
+                fontFamily: FontFamily.NotoSansDisplayRegular,
+                fontWeight: '700',
+              }}>
+              No hay proyectos asociados...
+            </Text>
+            <Text
+              style={{
+                width:'65%',
+                textAlign:'center',
+                color: 'black',
+                fontSize: FontSize.fontSizeText13,
+                fontFamily: FontFamily.NotoSansDisplayMedium,
+                fontWeight: '600',
+                marginTop: '3%',
+              }}>
+              Conforme la organización se asocie con los diferentes proyectos, se irán mostrando aquí.
+            </Text>
+            <View style={{alignItems: 'center'}}>
+              <NotContribution width={RFPercentage(28)} height={RFPercentage(28)} />
+            </View>
+          </View>
+        </>
+            ) : (
+              <ScrollView
             style={{flex: 1}}
             contentContainerStyle={{alignItems: 'center'}}>
             {projectList.map((item, index) => {
@@ -225,16 +315,19 @@ export const OrganizationPage = (props: Props) => {
               );
             })}
           </ScrollView>
+            )
+          }
+          
           <SaveProyectModal
-          visible={saveModal}
-          hideModal={hideModalSave}
-          onPress={hideModalSave}
-          size={RFPercentage(6)}
-          color={Colors.semanticSuccessLight}
-          label='¡Proyecto creado!'
-          subLabel='No olvides compartir tu proyecto para obtener una mayor
-          participación'
-        />
+            visible={saveModal}
+            hideModal={hideModalSave}
+            onPress={hideModalSave}
+            size={RFPercentage(6)}
+            color={Colors.semanticSuccessLight}
+            label="¡Organización creada!"
+            subLabel="No olvides compartir tu proyecto para obtener una mayor
+          participación"
+          />
           {/* <FlatList
             style={{flex: 1}}
             contentContainerStyle={{alignItems: 'center'}}
@@ -262,12 +355,15 @@ export const OrganizationPage = (props: Props) => {
 
 const style = StyleSheet.create({
   curvedView: {
-    backgroundColor: 'red',
-    height: RFPercentage(100),
+    // backgroundColor: 'red',
+    height: RFPercentage(101),
     width: RFPercentage(107),
     alignSelf: 'center',
-    borderRadius: 500,
+    borderRadius: 365,
     top: RFPercentage(-82),
+    overflow: 'hidden',
+    alignItems: 'center', // Centra horizontalmente la imagen
+    justifyContent: 'center',
     // borderBottomRightRadius: 500,
     // borderBottomLeftRadius: 500
   },

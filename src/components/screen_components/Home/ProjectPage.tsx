@@ -30,7 +30,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import citmapApi from '../../../api/citmapApi';
 import {HasTag} from '../../../interfaces/appInterfaces';
 import {LoadingScreen} from '../../../screens/LoadingScreen';
-import {SaveProyectModal} from '../../utility/Modals';
+import {PassModal, SaveProyectModal} from '../../utility/Modals';
 import { CommonActions } from '@react-navigation/native';
 
 const data = [
@@ -50,6 +50,11 @@ const data = [
 
 interface Props extends StackScreenProps<StackParams, 'ProjectPage'> {}
 
+interface PassValidate {
+  pass: string;
+  pass2: string;
+}
+
 export const ProjectPage = (props: Props) => {
   //#region estados y referencias
   const [carouselIndex, setCarouselIndex] = useState(0);
@@ -59,7 +64,8 @@ export const ProjectPage = (props: Props) => {
 
   const [project, setProject] = useState<Project>();
   const [hastags, setHastags] = useState<HasTag[]>([]);
-
+  const [pass, setPass] = useState<PassValidate>({pass:'', pass2:''});
+  
   //#region MODAL NEW
   /**
    * Elementos del modal
@@ -67,6 +73,9 @@ export const ProjectPage = (props: Props) => {
   const [saveModal, setSaveModal] = useState(false);
   const showModalSave = () => setSaveModal(true);
   const hideModalSave = () => setSaveModal(false);
+  const [passModal, setPassModal] = useState(false);
+  const showModalPass = () => setPassModal(true);
+  const hideModalPass = () => setPassModal(false);
   //#endregion
 
   //#endregion
@@ -75,7 +84,7 @@ export const ProjectPage = (props: Props) => {
 
   useEffect(() => {
     //si entra nada mas crear un project
-    
+    console.log('entra en proyecto ' + props.route.params.id)
     getProjectApi();
   }, []);
 
@@ -137,19 +146,56 @@ export const ProjectPage = (props: Props) => {
    * Metodo para volver atrás
    */
   const onBack = () => {
-    props.navigation.goBack();
+    // props.navigation.popToTop();
+    props.navigation.dispatch(
+      CommonActions.navigate({
+        name: 'HomeNavigator',
+      }),
+    )
   };
 
   /**
    * metodo para ir al mapa
    */
   const navigateToMap = () => {
-    props.navigation.dispatch(
-      CommonActions.navigate({
-        name: 'ParticipateMap',
-        params: {id: 6},
-      }),
-    );
+    if(project?.is_private){
+      showModalPass()
+    }else{
+      props.navigation.dispatch(
+        CommonActions.navigate({
+          name: 'ParticipateMap',
+          params: {id: 6},
+        }),
+      );
+    }
+  }
+  const navigateToMapPass = async (value1?: string) => {
+    
+    if(project?.is_private){
+      if(value1){
+        console.log(value1);
+        try{
+          const token = await AsyncStorage.getItem('token');
+          const isValid = await citmapApi.post(`/projects/${project.id}/validate-password/`, {password: value1}, {
+            headers: {
+              Authorization: token,
+            },
+          },)
+          console.log(isValid)
+          if(isValid.data){
+          props.navigation.dispatch(
+            CommonActions.navigate({
+              name: 'ParticipateMap',
+              params: {id: 6},
+            }),
+          );
+        }
+        }catch(err){
+          console.log('password erronea')
+        }
+        
+      }
+    }
   }
 
   const getProjectApi = async () => {
@@ -461,6 +507,15 @@ export const ProjectPage = (props: Props) => {
           label='¡Proyecto creado!'
           subLabel='No olvides compartir tu proyecto para obtener una mayor
           participación'
+        />
+        <PassModal
+          visible={passModal}
+          hideModal={hideModalPass}
+          onPress={hideModalPass}
+          size={RFPercentage(6)}
+          color={Colors.semanticSuccessLight}
+          label='Escribe la contraseña del proyecto'
+          setPass={(value) => navigateToMapPass(value)}
         />
       </ScrollView>
     </SafeAreaView>

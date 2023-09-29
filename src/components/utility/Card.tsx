@@ -17,7 +17,8 @@ import Plus from '../../assets/icons/general/plus-lg.svg';
 import {FontSize, FontWeight} from '../../theme/fonts';
 import {Colors} from '../../theme/colors';
 import {CustomButton} from './CustomButton';
-import { SvgIcons } from './SvgIcons';
+import {SvgIcons} from './SvgIcons';
+import {imageUrl} from '../../api/citmapApi';
 
 const categoryIcons = [
   require('../../assets/icons/category/Group-1.png'),
@@ -37,22 +38,28 @@ interface Props {
   type?: string;
   categoryImage?: number;
   onPress?: () => void;
+  onLike?: () => void;
   title?: string;
   description?: string;
   auxString?: string;
+  totalLikes?: number;
   boolHelper?: boolean;
   styleProp?: ViewStyle;
   pressed?: boolean;
+  cover?: string;
 }
 export const Card = ({
   type,
   categoryImage = 0,
   onPress,
+  onLike,
   title = 'prueba',
   description = '',
   auxString = '',
   boolHelper = false,
   pressed = false,
+  totalLikes = 0,
+  cover,
   styleProp,
 }: Props) => {
   const cardType = () => {
@@ -84,10 +91,10 @@ export const Card = ({
                     style={{alignSelf: 'center'}}
                     source={categoryIcons[categoryImage]}
                   /> */}
-                  <SvgIcons id={categoryImage} color={pressed
-                  ? '#fff'
-                  : '#000'}
-                  size={RFPercentage(7)}
+                  <SvgIcons
+                    id={categoryImage}
+                    color={pressed ? '#fff' : '#000'}
+                    size={RFPercentage(7)}
                   />
                 </View>
                 <View
@@ -149,8 +156,15 @@ export const Card = ({
               <ImageBackground
                 borderRadius={10}
                 // source={require(urii)}
-                source={require('../../assets/backgrounds/login-background.jpg')}
-                style={[style.imageBackground]}>
+                source={
+                  cover !== ''
+                    ? {uri: cover}
+                    : require('../../assets/backgrounds/nuevoproyecto.jpg')
+                }
+                style={{
+                  ...style.imageBackground,
+                  backgroundColor: cover ? 'transparent' : 'grey',
+                }}>
                 <View style={{alignItems: 'stretch', flex: 1}}>
                   <Text
                     style={{
@@ -161,7 +175,7 @@ export const Card = ({
                       marginTop: RFPercentage(4),
                       backgroundColor: 'white',
                       alignSelf: 'flex-start',
-                      paddingHorizontal: RFPercentage(0.5)
+                      paddingHorizontal: RFPercentage(0.5),
                     }}>
                     {title}
                   </Text>
@@ -203,11 +217,31 @@ export const Card = ({
         return (
           <TouchableOpacity style={style.importants} onPress={onPress}>
             <View>
-              <ImageBackground
+              <View
+                style={{
+                  ...style.imageBackgroundImportants,
+                  backgroundColor: cover ? 'transparent' : 'grey',
+                  borderTopLeftRadius: 10,
+                  borderTopRightRadius: 10,
+                }}>
+                <Image
+                  source={
+                    cover !== ''
+                      ? {uri: cover}
+                      : require('../../assets/backgrounds/nuevoproyecto.jpg')
+                  }
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    // resizeMode: 'cover',
+                  }}
+                />
+              </View>
+              {/* <ImageBackground
                 borderTopLeftRadius={10}
                 borderTopRightRadius={10}
                 source={require('../../assets/backgrounds/login-background.jpg')}
-                style={[style.imageBackgroundImportants]}></ImageBackground>
+                style={[style.imageBackgroundImportants]}></ImageBackground> */}
               <View
                 style={{marginHorizontal: 14, marginTop: 13, marginBottom: 6}}>
                 <Text
@@ -248,7 +282,9 @@ export const Card = ({
                       1500
                     </Text>
                   </View>
-                  <View style={{flexDirection: 'row'}}>
+                  <TouchableOpacity
+                    onPress={onLike}
+                    style={{flexDirection: 'row'}}>
                     {/* <IconBootstrap name={'plus'} size={20} color={'black'} /> */}
                     {boolHelper ? (
                       <HeartFill width={16} height={16} color={'#ff0000'} />
@@ -260,9 +296,9 @@ export const Card = ({
                         fontSize: FontSize.fontSizeText13,
                         marginHorizontal: RFPercentage(1),
                       }}>
-                      120
+                      {totalLikes}
                     </Text>
-                  </View>
+                  </TouchableOpacity>
                 </View>
               </View>
             </View>
@@ -274,11 +310,13 @@ export const Card = ({
             <View style={{alignItems: 'center'}}>
               <View
                 style={{
-                  // height: '70%',
+                  height: '71%',
                   alignSelf: 'center',
                   padding: '30%',
                   backgroundColor: 'transparent',
-                  marginHorizontal: 14, marginTop: 0, marginBottom: RFPercentage(0.6)
+                  marginHorizontal: 14,
+                  marginTop: 0,
+                  marginBottom: RFPercentage(0.6),
                 }}>
                 <Plus height={60} width={60} />
               </View>
@@ -303,8 +341,12 @@ export const Card = ({
               <ImageBackground
                 borderRadius={10}
                 // source={require(urii)}
-                source={require('../../assets/backgrounds/login-background.jpg')}
-                style={[style.imageBackground]}>
+                source={
+                  cover !== ''
+                    ? {uri: cover}
+                    : require('../../assets/backgrounds/nuevoproyecto.jpg')
+                }
+                style={{...style.imageBackground}}>
                 <View style={{alignItems: 'stretch', flex: 1}}>
                   <Text
                     style={{
@@ -370,11 +412,26 @@ export const Card = ({
             style={style.touchableOrganization}
             onPress={onPress}>
             <View style={style.organization}>
-              <ImageBackground
-                borderRadius={100}
-                // source={require(urii)}
-                source={require('../../assets/backgrounds/login-background.jpg')}
-                style={[style.imageBackgroundOrganization]}></ImageBackground>
+              <View
+                style={{
+                  ...style.imageBackgroundOrganization,
+                  backgroundColor: cover ? 'transparent' : 'grey',
+                  borderRadius: 100,
+                }}>
+                <Image
+                  source={
+                    cover !== ''
+                      ? {uri: cover}
+                      : require('../../assets/backgrounds/nuevoproyecto.jpg')
+                  }
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: 100,
+                    // resizeMode: 'cover',
+                  }}
+                />
+              </View>
               <View style={{alignItems: 'stretch'}}>
                 <Text
                   style={{
@@ -397,23 +454,25 @@ export const Card = ({
         return (
           <TouchableOpacity
             activeOpacity={0.5}
-            style={style.touchableOrganization}
+            style={{...style.touchableOrganization, 
+            //   shadowColor: '#000',
+            // shadowOffset: {
+            //   width: 0,
+            //   height: 0.1,
+            // },
+            // shadowOpacity: 0.2,
+            // shadowRadius: 1.41,
+            // elevation: 1,
+          }}
             onPress={onPress}>
             <View>
               <View
                 style={{
                   ...style.imageBackgroundOrganization,
-                  //   shadowColor: '#000',
-                  //   shadowOffset: {
-                  //     width: 0,
-                  //     height: 0.1,
-                  //   },
-                  //   shadowOpacity: 0.2,
-                  //   shadowRadius: 1.41,
-                  //   elevation: 1,
+                   
                 }}>
                 <Plus
-                  style={{alignSelf: 'center', bottom: RFPercentage(2)}}
+                  style={{alignSelf: 'center', bottom: RFPercentage(-2)}}
                   height={60}
                   width={60}
                 />
@@ -421,7 +480,7 @@ export const Card = ({
               <View style={{alignItems: 'stretch'}}>
                 <Text
                   style={{
-                    // textAlign: 'center',
+                    textAlign: 'center',
                     marginBottom: '7%',
                     marginLeft: '10%',
                     marginRight: '10%',
@@ -484,11 +543,16 @@ export const Card = ({
               <ImageBackground
                 // borderRadius={10}
                 // source={require(urii)}
-                source={require('../../assets/backgrounds/login-background.jpg')}
+                source={
+                  cover
+                    ? {uri: imageUrl + cover}
+                    : require('../../assets/backgrounds/nuevoproyecto.jpg')
+                }
                 style={{
                   ...style.imageBackground,
                   width: '100%',
-                  height: 200,
+                  height: RFPercentage(23),
+                  backgroundColor: cover ? 'transparent' : 'grey',
                 }}>
                 <View
                   style={{
@@ -496,7 +560,7 @@ export const Card = ({
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     marginHorizontal: RFPercentage(1),
-                    // backgroundColor: 'red',
+                    backgroundColor: 'red',
                     top: RFPercentage(16),
                   }}>
                   <View
@@ -517,37 +581,42 @@ export const Card = ({
                       1500
                     </Text>
                     {/* <IconBootstrap name={'plus'} size={20} color={'black'} /> */}
-                    {boolHelper ? (
-                      <HeartFill width={16} height={16} color={'#ff0000'} />
-                    ) : (
-                      <Heart width={16} height={16} color={'#000000'} />
-                    )}
+                    <Heart width={16} height={16} color={'#000000'} />
                     <Text
                       style={{
                         fontSize: FontSize.fontSizeText13,
                         marginHorizontal: RFPercentage(1),
                       }}>
-                      120
+                      {totalLikes}
                     </Text>
                   </View>
-                  <View
+                  <TouchableOpacity
+                    onPress={onLike}
                     style={{
                       flexDirection: 'row',
                       backgroundColor: 'white',
                       borderRadius: 15,
                       margin: '2%',
-                      paddingHorizontal: '3%',
+                      marginVertical: '5%',
+                      // paddingHorizontal: '3%',
                       paddingVertical: '2%',
+                      flex: 1,
+
                     }}>
                     <Text
                       style={{
                         fontSize: FontSize.fontSizeText13,
                         marginHorizontal: RFPercentage(1),
                       }}>
-                      120
+                      {totalLikes}
                     </Text>
-                    <Heart width={16} height={16} color={'#000000'} />
-                  </View>
+
+                    {boolHelper ? (
+                      <HeartFill width={16} height={16} color={'#ff0000'} />
+                    ) : (
+                      <Heart width={16} height={16} color={'#000000'} />
+                    )}
+                  </TouchableOpacity>
                 </View>
               </ImageBackground>
             </View>
@@ -572,14 +641,35 @@ export const Card = ({
                   alignItems: 'center',
                   // backgroundColor: 'blue',
                 }}>
-                <ImageBackground
+                {/* <ImageBackground
                   borderRadius={100}
                   // source={require(urii)}
                   source={require('../../assets/backgrounds/login-background.jpg')}
                   style={{
                     height: RFPercentage(12),
                     width: RFPercentage(12),
-                  }}></ImageBackground>
+                  }}></ImageBackground> */}
+                <View
+                  style={{
+                    height: RFPercentage(12),
+                    width: RFPercentage(12),
+                    backgroundColor: cover ? 'transparent' : 'grey',
+                    borderRadius: 100,
+                  }}>
+                  <Image
+                    source={
+                      cover !== ''
+                        ? {uri: cover}
+                        : require('../../assets/backgrounds/nuevaorganizacion.jpg')
+                    }
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      borderRadius: 100,
+                      // resizeMode: 'cover',
+                    }}
+                  />
+                </View>
               </View>
 
               <View
@@ -636,7 +726,11 @@ export const Card = ({
                   borderBottomLeftRadius={10}
                   borderTopLeftRadius={10}
                   // source={require(urii)}
-                  source={require('../../assets/backgrounds/login-background.jpg')}
+                  source={
+                    cover !== ''
+                      ? {uri: cover}
+                      : require('../../assets/backgrounds/nuevoproyecto.jpg')
+                  }
                   style={{height: '100%'}}>
                   <View style={{alignItems: 'stretch', flex: 1}}>
                     <Text
@@ -824,7 +918,7 @@ const style = StyleSheet.create({
   },
   imageBackgroundImportants: {
     height: 150,
-    borderRadius: 10,
+    // borderRadius: 10,
   },
 
   interesting: {
@@ -855,13 +949,13 @@ const style = StyleSheet.create({
     width: RFPercentage(12),
     // borderRadius: 10,
     alignSelf: 'center',
-    padding: '30%',
+    // padding: '30%',
   },
   touchableOrganization: {
     // height: '100%',
     width: RFPercentage(18),
     margin: 4,
-    borderRadius: 10,
+    borderRadius: 100,
     backgroundColor: 'white',
     // shadowColor: '#000',
     // shadowOffset: {

@@ -34,7 +34,7 @@ type AuthContextProps = {
   message: string;
   token: string | null;
   user: User | null;
-  signIn: (loginData: LoginData) => void;
+  signIn: (loginData: LoginData) => Promise<boolean>;
   signUp: (data: RegisterData) => void;
   signOut: () => void;
   status: 'checking' | 'authenticated' | 'not-authenticated';
@@ -111,7 +111,10 @@ export const AuthProvider = ({children}: any) => {
           payload: 'No se pudo iniciar sesión debido a un problema en el servidor',
         });
       }
+      return true
     } catch (err) {
+      //TODO arreglar para que capture los errores bien
+      return false
       console.log(err);
       let textError = '';
       const dataError = JSON.stringify(err.response.data, null);
@@ -123,6 +126,7 @@ export const AuthProvider = ({children}: any) => {
         type: 'addError',
         payload: textError,
       });
+      return false
     }
   };
 

@@ -37,6 +37,7 @@ import {CustomButton} from '../components/utility/CustomButton';
 import {CustomButtonOutline} from '../components/utility/CustomButtonOutline';
 import {GeometryForms} from '../components/utility/GeometryForms';
 import {ForgotPasswordTemplate} from '../components/screen_components/Authentication/ForgotPasswordTemplate';
+import {Spinner} from '../components/utility/Spinner';
 
 interface Props extends StackScreenProps<any, any> {}
 
@@ -58,7 +59,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
     password: '',
   });
   //#endregion
-
+  const [loading, setLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [checked, setChecked] = useState(false);
   const [isAnimated, setIsAnimated] = useState(false);
@@ -128,7 +129,6 @@ export const LoginScreen = ({navigation, route}: Props) => {
   useEffect(() => {
     if (errorMessage.length === 0) return;
     setUserError(true);
-    console.log(errorMessage);
   }, [errorMessage]);
 
   //#endregion
@@ -136,9 +136,11 @@ export const LoginScreen = ({navigation, route}: Props) => {
   //#region METHODS/LOGIN
 
   //aquí se comprobaría si existe el usuario y en caso de que sí, se le permitiría pasar
-  const loggin = () => {
+  const loggin = async () => {
+    setLoading(true);
     Keyboard.dismiss();
-    signIn({correo: form.userName, password: form.password});
+    const state = await signIn({correo: form.userName, password: form.password});
+    setLoading(state)
   };
 
   //TODO mover todo esto a un contexto para que se pueda controlar el logout desde cualquier lado
@@ -861,7 +863,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                 width: '100%',
                 height: 'auto',
                 alignSelf: 'center',
-                // backgroundColor: 'green',
+                justifyContent: 'center',
               }}>
               {/* name */}
               <View
@@ -869,6 +871,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                   width: '100%',
                   height: 'auto',
                   flexDirection: 'row',
+                  // flex: 1
                 }}>
                 <View
                   style={{
@@ -1305,8 +1308,8 @@ export const LoginScreen = ({navigation, route}: Props) => {
       <ScrollView
         contentContainerStyle={{flexGrow: 1}}
         keyboardShouldPersistTaps="handled">
-          {/* Ocultar la barra de estado */}
-      <StatusBar hidden />
+        {/* Ocultar la barra de estado */}
+        <StatusBar hidden />
         <KeyboardAvoidingView style={styles.parent}>
           {/* contenedor de formas geometricas y titulo */}
           <SafeAreaView style={styles.child1}>
@@ -1550,6 +1553,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                 </Animated.View>
               </View>
             </View>
+            <Spinner visible={loading} />
           </ScrollView>
         </KeyboardAvoidingView>
       </ScrollView>

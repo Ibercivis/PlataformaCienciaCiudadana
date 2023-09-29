@@ -93,7 +93,7 @@ export const InputText = ({
 
   return (
     // <View style={styles.container}>
-    <View style={{...globalStyles.inputContainer, borderColor: isValid ? onBlurInput : Colors.semanticWarningDark }}>
+    <View style={{...globalStyles.inputContainer, borderColor: isValid ? onBlurInput : Colors.semanticWarningDark, width:'100%' }}>
       {iconLeft && (
         <View
           style={{

@@ -22,15 +22,12 @@ import {InfoModal, SaveProyectModal} from '../../utility/Modals';
 import PlusImg from '../../../assets/icons/general/Plus-img.svg';
 import Person from '../../../assets/icons/general/person.svg';
 import FrontPage from '../../../assets/icons/project/image.svg';
-import {Size} from '../../../theme/size';
-import {IconButton} from 'react-native-paper';
 import {InputText} from '../../utility/InputText';
 import ImagePicker from 'react-native-image-crop-picker';
 import {FontSize} from '../../../theme/fonts';
 import {NewOrganization, User, UserInfo} from '../../../interfaces/interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import citmapApi from '../../../api/citmapApi';
-import {CustomButtonOutline} from '../../utility/CustomButtonOutline';
 import {useForm} from '../../../hooks/useForm';
 import {CommonActions} from '@react-navigation/native';
 
@@ -40,8 +37,10 @@ export const CreateOrganization = ({navigation}: Props) => {
   useEffect(() => {}, []);
 
   // variables de las imagenes
-  const [profileImage, setProfileImage] = useState<string[]>();
-  const [organizationImage, setOrganizationImage] = useState<string[]>();
+  const [profileImage, setProfileImage] = useState<any>();
+  const [profileImageBlob, setProfileImageBlob] = useState<any>();
+  const [organizationImage, setOrganizationImage] = useState<any>();
+  const [organizationImageBlob, setOrganizationImageBlob] = useState<any>();
   const [suggestions, setSuggestions] = useState<UserInfo[]>([]);
   const [suggestionsSelected, setSuggestionsSelected] = useState<UserInfo[]>(
     [],
@@ -64,7 +63,12 @@ export const CreateOrganization = ({navigation}: Props) => {
     logo: '',
     cover: '',
   });
-  const [isOk, setIsOk] = useState(false);
+  /**
+   * validación primera pantalla
+   */
+  const [nameValidate, setNameValidate] = useState(true);
+  const [mailValidate, setMailValidate] = useState(true);
+  const [descriptionValidate, setDescriptionValidate] = useState(true);
 
   /**
    * Llama a la lista de usuarios.
@@ -125,6 +129,9 @@ export const CreateOrganization = ({navigation}: Props) => {
   const [infoModal, setInfoModal] = useState(false);
   const showModalInfo = () => setInfoModal(true);
   const hideModalInfo = () => setInfoModal(false);
+  const [controlSizeImage, setControlSizeImage] = useState(false);
+  const showModalControlSizeImage = () => setControlSizeImage(true);
+  const hideModalControlSizeImage = () => setControlSizeImage(false);
 
   /**
    * Llama para saber los usuarios que hay para añadir a integrantes
@@ -157,9 +164,18 @@ export const CreateOrganization = ({navigation}: Props) => {
     }).then(response => {
       //   console.log(JSON.stringify(response[0].sourceURL));
       if (response && response.data) {
-        const newImage = response.data;
-        setProfileImage([newImage]);
-        form.logo = newImage;
+        if (response.size < 4 * 1024 * 1024) {
+          const newImage = response;
+          setProfileImage(response);
+          form.logo = newImage;
+          setProfileImageBlob({
+            uri: newImage.path, // Debes ajustar esto según la estructura de response
+            type: newImage.mime, // Tipo MIME de la imagen
+            name: 'profile.jpg', // Nombre de archivo de la imagen (puedes cambiarlo)
+          });
+        } else {
+          showModalControlSizeImage();
+        }
       }
     });
   };
@@ -175,9 +191,18 @@ export const CreateOrganization = ({navigation}: Props) => {
     }).then(response => {
       //   console.log(JSON.stringify(response[0].sourceURL));
       if (response && response.data) {
-        const newImage = response.data;
-        setOrganizationImage([newImage]);
-        form.cover = newImage;
+        if (response.size < 4 * 1024 * 1024) {
+          const newImage = response;
+          setOrganizationImage(response);
+          form.cover = newImage;
+          setOrganizationImageBlob({
+            uri: newImage.path, // Debes ajustar esto según la estructura de response
+            type: newImage.mime, // Tipo MIME de la imagen
+            name: 'cover.jpg', // Nombre de archivo de la imagen (puedes cambiarlo)
+          });
+        } else {
+          showModalControlSizeImage();
+        }
       }
     });
   };
@@ -302,12 +327,10 @@ export const CreateOrganization = ({navigation}: Props) => {
   };
 
   //#region CREATE
-
   const onCreate = async () => {
     let valid = true;
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i; // validación correo
     const token = await AsyncStorage.getItem('token');
-    console.log(token);
 
     //hace una llamada para saber qué usuario es el que está creando
     // si está editando, se puede hacer una validación para que no entre aquí
@@ -327,36 +350,52 @@ export const CreateOrganization = ({navigation}: Props) => {
 
     if (form.principalName.length <= 0) {
       valid = false;
+      setNameValidate(false);
     }
 
     if (form.contactMail.length <= 0) {
       valid = false;
+      setMailValidate(false);
     } else if (!emailRegex.test(form.contactMail)) {
       valid = false;
+      setMailValidate(false);
     }
 
     if (form.description.length <= 0) {
       valid = false;
+      setDescriptionValidate(false);
     }
-
-    if (form.members.length <= 0) {
-      valid = false;
-    }
-
-    // console.log(JSON.stringify(form, null, 2));
 
     //comprobar que todo está bien antes de crear
     if (!valid) {
       showModalSave();
     } else {
       try {
+        const formData = new FormData();
+        formData.append('principalName', form.principalName);
+        formData.append('creator', form.creator);
+        formData.append('administrators', form.administrators);
+        formData.append('members', form.members);
+        formData.append('url', form.url);
+        formData.append('description', form.description);
+        formData.append('contactName', form.contactName);
+        formData.append('contactMail', form.contactMail);
+        if (profileImageBlob) {
+          formData.append('logo', profileImageBlob);
+        }
+        if (organizationImageBlob) {
+          formData.append('cover', organizationImageBlob);
+        }
+
         const organizationCreated = await citmapApi.post(
-          '/organization/create/',form,
+          '/organization/create/',
+          formData,
           {
             headers: {
+              'Content-Type': 'multipart/form-data',
               Authorization: token,
             },
-          }
+          },
         );
 
         navigation.dispatch(
@@ -366,7 +405,7 @@ export const CreateOrganization = ({navigation}: Props) => {
           }),
         );
       } catch (err) {
-        console.log(err)
+        console.log(err);
       }
     }
   };
@@ -485,7 +524,7 @@ export const CreateOrganization = ({navigation}: Props) => {
                         }}>
                         <Image
                           source={{
-                            uri: 'data:image/jpeg;base64,' + profileImage,
+                            uri: 'data:image/jpeg;base64,' + profileImage.data,
                           }}
                           style={{
                             width: '100%',
@@ -580,7 +619,9 @@ export const CreateOrganization = ({navigation}: Props) => {
                         }}>
                         <Image
                           source={{
-                            uri: 'data:image/jpeg;base64,' + organizationImage,
+                            uri:
+                              'data:image/jpeg;base64,' +
+                              organizationImage.data,
                           }}
                           style={{
                             width: '100%',
@@ -591,6 +632,7 @@ export const CreateOrganization = ({navigation}: Props) => {
                         />
 
                         <TouchableOpacity
+                        onPress={openPortadaPhoto}
                           style={{
                             width: RFPercentage(4),
                             position: 'absolute',
@@ -619,11 +661,14 @@ export const CreateOrganization = ({navigation}: Props) => {
                   </Text>
                   <InputText
                     // isInputText={() => setIsInputText(!isInputText)}
+                    isValid={nameValidate}
                     label={'Escribe el nombre de la organización...'}
                     keyboardType="default"
                     multiline={false}
                     numOfLines={1}
-                    onChangeText={value => onChange(value, 'principalName')}
+                    onChangeText={value => {
+                      onChange(value, 'principalName'), setNameValidate(true);
+                    }}
                     value={form.principalName}
                   />
                 </View>
@@ -636,11 +681,14 @@ export const CreateOrganization = ({navigation}: Props) => {
                   <Text style={{color: 'black'}}>Email de contacto</Text>
                   <InputText
                     // isInputText={() => setIsInputText(!isInputText)}
+                    isValid={mailValidate}
                     label={'Mail de contacto'}
                     keyboardType="email-address"
                     multiline={false}
                     numOfLines={1}
-                    onChangeText={value => onChange(value, 'contactMail')}
+                    onChangeText={value => {
+                      onChange(value, 'contactMail'), setMailValidate(true);
+                    }}
                     value={form.contactMail}
                   />
                 </View>
@@ -653,12 +701,16 @@ export const CreateOrganization = ({navigation}: Props) => {
                   <Text style={{color: 'black'}}>Biografía</Text>
                   <InputText
                     // isInputText={() => setIsInputText(!isInputText)}
+                    isValid={descriptionValidate}
                     label={'Presenta tu organización en la biografia'}
                     keyboardType="default"
                     multiline={true}
                     maxLength={300}
                     numOfLines={5}
-                    onChangeText={value => onChange(value, 'description')}
+                    onChangeText={value => {
+                      onChange(value, 'description'),
+                        setDescriptionValidate(true);
+                    }}
                     value={form.description}
                   />
                 </View>
@@ -808,6 +860,15 @@ export const CreateOrganization = ({navigation}: Props) => {
                 size={RFPercentage(8)}
                 color={Colors.semanticWarningDark}
                 label="Ha surgido un problema, vuelva a intentarlo."
+                helper={false}
+              />
+              <SaveProyectModal
+                visible={controlSizeImage}
+                hideModal={hideModalControlSizeImage}
+                onPress={hideModalControlSizeImage}
+                size={RFPercentage(8)}
+                color={Colors.semanticWarningDark}
+                label="La imagen no puede pesar mas de 4 Mb"
                 helper={false}
               />
               <InfoModal
