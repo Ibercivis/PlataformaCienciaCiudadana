@@ -948,7 +948,7 @@ export const Profile = ({navigation}: Props) => {
                 {
                   name:'ProjectPage',
                   params:{
-                    id: projectId, isNew: false
+                    id: projectId, isNew: false, fromProfile:true,
                   }
                 }
               ]

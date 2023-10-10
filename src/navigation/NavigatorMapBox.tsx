@@ -24,7 +24,7 @@ export const NavigatorMapBox = () => {
         },
       }}>
       {permissions.locationStatus === 'granted' ? (
-        <Stack.Screen name="MapBoxScreen" component={MapBoxScreen} />
+        <Stack.Screen name="ParticipateMap" component={MapBoxScreen} />
       ) : (
         <Stack.Screen name="PermissionsScreen" component={PermissionsScreen} />
       )}

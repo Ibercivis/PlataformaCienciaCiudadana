@@ -1,5 +1,11 @@
 import React from 'react';
-import {TouchableOpacity, Text, View, StyleSheet, useWindowDimensions} from 'react-native';
+import {
+  TouchableOpacity,
+  Text,
+  View,
+  StyleSheet,
+  useWindowDimensions,
+} from 'react-native';
 import {Colors} from '../../theme/colors';
 import {FontFamily, FontSize} from '../../theme/fonts';
 import {Size} from '../../theme/size';
@@ -15,7 +21,8 @@ interface Props {
   width?: number;
   fontFamily?: string;
   iconColor?: string;
-  outlineColor?:string;
+  outlineColor?: string;
+  disabled?: boolean;
 }
 
 export const CustomButton = ({
@@ -27,19 +34,21 @@ export const CustomButton = ({
   iconRight = '',
   width,
   iconColor = 'black',
-  fontFamily= FontFamily.NotoSansDisplayMedium,
-  outlineColor
+  fontFamily = FontFamily.NotoSansDisplayMedium,
+  outlineColor,
+  disabled = false,
 }: Props) => {
   const {fontScale} = useWindowDimensions();
   return (
     <TouchableOpacity
+      disabled={disabled}
       activeOpacity={0.6}
       onPress={onPress}
       style={{
         ...styles.touchable,
         backgroundColor: backgroundColor,
         borderColor: outlineColor,
-        borderWidth: outlineColor ? 1 : 0
+        borderWidth: outlineColor ? 1 : 0,
       }}>
       <View
         style={{
@@ -87,8 +96,8 @@ const styles = StyleSheet.create({
     // paddingHorizontal: '5%',
     // paddingVertical: '2%',
     width: '100%',
-    justifyContent:'center',
-    height:35,
+    justifyContent: 'center',
+    height: 35,
     borderRadius: 12,
     // marginBottom: '4%',
     // marginHorizontal: '2%',

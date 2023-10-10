@@ -87,10 +87,7 @@ export const Home = ({navigation}: Props) => {
   useEffect(() => {
     setLoading(true);
     categoryListApi();
-    // projectListApi();
-    // organizationListApi();
     setCategoriesSelected([]);
-    // setIsAllCharged(true);
     //aquí estaba el setIsAllCharged(true);
   }, []);
 
@@ -783,6 +780,9 @@ export const Home = ({navigation}: Props) => {
                         totalLikes={x.total_likes ? x.total_likes : 0}
                         boolHelper={x.is_liked_by_user}
                         description={x.description}
+                        onPress={() => {
+                          onProjectPress(x.id);
+                        }}
                       />
                     );
                     // }

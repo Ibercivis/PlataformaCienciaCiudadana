@@ -50,6 +50,8 @@ export const Home = ({navigation}: Props) => {
 
   const insets = useSafeAreaInsets(); //controlar el notch?
 
+  const [firstTime, setfirstTime] = useState(true)
+
   const onChangeSearch = (query: SetStateAction<string>) =>
     setSearchQuery(query);
 
@@ -93,24 +95,6 @@ export const Home = ({navigation}: Props) => {
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
 
-  //prueba boton animado
-  // const animation = useRef(new Animated.Value(1)).current;
-  // const handlePress = () => {
-  //   Animated.spring(animation, {
-  //     toValue: 1.2,
-  //     friction: 2,
-  //     tension: 60,
-  //     useNativeDriver: true,
-  //   }).start(() => {
-  //     Animated.timing(animation, {
-  //       toValue: 1,
-  //       duration: 500,
-  //       useNativeDriver: true,
-  //     }).start();
-  //   });
-
-  //   navigation.navigate('NewProjectScreen', []);
-  // };
 
   // fav y marcadores
   const [fav, setFav] = useState(false);
@@ -123,7 +107,24 @@ export const Home = ({navigation}: Props) => {
   }, []);
 
   useEffect(() => {
-    StatusBar.setHidden(true);
+    if(firstTime){
+      setfirstTime(false)
+      StatusBar.setHidden(true);
+      setHasTagToFilter(0);
+      setLastHastagFilter(0);
+      setTopicToFilter(0);
+      setProject([]);
+      setProjectAll([]);
+      getData();
+      getCreator();
+      getHasTag();
+      getTopics();
+    }
+    
+  }, []);
+
+  useEffect(() => {
+    // StatusBar.setHidden(true);
     setHasTagToFilter(0);
     setLastHastagFilter(0);
     setTopicToFilter(0);
@@ -133,7 +134,7 @@ export const Home = ({navigation}: Props) => {
     getCreator();
     getHasTag();
     getTopics();
-    setRefreshing(false);
+    
   }, [refreshing]);
 
   //espera a que cambie el valor numerico del id del hastag por el que filtrar para así cambiar el del isFiltered
@@ -167,8 +168,8 @@ export const Home = ({navigation}: Props) => {
   const getData = async () => {
     const token = await AsyncStorage.getItem('token');
     try {
-      // const jsonValue = await AsyncStorage.getItem('projects');
-      // return jsonValue != null ? JSON.parse(jsonValue) : null;
+      console.log('entra en getData')
+      console.log(token)
       const resp = await citmapApi.get('/projects/', {
         headers: {
           Authorization: token,
@@ -178,7 +179,7 @@ export const Home = ({navigation}: Props) => {
         setProject(resp.data);
         setProjectAll(resp.data);
       }
-      setIsAllCharged(true);
+      // setIsAllCharged(true);
     } catch (e) {
       console.log('error get projects ' + e);
       getData();
@@ -214,6 +215,7 @@ export const Home = ({navigation}: Props) => {
       if (resp.data) {
         setTopics(resp.data);
       }
+      setRefreshing(false);
     } catch (e) {
       console.log('error topic ' + e);
       getTopics();

@@ -37,7 +37,9 @@ export interface Image {
 }
 
 export interface FieldForm {
-    questions: Question[];
+    id:         number,
+    project:    number,
+    questions:  Question[];
 }
 
 export interface Organization {
@@ -117,5 +119,47 @@ export interface CreatedProject {
 export interface CountryData {
     abbreviation: string; 
     name: string; 
+  }
+
+export interface Observation {
+    id:          number;
+    creator:     number;
+    field_form:  number;
+    geoposition: GeoPosition;
+    data:        ObervationDataForm[];
+    images?:      any[];
+}
+export interface CreateObservation {
+    field_form:  number;
+    geoposition: Point;
+    data:        ObervationDataForm;
+    timestamp:   string
+    images?:     ImageObservation[];
+}
+
+export interface ImageObservation {
+    key: number;
+    value: any;
+}
+
+export interface ObervationDataForm {
+    subData: SubDataObservationDataForm[]
+}
+
+export interface SubDataObservationDataForm{
+    key: string;
+    value: string;
+}
+
+export interface Point {
+    point: string;
+}
+
+export interface GeoPosition {
+    srid: string;
+    point: {
+      longitude: number;
+      latitude: number;
+    };
   }
 

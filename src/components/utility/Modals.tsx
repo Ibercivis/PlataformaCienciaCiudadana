@@ -665,7 +665,7 @@ export const InfoModalMap = ({
                 style={{
                   ...styles.modalContent,
                   alignItems: 'center',
-                  height: '0%',
+                  height: '50%',
                   width: '75%',
                   // justifyContent: 'center',
                   // paddingHorizontal: '11%',

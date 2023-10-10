@@ -344,14 +344,6 @@ export const ParticipateMapbox = () => {
               right: '2%',
             }}>
             <TouchableOpacity activeOpacity={0.5} onPress={() => addMarkPlus()}>
-              {/* <Image
-            source={require('../../assets/icons/add.png')}
-            style={{
-              width: iconSize,
-              height: iconSize,
-              borderRadius: 50,
-            }}
-          /> */}
               <View
                 style={{
                   justifyContent: 'center',

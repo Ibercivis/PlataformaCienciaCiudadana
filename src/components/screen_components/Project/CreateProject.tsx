@@ -63,6 +63,8 @@ export const CreateProject = ({navigation}: Props) => {
     name: '',
     description: '',
     field_form: {
+      id:0,
+      project: 0,
       questions: [],
     },
     is_private: false,
@@ -474,7 +476,7 @@ export const CreateProject = ({navigation}: Props) => {
   const createAnswer = () => {
     setQuestions([
       ...questions,
-      {question_text: '', answer_type: '', mandatory: false},
+      {id:0,question_text: '', answer_type: '', mandatory: false},
     ]);
   };
 

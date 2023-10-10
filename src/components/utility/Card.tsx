@@ -237,11 +237,6 @@ export const Card = ({
                   }}
                 />
               </View>
-              {/* <ImageBackground
-                borderTopLeftRadius={10}
-                borderTopRightRadius={10}
-                source={require('../../assets/backgrounds/login-background.jpg')}
-                style={[style.imageBackgroundImportants]}></ImageBackground> */}
               <View
                 style={{marginHorizontal: 14, marginTop: 13, marginBottom: 6}}>
                 <Text
@@ -307,10 +302,11 @@ export const Card = ({
       case 'importantsPlus':
         return (
           <TouchableOpacity style={style.importants} onPress={onPress}>
-            <View style={{alignItems: 'center'}}>
+            <View style={{alignItems: 'center',
+          height: '100%',}}>
               <View
                 style={{
-                  height: '71%',
+                  
                   alignSelf: 'center',
                   padding: '30%',
                   backgroundColor: 'transparent',
@@ -560,7 +556,6 @@ export const Card = ({
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     marginHorizontal: RFPercentage(1),
-                    backgroundColor: 'red',
                     top: RFPercentage(16),
                   }}>
                   <View
@@ -597,11 +592,11 @@ export const Card = ({
                       backgroundColor: 'white',
                       borderRadius: 15,
                       margin: '2%',
-                      marginVertical: '5%',
+                      marginVertical: RFPercentage(0.8),
                       // paddingHorizontal: '3%',
                       paddingVertical: '2%',
                       flex: 1,
-
+                      alignItems:'center',
                     }}>
                     <Text
                       style={{
@@ -861,6 +856,8 @@ export const Card = ({
   );
 };
 
+
+
 const style = StyleSheet.create({
   container: {},
   category: {
@@ -902,7 +899,7 @@ const style = StyleSheet.create({
   },
   importants: {
     // height: RFPercentage(30),
-    // height: '100%',
+    height: RFPercentage(33),
     width: RFPercentage(23),
     margin: 4,
     borderRadius: 10,
@@ -917,7 +914,7 @@ const style = StyleSheet.create({
     elevation: 2,
   },
   imageBackgroundImportants: {
-    height: 150,
+    height: '57%',
     // borderRadius: 10,
   },
 

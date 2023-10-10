@@ -7,8 +7,10 @@ export const useLocation = () => {
   const [hasLocation, setHasLocation] = useState(false);
   const [routeLines, setRouteLines] = useState<Location[]>([]);
 
+  const [loading, setLoading] = useState(true);
+
   const [initialPositionArray, setInitialPositionArray] = useState<number[]>(
-    [],
+    [0,0],
   );
   const [initialPosition, setInitialPosition] = useState<Location>({
     latitude: 0,
@@ -23,6 +25,18 @@ export const useLocation = () => {
   const watchId = useRef<number>();
   const isMounted = useRef<boolean>(true);
 
+  // useEffect(() => {
+  //   // Comprueba si el GPS ya está habilitado al cargar la aplicación
+  //   Geolocation.getCurrentPosition(
+  //     (position) => {
+  //       setLoading(true);
+  //     },
+  //     (error) => {
+  //       setGpsEnabled(false);
+  //     }
+  //   );
+  // }, []);
+
   useEffect(() => {
     isMounted.current = true;
     return () => {
@@ -31,6 +45,7 @@ export const useLocation = () => {
   }, []);
 
   useEffect(() => {
+    
     if (!hasLocation) {
       // getCurrLocation();
       getCurrentLocation().then(location => {
@@ -40,11 +55,23 @@ export const useLocation = () => {
         setUserLocation(location);
         setRouteLines(routes => [...routes, location]);
         setHasLocation(true);
-      });
+        setLoading(false);
+      }).catch(error => {
+        console.error("Error al obtener la ubicación:", error);
+        setLoading(true);
+        // Aquí puedes manejar el error de la manera que desees
+      });;
     }
   }, []);
 
   const getCurrentLocation = (): Promise<Location> => {
+    Geolocation.setRNConfiguration({
+      authorizationLevel: 'always', // Cambia a 'always' si necesitas acceso constante
+      skipPermissionRequests: false,
+    });
+    // Solicita permisos y habilita el GPS
+    Geolocation.requestAuthorization(); // Esto mostrará un cuadro de diálogo para solicitar permisos
+
     return new Promise((resolve, reject) => {
       Geolocation.getCurrentPosition(
         info => {
@@ -52,6 +79,10 @@ export const useLocation = () => {
             latitude: info.coords.latitude,
             longitude: info.coords.longitude,
           });
+          setInitialPositionArray([info.coords.longitude, info.coords.latitude]);
+          setUserLocation(info.coords);
+          setHasLocation(true);
+          setLoading(false);
         },
         err => {
           if (err.code === 1) {
@@ -65,6 +96,7 @@ export const useLocation = () => {
             {
               enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 
             };
+            setLoading(true);
         },
       );
     });
@@ -82,6 +114,7 @@ export const useLocation = () => {
         // console.log('entra en watchPosition');
         setUserLocation(location);
         setRouteLines(routes => [...routes, location]);
+        setLoading(false);
       },
       err => console.log(err),
       {
@@ -106,5 +139,6 @@ export const useLocation = () => {
     routeLines,
     initialPositionArray,
     setInitialPositionArray,
+    loading
   };
 };

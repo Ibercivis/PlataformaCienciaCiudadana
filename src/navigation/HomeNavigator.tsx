@@ -26,6 +26,7 @@ export type StackParams = {
   ProjectPage: {
     id: number;
     isNew?: boolean; 
+    fromProfile?: boolean; 
   };
   OrganizationPage: {
     id: number;

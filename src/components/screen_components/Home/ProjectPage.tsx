@@ -84,7 +84,6 @@ export const ProjectPage = (props: Props) => {
 
   useEffect(() => {
     //si entra nada mas crear un project
-    console.log('entra en proyecto ' + props.route.params.id)
     getProjectApi();
   }, []);
 
@@ -147,27 +146,35 @@ export const ProjectPage = (props: Props) => {
    */
   const onBack = () => {
     // props.navigation.popToTop();
-    props.navigation.dispatch(
+    if(!props.route.params.fromProfile){
+      props.navigation.popToTop();
+    }else{
+      props.navigation.dispatch(
       CommonActions.navigate({
         name: 'HomeNavigator',
       }),
     )
+    }
+    
   };
 
   /**
    * metodo para ir al mapa
    */
   const navigateToMap = () => {
-    if(project?.is_private){
+    if(project){
+      if(project.is_private){
       showModalPass()
     }else{
       props.navigation.dispatch(
         CommonActions.navigate({
           name: 'ParticipateMap',
-          params: {id: 6},
+          params: {id: project.id},
         }),
       );
     }
+    }
+    
   }
   const navigateToMapPass = async (value1?: string) => {
     
@@ -248,7 +255,7 @@ export const ProjectPage = (props: Props) => {
         onTouchCancel={() => hideModalSave()}
         keyboardShouldPersistTaps="handled">
         {/* Ocultar la barra de estado */}
-        <StatusBar hidden />
+        {/* <StatusBar hidden /> */}
         <View style={styles.textContainer}>
           <Text style={styles.title}>{project?.name}</Text>
         </View>

@@ -112,12 +112,9 @@ export const InputText = ({
       }}
         style={{
           width: '80%',
-          // marginLeft: '1%',
           fontSize: FontSize.fontSizeText13,
           fontFamily: FontFamily.NotoSansDisplayLight,
-          
           fontWeight: '300',
-          // color: 'green',
           alignSelf: 'center',
           backgroundColor: 'transparent',
           height: multiline ? 0 : window.height * 0.04,

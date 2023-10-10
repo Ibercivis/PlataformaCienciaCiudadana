@@ -143,3 +143,31 @@ anterior version de react native reanimated = 2.14.4, modificada para que pueda 
 
 - npm install base-64 npm i --save-dev @types/base-64  para pasar base64 a blob npm i --save-dev @types/react-native-fetch-blob
 
+- react-native-settings
+    https://www.npmjs.com/package/react-native-settings?activeTab=readme
+    
+Abre el archivo MainApplication.java en android/app/src/main/java/[...]/MainApplication.java.
+
+Agrega la importación necesaria al principio del archivo:
+
+import io.rumors.reactnativesettings.RNSettingsPackage;
+Busca el método getPackages() en la clase ReactNativeHost dentro de tu MainApplication:
+
+
+@Override
+protected List<ReactPackage> getPackages() {
+  @SuppressWarnings("UnnecessaryLocalVariable")
+  List<ReactPackage> packages = new PackageList(this).getPackages();
+  // Agrega la siguiente línea para incluir el paquete react-native-settings
+  packages.add(new RNSettingsPackage());
+  return packages;
+}
+Asegúrate de haber realizado los cambios en el archivo android/settings.gradle como se indica en las instrucciones que mencionaste. Debería verse algo como esto:
+
+
+include ':react-native-settings'
+project(':react-native-settings').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-settings/android')
+En tu archivo android/app/build.gradle, dentro del bloque dependencies, agrega la línea que incluye react-native-settings:
+
+
+implementation project(':react-native-settings')
