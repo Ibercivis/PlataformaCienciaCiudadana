@@ -60,6 +60,7 @@ import NotContribution from '../../../assets/icons/profile/No hay contribuciones
 import NotCreated from '../../../assets/icons/profile/No hay creados.svg';
 import NotLiked from '../../../assets/icons/profile/No hay me gusta.svg';
 import {CommonActions, useNavigation} from '@react-navigation/native';
+import {Country} from '../../../interfaces/interfaces';
 
 interface Props extends StackScreenProps<any, any> {}
 
@@ -100,7 +101,10 @@ export const Profile = ({navigation}: Props) => {
   const [userProfile, setUserProfile] = useState<UserProfile>({
     biography: '',
     visibility: false,
-    country: '',
+    country: {
+      code: '',
+      name: '',
+    },
     participated_projects: [],
     created_projects: [],
     liked_projects: [],
@@ -804,6 +808,7 @@ export const Profile = ({navigation}: Props) => {
         },
       });
       setUserProfile(profile.data.profile);
+      form.country = profile.data.profile.country;
       setIsSwitchOn(profile.data.profile.visibility);
       getCountriesApi();
       // console.log(JSON.stringify(profile.data.profile, null, 2))
@@ -843,10 +848,10 @@ export const Profile = ({navigation}: Props) => {
         },
       });
       setCountries(resp.data);
-      if(userProfile.country){
-        const country = resp.data.find(x => x[1] === userProfile.country)
-        if(country){
-          setSelectedCountry(country)
+      if (userProfile.country) {
+        const country = resp.data.find(x => x[1] === userProfile.country);
+        if (country) {
+          setSelectedCountry(country);
         }
       }
     } catch {}
@@ -870,7 +875,7 @@ export const Profile = ({navigation}: Props) => {
             alignSelf: 'center',
             marginTop: RFPercentage(0.5),
           }}>
-          <TouchableOpacity onPress={() => setUserEdit(!userEdit)}>
+          <TouchableOpacity onPress={() => saveProfile()}>
             <Text style={{color: 'blue'}}>Guardar</Text>
           </TouchableOpacity>
         </View>
@@ -935,29 +940,30 @@ export const Profile = ({navigation}: Props) => {
     setVisibilityOrganization(state);
   };
 
-  //metodo para poder navegar entre 
+  //metodo para poder navegar entre
   const navigateTo = (projectId: number) => {
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
-        routes:[
+        routes: [
           {
             name: 'HomeNavigator',
-            state:{
-              routes:[
+            state: {
+              routes: [
                 {
-                  name:'ProjectPage',
-                  params:{
-                    id: projectId, isNew: false, fromProfile:true,
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      })
-    )
-
+                  name: 'ProjectPage',
+                  params: {
+                    id: projectId,
+                    isNew: false,
+                    fromProfile: true,
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      }),
+    );
   };
 
   const openProfilePhoto = () => {
@@ -1037,11 +1043,75 @@ export const Profile = ({navigation}: Props) => {
     } catch (err) {}
   };
 
+  /**
+   * cuando guarda el proyecto, comprueba si hay datos en los campos de cambiar pass y comprueba que sean iguales,
+   * tras esto, llama a cambiar pass
+   */
   const saveProfile = async () => {
-    try {
-    } catch (err) {
-      console.log(err);
+    if (userEdit) {
+      const token = await AsyncStorage.getItem('token');
+
+      const formData = new FormData();
+      formData.append('biography', form.biography);
+      formData.append('country', form.country);
+      formData.append('visibility', isSwitchOn);
+      console.log(JSON.stringify(formData, null, 2));
+      try {
+        const resp = await citmapApi.put('/users/profile/', formData, {
+          headers: {
+            Authorization: token,
+          },
+        });
+        console.log(resp);
+      } catch (error) {
+        if (error.response) {
+          // Se recibió una respuesta del servidor con un código de estado de error
+
+          if (error.response.status === 400) {
+            console.log(
+              'Error 400: Solicitud incorrecta - La solicitud tiene un formato incorrecto o faltan datos.',
+            );
+          } else if (error.response.status === 401) {
+            console.log(
+              'Error 401: No autorizado - La solicitud requiere autenticación.',
+            );
+          } else if (error.response.status === 403) {
+            console.log(
+              'Error 403: Prohibido - No tienes permiso para acceder a este recurso.',
+            );
+          } else if (error.response.status === 404) {
+            console.log(
+              'Error 404: No encontrado - El recurso solicitado no existe en el servidor.',
+            );
+          } else {
+            console.log(
+              `Error ${error.response.status}: Error en la solicitud.`,
+            );
+          }
+
+          // Puedes acceder a detalles adicionales de la respuesta del servidor:
+          console.log('Mensaje del servidor:', error.response.data);
+          console.log('Encabezados de respuesta:', error.response.headers);
+        } else if (error.request) {
+          // La solicitud se realizó, pero no se recibió una respuesta
+          console.log(
+            'Error de red: No se pudo recibir una respuesta del servidor.',
+          );
+        } else {
+          // Se produjo un error durante la configuración de la solicitud
+          console.log('Error de configuración de la solicitud:', error.message);
+        }
+      }
     }
+    setUserEdit(!userEdit);
+  };
+
+  const changeCountry = (code: string) => {
+    const newCountry = countries.find(x => x[0] === code);
+    const newCountryValue = newCountry
+      ? {code: newCountry[0], name: newCountry[1]}
+      : {code: 'ES', name: 'ESPAÑA'};
+    onChange(newCountryValue, 'country');
   };
 
   //#endregion
@@ -1055,7 +1125,7 @@ export const Profile = ({navigation}: Props) => {
       <HeaderComponent
         title={!userEdit ? user.username : 'Editar perfil'}
         onPressLeft={() => navigation.goBack()}
-        onPressRight={() => setUserEdit(!userEdit)}
+        onPressRight={() => saveProfile()}
         rightIcon={canEdit ? true : false}
         renderRight={() => rightRenderIconHeader()}
       />
@@ -1382,29 +1452,21 @@ export const Profile = ({navigation}: Props) => {
                     marginVertical: RFPercentage(1),
                   }}>
                   <Text style={{color: 'black'}}>Ubicacion</Text>
-                  {/* <InputText
-                    // isInputText={() => setIsInputText(!isInputText)}
-                    label={'Di tu ubicación'}
-                    keyboardType="email-address"
-                    multiline={false}
-                    numOfLines={1}
-                    onChangeText={value => console.log()}
-                    value={form.country}
-                  /> */}
                   <Picker
-                    selectedValue={selectedCountry[0]}
+                    selectedValue={form.country.code}
                     onValueChange={(itemValue, itemIndex) => {
                       // Aquí puedes manejar el valor seleccionado, por ejemplo, actualizando form.country
                       // En este ejemplo, simplemente imprimimos el valor seleccionado.
-                      setSelectedCountry(itemValue)
-                      onChange(itemValue, 'country')
+                      // setSelectedCountry(itemValue)
+                      // onChange(itemValue, 'country')
+                      changeCountry(itemValue);
                     }}
                     style={{width: RFPercentage(41)}}>
                     {countries.map((pais, index) => (
                       <Picker.Item
                         key={index}
                         label={pais[1]}
-                        value={pais[1]}
+                        value={pais[0]}
                       />
                     ))}
                   </Picker>
@@ -1774,7 +1836,7 @@ export const Profile = ({navigation}: Props) => {
                         fontSize: FontSize.fontSizeText13,
                         fontFamily: FontFamily.NotoSansDisplayRegular,
                       }}>
-                      {userProfile.country}
+                      {userProfile.country.name}
                     </Text>
                   </View>
                 </View>

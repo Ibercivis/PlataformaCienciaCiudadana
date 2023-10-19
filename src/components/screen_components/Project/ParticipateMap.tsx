@@ -24,8 +24,8 @@ import {
   CreateObservation,
   FieldForm,
   ImageObservation,
-  ObervationDataForm,
   Observation,
+  ObservationDataForm,
   Question,
   ShowProject,
   User,
@@ -82,13 +82,9 @@ export const ParticipateMap = ({navigation, route}: Props) => {
 
   // form variables
   const {form, onChange, clear} = useForm<CreateObservation>({
-    data: {
-      subData: [],
-    },
+    data: [],
     field_form: 0,
-    geoposition: {
-      point: '',
-    },
+    geoposition: '',
     timestamp: '',
     images: [],
   });
@@ -154,13 +150,39 @@ export const ParticipateMap = ({navigation, route}: Props) => {
   const [newObservationCreate, setNewObservationCreate] =
     useState<CreateObservation>({
       field_form: 0,
-      geoposition: {
-        point: '',
-      },
-      data: {
-        subData: [],
-      },
+      geoposition: '',
+      data: [],
       timestamp: '',
+    });
+
+  const [selectedObservation, setSelectedObservation] = useState<Observation>({
+    id: 0,
+    creator: 0,
+    field_form: 0,
+    geoposition: {
+      srid: '0',
+      point: {
+        latitude: 0,
+        longitude: 0,
+      },
+    },
+    data: [],
+    images: [],
+  });
+  const [showSelectedObservation, setShowSelectedObservation] =
+    useState<Observation>({
+      id: 0,
+      creator: 0,
+      field_form: 0,
+      geoposition: {
+        srid: '0',
+        point: {
+          latitude: 0,
+          longitude: 0,
+        },
+      },
+      data: [],
+      images: [],
     });
 
   // TODO gestionar lo de las imagenes
@@ -169,9 +191,11 @@ export const ParticipateMap = ({navigation, route}: Props) => {
 
   // map controll
   const [isCreatingObservation, setIsCreatingObservation] = useState(false);
+  const [colorMark, setColorMark] = useState('#FC5561');
   const [showMap, setShowMap] = useState(true);
   const [chargedData, setChargedData] = useState(false);
   const [onBack, setOnBack] = useState(true);
+  const [onlyRead, setOnlyRead] = useState(false);
 
   const [waitingData, setWaitingData] = useState(true);
 
@@ -204,6 +228,15 @@ export const ParticipateMap = ({navigation, route}: Props) => {
       showModalInfo();
     }
   }, []);
+
+  useEffect(() => {
+    // if (userInfo.pk !== showSelectedObservation.creator) {
+    //   setOnlyRead(true);
+    // }
+    if (showSelectedObservation) {
+      handleEdit();
+    }
+  }, [showSelectedObservation]);
 
   useEffect(() => {
     cameraRef.current?.setCamera({
@@ -247,6 +280,16 @@ export const ParticipateMap = ({navigation, route}: Props) => {
           },
         },
       );
+
+      const userInfo = await citmapApi.get<User>(
+        '/users/authentication/user/',
+        {
+          headers: {
+            Authorization: token,
+          },
+        },
+      );
+      setUserInfo(userInfo.data);
 
       const formfield = await citmapApi.get<FieldForm[]>(`/field_forms/`, {
         headers: {
@@ -322,11 +365,45 @@ export const ParticipateMap = ({navigation, route}: Props) => {
 
   //#region METHODS
 
+  // Cuando cambies al modo de edición:
+  const handleEdit = () => {
+    // Completar los campos del formulario con los datos de showSelectedObservation
+    // console.log(JSON.stringify(showSelectedObservation, null, 2));
+    form.field_form = showSelectedObservation.field_form;
+    form.geoposition = `POINT(${showSelectedObservation.geoposition.point.latitude} ${showSelectedObservation.geoposition.point.longitude})`;
+    form.images = showSelectedObservation.images;
+    form.data = showSelectedObservation.data;
+  };
+
+  const clearSelectedObservation = () => {
+    return {
+      id: 0,
+      creator: 0,
+      field_form: 0,
+      geoposition: {
+        srid: '0',
+        point: {
+          latitude: 0,
+          longitude: 0,
+        },
+      },
+      data: [],
+      images: [],
+    };
+  };
+
   const clearFormData = () => {
     clear();
   };
 
+  /**
+   * Metodo que creará el form en base a lo que se le pasa
+   * @param value valor a cambiar
+   * @param id corresponde al identificador de la pregunta
+   * @param type es el typo de respuesta esperado
+   */
   const onChangeText = (value: any, id: number, type: string) => {
+    console.log(value);
     if (type === 'IMG') {
       // Busca si ya existe un elemento en form.images con la misma clave (id).
       const existingImageIndex = form.images!.findIndex(
@@ -347,23 +424,25 @@ export const ParticipateMap = ({navigation, route}: Props) => {
       }
     } else {
       // Clona el array existente en form.data si existe, o crea uno nuevo si es nulo.
-      const newDataArray = form.data.subData ? [...form.data.subData] : [];
+      const newDataArray: ObservationDataForm[] = form.data
+        ? [...form.data]
+        : [];
 
       // Busca si ya existe un elemento en newDataArray con la misma clave (id).
-      const existingElementIndex = newDataArray.findIndex(
+      const existingElement = newDataArray.find(
         item => item.key === id.toString(),
       );
 
-      if (existingElementIndex !== -1) {
+      if (existingElement) {
         // Si ya existe un elemento con la misma clave (id), actualiza su valor.
-        newDataArray[existingElementIndex].value = value;
+        existingElement.value = value;
       } else {
         // Si no existe un elemento con la misma clave (id), crea uno nuevo y agrégalo.
-        newDataArray.push({key: id.toString(), value});
+        newDataArray.push({key: id.toString(), value: value});
       }
-
+      // console.log(JSON.stringify(newDataArray, null, 2));
       // Actualiza form.data con el nuevo array de elementos.
-      form.data.subData = newDataArray;
+      form.data = newDataArray;
     }
   };
 
@@ -425,6 +504,12 @@ export const ParticipateMap = ({navigation, route}: Props) => {
   };
 
   /**
+   * cuando pulsas una marca, cambia la opacidad de esta a 0 y pone un svg en esa posición de la pantalla
+   *
+   */
+  const setMarkView = (coords: number[], id: number) => {};
+
+  /**
    * Se le pasan las coordenadas y crea una observación.
    * Tras eso, llama de nuevo para cargar las observationList
    * @param coordinates coordenadas para crear la marca
@@ -432,38 +517,23 @@ export const ParticipateMap = ({navigation, route}: Props) => {
   const createNewObservation = async (coordinates: number[]) => {
     // await getCreatorApi();
     // console.log(JSON.stringify(userInfo, null, 2));
+    // setOnlyRead(false)
+    // console.log(userInfo.pk + ' ' + showSelectedObservation.creator);
+    setColorMark('#919191');
+    setIsCreatingObservation(true);
     clearFormData();
+    setShowSelectedObservation(clearSelectedObservation);
+    setSelectedObservation(clearSelectedObservation);
     const token = await AsyncStorage.getItem('token');
     try {
-      const userInfo = await citmapApi.get<User>(
-        '/users/authentication/user/',
-        {
-          headers: {
-            Authorization: token,
-          },
-        },
-      );
-      setUserInfo(userInfo.data);
-
       // se crea la nueva observación sin respuestas ni nada
       const createdObservation: CreateObservation = {
         field_form: fieldForm.id,
         timestamp: currentISODateTime,
-        geoposition: {
-          point: `POINT(${coordinates[0]} ${coordinates[1]})`,
-        },
-        data: {
-          subData: [],
-        },
+        geoposition: `POINT(${coordinates[1]} ${coordinates[0]})`,
+        data: [],
       };
-      console.log(JSON.stringify(createdObservation, null, 2));
 
-      // const marca = await citmapApi.post('/observations/', createdObservation, {
-      //   headers: {
-      //     Authorization: token,
-      //   },
-      // });
-      // await setNewObservation(marca.data);
       await setNewObservationCreate(createdObservation);
       await setObservationListCreator([
         ...observationListCreator,
@@ -486,34 +556,160 @@ export const ParticipateMap = ({navigation, route}: Props) => {
     if (match) {
       const latitude = parseFloat(match[2]);
       const longitude = parseFloat(match[1]);
-
       return [latitude, longitude];
     }
   };
 
   const onSaveObservation = async () => {
+    setWaitingData(true);
     const token = await AsyncStorage.getItem('token');
-    const createdObservation: CreateObservation = {
-      field_form: fieldForm.id,
-      timestamp: newObservationCreate.timestamp,
-      geoposition: newObservationCreate.geoposition,
-      data: form.data,
-      images: form.images,
-    };
+    setColorMark('#FC5561');
 
-    
-    console.log(JSON.stringify(createdObservation, null, 2));
+    const formData = new FormData();
+
+    // Agregar los campos a FormData
+    formData.append('field_form', fieldForm.id);
+    formData.append('timestamp', newObservationCreate.timestamp);
+    formData.append('geoposition', newObservationCreate.geoposition);
+
+    formData.append('data', JSON.stringify(form.data));
+    if (form.images) {
+      form.images.forEach(image => {
+        formData.append(image.key.toString(), image.value);
+      });
+    }
+    // console.log(JSON.stringify(formData, null, 2));
+
     try {
-      const marca = await citmapApi.post('/observations/', createdObservation, {
+      const marca = await citmapApi.post('/observations/', formData, {
         headers: {
+          'Content-Type': 'multipart/form-data',
           Authorization: token,
         },
       });
+      console.log('si crea la marca' + JSON.stringify(marca, null, 2));
+      setIsCreatingObservation(false);
+      setShowSelectedObservation(clearSelectedObservation());
+      setObservationListCreator([]);
+      setObservationList([]);
+      await getObservation();
+      setShowMap(true);
+      setWaitingData(false);
+    } catch (error) {
+      setWaitingData(false);
+      if (error.response) {
+        // Se recibió una respuesta del servidor con un código de estado de error
 
-      console.log('si crea la marca');
-    } catch (err) {
-      console.log('error al crear ');
-      console.log(err);
+        if (error.response.status === 400) {
+          console.log(
+            'Error 400: Solicitud incorrecta - La solicitud tiene un formato incorrecto o faltan datos.',
+          );
+        } else if (error.response.status === 401) {
+          console.log(
+            'Error 401: No autorizado - La solicitud requiere autenticación.',
+          );
+        } else if (error.response.status === 403) {
+          console.log(
+            'Error 403: Prohibido - No tienes permiso para acceder a este recurso.',
+          );
+        } else if (error.response.status === 404) {
+          console.log(
+            'Error 404: No encontrado - El recurso solicitado no existe en el servidor.',
+          );
+        } else {
+          console.log(`Error ${error.response.status}: Error en la solicitud.`);
+        }
+
+        // Puedes acceder a detalles adicionales de la respuesta del servidor:
+        console.log('Mensaje del servidor:', error.response.data);
+        console.log('Encabezados de respuesta:', error.response.headers);
+      } else if (error.request) {
+        // La solicitud se realizó, pero no se recibió una respuesta
+        console.log(
+          'Error de red: No se pudo recibir una respuesta del servidor.',
+        );
+      } else {
+        // Se produjo un error durante la configuración de la solicitud
+        console.log('Error de configuración de la solicitud:', error.message);
+      }
+    }
+  };
+
+  const onEditObservation = async () => {
+    setWaitingData(true);
+    const token = await AsyncStorage.getItem('token');
+    setColorMark('#FC5561');
+    console.log(JSON.stringify(form, null, 2));
+    const formData = new FormData();
+
+    // Agregar los campos a FormData
+    formData.append('field_form', fieldForm.id);
+    formData.append('timestamp', newObservationCreate.timestamp);
+    formData.append('geoposition', newObservationCreate.geoposition);
+
+    formData.append('data', JSON.stringify(form.data));
+
+    if (form.images) {
+      form.images.forEach(image => {
+        if (image.key !== undefined)
+          formData.append(image.key.toString(), image.value);
+      });
+    }
+    console.log(JSON.stringify(formData, null, 2));
+
+    try {
+      const marca = await citmapApi.patch(`/observations/${showSelectedObservation.id}/`, formData, {
+        headers: {
+          // 'Content-Type': 'multipart/form-data',
+          // 'Content-Type': 'application/json',
+          Authorization: token,
+        },
+      });
+      console.log('si edita la marca' + JSON.stringify(marca, null, 2));
+      setIsCreatingObservation(false);
+      setShowSelectedObservation(clearSelectedObservation());
+      setObservationListCreator([]);
+      setObservationList([]);
+      await getObservation();
+      setShowMap(true);
+      setWaitingData(false);
+    } catch (error) {
+      setWaitingData(false);
+      if (error.response) {
+        // Se recibió una respuesta del servidor con un código de estado de error
+
+        if (error.response.status === 400) {
+          console.log(
+            'Error 400: Solicitud incorrecta - La solicitud tiene un formato incorrecto o faltan datos.',
+          );
+        } else if (error.response.status === 401) {
+          console.log(
+            'Error 401: No autorizado - La solicitud requiere autenticación.',
+          );
+        } else if (error.response.status === 403) {
+          console.log(
+            'Error 403: Prohibido - No tienes permiso para acceder a este recurso.',
+          );
+        } else if (error.response.status === 404) {
+          console.log(
+            'Error 404: No encontrado - El recurso solicitado no existe en el servidor.',
+          );
+        } else {
+          console.log(`Error ${error.response.status}: Error en la solicitud.`);
+        }
+
+        // Puedes acceder a detalles adicionales de la respuesta del servidor:
+        console.log('Mensaje del servidor:', error.response.data);
+        console.log('Encabezados de respuesta:', error.response.headers);
+      } else if (error.request) {
+        // La solicitud se realizó, pero no se recibió una respuesta
+        console.log(
+          'Error de red: No se pudo recibir una respuesta del servidor.',
+        );
+      } else {
+        // Se produjo un error durante la configuración de la solicitud
+        console.log('Error de configuración de la solicitud:', error.message);
+      }
     }
   };
 
@@ -537,6 +733,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
     //TODO añadir a una nueva lista
     createNewObservation(coords);
     setShowConfirmMark(true);
+    console.log(onlyRead);
   };
 
   /**
@@ -544,19 +741,22 @@ export const ParticipateMap = ({navigation, route}: Props) => {
    */
   const cancelCreationObservation = async () => {
     setShowConfirmMark(false);
+    setColorMark('#FC5561');
+    setIsCreatingObservation(false);
     const token = await AsyncStorage.getItem('token');
     try {
-      const marca = await citmapApi.delete(
-        `/observations/${newObservation.id}/`,
-        {
-          headers: {
-            Authorization: token,
-          },
-        },
+      // Supongamos que newObservationCreate es el objeto que deseas eliminar.
+      const observationToRemove = newObservationCreate;
+
+      // Filtra la matriz original de observationListCreator para eliminar observationToRemove.
+      const filteredList = observationListCreator.filter(
+        observation => observation !== observationToRemove,
       );
 
+      // Establece el nuevo estado de observationListCreator con la matriz filtrada.
+      setObservationListCreator(filteredList);
       console.log('marca borrada');
-      console.log(JSON.stringify(marca.data, null, 2));
+      // console.log(JSON.stringify(marca.data, null, 2));
     } catch (err) {
       console.log('error en borrar');
       console.log(err);
@@ -603,7 +803,9 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                 scaleBarEnabled={false}
                 compassEnabled={false}
                 collapsable={true}
-                onTouchStart={() => console.log('on touch start')}
+                onTouchStart={() =>
+                  setSelectedObservation(clearSelectedObservation())
+                }
                 onLongPress={data => {
                   addMarkLongPress(data);
                 }}>
@@ -622,46 +824,56 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                 {observationList.length > 0 &&
                   observationList.map((x, index) => {
                     if (x.geoposition.point) {
-                      return (
-                        <View key={index}>
-                          <MarkerView
-                            // coordinate={[-6.300905, 36.53777]}
-                            coordinate={[
-                              x.geoposition.point.latitude,
-                              x.geoposition.point.longitude,
-                            ]}>
-                            <TouchableOpacity
-                              onPress={() => console.log(x.geoposition.point)}>
-                              <View
-                                style={{
-                                  alignItems: 'center',
-                                  width: RFPercentage(5),
-                                  backgroundColor: 'transparent',
-                                  height: RFPercentage(6),
+                      if (selectedObservation.id !== x.id) {
+                        return (
+                          <View key={index}>
+                            <MarkerView
+                              // coordinate={[-6.300905, 36.53777]}
+                              coordinate={[
+                                x.geoposition.point.latitude,
+                                x.geoposition.point.longitude,
+                              ]}>
+                              {/* sustituir esto por una imagen */}
+                              <TouchableOpacity
+                                disabled={isCreatingObservation}
+                                onPress={() => {
+                                  setSelectedObservation(x);
+                                  setShowSelectedObservation(x);
                                 }}>
-                                <MarkEnabled
-                                  height={RFPercentage(5)}
-                                  width={RFPercentage(5)}
-                                />
-                              </View>
-                            </TouchableOpacity>
-                          </MarkerView>
-                        </View>
-                      );
+                                <View
+                                  style={{
+                                    alignItems: 'center',
+                                    width: RFPercentage(5),
+                                    backgroundColor: 'transparent',
+                                    height: RFPercentage(6),
+                                  }}>
+                                  <MarkEnabled
+                                    height={RFPercentage(5)}
+                                    width={RFPercentage(5)}
+                                    fill={colorMark}
+                                  />
+                                </View>
+                              </TouchableOpacity>
+                            </MarkerView>
+                          </View>
+                        );
+                      } else {
+                        return <View key={index}></View>;
+                      }
                     } else {
                       return <View key={index}></View>;
                     }
                   })}
                 {observationListCreator.length > 0 &&
                   observationListCreator.map((x, index) => {
-                    if (x.geoposition.point) {
+                    if (x.geoposition) {
                       return (
                         <View key={index}>
                           <MarkerView
                             // coordinate={[-6.300905, 36.53777]}
-                            coordinate={parsePoint(x.geoposition.point)}>
+                            coordinate={parsePoint(x.geoposition)}>
                             <TouchableOpacity
-                              onPress={() => console.log(x.geoposition.point)}>
+                              onPress={() => console.log(x.geoposition)}>
                               <View
                                 style={{
                                   alignItems: 'center',
@@ -672,6 +884,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                                 <MarkEnabled
                                   height={RFPercentage(5)}
                                   width={RFPercentage(5)}
+                                  fill={'#FC5561'}
                                 />
                               </View>
                             </TouchableOpacity>
@@ -682,6 +895,72 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                       return <View key={index}></View>;
                     }
                   })}
+
+                {/* CREAR OTRA MARCA CON EL CUADRITO QUE HA PASADO GERMAN PARA QUE ASÍ, ESTE SE MUESTRE EN LA COORDENADA PASADA Y LISTO */}
+                {selectedObservation && (
+                  <MarkerView
+                    // coordinate={[-6.300905, 36.53777]}
+                    coordinate={[
+                      selectedObservation.geoposition.point.latitude,
+                      selectedObservation.geoposition.point.longitude,
+                    ]}>
+                    <View
+                      style={{
+                        alignItems: 'center',
+                      }}>
+                      <View
+                        style={{
+                          alignItems: 'center',
+                          width: RFPercentage(25),
+                          height: RFPercentage(25),
+                          backgroundColor: 'transparent',
+                          right: RFPercentage(-3),
+                          top: RFPercentage(0),
+                        }}>
+                        <CardMap
+                          height={RFPercentage(15)}
+                          width={RFPercentage(15)}
+                          fill={'blue'}
+                        />
+                        <View
+                          style={{
+                            width: '30%',
+                            marginHorizontal: RFPercentage(1),
+                            marginBottom: RFPercentage(-5),
+                            zIndex: 999,
+                            position: 'absolute',
+                            top: RFPercentage(2),
+                          }}>
+                          <Text style={{color: 'black'}}>
+                            Marcador Nº {selectedObservation.id}
+                          </Text>
+                        </View>
+                        <View
+                          style={{
+                            width: '30%',
+                            marginHorizontal: RFPercentage(1),
+                            marginBottom: RFPercentage(-5),
+                            zIndex: 999,
+                            position: 'absolute',
+                            top: RFPercentage(7.4),
+                          }}>
+                          <CustomButton
+                            fontSize={FontSize.fontSizeText10}
+                            height={RFPercentage(3)}
+                            onPress={() => {
+                              setShowMap(false),
+                                console.log(
+                                  JSON.stringify(selectedObservation, null, 2),
+                                );
+                            }}
+                            label="Ver más"
+                            backgroundColor={Colors.primaryLigth}
+                          />
+                        </View>
+                      </View>
+                    </View>
+                  </MarkerView>
+                )}
               </MapView>
               {showConfirmMark && (
                 <View style={styles.showConfirmMarkStyle}>
@@ -718,6 +997,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                       <CustomButton
                         onPress={() => {
                           setShowMap(false), setShowConfirmMark(false);
+                          setSelectedObservation(clearSelectedObservation());
                         }}
                         label="Confirmar"
                         backgroundColor={Colors.primaryLigth}
@@ -789,6 +1069,9 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                 title={'proyect name'}
                 onPressLeft={() => {
                   setShowMap(true);
+                  cancelCreationObservation();
+                  setOnlyRead(false);
+                  // setShowConfirmMark(true);
                 }}
                 rightIcon={false}
               />
@@ -801,37 +1084,184 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                     alignItems: 'center',
                   }}>
                   {questions.map((x, index) => {
-                    return (
-                      <View
-                        style={{justifyContent: 'center', alignItems: 'center'}}
-                        key={index}>
-                        <CardAnswerMap
-                          question={x}
-                          index={index + 1}
-                          onChangeText={value =>
-                            onChangeText(value, x.id!, x.answer_type)
-                          }
-                          showModal={value => {
-                            if (value) {
-                              console.log('la imagen pesa demasiado');
-                            }
+                    /**
+                     * el primer if es si no hay ninguna observation seleccionada y está creando. Entra a crear
+                     * el segundo if es si hay una observation seleccionada, si esta es por parte del creador y si no está creando. Entra a editar
+                     * la tercera entra si hay una observation seleccionada, si esta no es por parte del creador y si no está creando. Entra a Ver
+                     */
+                    if (isCreatingObservation) {
+                      return (
+                        <View
+                          style={{
+                            justifyContent: 'center',
+                            alignItems: 'center',
                           }}
-                        />
-                      </View>
-                    );
+                          key={index}>
+                          <CardAnswerMap
+                            question={x}
+                            index={index + 1}
+                            onChangeText={value =>
+                              onChangeText(value, x.id!, x.answer_type)
+                            }
+                            showModal={value => {
+                              if (value) {
+                                console.log('la imagen pesa demasiado');
+                              }
+                            }}
+                          />
+                        </View>
+                      );
+                    } else if (
+                      userInfo.pk === showSelectedObservation.creator &&
+                      !isCreatingObservation
+                    ) {
+                      let image;
+                      let selectedElement;
+                      if (showSelectedObservation.images) {
+                        image = showSelectedObservation.images.find(
+                          img => img.question === x.id,
+                        );
+                      }
+                      if (form.data) {
+                        selectedElement = form.data.find(
+                          item => item.key === x.id!.toString(),
+                        );
+                      }
+
+                      const valueToUse = image
+                        ? image.image
+                        : selectedElement
+                        ? selectedElement.value
+                        : '';
+
+                      return (
+                        <View
+                          style={{
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                          }}
+                          key={index}>
+                          <CardAnswerMap
+                            value={
+                              valueToUse
+                              //: inputValues[x.id!] || ''
+                            }
+                            onlyRead={false}
+                            question={x}
+                            index={index + 1}
+                            isEditing={true}
+                            onChangeText={value =>
+                              onChangeText(value, x.id!, x.answer_type)
+                            }
+                            showModal={value => {
+                              if (value) {
+                                console.log('la imagen pesa demasiado');
+                              }
+                            }}
+                          />
+                        </View>
+                      );
+                    } else {
+                      let image;
+                      let selectedElement;
+                      if (showSelectedObservation.images) {
+                        image = showSelectedObservation.images.find(
+                          img => img.question === x.id,
+                        );
+                      }
+                      if (form.data) {
+                        selectedElement = form.data.find(
+                          item => item.key === x.id!.toString(),
+                        );
+                      }
+
+                      const valueToUse = image
+                        ? image.image
+                        : selectedElement
+                        ? selectedElement.value
+                        : '';
+                      return (
+                        <View
+                          style={{
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                          }}
+                          key={index}>
+                          <CardAnswerMap
+                            value={valueToUse}
+                            onlyRead={true}
+                            question={x}
+                            index={index + 1}
+                            onChangeText={value =>
+                              onChangeText(value, x.id!, x.answer_type)
+                            }
+                            showModal={value => {
+                              if (value) {
+                                console.log('la imagen pesa demasiado');
+                              }
+                            }}
+                          />
+                        </View>
+                      );
+                    }
                   })}
-                  <View
-                    style={{
-                      width: '70%',
-                      marginHorizontal: RFPercentage(1),
-                      marginBottom: '5%',
-                    }}>
-                    <CustomButton
-                      onPress={() => onSaveObservation()}
-                      label="Finalizar"
-                      backgroundColor={Colors.primaryLigth}
-                    />
-                  </View>
+                  {/* si es igual al creator y no está creando, está editando
+                      si es diferente al creador y no está creando, está viendo
+                      si no, significa que está creando
+                  */}
+                  {userInfo.pk === showSelectedObservation.creator &&
+                  !isCreatingObservation ? (
+                    <View
+                      style={{
+                        width: '70%',
+                        marginHorizontal: RFPercentage(1),
+                        marginBottom: '5%',
+                      }}>
+                      <CustomButton
+                        disabled={onlyRead}
+                        onPress={() => onEditObservation()}
+                        label="Guardar"
+                        backgroundColor={Colors.primaryLigth}
+                      />
+                    </View>
+                  ) : userInfo.pk !== showSelectedObservation.creator &&
+                    !isCreatingObservation ? (
+                    <View
+                      style={{
+                        width: '70%',
+                        marginHorizontal: RFPercentage(1),
+                        marginBottom: '5%',
+                      }}>
+                      <CustomButton
+                        disabled={onlyRead}
+                        onPress={() => onSaveObservation()}
+                        label="Finalizar"
+                        backgroundColor={
+                          showSelectedObservation.id <= 0
+                            ? Colors.primaryLigth
+                            : Colors.secondaryBackground
+                        }
+                      />
+                    </View>
+                  ) : (
+                    <View
+                      style={{
+                        width: '70%',
+                        marginHorizontal: RFPercentage(1),
+                        marginBottom: '5%',
+                      }}>
+                      <CustomButton
+                        disabled={false}
+                        onPress={() => onSaveObservation()}
+                        label="Finalizar"
+                        backgroundColor={
+                          showSelectedObservation.id <= 0
+                            ? Colors.primaryLigth
+                            : Colors.secondaryBackground
+                        }
+                      />
+                    </View>
+                  )}
                 </View>
               </ScrollView>
             </>

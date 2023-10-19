@@ -1,5 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  ImageBackground,
+} from 'react-native';
 import {RFPercentage} from 'react-native-responsive-fontsize';
 import {Question} from '../../interfaces/interfaces';
 import {InputText} from './InputText';
@@ -11,7 +18,7 @@ import Person from '../../assets/icons/general/person.svg';
 import FrontPage from '../../assets/icons/project/image.svg';
 import {Size} from '../../theme/size';
 import {Colors} from '../../theme/colors';
-import { useDateTime } from '../../hooks/useDateTime';
+import {useDateTime} from '../../hooks/useDateTime';
 
 interface Props {
   //   onChangeText?: (fieldName: string, value: any) => void;
@@ -19,9 +26,22 @@ interface Props {
   question: Question;
   index: number;
   showModal: (value: boolean) => void;
+  value?: any;
+  obligatory?: boolean;
+  onlyRead?: boolean;
+  isEditing?: boolean;
 }
 
-export const CardAnswerMap = ({question, index, onChangeText, showModal}: Props) => {
+export const CardAnswerMap = ({
+  question,
+  index,
+  onChangeText,
+  showModal,
+  value,
+  obligatory = false,
+  onlyRead = false,
+  isEditing = false,
+}: Props) => {
   // useEffect(() => {
   //     card(question, index)
   //   }, []);
@@ -49,19 +69,18 @@ export const CardAnswerMap = ({question, index, onChangeText, showModal}: Props)
           setImages(newImage);
           const texto: string = getFormattedDateTime();
           onChangeText({
-            image: {
-              uri: newImage.path, // Debes ajustar esto según la estructura de response
-              type: newImage.mime, // Tipo MIME de la imagen
-              name: texto +'cover.jpg', // Nombre de archivo de la imagen (puedes cambiarlo)
-            },
+            uri: newImage.path, // Debes ajustar esto según la estructura de response
+            type: newImage.mime, // Tipo MIME de la imagen
+            name: texto + 'cover.jpg', // Nombre de archivo de la imagen (puedes cambiarlo)
           });
         } else {
-          showModal(true)
+          showModal(true);
           setImages(undefined);
         }
       }
     });
   };
+
 
   //#region SECCIÓN RENDERS
   /**
@@ -103,11 +122,13 @@ export const CardAnswerMap = ({question, index, onChangeText, showModal}: Props)
                   /> */}
                   <View style={styles.container}>
                     <TextInput
+                      disabled={onlyRead}
                       style={[styles.input, {borderBottomColor: '#bab9b9'}]}
-                      placeholder={item.question_text}
-                      placeholderTextColor={'#bab9b9'}
+                      placeholder={value || item.question_text}
+                      placeholderTextColor={value ? '#000000' : '#bab9b9'}
                       onChangeText={value => onChangeText(value)}
                       underlineColorAndroid="transparent"
+                      // value={value}
                     />
                   </View>
                 </View>
@@ -135,12 +156,14 @@ export const CardAnswerMap = ({question, index, onChangeText, showModal}: Props)
                   }}>
                   <View style={styles.container}>
                     <TextInput
+                      disabled={onlyRead}
                       style={[styles.input, {borderBottomColor: '#bab9b9'}]}
                       keyboardType="number-pad"
-                      placeholder={item.question_text}
-                      placeholderTextColor={'#bab9b9'}
+                      placeholder={value || item.question_text}
+                      placeholderTextColor={value ? '#000000' : '#bab9b9'}
                       onChangeText={value => onChangeText(value)}
                       underlineColorAndroid="transparent"
+                      // value={value}
                     />
                   </View>
                 </View>
@@ -160,16 +183,16 @@ export const CardAnswerMap = ({question, index, onChangeText, showModal}: Props)
                   <Text>{item.question_text}</Text>
                 </View>
               </View>
-              <View style={{alignItems: 'center',}}>
+              <View style={{alignItems: 'center'}}>
                 <View
                   style={{
                     // marginVertical: RFPercentage(1),
                     alignItems: 'center',
                     marginTop: '5%',
                     width: '60%',
-                    height:'80%'
+                    height: '80%',
                   }}>
-                  {!images && (
+                  {!images && !onlyRead && !value && (
                     <View
                       style={{
                         width: '80%',
@@ -205,7 +228,7 @@ export const CardAnswerMap = ({question, index, onChangeText, showModal}: Props)
                       </TouchableOpacity>
                     </View>
                   )}
-                  {images && (
+                  {!images && !onlyRead && value && (
                     <View
                       style={{
                         width: '80%',
@@ -213,14 +236,15 @@ export const CardAnswerMap = ({question, index, onChangeText, showModal}: Props)
                         // marginTop: '3.5%',
                         justifyContent: 'center',
                         alignItems: 'center',
-                        backgroundColor: images ? 'transparent': Colors.secondaryBackground,
+                        backgroundColor: images || value
+                          ? 'transparent'
+                          : Colors.secondaryBackground,
                         borderRadius: 10,
                         padding: '2%',
                       }}>
                       <Image
                         source={{
-                          uri:
-                            'data:image/jpeg;base64,' + images.data,
+                          uri: value,
                         }}
                         style={{
                           width: '100%',
@@ -246,6 +270,69 @@ export const CardAnswerMap = ({question, index, onChangeText, showModal}: Props)
                         />
                       </TouchableOpacity>
                     </View>
+                  )}
+                  {images && !onlyRead && (
+                    <View
+                      style={{
+                        width: '80%',
+                        height: '100%',
+                        // marginTop: '3.5%',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        backgroundColor: images
+                          ? 'transparent'
+                          : Colors.secondaryBackground,
+                        borderRadius: 10,
+                        padding: '2%',
+                      }}>
+                      <Image
+                        source={{
+                          uri: 'data:image/jpeg;base64,' + images.data,
+                        }}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          borderRadius: 10,
+                          resizeMode: 'cover',
+                        }}
+                      />
+
+                      <TouchableOpacity
+                        onPress={selectImage}
+                        style={{
+                          width: RFPercentage(4),
+                          position: 'absolute',
+                          bottom: RFPercentage(-1),
+                          left: RFPercentage(17),
+                          zIndex: 999,
+                        }}>
+                        <PlusImg
+                          width={RFPercentage(4)}
+                          height={RFPercentage(4)}
+                          fill={'#0059ff'}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                  {value && onlyRead &&  (
+                    <ImageBackground
+                      borderRadius={10}
+                      // source={require(urii)}
+                      source={
+                        value !== ''
+                          ? {uri: value}
+                          : require('../../assets/backgrounds/nuevoproyecto.jpg')
+                      }
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        // marginTop: '4%',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        borderRadius: 10,
+                        padding: '2%',
+                        backgroundColor: value ? 'transparent' : 'grey',
+                      }}></ImageBackground>
                   )}
                 </View>
               </View>

@@ -303,7 +303,7 @@ export const Card = ({
         return (
           <TouchableOpacity style={style.importants} onPress={onPress}>
             <View style={{alignItems: 'center',
-          height: '100%',}}>
+            height: '100%',}}>
               <View
                 style={{
                   

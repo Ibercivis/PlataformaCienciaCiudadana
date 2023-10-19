@@ -10,6 +10,7 @@ import {Colors} from '../../theme/colors';
 import {FontFamily, FontSize} from '../../theme/fonts';
 import {Size} from '../../theme/size';
 import {IconTemp} from '../IconTemp';
+import { RFPercentage } from 'react-native-responsive-fontsize';
 
 interface Props {
   label?: string;
@@ -19,7 +20,9 @@ interface Props {
   iconLeft?: string;
   iconRight?: string;
   width?: number;
+  height?: number;
   fontFamily?: string;
+  fontSize?: number;
   iconColor?: string;
   outlineColor?: string;
   disabled?: boolean;
@@ -33,7 +36,9 @@ export const CustomButton = ({
   iconLeft = '',
   iconRight = '',
   width,
+  height= RFPercentage(4.3),
   iconColor = 'black',
+  fontSize = FontSize.fontSizeText14 ,
   fontFamily = FontFamily.NotoSansDisplayMedium,
   outlineColor,
   disabled = false,
@@ -46,6 +51,7 @@ export const CustomButton = ({
       onPress={onPress}
       style={{
         ...styles.touchable,
+        height: height,
         backgroundColor: backgroundColor,
         borderColor: outlineColor,
         borderWidth: outlineColor ? 1 : 0,
@@ -70,7 +76,7 @@ export const CustomButton = ({
             style={{
               textAlign: 'center',
               fontWeight: '500',
-              fontSize: FontSize.fontSizeText14 / fontScale,
+              fontSize: fontSize,
               alignSelf: 'center',
               fontFamily: fontFamily,
               color: fontColor,
@@ -97,7 +103,7 @@ const styles = StyleSheet.create({
     // paddingVertical: '2%',
     width: '100%',
     justifyContent: 'center',
-    height: 35,
+    
     borderRadius: 12,
     // marginBottom: '4%',
     // marginHorizontal: '2%',

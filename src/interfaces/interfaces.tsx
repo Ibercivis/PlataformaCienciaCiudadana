@@ -104,10 +104,15 @@ export interface UserInfo {
 export interface UserProfile {
     biography:             string;
     visibility:            boolean;
-    country:               string;
+    country:               Country;
     participated_projects: CreatedProject[];
     created_projects:      CreatedProject[];
     liked_projects:        CreatedProject[];
+}
+
+export interface Country {
+    code: string;
+    name: string;
 }
 
 export interface CreatedProject {
@@ -126,13 +131,13 @@ export interface Observation {
     creator:     number;
     field_form:  number;
     geoposition: GeoPosition;
-    data:        ObervationDataForm[];
+    data:        ObservationDataForm[];
     images?:      any[];
 }
 export interface CreateObservation {
     field_form:  number;
-    geoposition: Point;
-    data:        ObervationDataForm;
+    geoposition: string;
+    data:        ObservationDataForm[];
     timestamp:   string
     images?:     ImageObservation[];
 }
@@ -142,11 +147,11 @@ export interface ImageObservation {
     value: any;
 }
 
-export interface ObervationDataForm {
-    subData: SubDataObservationDataForm[]
-}
+// export interface ObervationDataForm {
+//     subData: SubDataObservationDataForm[]
+// }
 
-export interface SubDataObservationDataForm{
+export interface ObservationDataForm{
     key: string;
     value: string;
 }
