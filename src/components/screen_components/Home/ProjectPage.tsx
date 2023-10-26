@@ -31,13 +31,11 @@ import citmapApi from '../../../api/citmapApi';
 import {HasTag} from '../../../interfaces/appInterfaces';
 import {LoadingScreen} from '../../../screens/LoadingScreen';
 import {PassModal, SaveProyectModal} from '../../utility/Modals';
-import { CommonActions } from '@react-navigation/native';
+import {CommonActions} from '@react-navigation/native';
 
 const data = [
-  require('../../../assets/icons/category/Group-1.png'),
-  require('../../../assets/icons/category/Group-2.png'),
-  require('../../../assets/icons/category/Group-3.png'),
-  require('../../../assets/icons/category/Group-4.png'),
+  require('../../../assets/backgrounds/login-background.jpg'),
+  require('../../../assets/backgrounds/login-background.jpg'),
   // require('../../../assets/icons/category/Group-5.png'),
   // require('../../../assets/icons/category/Group-6.png'),
   // require('../../../assets/icons/category/Group-7.png'),
@@ -64,8 +62,9 @@ export const ProjectPage = (props: Props) => {
 
   const [project, setProject] = useState<Project>();
   const [hastags, setHastags] = useState<HasTag[]>([]);
-  const [pass, setPass] = useState<PassValidate>({pass:'', pass2:''});
-  
+  const [imagesCharged, setImagesCharged] = useState<any[]>([]);
+  const [pass, setPass] = useState<PassValidate>({pass: '', pass2: ''});
+
   //#region MODAL NEW
   /**
    * Elementos del modal
@@ -146,64 +145,79 @@ export const ProjectPage = (props: Props) => {
    */
   const onBack = () => {
     // props.navigation.popToTop();
-    if(!props.route.params.fromProfile){
+    if (!props.route.params.fromProfile) {
       props.navigation.popToTop();
-    }else{
+    } else {
       props.navigation.dispatch(
-      CommonActions.navigate({
-        name: 'HomeNavigator',
-      }),
-    )
+        CommonActions.navigate({
+          name: 'HomeNavigator',
+        }),
+      );
     }
-    
   };
 
   /**
    * metodo para ir al mapa
    */
   const navigateToMap = () => {
-    if(project){
-      if(project.is_private){
-      showModalPass()
-    }else{
+    if (project) {
+      if (project.is_private) {
+        showModalPass();
+      } else {
+        props.navigation.dispatch(
+          CommonActions.navigate({
+            name: 'ParticipateMap',
+            params: {id: project.id},
+          }),
+        );
+      }
+    }
+  };
+
+  /**
+   * metodo para ir a la edición del proyecto
+   */
+  const editProyect = () => {
+    if (project) {
       props.navigation.dispatch(
         CommonActions.navigate({
-          name: 'ParticipateMap',
+          name: 'CreateProject',
           params: {id: project.id},
         }),
       );
     }
-    }
-    
-  }
+  };
+
   const navigateToMapPass = async (value1?: string) => {
-    
-    if(project?.is_private){
-      if(value1){
+    if (project?.is_private) {
+      if (value1) {
         console.log(value1);
-        try{
+        try {
           const token = await AsyncStorage.getItem('token');
-          const isValid = await citmapApi.post(`/projects/${project.id}/validate-password/`, {password: value1}, {
-            headers: {
-              Authorization: token,
+          const isValid = await citmapApi.post(
+            `/projects/${project.id}/validate-password/`,
+            {password: value1},
+            {
+              headers: {
+                Authorization: token,
+              },
             },
-          },)
-          console.log(isValid)
-          if(isValid.data){
-          props.navigation.dispatch(
-            CommonActions.navigate({
-              name: 'ParticipateMap',
-              params: {id: 6},
-            }),
           );
+          console.log(isValid);
+          if (isValid.data) {
+            props.navigation.dispatch(
+              CommonActions.navigate({
+                name: 'ParticipateMap',
+                params: {id: 6},
+              }),
+            );
+          }
+        } catch (err) {
+          console.log('password erronea');
         }
-        }catch(err){
-          console.log('password erronea')
-        }
-        
       }
     }
-  }
+  };
 
   const getProjectApi = async () => {
     const token = await AsyncStorage.getItem('token');
@@ -217,8 +231,10 @@ export const ProjectPage = (props: Props) => {
         },
       );
       setProject(resp.data);
-      if(resp.data.hasTag.length <= 0){
-        console.log("entra en hastag length")
+      if (resp.data.cover) {
+        setImagesCharged(resp.data.cover);
+      }
+      if (resp.data.hasTag.length <= 0) {
         setIsAllCharged(true);
       }
       if (props.route.params.isNew) {
@@ -270,15 +286,34 @@ export const ProjectPage = (props: Props) => {
               alignItems: 'center',
             }}>
             <Carousel
-              data={data}
+              data={imagesCharged.length > 0 ? imagesCharged : data}
               renderItem={x => {
                 return (
-                  <View style={styles.slide}>
-                    <Image
-                      source={x.index}
-                      style={styles.image}
-                      resizeMode="cover"
-                    />
+                  <View
+                    style={{
+                      ...styles.slide,
+                      backgroundColor:  'transparent'
+                    }}>
+                    {imagesCharged.length > 0 ? (
+                      <>
+                        <Image
+                          source={{uri: 'http://dev.ibercivis.es:10001'+ imagesCharged[x.index].image}}
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                          }}
+                          resizeMode="cover"
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <Image
+                          source={x.index}
+                          style={styles.image}
+                          resizeMode="cover"
+                        />
+                      </>
+                    )}
                   </View>
                 );
               }}
@@ -289,10 +324,6 @@ export const ProjectPage = (props: Props) => {
               useScrollView={true}
               automaticallyAdjustContentInsets
               automaticallyAdjustKeyboardInsets
-              // autoplay
-              // autoplayInterval={5000}
-              // autoplayDelay={5000}
-              // loop
             />
             <View
               style={{
@@ -302,7 +333,9 @@ export const ProjectPage = (props: Props) => {
                 position: 'absolute',
               }}>
               <Pagination
-                dotsLength={data.length}
+                dotsLength={
+                  imagesCharged.length > 0 ? imagesCharged.length : data.length
+                }
                 activeDotIndex={carouselIndex}
                 ref={isCarousel}
                 dotStyle={{
@@ -485,15 +518,17 @@ export const ProjectPage = (props: Props) => {
             <Chevron
               width={RFPercentage(2.5)}
               height={RFPercentage(2.5)}
-              color={'#000000'}
+              fill={'#000000'}
             />
           </TouchableOpacity>
           {/* boton edit */}
-          <TouchableOpacity style={styles.buttonEdit}>
+          <TouchableOpacity
+            style={styles.buttonEdit}
+            onPress={() => editProyect()}>
             <PencilSquare
               width={RFPercentage(2.5)}
               height={RFPercentage(2.5)}
-              color={'#000000'}
+              fill={'#000000'}
             />
           </TouchableOpacity>
           {/* boton download */}
@@ -501,7 +536,7 @@ export const ProjectPage = (props: Props) => {
             <Download
               width={RFPercentage(2.5)}
               height={RFPercentage(2.5)}
-              color={'#000000'}
+              fill={'#000000'}
             />
           </TouchableOpacity>
         </View>
@@ -511,9 +546,9 @@ export const ProjectPage = (props: Props) => {
           onPress={hideModalSave}
           size={RFPercentage(6)}
           color={Colors.semanticSuccessLight}
-          label='¡Proyecto creado!'
-          subLabel='No olvides compartir tu proyecto para obtener una mayor
-          participación'
+          label="¡Proyecto creado!"
+          subLabel="No olvides compartir tu proyecto para obtener una mayor
+          participación"
         />
         <PassModal
           visible={passModal}
@@ -521,8 +556,8 @@ export const ProjectPage = (props: Props) => {
           onPress={hideModalPass}
           size={RFPercentage(6)}
           color={Colors.semanticSuccessLight}
-          label='Escribe la contraseña del proyecto'
-          setPass={(value) => navigateToMapPass(value)}
+          label="Escribe la contraseña del proyecto"
+          setPass={value => navigateToMapPass(value)}
         />
       </ScrollView>
     </SafeAreaView>
@@ -539,8 +574,8 @@ const styles = StyleSheet.create({
     zIndex: 0,
   },
   image: {
-    // width: '100%',
-    // height: '100%',
+    width: '100%',
+    height: '100%',
   },
   textContainer: {
     position: 'absolute',
@@ -560,19 +595,19 @@ const styles = StyleSheet.create({
   },
   buttonBack: {
     position: 'absolute',
-    top: RFPercentage(4),
+    top: RFPercentage(6),
     left: RFPercentage(2),
     zIndex: 999,
   },
   buttonEdit: {
     position: 'absolute',
-    top: RFPercentage(4),
+    top: RFPercentage(6),
     right: RFPercentage(2),
     zIndex: 999,
   },
   buttonDownload: {
     position: 'absolute',
-    top: RFPercentage(4),
+    top: RFPercentage(6),
     right: RFPercentage(7),
     zIndex: 999,
   },

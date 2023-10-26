@@ -89,6 +89,7 @@ export const Profile = ({navigation}: Props) => {
   const [hastags, setHastags] = useState<HasTag[]>([]);
 
   const [profileImage, setProfileImage] = useState<any>();
+  const [profileImageCharged, setProfileImageCharged] = useState<any>();
   const [profileImageBlob, setProfileImageBlob] = useState<any>();
 
   const [user, setUser] = useState<User>({
@@ -807,8 +808,13 @@ export const Profile = ({navigation}: Props) => {
           Authorization: token,
         },
       });
+      console.log(JSON.stringify(profile.data, null, 2))
       setUserProfile(profile.data.profile);
       form.country = profile.data.profile.country;
+      form.biography = profile.data.profile.biography;
+      if (profile.data.profile.cover) {
+        setProfileImageCharged(profile.data.profile.cover);
+      }
       setIsSwitchOn(profile.data.profile.visibility);
       getCountriesApi();
       // console.log(JSON.stringify(profile.data.profile, null, 2))
@@ -1053,16 +1059,20 @@ export const Profile = ({navigation}: Props) => {
 
       const formData = new FormData();
       formData.append('biography', form.biography);
-      formData.append('country', form.country);
+      formData.append('country', form.country.code);
       formData.append('visibility', isSwitchOn);
+      if (profileImageBlob) {
+        formData.append('cover', profileImageBlob);
+      }
       console.log(JSON.stringify(formData, null, 2));
       try {
-        const resp = await citmapApi.put('/users/profile/', formData, {
+        const resp = await citmapApi.patch('/users/profile/', formData, {
           headers: {
             Authorization: token,
+            // 'Content-Type': 'application/json',
+            'Content-Type': 'multipart/form-data',
           },
         });
-        console.log(resp);
       } catch (error) {
         if (error.response) {
           // Se recibió una respuesta del servidor con un código de estado de error
@@ -1101,9 +1111,10 @@ export const Profile = ({navigation}: Props) => {
           // Se produjo un error durante la configuración de la solicitud
           console.log('Error de configuración de la solicitud:', error.message);
         }
+      } finally {
+        setUserEdit(!userEdit);
       }
     }
-    setUserEdit(!userEdit);
   };
 
   const changeCountry = (code: string) => {
@@ -1162,6 +1173,20 @@ export const Profile = ({navigation}: Props) => {
                       <Image
                         source={{
                           uri: 'data:image/jpeg;base64,' + profileImage.data,
+                        }}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          // borderRadius: 50,
+                          resizeMode: 'cover',
+                        }}
+                      />
+                    </>
+                  ) : profileImageCharged ? (
+                    <>
+                      <Image
+                        source={{
+                          uri: profileImageCharged,
                         }}
                         style={{
                           width: '100%',
@@ -1280,7 +1305,7 @@ export const Profile = ({navigation}: Props) => {
                 </View>
 
                 {/* email */}
-                <View
+                {/* <View
                   style={{
                     width: '80%',
                     marginVertical: RFPercentage(1),
@@ -1295,10 +1320,10 @@ export const Profile = ({navigation}: Props) => {
                     onChangeText={value => console.log(value)}
                     value={user.email}
                   />
-                </View>
+                </View> */}
 
                 {/* cambiar contraseña */}
-                <View
+                {/* <View
                   style={{
                     width: '80%',
                     marginVertical: RFPercentage(1),
@@ -1313,10 +1338,10 @@ export const Profile = ({navigation}: Props) => {
                     isSecureText={true}
                     onChangeText={value => console.log()}
                   />
-                </View>
+                </View> */}
 
                 {/* cambiar nueva contraseña */}
-                <View
+                {/* <View
                   style={{
                     width: '80%',
                     marginVertical: RFPercentage(1),
@@ -1333,7 +1358,7 @@ export const Profile = ({navigation}: Props) => {
                     isSecureText={true}
                     onChangeText={value => console.log()}
                   />
-                </View>
+                </View> */}
 
                 {/* organizacion */}
                 <View
@@ -1707,7 +1732,22 @@ export const Profile = ({navigation}: Props) => {
                       }}
                     />
                   </>
-                ) : (
+                ): profileImageCharged ? (
+                  <>
+                    <Image
+                      source={{
+                        uri: profileImageCharged,
+                      }}
+                      style={{
+                        height: '100%',
+                        maxWidth: RFPercentage(14),
+                        borderRadius: 10,
+                        // borderRadius: 50,
+                        resizeMode: 'cover',
+                      }}
+                    />
+                  </>
+                )  : (
                   <>
                     <Image
                       borderRadius={10}

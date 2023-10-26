@@ -28,6 +28,8 @@ import {
   Question,
   FieldForm,
   User,
+  CreateFieldForm,
+  ShowProject,
 } from '../../../interfaces/interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import citmapApi from '../../../api/citmapApi';
@@ -48,13 +50,12 @@ import {CommonActions} from '@react-navigation/native';
 
 interface Props extends StackScreenProps<StackParams, 'CreateProject'> {}
 
-export const CreateProject = ({navigation}: Props) => {
+export const CreateProject = ({navigation, route}: Props) => {
   const [currentStep, setCurrentStep] = useState(1);
-  const [isSaved, setIsSaved] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
   const totalSteps = 3;
   const {fontScale} = useWindowDimensions();
   const {form, onChange} = useForm<Project>({
-    id: 0,
     hasTag: [],
     topic: [],
     organizations_write: [],
@@ -63,7 +64,7 @@ export const CreateProject = ({navigation}: Props) => {
     name: '',
     description: '',
     field_form: {
-      id:0,
+      id: 0,
       project: 0,
       questions: [],
     },
@@ -84,6 +85,7 @@ export const CreateProject = ({navigation}: Props) => {
 
   // variables que controlan las imagenes
   const [images, setImages] = useState<any[]>([]);
+  const [imagesCharged, setImagesCharged] = useState<any[]>([]);
   const [isImageCarged, setIsImageCarged] = useState<boolean>(false);
   const [imageBlob, setImageBlob] = useState<any[]>([]);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -181,8 +183,19 @@ export const CreateProject = ({navigation}: Props) => {
 
   useEffect(() => {
     categoryListApi();
-    organizationListApi();
   }, []);
+
+  /**
+   * está puesto aquí para que entre solo cuando la organizationList haya cargado
+   */
+  useEffect(() => {
+    if (organizationList.length > 0) {
+      if (route.params.id) {
+        setIsEdit(true);
+        getProjectApi();
+      }
+    }
+  }, [organizationList]);
 
   useEffect(() => {
     if (inputValueOrganization.length <= 0) {
@@ -199,17 +212,17 @@ export const CreateProject = ({navigation}: Props) => {
 
     if (suggestions.length == 1) {
       // count = (suggestions.length - 1) * 12;
-      count = suggestions.length * 20;
+      count = suggestions.length * 14;
     } else if (suggestions.length === 2) {
-      count = 25;
+      count = 24;
     } else if (suggestions.length >= 3) {
       count = 34;
       // count = (suggestions.length - 1) * 12;
     } else {
       // count = suggestions.length * 12;
-      count = 35;
+      count = 34;
     }
-
+    count += RFPercentage(5);
     if (scrollViewRef.current) {
       scrollViewRef.current.scrollTo({y: RFPercentage(count), animated: true});
     }
@@ -291,6 +304,7 @@ export const CreateProject = ({navigation}: Props) => {
           );
         }
       });
+      organizationListApi();
     } catch {}
   };
 
@@ -304,6 +318,73 @@ export const CreateProject = ({navigation}: Props) => {
       });
       setOrganizationList(resp.data);
     } catch {}
+  };
+
+  const getProjectApi = async () => {
+    setUserCategories([]);
+    setSuggestionsSelected([]);
+    setQuestions([]);
+    setImagesCharged([]);
+    const token = await AsyncStorage.getItem('token');
+    try {
+      const resp = await citmapApi.get<ShowProject>(
+        `/project/${route.params.id}`,
+        {
+          headers: {
+            Authorization: token,
+          },
+        },
+      );
+      form.name = resp.data.name;
+      form.administrators = resp.data.administrators;
+      form.creator = resp.data.creator;
+      form.description = resp.data.description;
+      form.is_private = resp.data.is_private;
+
+      if (resp.data.is_private != undefined) {
+        setIsSwitchOnProject(resp.data.is_private);
+        // form.raw_password = resp.data.raw_password;
+      }
+      form.hasTag = resp.data.hasTag;
+      form.topic = resp.data.topic;
+
+      if (resp.data.topic.length > 0) {
+        resp.data.topic.map(idTopic => {
+          const topic = categoryList.find(x => x.id === idTopic);
+          if (topic) setUserCategories([...userCategories, topic]);
+        });
+      }
+
+      // form.organizations_write = resp.data.organizations_write;
+      if (resp.data.organizations.length > 0) {
+        resp.data.organizations.map(id => {
+          const sugg = organizationList.find(x => x.id === id.id);
+          if (sugg) setSuggestionsSelected([...suggestionsSelected, sugg]);
+        });
+      }
+
+      const dataField = await citmapApi.get<FieldForm[]>(`/field_forms/`, {
+        headers: {
+          Authorization: token,
+        },
+      });
+      const fieldform = dataField.data.find(x => x.project === route.params.id);
+      if (fieldform) {
+        console.log(JSON.stringify(fieldform, null, 2));
+        form.field_form = fieldform;
+        setQuestions(fieldform.questions);
+      }
+
+      form.id = resp.data.id;
+
+      // form.cover = resp.data.cover;
+      if (resp.data.cover != undefined) {
+        setImagesCharged(resp.data.cover);
+        console.log(JSON.stringify(resp.data.cover, null, 2));
+      }
+    } catch (err) {
+      console.log('hay un error: ' + err);
+    }
   };
   //#endregion
 
@@ -476,7 +557,7 @@ export const CreateProject = ({navigation}: Props) => {
   const createAnswer = () => {
     setQuestions([
       ...questions,
-      {id:0,question_text: '', answer_type: '', mandatory: false},
+      {question_text: '', answer_type: '', mandatory: false},
     ]);
   };
 
@@ -522,24 +603,29 @@ export const CreateProject = ({navigation}: Props) => {
     });
   };
 
-  // TODO cambiar nombre añadir id user
   /**
    * Metodo para guardar el proyecto
    */
   const showData = async () => {
     let correct = true;
     const token = await AsyncStorage.getItem('token');
+    let updatedForm = {...form};
     const updatedQuestions = [...questions];
+    // console.log(updatedQuestions)
     updatedQuestions.map(x => {
       if (x.question_text.length <= 0) {
         correct = false;
       }
     });
+    let newFieldForm: CreateFieldForm = {
+      questions: updatedQuestions,
+    };
+    // updatedForm.field_form.questions = updatedQuestions;
+    onChange(newFieldForm, 'field_form');
+    updatedForm = form;
 
-    form.field_form.questions = updatedQuestions;
-
+    console.log('congelado');
     try {
-      console.log(JSON.stringify(form, null, 2));
       const userInfo = await citmapApi.get<User>(
         '/users/authentication/user/',
         {
@@ -548,39 +634,53 @@ export const CreateProject = ({navigation}: Props) => {
           },
         },
       );
-      form.creator = userInfo.data.pk;
+      updatedForm.creator = userInfo.data.pk;
     } catch (err) {
       console.log('error en coger el creator');
       console.log(err);
     }
     try {
       const formData = new FormData();
-      formData.append('creator', form.creator);
-      formData.append('name', form.name);
+      formData.append('creator', updatedForm.creator);
+      formData.append('name', updatedForm.name);
       // formData.append('administrators', form.administrators);
-      formData.append('description', form.description);
-      formData.append('topic', form.topic);
-      formData.append('hasTag', form.hasTag);
-      formData.append('organizations_write', form.organizations_write);
-      formData.append('is_private', form.is_private);
-      formData.append('raw_password', form.raw_password);
-      formData.append('field_form', form.field_form);
-      // if (imageBlob) {
-      //   formData.append('cover', imageBlob);
-      // }
-      console.log(JSON.stringify(formData, null, 2));
+      formData.append('description', updatedForm.description);
+      if (updatedForm.topic.length > 0) {
+        for (let i = 0; i < updatedForm.topic.length; i++) {
+          formData.append('topic', updatedForm.topic[i]);
+        }
+      }
+      if (updatedForm.hasTag.length > 0) {
+        formData.append('hasTag', updatedForm.hasTag);
+      }
+
+      if (updatedForm.organizations_write.length > 0) {
+        for (let i = 0; i < updatedForm.organizations_write.length; i++) {
+          formData.append(
+            'organizations_write',
+            updatedForm.organizations_write[i],
+          );
+        }
+      }
+      formData.append('is_private', updatedForm.is_private);
+      if (updatedForm.is_private) {
+        formData.append('raw_password', updatedForm.raw_password);
+      }
+      formData.append('field_form', JSON.stringify(updatedForm.field_form));
+      if (imageBlob) {
+        formData.append('cover', imageBlob[0]);
+      }
       if (correct) {
         const projectCreated = await citmapApi.post(
           '/project/create/',
-          {formData},
+          formData,
           {
             headers: {
-              'Content-Type': 'multipart/form-data',
               Authorization: token,
+              'Content-Type': 'multipart/form-data',
             },
           },
         );
-        console.log(JSON.stringify(projectCreated.data, null, 2));
         navigation.dispatch(
           CommonActions.navigate({
             name: 'ProjectPage',
@@ -659,7 +759,7 @@ export const CreateProject = ({navigation}: Props) => {
               //   backgroundColor: 'red',
             }}>
             <Text style={{color: 'black'}}>Imagenes del proyecto</Text>
-            {images.length <= 0 && (
+            {images.length <= 0 && imagesCharged.length <= 0 && (
               <View style={{width: RFPercentage(41), justifyContent: 'center'}}>
                 <IconButton
                   icon="image-album"
@@ -706,7 +806,7 @@ export const CreateProject = ({navigation}: Props) => {
                         position: 'absolute',
                         height: RFPercentage(15),
                         width: RFPercentage(13),
-                        backgroundColor: 'transparent',
+                        backgroundColor: 'grey',
                         // alignSelf: 'flex-start',
                         borderRadius: 10,
                         zIndex: 1,
@@ -850,6 +950,205 @@ export const CreateProject = ({navigation}: Props) => {
                 /> */}
               </View>
             )}
+            {imagesCharged.length > 0 && (
+              <View
+                style={{
+                  //   alignItems: 'center',
+                  //   justifyContent: 'center',
+                  height: RFPercentage(15),
+                  width: RFPercentage(41),
+                  marginBottom: RFPercentage(2),
+                  marginTop: RFPercentage(2),
+                  padding: 10,
+                  flexDirection: 'row',
+                }}>
+                {imagesCharged[0] ? (
+                  <>
+                    <Image
+                      source={{
+                        uri:
+                          'http://dev.ibercivis.es:10001' +
+                          imagesCharged[0].image,
+                      }}
+                      style={{
+                        position: 'absolute',
+                        height: RFPercentage(15),
+                        width: RFPercentage(13),
+                        backgroundColor: 'transparent',
+                        // alignSelf: 'flex-start',
+                        borderRadius: 10,
+                        zIndex: 1,
+                        left: RFPercentage(4),
+                        borderColor: 'white',
+                        borderWidth: 4,
+                      }}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <View
+                      style={{
+                        position: 'absolute',
+                        height: RFPercentage(15),
+                        width: RFPercentage(13),
+                        backgroundColor: 'grey',
+                        // alignSelf: 'flex-start',
+                        borderRadius: 10,
+                        zIndex: 1,
+                        left: RFPercentage(4),
+                        borderColor: 'white',
+                        borderWidth: 4,
+                      }}></View>
+                  </>
+                )}
+
+                {imagesCharged[1] ? (
+                  <>
+                    <Image
+                      source={{
+                        uri:
+                          'http://dev.ibercivis.es:10001' +
+                          imagesCharged[1].image,
+                      }}
+                      style={{
+                        position: 'absolute',
+                        height: RFPercentage(15),
+                        width: RFPercentage(13),
+                        backgroundColor: 'transparent',
+                        // alignSelf: 'flex-start',
+                        borderRadius: 10,
+                        zIndex: 0,
+                        left: RFPercentage(10),
+                        borderColor: 'white',
+                        borderWidth: 4,
+                      }}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <View
+                      style={{
+                        position: 'absolute',
+                        height: RFPercentage(15),
+                        width: RFPercentage(13),
+                        borderRadius: 10,
+                        zIndex: 0,
+                        left: RFPercentage(10),
+                        borderColor: 'white',
+                        borderWidth: 4,
+                        backgroundColor: 'grey',
+                      }}></View>
+                  </>
+                )}
+
+                {imagesCharged[2] ? (
+                  <>
+                    <Image
+                      source={{
+                        uri:
+                          'http://dev.ibercivis.es:10001' +
+                          imagesCharged[2].image,
+                      }}
+                      style={{
+                        position: 'absolute',
+                        height: RFPercentage(15),
+                        width: RFPercentage(13),
+                        backgroundColor: 'transparent',
+                        // alignSelf: 'flex-start',
+                        borderRadius: 10,
+                        zIndex: -1,
+                        left: RFPercentage(16),
+                        borderColor: 'white',
+                        borderWidth: 4,
+                      }}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <View
+                      style={{
+                        position: 'absolute',
+                        height: RFPercentage(15),
+                        width: RFPercentage(13),
+                        backgroundColor: 'grey',
+                        // alignSelf: 'center',
+                        borderRadius: 10,
+                        zIndex: -1,
+                        left: RFPercentage(16),
+                        borderColor: 'white',
+                        borderWidth: 4,
+                      }}></View>
+                  </>
+                )}
+
+                {imagesCharged[3] ? (
+                  <>
+                    <Image
+                      source={{
+                        uri:
+                          'http://dev.ibercivis.es:10001' +
+                          imagesCharged[3].image,
+                      }}
+                      style={{
+                        position: 'absolute',
+                        height: RFPercentage(15),
+                        width: RFPercentage(13),
+                        backgroundColor: 'transparent',
+                        // alignSelf: 'flex-start',
+                        borderRadius: 10,
+                        zIndex: -2,
+                        left: RFPercentage(22),
+                        borderColor: 'white',
+                        borderWidth: 4,
+                      }}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <View
+                      style={{
+                        position: 'absolute',
+                        height: RFPercentage(15),
+                        width: RFPercentage(13),
+                        backgroundColor: 'grey',
+                        // alignSelf: 'center',
+                        borderRadius: 10,
+                        zIndex: -2,
+                        left: RFPercentage(22),
+                        borderColor: 'white',
+                        borderWidth: 4,
+                      }}></View>
+                  </>
+                )}
+
+                <TouchableOpacity
+                  style={{
+                    width: RFPercentage(5),
+                    position: 'absolute',
+                    bottom: RFPercentage(-1),
+                    left: RFPercentage(18),
+                    zIndex: 999,
+                  }}
+                  onPress={() => selectImage()}>
+                  {/* <IconButton
+                    icon="image-album"
+                    iconColor="#5F4B66"
+                    size={Size.iconSizeLarge}
+                    onPress={() => selectImage()}
+                  /> */}
+                  <PlusBlue
+                    width={RFPercentage(4)}
+                    height={RFPercentage(4)}
+                    fill={'#0059ff'}
+                  />
+                </TouchableOpacity>
+                {/* <Button
+                  //   style={{margin: 15, width: 150, alignSelf: 'center'}}
+                  title="borrar imagen"
+                  onPress={() => deleteImage()}
+                /> */}
+              </View>
+            )}
           </View>
           {/* nombre de del proyecto */}
           <View
@@ -902,7 +1201,9 @@ export const CreateProject = ({navigation}: Props) => {
               <CustomButton
                 backgroundColor={Colors.secondaryDark}
                 label={'Seleccionar categorías'}
-                onPress={() => setShowCategoryList(true)}
+                onPress={() => {
+                  Keyboard.dismiss(), setShowCategoryList(true);
+                }}
               />
             </View>
           </View>
@@ -1263,11 +1564,15 @@ export const CreateProject = ({navigation}: Props) => {
               width: '100%',
               marginHorizontal: RFPercentage(1),
             }}>
-            <ScrollView>
+            <ScrollView keyboardShouldPersistTaps="handled">
               {questions.map((item, index) => (
                 <QuestionCard
-                  onPress={() => onSelectedCard(index, item)}
-                  onEdit={() => onEditResponseType(index, item)}
+                  onPress={() => {
+                    Keyboard.dismiss(), onSelectedCard(index, item);
+                  }}
+                  onEdit={() => {
+                    Keyboard.dismiss(), onEditResponseType(index, item);
+                  }}
                   onDelete={() => onDelete(item)}
                   onDuplicate={() => duplicate(item)}
                   onFocus={() => onSelectedCard(index, item)}

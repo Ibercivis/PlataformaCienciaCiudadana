@@ -370,7 +370,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
     // Completar los campos del formulario con los datos de showSelectedObservation
     // console.log(JSON.stringify(showSelectedObservation, null, 2));
     form.field_form = showSelectedObservation.field_form;
-    form.geoposition = `POINT(${showSelectedObservation.geoposition.point.latitude} ${showSelectedObservation.geoposition.point.longitude})`;
+    form.geoposition = `POINT(${showSelectedObservation.geoposition.point.longitude} ${showSelectedObservation.geoposition.point.latitude})`;
     form.images = showSelectedObservation.images;
     form.data = showSelectedObservation.data;
   };
@@ -643,11 +643,13 @@ export const ParticipateMap = ({navigation, route}: Props) => {
     const formData = new FormData();
 
     // Agregar los campos a FormData
+    formData.append('creator', userInfo.pk);
     formData.append('field_form', fieldForm.id);
-    formData.append('timestamp', newObservationCreate.timestamp);
-    formData.append('geoposition', newObservationCreate.geoposition);
-
-    formData.append('data', JSON.stringify(form.data));
+    formData.append('timestamp', currentISODateTime);
+    formData.append('geoposition', form.geoposition);
+    if (form.data) {
+      formData.append('data', JSON.stringify(form.data));
+    }
 
     if (form.images) {
       form.images.forEach(image => {
@@ -655,17 +657,20 @@ export const ParticipateMap = ({navigation, route}: Props) => {
           formData.append(image.key.toString(), image.value);
       });
     }
-    console.log(JSON.stringify(formData, null, 2));
+    console.log(JSON.stringify(showSelectedObservation, null, 2));
 
     try {
-      const marca = await citmapApi.patch(`/observations/${showSelectedObservation.id}/`, formData, {
-        headers: {
-          // 'Content-Type': 'multipart/form-data',
-          // 'Content-Type': 'application/json',
-          Authorization: token,
+      const marca = await citmapApi.patch(
+        `/observations/${showSelectedObservation.id}/`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            // 'Content-Type': 'application/json',
+            Authorization: token,
+          },
         },
-      });
-      console.log('si edita la marca' + JSON.stringify(marca, null, 2));
+      );
       setIsCreatingObservation(false);
       setShowSelectedObservation(clearSelectedObservation());
       setObservationListCreator([]);
@@ -1098,6 +1103,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                           }}
                           key={index}>
                           <CardAnswerMap
+                            obligatory={x.mandatory}
                             question={x}
                             index={index + 1}
                             onChangeText={value =>
@@ -1111,10 +1117,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                           />
                         </View>
                       );
-                    } else if (
-                      userInfo.pk === showSelectedObservation.creator &&
-                      !isCreatingObservation
-                    ) {
+                    } else if (userInfo.pk === showSelectedObservation.creator &&!isCreatingObservation) {
                       let image;
                       let selectedElement;
                       if (showSelectedObservation.images) {

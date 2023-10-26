@@ -81,7 +81,6 @@ export const CardAnswerMap = ({
     });
   };
 
-
   //#region SECCIÓN RENDERS
   /**
    * TODO ESTO HAY QUE SACARLO A UN COMPONENTE DIFERENTE
@@ -104,6 +103,11 @@ export const CardAnswerMap = ({
                 <View>
                   <Text>{item.question_text}</Text>
                 </View>
+                {obligatory && (
+                  <View>
+                    <Text>Obligatoria</Text>
+                  </View>
+                )}
               </View>
               <View style={{}}>
                 <View
@@ -236,9 +240,10 @@ export const CardAnswerMap = ({
                         // marginTop: '3.5%',
                         justifyContent: 'center',
                         alignItems: 'center',
-                        backgroundColor: images || value
-                          ? 'transparent'
-                          : Colors.secondaryBackground,
+                        backgroundColor:
+                          images || value
+                            ? 'transparent'
+                            : Colors.secondaryBackground,
                         borderRadius: 10,
                         padding: '2%',
                       }}>
@@ -314,7 +319,7 @@ export const CardAnswerMap = ({
                       </TouchableOpacity>
                     </View>
                   )}
-                  {value && onlyRead &&  (
+                  {value && onlyRead && (
                     <ImageBackground
                       borderRadius={10}
                       // source={require(urii)}

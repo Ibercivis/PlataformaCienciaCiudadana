@@ -1,5 +1,5 @@
 export interface Project {
-    id:             number;
+    id?:             number;
     creator:        number;
     administrators: number[];
     name:           string;
@@ -7,7 +7,7 @@ export interface Project {
     topic:          number[];
     hasTag:         number[];
     organizations_write:  number[];
-    field_form:     FieldForm;
+    field_form:     CreateFieldForm;
     cover?:         string[];
     is_private?:  boolean;
     raw_password?:  string;
@@ -17,7 +17,7 @@ export interface ShowProject {
     id:             number;
     hasTag:         number[];
     topic:          number[];
-    organizations:  number[];
+    organizations:  OrganizationWrite[];
     creator:        number;
     administrators: number[];
     created_at?:    Date;
@@ -32,6 +32,11 @@ export interface ShowProject {
     cover?:         Image[];
 }
 
+export interface OrganizationWrite {
+    id:             number;
+    principalName:  string;
+}
+
 export interface Image {
     image: string;
 }
@@ -39,6 +44,12 @@ export interface Image {
 export interface FieldForm {
     id:         number,
     project:    number,
+    questions:  Question[];
+}
+
+export interface CreateFieldForm {
+    id?:         number,
+    project?:    number,
     questions:  Question[];
 }
 
@@ -105,6 +116,7 @@ export interface UserProfile {
     biography:             string;
     visibility:            boolean;
     country:               Country;
+    cover?:                string;
     participated_projects: CreatedProject[];
     created_projects:      CreatedProject[];
     liked_projects:        CreatedProject[];

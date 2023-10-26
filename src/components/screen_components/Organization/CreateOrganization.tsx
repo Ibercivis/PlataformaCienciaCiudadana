@@ -374,8 +374,12 @@ export const CreateOrganization = ({navigation}: Props) => {
         const formData = new FormData();
         formData.append('principalName', form.principalName);
         formData.append('creator', form.creator);
-        formData.append('administrators', form.administrators);
-        formData.append('members', form.members);
+        if (form.administrators.length > 0) {
+          formData.append('administrators', form.administrators);
+        }
+        if (form.members.length > 0) {
+          formData.append('members', form.members);
+        }
         formData.append('url', form.url);
         formData.append('description', form.description);
         formData.append('contactName', form.contactName);
@@ -386,7 +390,7 @@ export const CreateOrganization = ({navigation}: Props) => {
         if (organizationImageBlob) {
           formData.append('cover', organizationImageBlob);
         }
-
+        console.log(JSON.stringify(formData, null, 2));
         const organizationCreated = await citmapApi.post(
           '/organization/create/',
           formData,
@@ -632,7 +636,7 @@ export const CreateOrganization = ({navigation}: Props) => {
                         />
 
                         <TouchableOpacity
-                        onPress={openPortadaPhoto}
+                          onPress={openPortadaPhoto}
                           style={{
                             width: RFPercentage(4),
                             position: 'absolute',

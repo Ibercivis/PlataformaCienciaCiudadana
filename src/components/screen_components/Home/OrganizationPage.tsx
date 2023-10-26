@@ -309,7 +309,7 @@ export const OrganizationPage = (props: Props) => {
                   title={item.name}
                   description={item.description}
                   onPress={() =>
-                    props.navigation.navigate('ProjectPage', {id: item.id})
+                    props.navigation.navigate('ProjectPage', {id: item.id!})
                   }
                 />
               );
