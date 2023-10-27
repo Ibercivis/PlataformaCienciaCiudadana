@@ -78,7 +78,7 @@ export const ProjectList = (props: Props) => {
         showsHorizontalScrollIndicator={false}
         data={projectList}
         renderItem={({item, index}) => {
-          if(item.cover && item.cover[0]) console.log(imageUrl +item.cover[0].image)
+          // if(item.cover && item.cover[0]) console.log(imageUrl +item.cover[0].image)
           return (
             <TouchableOpacity
               key={index}

@@ -25,13 +25,14 @@ import PencilSquare from '../../../assets/icons/general/pencil-square-1.svg';
 import Download from '../../../assets/icons/general/Vector-1.svg';
 import {CustomButton} from '../../utility/CustomButton';
 import {Colors} from '../../../theme/colors';
-import {Project} from '../../../interfaces/interfaces';
+import {Project, User} from '../../../interfaces/interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import citmapApi from '../../../api/citmapApi';
 import {HasTag} from '../../../interfaces/appInterfaces';
 import {LoadingScreen} from '../../../screens/LoadingScreen';
 import {PassModal, SaveProyectModal} from '../../utility/Modals';
-import {CommonActions} from '@react-navigation/native';
+import {CommonActions, useFocusEffect} from '@react-navigation/native';
+import { Spinner } from '../../utility/Spinner';
 
 const data = [
   require('../../../assets/backgrounds/login-background.jpg'),
@@ -57,7 +58,8 @@ export const ProjectPage = (props: Props) => {
   //#region estados y referencias
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [isAllCharged, setIsAllCharged] = useState(false);
-
+  const [canEdit, setCanEdit] = useState(false);
+  const [waitingData, setWaitingData] = useState(false);
   const isCarousel = useRef(null);
 
   const [project, setProject] = useState<Project>();
@@ -82,7 +84,6 @@ export const ProjectPage = (props: Props) => {
   //#region USEEFECT
 
   useEffect(() => {
-    //si entra nada mas crear un project
     getProjectApi();
   }, []);
 
@@ -100,11 +101,23 @@ export const ProjectPage = (props: Props) => {
         }
       }
     }
+    setWaitingData(false)
   }, [hastags]);
 
   useEffect(() => {
     getHastagApi();
   }, [project]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      // Aquí puedes cargar de nuevo los datos, por ejemplo, realizando una llamada a la API
+      // Puedes usar la variable "route.params.id" para obtener el ID necesario
+      getProjectApi();
+      console.log('llama en el useFocusEffect')
+      // Código para cargar los datos de la organización
+
+    }, [props.route.params.id])
+  );
 
   //#endregion
 
@@ -220,8 +233,18 @@ export const ProjectPage = (props: Props) => {
   };
 
   const getProjectApi = async () => {
+    setWaitingData(true)
     const token = await AsyncStorage.getItem('token');
     try {
+      const userInfo = await citmapApi.get<User>(
+        '/users/authentication/user/',
+        {
+          headers: {
+            Authorization: token,
+          },
+        },
+      );
+
       const resp = await citmapApi.get<Project>(
         `/project/${props.route.params.id}`,
         {
@@ -230,6 +253,9 @@ export const ProjectPage = (props: Props) => {
           },
         },
       );
+      if (userInfo.data.pk === resp.data.creator) {
+        setCanEdit(true);
+      }
       setProject(resp.data);
       if (resp.data.cover) {
         setImagesCharged(resp.data.cover);
@@ -292,12 +318,16 @@ export const ProjectPage = (props: Props) => {
                   <View
                     style={{
                       ...styles.slide,
-                      backgroundColor:  'transparent'
+                      backgroundColor: 'transparent',
                     }}>
                     {imagesCharged.length > 0 ? (
                       <>
                         <Image
-                          source={{uri: 'http://dev.ibercivis.es:10001'+ imagesCharged[x.index].image}}
+                          source={{
+                            uri:
+                              'http://dev.ibercivis.es:10001' +
+                              imagesCharged[x.index].image,
+                          }}
                           style={{
                             width: '100%',
                             height: '100%',
@@ -325,7 +355,7 @@ export const ProjectPage = (props: Props) => {
               automaticallyAdjustContentInsets
               automaticallyAdjustKeyboardInsets
             />
-            <View
+            {/* <View
               style={{
                 bottom: RFPercentage(0),
                 right: RFPercentage(5),
@@ -355,7 +385,7 @@ export const ProjectPage = (props: Props) => {
                 inactiveDotOpacity={0.4}
                 inactiveDotScale={0.6}
               />
-            </View>
+            </View> */}
           </View>
           {/* half part */}
           <View
@@ -463,7 +493,7 @@ export const ProjectPage = (props: Props) => {
                       marginBottom: '1%',
                       alignSelf: 'flex-start',
                     }}>
-                    Creado por:
+                    Creado por:{' '}
                   </Text>
                   <Text
                     style={{
@@ -522,17 +552,19 @@ export const ProjectPage = (props: Props) => {
             />
           </TouchableOpacity>
           {/* boton edit */}
-          <TouchableOpacity
-            style={styles.buttonEdit}
-            onPress={() => editProyect()}>
-            <PencilSquare
-              width={RFPercentage(2.5)}
-              height={RFPercentage(2.5)}
-              fill={'#000000'}
-            />
-          </TouchableOpacity>
+          {canEdit && (
+            <TouchableOpacity
+              style={styles.buttonEdit}
+              onPress={() => editProyect()}>
+              <PencilSquare
+                width={RFPercentage(2.5)}
+                height={RFPercentage(2.5)}
+                fill={'#000000'}
+              />
+            </TouchableOpacity>
+          )}
           {/* boton download */}
-          <TouchableOpacity style={styles.buttonDownload}>
+          <TouchableOpacity style={canEdit ? styles.buttonDownload : styles.buttonEdit}>
             <Download
               width={RFPercentage(2.5)}
               height={RFPercentage(2.5)}
@@ -559,6 +591,7 @@ export const ProjectPage = (props: Props) => {
           label="Escribe la contraseña del proyecto"
           setPass={value => navigateToMapPass(value)}
         />
+        <Spinner visible={waitingData} />
       </ScrollView>
     </SafeAreaView>
   );

@@ -70,7 +70,7 @@ export const HeaderComponent = ({
               <Back
                 width={RFPercentage(3)}
                 height={RFPercentage(3)}
-                color={'#000000'}
+                fill={'#000000'}
               />
             </View>
           </TouchableOpacity>

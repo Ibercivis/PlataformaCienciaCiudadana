@@ -103,12 +103,12 @@ export const CardAnswerMap = ({
                 <View>
                   <Text>{item.question_text}</Text>
                 </View>
-                {obligatory && (
-                  <View>
-                    <Text>Obligatoria</Text>
+                
+              </View>{obligatory && (
+                  <View style={{justifyContent:'flex-end', position:'absolute', right:RFPercentage(2), bottom: RFPercentage(11.4)}}>
+                    <Text style={{fontSize: FontSize.fontSizeText10}}>Obligatoria</Text>
                   </View>
                 )}
-              </View>
               <View style={{}}>
                 <View
                   style={{
@@ -152,6 +152,11 @@ export const CardAnswerMap = ({
                   <Text>{item.question_text}</Text>
                 </View>
               </View>
+              {obligatory && (
+                  <View style={{justifyContent:'flex-end', position:'absolute', right:RFPercentage(2), bottom: RFPercentage(11.4)}}>
+                    <Text style={{fontSize: FontSize.fontSizeText10}}>Obligatoria</Text>
+                  </View>
+                )}
               <View style={{}}>
                 <View
                   style={{
@@ -187,6 +192,11 @@ export const CardAnswerMap = ({
                   <Text>{item.question_text}</Text>
                 </View>
               </View>
+              {obligatory && (
+                  <View style={{justifyContent:'flex-end', position:'absolute', right:RFPercentage(2), bottom: RFPercentage(11.4)}}>
+                    <Text style={{fontSize: FontSize.fontSizeText10}}>Obligatoria</Text>
+                  </View>
+                )}
               <View style={{alignItems: 'center'}}>
                 <View
                   style={{

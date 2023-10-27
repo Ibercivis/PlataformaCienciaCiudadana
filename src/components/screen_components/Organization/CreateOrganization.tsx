@@ -25,22 +25,29 @@ import FrontPage from '../../../assets/icons/project/image.svg';
 import {InputText} from '../../utility/InputText';
 import ImagePicker from 'react-native-image-crop-picker';
 import {FontSize} from '../../../theme/fonts';
-import {NewOrganization, User, UserInfo} from '../../../interfaces/interfaces';
+import {
+  NewOrganization,
+  Organization,
+  User,
+  UserInfo,
+} from '../../../interfaces/interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import citmapApi from '../../../api/citmapApi';
 import {useForm} from '../../../hooks/useForm';
 import {CommonActions} from '@react-navigation/native';
+import {Spinner} from '../../utility/Spinner';
 
 interface Props extends StackScreenProps<StackParams, 'CreateOrganization'> {}
 
-export const CreateOrganization = ({navigation}: Props) => {
-  useEffect(() => {}, []);
-
+export const CreateOrganization = ({navigation, route}: Props) => {
   // variables de las imagenes
   const [profileImage, setProfileImage] = useState<any>();
   const [profileImageBlob, setProfileImageBlob] = useState<any>();
+  const [profileImageCharged, setProfileImageCharged] = useState<any>();
   const [organizationImage, setOrganizationImage] = useState<any>();
   const [organizationImageBlob, setOrganizationImageBlob] = useState<any>();
+  const [organizationImageCharged, setOrganizationImageCharged] =
+    useState<any>();
   const [suggestions, setSuggestions] = useState<UserInfo[]>([]);
   const [suggestionsSelected, setSuggestionsSelected] = useState<UserInfo[]>(
     [],
@@ -64,11 +71,14 @@ export const CreateOrganization = ({navigation}: Props) => {
     cover: '',
   });
   /**
-   * validación primera pantalla
+   * validación
    */
   const [nameValidate, setNameValidate] = useState(true);
   const [mailValidate, setMailValidate] = useState(true);
   const [descriptionValidate, setDescriptionValidate] = useState(true);
+
+  const [isEdit, setIsEdit] = useState(false);
+  const [waitingData, setWaitingData] = useState(false);
 
   /**
    * Llama a la lista de usuarios.
@@ -78,6 +88,19 @@ export const CreateOrganization = ({navigation}: Props) => {
   useEffect(() => {
     UserListApi();
   }, []);
+
+  useEffect(() => {
+    if (userList.length > 0) {
+      if (route.params) {
+        if (route.params.id) {
+          setIsEdit(true);
+          OrganizationApi();
+        }
+      } else {
+        setWaitingData(false);
+      }
+    }
+  }, [userList]);
 
   useEffect(() => {
     if (inputValueUser === '') {
@@ -114,7 +137,7 @@ export const CreateOrganization = ({navigation}: Props) => {
       // count = suggestions.length * 12;
       count = 24;
     }
-
+    count += RFPercentage(5);
     if (scrollViewRef.current) {
       scrollViewRef.current.scrollTo({y: RFPercentage(count), animated: true});
     }
@@ -140,6 +163,7 @@ export const CreateOrganization = ({navigation}: Props) => {
    * lo mismo com members
    */
   const UserListApi = async () => {
+    setWaitingData(true);
     const token = await AsyncStorage.getItem('token');
     try {
       const resp = await citmapApi.get<UserInfo[]>('/users/list/', {
@@ -151,6 +175,91 @@ export const CreateOrganization = ({navigation}: Props) => {
       setArrayAdminId(form.administrators);
       setArrayMembersId(form.members);
     } catch {}
+  };
+
+  const OrganizationApi = async () => {
+    const token = await AsyncStorage.getItem('token');
+    try {
+      const resp = await citmapApi.get<Organization>(
+        `/organization/${route.params.id}`,
+        {
+          headers: {
+            Authorization: token,
+          },
+        },
+      );
+      form.administrators = resp.data.administrators;
+      form.members = resp.data.members;
+      setArrayAdminId(form.administrators);
+      setArrayMembersId(form.members);
+      form.contactMail = resp.data.contactMail;
+      form.creator = resp.data.creator;
+      form.description = resp.data.description;
+      form.contactName = resp.data.contactName;
+      form.principalName = resp.data.principalName;
+
+      if (resp.data.cover != undefined) {
+        setOrganizationImage(resp.data.cover);
+        setOrganizationImageBlob(resp.data.cover);
+        setOrganizationImageCharged(resp.data.cover);
+      }
+      if (resp.data.logo != undefined) {
+        setProfileImage(resp.data.logo);
+        setProfileImageBlob(resp.data.logo);
+        setProfileImageCharged(resp.data.logo);
+      }
+      if (
+        resp.data.members.length > 0 &&
+        resp.data.administrators.length <= 0
+      ) {
+        const unique = new Set(suggestionsSelected);
+        resp.data.members.forEach(id => {
+          const sugg = userList.find(x => x.id === id);
+          if (
+            sugg &&
+            !suggestionsSelected.some(selectedOrg => selectedOrg.id === sugg.id)
+          ) {
+            unique.add(sugg);
+          }
+        });
+        setSuggestionsSelected([...unique]);
+      }
+      if (
+        resp.data.administrators.length > 0 &&
+        resp.data.members.length <= 0
+      ) {
+        const unique = new Set(suggestionsSelected);
+        resp.data.administrators.forEach(id => {
+          const sugg = userList.find(x => x.id === id);
+          if (
+            sugg &&
+            !suggestionsSelected.some(selectedOrg => selectedOrg.id === sugg.id)
+          ) {
+            unique.add(sugg);
+          }
+        });
+        setSuggestionsSelected([...unique]);
+      }
+
+      if (resp.data.administrators.length > 0 && resp.data.members.length > 0) {
+        const combinedList = resp.data.members.concat(resp.data.administrators);
+
+        const unique = new Set(suggestionsSelected);
+        combinedList.forEach(id => {
+          const sugg = userList.find(x => x.id === id);
+          if (
+            sugg &&
+            !suggestionsSelected.some(selectedOrg => selectedOrg.id === sugg.id)
+          ) {
+            unique.add(sugg);
+          }
+        });
+        setSuggestionsSelected([...unique]);
+      }
+      setWaitingData(false);
+    } catch (err) {
+      console.log('hay un error: ' + err);
+    }
   };
 
   const openProfilePhoto = () => {
@@ -173,6 +282,7 @@ export const CreateOrganization = ({navigation}: Props) => {
             type: newImage.mime, // Tipo MIME de la imagen
             name: 'profile.jpg', // Nombre de archivo de la imagen (puedes cambiarlo)
           });
+          setProfileImageCharged(undefined);
         } else {
           showModalControlSizeImage();
         }
@@ -200,6 +310,7 @@ export const CreateOrganization = ({navigation}: Props) => {
             type: newImage.mime, // Tipo MIME de la imagen
             name: 'cover.jpg', // Nombre de archivo de la imagen (puedes cambiarlo)
           });
+          setOrganizationImageCharged(undefined);
         } else {
           showModalControlSizeImage();
         }
@@ -326,8 +437,9 @@ export const CreateOrganization = ({navigation}: Props) => {
     else return true;
   };
 
-  //#region CREATE
+  //#region CREATE / EDIT
   const onCreate = async () => {
+    setWaitingData(true);
     let valid = true;
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i; // validación correo
     const token = await AsyncStorage.getItem('token');
@@ -401,11 +513,103 @@ export const CreateOrganization = ({navigation}: Props) => {
             },
           },
         );
-
+        setWaitingData(false);
         navigation.dispatch(
           CommonActions.navigate({
             name: 'OrganizationPage',
             params: {id: organizationCreated.data.id, isNew: true},
+          }),
+        );
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  };
+  const onEdit = async () => {
+    setWaitingData(true);
+    let valid = true;
+    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i; // validación correo
+    const token = await AsyncStorage.getItem('token');
+
+    //hace una llamada para saber qué usuario es el que está creando
+    // si está editando, se puede hacer una validación para que no entre aquí
+    try {
+      const userInfo = await citmapApi.get<User>(
+        '/users/authentication/user/',
+        {
+          headers: {
+            Authorization: token,
+          },
+        },
+      );
+      form.creator = userInfo.data.pk;
+    } catch (err) {
+      console.log(err);
+    }
+
+    if (form.principalName.length <= 0) {
+      valid = false;
+      setNameValidate(false);
+    }
+
+    if (form.contactMail.length <= 0) {
+      valid = false;
+      setMailValidate(false);
+    } else if (!emailRegex.test(form.contactMail)) {
+      valid = false;
+      setMailValidate(false);
+    }
+
+    if (form.description.length <= 0) {
+      valid = false;
+      setDescriptionValidate(false);
+    }
+
+    //comprobar que todo está bien antes de crear
+    if (!valid) {
+      showModalSave();
+    } else {
+      try {
+        const formData = new FormData();
+        formData.append('principalName', form.principalName);
+        formData.append('creator', form.creator);
+        if (form.administrators.length > 0) {
+          for (let i = 0; i < form.administrators.length; i++) {
+            formData.append('administrators', form.administrators[i]);
+          }
+        }
+        if (form.members.length > 0) {
+          for (let i = 0; i < form.members.length; i++) {
+            formData.append('members', form.members[i]);
+          }
+        }
+        formData.append('url', form.url);
+        formData.append('description', form.description);
+        formData.append('contactName', form.contactName);
+        formData.append('contactMail', form.contactMail);
+        if (profileImageBlob && !profileImageCharged) {
+          formData.append('logo', profileImageBlob);
+        }
+        if (organizationImageBlob && !organizationImageCharged) {
+          console.log('entra en cover');
+          formData.append('cover', organizationImageBlob);
+        }
+        console.log(JSON.stringify(formData, null, 2));
+        const organizationCreated = await citmapApi.patch(
+          `/organization/${route.params.id}/`,
+          formData,
+          {
+            headers: {
+              Authorization: token,
+              'Content-Type': 'multipart/form-data',
+            },
+          },
+        );
+        setWaitingData(false);
+        navigation.dispatch(
+          CommonActions.navigate({
+            name: 'OrganizationPage',
+            params: {id: route.params.id, isNew: false},
           }),
         );
       } catch (err) {
@@ -526,17 +730,32 @@ export const CreateOrganization = ({navigation}: Props) => {
                           borderRadius: 100,
                           padding: '2%',
                         }}>
-                        <Image
-                          source={{
-                            uri: 'data:image/jpeg;base64,' + profileImage.data,
-                          }}
-                          style={{
-                            width: '100%',
-                            height: '100%',
-                            borderRadius: 50,
-                            resizeMode: 'cover',
-                          }}
-                        />
+                        {profileImageCharged ? (
+                          <Image
+                            source={{
+                              uri: profileImageCharged,
+                            }}
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              borderRadius: 50,
+                              resizeMode: 'cover',
+                            }}
+                          />
+                        ) : (
+                          <Image
+                            source={{
+                              uri:
+                                'data:image/jpeg;base64,' + profileImage.data,
+                            }}
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              borderRadius: 50,
+                              resizeMode: 'cover',
+                            }}
+                          />
+                        )}
 
                         <TouchableOpacity
                           onPress={() => openProfilePhoto()}
@@ -621,19 +840,33 @@ export const CreateOrganization = ({navigation}: Props) => {
                           borderRadius: 10,
                           padding: '2%',
                         }}>
-                        <Image
-                          source={{
-                            uri:
-                              'data:image/jpeg;base64,' +
-                              organizationImage.data,
-                          }}
-                          style={{
-                            width: '100%',
-                            height: '100%',
-                            borderRadius: 10,
-                            resizeMode: 'cover',
-                          }}
-                        />
+                        {organizationImageCharged ? (
+                          <Image
+                            source={{
+                              uri: organizationImageCharged,
+                            }}
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              borderRadius: 10,
+                              resizeMode: 'cover',
+                            }}
+                          />
+                        ) : (
+                          <Image
+                            source={{
+                              uri:
+                                'data:image/jpeg;base64,' +
+                                organizationImage.data,
+                            }}
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              borderRadius: 10,
+                              resizeMode: 'cover',
+                            }}
+                          />
+                        )}
 
                         <TouchableOpacity
                           onPress={openPortadaPhoto}
@@ -849,11 +1082,19 @@ export const CreateOrganization = ({navigation}: Props) => {
               </View>
               {/* boton crear */}
               <View style={styles.buttonContainer}>
-                <CustomButton
-                  backgroundColor={Colors.primaryLigth}
-                  label={'Crear organización'}
-                  onPress={() => onCreate()}
-                />
+                {isEdit ? (
+                  <CustomButton
+                    backgroundColor={Colors.primaryLigth}
+                    label={'Editar organizacion'}
+                    onPress={() => onEdit()}
+                  />
+                ) : (
+                  <CustomButton
+                    backgroundColor={Colors.primaryLigth}
+                    label={'Crear organización'}
+                    onPress={() => onCreate()}
+                  />
+                )}
               </View>
 
               {/* modals */}
@@ -889,6 +1130,7 @@ export const CreateOrganization = ({navigation}: Props) => {
               />
             </ScrollView>
           </View>
+          <Spinner visible={waitingData} />
         </SafeAreaView>
       </KeyboardAvoidingView>
     </>

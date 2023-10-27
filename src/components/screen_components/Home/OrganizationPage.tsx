@@ -18,11 +18,13 @@ import Chevron from '../../../assets/icons/general/chevron-left-1.svg';
 import {FontFamily, FontSize, FontWeight} from '../../../theme/fonts';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import citmapApi from '../../../api/citmapApi';
-import {Organization, Project} from '../../../interfaces/interfaces';
+import {Organization, Project, User} from '../../../interfaces/interfaces';
 import {Card} from '../../utility/Card';
 import {SaveProyectModal} from '../../utility/Modals';
 import {Colors} from '../../../theme/colors';
 import NotContribution from '../../../assets/icons/profile/No hay contribuciones.svg';
+import PencilSquare from '../../../assets/icons/general/pencil-square-1.svg';
+import { CommonActions, useFocusEffect } from '@react-navigation/native';
 
 interface Props extends StackScreenProps<StackParams, 'OrganizationPage'> {}
 
@@ -30,6 +32,7 @@ export const OrganizationPage = (props: Props) => {
   //#region CONST
   const [organization, setOrganization] = useState<Organization>();
   const [projectList, setProjectList] = useState<Project[]>([]);
+  const [canEdit, setCanEdit] = useState(false);
   /**
    * Elementos del modal
    */
@@ -46,6 +49,17 @@ export const OrganizationPage = (props: Props) => {
     getOrganizationApi();
   }, []);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      // Aquí puedes cargar de nuevo los datos, por ejemplo, realizando una llamada a la API
+      // Puedes usar la variable "route.params.id" para obtener el ID necesario
+      getOrganizationApi();
+      console.log('llama en el useFocusEffect')
+      // Código para cargar los datos de la organización
+
+    }, [props.route.params.id])
+  );
+
   //#endregion
 
   //#region METHODS
@@ -55,6 +69,20 @@ export const OrganizationPage = (props: Props) => {
    */
   const onBack = () => {
     props.navigation.goBack();
+  };
+
+   /**
+   * metodo para ir a la edición del proyecto
+   */
+   const editProyect = () => {
+    if (organization) {
+      props.navigation.dispatch(
+        CommonActions.navigate({
+          name: 'CreateOrganization',
+          params: {id: organization.id},
+        }),
+      );
+    }
   };
 
   //#endregion
@@ -72,9 +100,22 @@ export const OrganizationPage = (props: Props) => {
           },
         },
       );
+
+      const userInfo = await citmapApi.get<User>(
+        '/users/authentication/user/',
+        {
+          headers: {
+            Authorization: token,
+          },
+        },
+      );
+
+      if (userInfo.data.pk === resp.data.creator) {
+        setCanEdit(true);
+      }
+
       setOrganization(resp.data);
       projectListApi();
-      console.log(resp.data.logo)
     } catch {}
   };
 
@@ -122,11 +163,25 @@ export const OrganizationPage = (props: Props) => {
           {/* boton back */}
           <TouchableOpacity style={style.buttonBack} onPress={onBack}>
             <Chevron
-              width={RFPercentage(2.5)}
-              height={RFPercentage(2.5)}
-              color={'#000000'}
+              width={RFPercentage(3.5)}
+              height={RFPercentage(3.5)}
+              fill={'#000000'}
             />
           </TouchableOpacity>
+
+          {/* boton edit */}
+          {canEdit && (
+            <TouchableOpacity
+              style={style.buttonEdit}
+              onPress={() => editProyect()}>
+              <PencilSquare
+                width={RFPercentage(2.5)}
+                height={RFPercentage(2.5)}
+                fill={'#000000'}
+              />
+            </TouchableOpacity>
+          )}
+
           {/* titulo de la organizacion */}
           <Text style={style.title}>{organization?.principalName}</Text>
           {/* contenedor de datos de organizacion */}
@@ -224,7 +279,9 @@ export const OrganizationPage = (props: Props) => {
                 zIndex: 1,
                 borderWidth: organization?.logo ? 0 : 1,
                 borderRadius: organization?.logo ? 0 : 100,
-                backgroundColor: organization?.logo ? 'transparent' : Colors.contentPrimaryDark,
+                backgroundColor: organization?.logo
+                  ? 'transparent'
+                  : Colors.contentPrimaryDark,
               }}
             />
             {/* {!organization?.logo === null ? (
@@ -266,58 +323,60 @@ export const OrganizationPage = (props: Props) => {
             }}>
             Proyectos
           </Text>
-          {
-            projectList.length <= 0 ? (
-              <>
-          <View style={{alignItems: 'center', marginTop: '7%'}}>
-            <Text
-              style={{
-                color: 'black',
-                fontSize: FontSize.fontSizeText20,
-                fontFamily: FontFamily.NotoSansDisplayRegular,
-                fontWeight: '700',
-              }}>
-              No hay proyectos asociados...
-            </Text>
-            <Text
-              style={{
-                width:'65%',
-                textAlign:'center',
-                color: 'black',
-                fontSize: FontSize.fontSizeText13,
-                fontFamily: FontFamily.NotoSansDisplayMedium,
-                fontWeight: '600',
-                marginTop: '3%',
-              }}>
-              Conforme la organización se asocie con los diferentes proyectos, se irán mostrando aquí.
-            </Text>
-            <View style={{alignItems: 'center'}}>
-              <NotContribution width={RFPercentage(28)} height={RFPercentage(28)} />
-            </View>
-          </View>
-        </>
-            ) : (
-              <ScrollView
-            style={{flex: 1}}
-            contentContainerStyle={{alignItems: 'center'}}>
-            {projectList.map((item, index) => {
-              return (
-                <Card
-                  key={index}
-                  type="projectOrganization"
-                  categoryImage={index}
-                  title={item.name}
-                  description={item.description}
-                  onPress={() =>
-                    props.navigation.navigate('ProjectPage', {id: item.id!})
-                  }
-                />
-              );
-            })}
-          </ScrollView>
-            )
-          }
-          
+          {projectList.length <= 0 ? (
+            <>
+              <View style={{alignItems: 'center', marginTop: '7%'}}>
+                <Text
+                  style={{
+                    color: 'black',
+                    fontSize: FontSize.fontSizeText20,
+                    fontFamily: FontFamily.NotoSansDisplayRegular,
+                    fontWeight: '700',
+                  }}>
+                  No hay proyectos asociados...
+                </Text>
+                <Text
+                  style={{
+                    width: '65%',
+                    textAlign: 'center',
+                    color: 'black',
+                    fontSize: FontSize.fontSizeText13,
+                    fontFamily: FontFamily.NotoSansDisplayMedium,
+                    fontWeight: '600',
+                    marginTop: '3%',
+                  }}>
+                  Conforme la organización se asocie con los diferentes
+                  proyectos, se irán mostrando aquí.
+                </Text>
+                <View style={{alignItems: 'center'}}>
+                  <NotContribution
+                    width={RFPercentage(28)}
+                    height={RFPercentage(28)}
+                  />
+                </View>
+              </View>
+            </>
+          ) : (
+            <ScrollView
+              style={{flex: 1}}
+              contentContainerStyle={{alignItems: 'center'}}>
+              {projectList.map((item, index) => {
+                return (
+                  <Card
+                    key={index}
+                    type="projectOrganization"
+                    categoryImage={index}
+                    title={item.name}
+                    description={item.description}
+                    onPress={() =>
+                      props.navigation.navigate('ProjectPage', {id: item.id!})
+                    }
+                  />
+                );
+              })}
+            </ScrollView>
+          )}
+
           <SaveProyectModal
             visible={saveModal}
             hideModal={hideModalSave}
@@ -395,16 +454,17 @@ const style = StyleSheet.create({
   projectView: {backgroundColor: 'transparent'},
   buttonBack: {
     position: 'absolute',
-    top: RFPercentage(5),
+    top: RFPercentage(4),
     left: RFPercentage(2),
+    zIndex: 999,
   },
   title: {
     position: 'absolute',
     top: RFPercentage(5),
     left: RFPercentage(5),
     right: RFPercentage(5),
-    zIndex: 999,
-    fontSize: FontSize.fontSizeText18,
+    zIndex: 3,
+    fontSize: FontSize.fontSizeText20,
     color: 'white',
     FontWeight: 'bold',
     textAlign: 'center',
@@ -412,5 +472,11 @@ const style = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     textAlignVertical: 'center',
+  },
+  buttonEdit: {
+    position: 'absolute',
+    top: RFPercentage(4),
+    right: RFPercentage(2),
+    zIndex: 999,
   },
 });

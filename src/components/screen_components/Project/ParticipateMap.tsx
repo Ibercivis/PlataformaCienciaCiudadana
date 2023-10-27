@@ -4,7 +4,7 @@ import {LoadingScreen} from '../../../screens/LoadingScreen';
 import Mapbox from '@rnmapbox/maps';
 import {useForm} from '../../../hooks/useForm';
 import {Button, Image, ScrollView, StyleSheet, Text, View} from 'react-native';
-import {InfoModal, InfoModalMap} from '../../utility/Modals';
+import {InfoModal, InfoModalMap, SaveProyectModal} from '../../utility/Modals';
 import {RFPercentage} from 'react-native-responsive-fontsize';
 import {Colors} from '../../../theme/colors';
 import {TouchableOpacity} from 'react-native';
@@ -79,6 +79,9 @@ export const ParticipateMap = ({navigation, route}: Props) => {
   const [infoModal, setInfoModal] = useState(false);
   const showModalInfo = () => setInfoModal(true);
   const hideModalInfo = () => setInfoModal(false);
+  const [errorValidate, setErrorValidate] = useState(false);
+  const showModalValidate = () => setErrorValidate(true);
+  const hideModalCValidate = () => setErrorValidate(false);
 
   // form variables
   const {form, onChange, clear} = useForm<CreateObservation>({
@@ -194,7 +197,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
   const [colorMark, setColorMark] = useState('#FC5561');
   const [showMap, setShowMap] = useState(true);
   const [chargedData, setChargedData] = useState(false);
-  const [onBack, setOnBack] = useState(true);
+  const [canSave, setCanSave] = useState(true);
   const [onlyRead, setOnlyRead] = useState(false);
 
   const [waitingData, setWaitingData] = useState(true);
@@ -402,8 +405,12 @@ export const ParticipateMap = ({navigation, route}: Props) => {
    * @param id corresponde al identificador de la pregunta
    * @param type es el typo de respuesta esperado
    */
-  const onChangeText = (value: any, id: number, type: string) => {
-    console.log(value);
+  const onChangeText = (
+    value: any,
+    id: number,
+    type: string,
+  ) => {
+    console.log(JSON.stringify(form.data, null, 2));
     if (type === 'IMG') {
       // Busca si ya existe un elemento en form.images con la misma clave (id).
       const existingImageIndex = form.images!.findIndex(
@@ -515,10 +522,6 @@ export const ParticipateMap = ({navigation, route}: Props) => {
    * @param coordinates coordenadas para crear la marca
    */
   const createNewObservation = async (coordinates: number[]) => {
-    // await getCreatorApi();
-    // console.log(JSON.stringify(userInfo, null, 2));
-    // setOnlyRead(false)
-    // console.log(userInfo.pk + ' ' + showSelectedObservation.creator);
     setColorMark('#919191');
     setIsCreatingObservation(true);
     clearFormData();
@@ -526,14 +529,24 @@ export const ParticipateMap = ({navigation, route}: Props) => {
     setSelectedObservation(clearSelectedObservation);
     const token = await AsyncStorage.getItem('token');
     try {
+
+      let newFormData: ObservationDataForm[] = [];
+      questions.forEach(question => {
+        newFormData.push({
+          key: question.id!.toString(),
+          value: ''
+        })
+      })
       // se crea la nueva observación sin respuestas ni nada
       const createdObservation: CreateObservation = {
         field_form: fieldForm.id,
         timestamp: currentISODateTime,
         geoposition: `POINT(${coordinates[1]} ${coordinates[0]})`,
-        data: [],
+        data: newFormData,
       };
-
+      // console.log(newFormData)
+      form.data = newFormData;
+      onChange(newFormData, 'data');
       await setNewObservationCreate(createdObservation);
       await setObservationListCreator([
         ...observationListCreator,
@@ -561,76 +574,104 @@ export const ParticipateMap = ({navigation, route}: Props) => {
   };
 
   const onSaveObservation = async () => {
-    setWaitingData(true);
-    const token = await AsyncStorage.getItem('token');
-    setColorMark('#FC5561');
+    if (canSave) {
+      let validate = true;
+      setWaitingData(true);
+      const token = await AsyncStorage.getItem('token');
+      setColorMark('#FC5561');
 
-    const formData = new FormData();
+      const formData = new FormData();
 
-    // Agregar los campos a FormData
-    formData.append('field_form', fieldForm.id);
-    formData.append('timestamp', newObservationCreate.timestamp);
-    formData.append('geoposition', newObservationCreate.geoposition);
+      // Agregar los campos a FormData
+      formData.append('field_form', fieldForm.id);
+      formData.append('timestamp', newObservationCreate.timestamp);
+      formData.append('geoposition', newObservationCreate.geoposition);
 
-    formData.append('data', JSON.stringify(form.data));
-    if (form.images) {
-      form.images.forEach(image => {
-        formData.append(image.key.toString(), image.value);
+      // console.log(JSON.stringify(form.data, null, 2));
+      const updatedQuestions = [...questions];
+      //hay que recorrer las question y si es obligatorio, y no se ha escrito, se hace un false para que no guarde y muestre un error
+      updatedQuestions.forEach((question, index) => {
+        console.log(question);
+        if(question.mandatory){
+          console.log('mandatory true');
+          console.log('id de question ' + question.id);
+          if(form.data.some(data => data.key === question.id?.toString())){
+            console.log('no es valido');
+          }
+        }
+        
       });
-    }
-    // console.log(JSON.stringify(formData, null, 2));
+      if(validate){
+        formData.append('data', JSON.stringify(form.data));
+      }
 
-    try {
-      const marca = await citmapApi.post('/observations/', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: token,
-        },
-      });
-      console.log('si crea la marca' + JSON.stringify(marca, null, 2));
-      setIsCreatingObservation(false);
-      setShowSelectedObservation(clearSelectedObservation());
-      setObservationListCreator([]);
-      setObservationList([]);
-      await getObservation();
-      setShowMap(true);
-      setWaitingData(false);
-    } catch (error) {
-      setWaitingData(false);
-      if (error.response) {
-        // Se recibió una respuesta del servidor con un código de estado de error
+      if (form.images) {
+        form.images.forEach(image => {
+          formData.append(image.key.toString(), image.value);
+        });
+      }
+      // console.log(JSON.stringify(formData, null, 2));
 
-        if (error.response.status === 400) {
+      try {
+        if(validate){
+          console.log('entra porque es valido')
+        //   const marca = await citmapApi.post('/observations/', formData, {
+        //   headers: {
+        //     'Content-Type': 'multipart/form-data',
+        //     Authorization: token,
+        //   },
+        // });
+        // console.log('si crea la marca' + JSON.stringify(marca, null, 2));
+        // setIsCreatingObservation(false);
+        // setShowSelectedObservation(clearSelectedObservation());
+        // setObservationListCreator([]);
+        // setObservationList([]);
+        // await getObservation();
+        // setShowMap(true);
+        }else{
+          showModalValidate()
+        }
+        
+        setWaitingData(false);
+      } catch (error) {
+        setWaitingData(false);
+        if (error.response) {
+          // Se recibió una respuesta del servidor con un código de estado de error
+
+          if (error.response.status === 400) {
+            console.log(
+              'Error 400: Solicitud incorrecta - La solicitud tiene un formato incorrecto o faltan datos.',
+            );
+          } else if (error.response.status === 401) {
+            console.log(
+              'Error 401: No autorizado - La solicitud requiere autenticación.',
+            );
+          } else if (error.response.status === 403) {
+            console.log(
+              'Error 403: Prohibido - No tienes permiso para acceder a este recurso.',
+            );
+          } else if (error.response.status === 404) {
+            console.log(
+              'Error 404: No encontrado - El recurso solicitado no existe en el servidor.',
+            );
+          } else {
+            console.log(
+              `Error ${error.response.status}: Error en la solicitud.`,
+            );
+          }
+
+          // Puedes acceder a detalles adicionales de la respuesta del servidor:
+          console.log('Mensaje del servidor:', error.response.data);
+          console.log('Encabezados de respuesta:', error.response.headers);
+        } else if (error.request) {
+          // La solicitud se realizó, pero no se recibió una respuesta
           console.log(
-            'Error 400: Solicitud incorrecta - La solicitud tiene un formato incorrecto o faltan datos.',
-          );
-        } else if (error.response.status === 401) {
-          console.log(
-            'Error 401: No autorizado - La solicitud requiere autenticación.',
-          );
-        } else if (error.response.status === 403) {
-          console.log(
-            'Error 403: Prohibido - No tienes permiso para acceder a este recurso.',
-          );
-        } else if (error.response.status === 404) {
-          console.log(
-            'Error 404: No encontrado - El recurso solicitado no existe en el servidor.',
+            'Error de red: No se pudo recibir una respuesta del servidor.',
           );
         } else {
-          console.log(`Error ${error.response.status}: Error en la solicitud.`);
+          // Se produjo un error durante la configuración de la solicitud
+          console.log('Error de configuración de la solicitud:', error.message);
         }
-
-        // Puedes acceder a detalles adicionales de la respuesta del servidor:
-        console.log('Mensaje del servidor:', error.response.data);
-        console.log('Encabezados de respuesta:', error.response.headers);
-      } else if (error.request) {
-        // La solicitud se realizó, pero no se recibió una respuesta
-        console.log(
-          'Error de red: No se pudo recibir una respuesta del servidor.',
-        );
-      } else {
-        // Se produjo un error durante la configuración de la solicitud
-        console.log('Error de configuración de la solicitud:', error.message);
       }
     }
   };
@@ -1107,7 +1148,11 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                             question={x}
                             index={index + 1}
                             onChangeText={value =>
-                              onChangeText(value, x.id!, x.answer_type)
+                              onChangeText(
+                                value,
+                                x.id!,
+                                x.answer_type,
+                              )
                             }
                             showModal={value => {
                               if (value) {
@@ -1117,7 +1162,10 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                           />
                         </View>
                       );
-                    } else if (userInfo.pk === showSelectedObservation.creator &&!isCreatingObservation) {
+                    } else if (
+                      userInfo.pk === showSelectedObservation.creator &&
+                      !isCreatingObservation
+                    ) {
                       let image;
                       let selectedElement;
                       if (showSelectedObservation.images) {
@@ -1284,6 +1332,15 @@ export const ParticipateMap = ({navigation, route}: Props) => {
               subLabel2="Una vez hayas aceptado la solicitud, podrás añadir la organzación a tu biografía."
               helper={false}
             />
+            <SaveProyectModal
+                visible={errorValidate}
+                hideModal={hideModalCValidate}
+                onPress={hideModalCValidate}
+                size={RFPercentage(8)}
+                color={Colors.semanticWarningDark}
+                label="Hay campos obligatorios sin rellenar."
+                helper={false}
+              />
           </View>
           <Spinner visible={waitingData} />
         </>

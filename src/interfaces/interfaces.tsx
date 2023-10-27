@@ -56,7 +56,7 @@ export interface CreateFieldForm {
 export interface Organization {
     id:             number;
     type:           Type[];
-    creator:        Creator;
+    creator:        number;
     administrators: number[];
     members:        number[];
     principalName:  string;

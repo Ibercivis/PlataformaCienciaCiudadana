@@ -47,6 +47,7 @@ import {IconTemp} from '../../IconTemp';
 import {useForm} from '../../../hooks/useForm';
 import {InfoModal, SaveProyectModal} from '../../utility/Modals';
 import {CommonActions} from '@react-navigation/native';
+import {Spinner} from '../../utility/Spinner';
 
 interface Props extends StackScreenProps<StackParams, 'CreateProject'> {}
 
@@ -71,6 +72,7 @@ export const CreateProject = ({navigation, route}: Props) => {
     is_private: false,
     raw_password: '',
   });
+  const [waitingData, setWaitingData] = useState(false);
 
   //#region FIRST
   const [categoryList, setCategoryList] = useState<Topic[]>([]);
@@ -114,7 +116,7 @@ export const CreateProject = ({navigation, route}: Props) => {
   const [isSwitchOnProject, setIsSwitchOnProject] = useState(false);
   const [rawPassword, setRawPassword] = useState('');
 
-  const [errorPAss, setErrorPass] = useState(false);
+  const [errorPass, setErrorPass] = useState(false);
   const showModalErrorPass = () => setErrorPass(true);
   const hideModalErrorPass = () => setErrorPass(false);
 
@@ -190,10 +192,12 @@ export const CreateProject = ({navigation, route}: Props) => {
    */
   useEffect(() => {
     if (organizationList.length > 0) {
-      if (route.params.id) {
-        setIsEdit(true);
-        getProjectApi();
-      }
+      if (route.params) {
+        if (route.params.id) {
+          setIsEdit(true);
+          getProjectApi();
+        }
+      } else setWaitingData(false);
     }
   }, [organizationList]);
 
@@ -265,7 +269,6 @@ export const CreateProject = ({navigation, route}: Props) => {
           showModalErrorPass();
           isValid = false;
         }
-
         break;
       case 3:
         break;
@@ -321,8 +324,9 @@ export const CreateProject = ({navigation, route}: Props) => {
   };
 
   const getProjectApi = async () => {
-    setUserCategories([]);
-    setSuggestionsSelected([]);
+    // setUserCategories([]);
+    // setSuggestionsSelected([]);
+    setWaitingData(true);
     setQuestions([]);
     setImagesCharged([]);
     const token = await AsyncStorage.getItem('token');
@@ -348,18 +352,36 @@ export const CreateProject = ({navigation, route}: Props) => {
       form.hasTag = resp.data.hasTag;
       form.topic = resp.data.topic;
 
-      if (resp.data.topic.length > 0) {
-        resp.data.topic.map(idTopic => {
+      if (form.topic.length > 0) {
+        // Crear un conjunto temporal para almacenar las categorías únicas a agregar
+        const uniqueCategoriesToAdd = new Set(userCategories);
+
+        form.topic.forEach(idTopic => {
           const topic = categoryList.find(x => x.id === idTopic);
-          if (topic) setUserCategories([...userCategories, topic]);
+          if (
+            topic &&
+            !userCategories.some(category => category.id === topic.id)
+          ) {
+            uniqueCategoriesToAdd.add(topic);
+            setCheckCategories(topic);
+            console.log('coincide: ' + JSON.stringify(topic));
+          }
         });
+
+        // Actualizar el estado userCategories con las categorías únicas
+        setUserCategories([...uniqueCategoriesToAdd]);
       }
 
       // form.organizations_write = resp.data.organizations_write;
       if (resp.data.organizations.length > 0) {
-        resp.data.organizations.map(id => {
+        resp.data.organizations.forEach(id => {
           const sugg = organizationList.find(x => x.id === id.id);
-          if (sugg) setSuggestionsSelected([...suggestionsSelected, sugg]);
+          if (
+            sugg &&
+            !suggestionsSelected.some(selectedOrg => selectedOrg.id === sugg.id)
+          ) {
+            setSuggestionsSelected([...suggestionsSelected, sugg]);
+          }
         });
       }
 
@@ -370,7 +392,6 @@ export const CreateProject = ({navigation, route}: Props) => {
       });
       const fieldform = dataField.data.find(x => x.project === route.params.id);
       if (fieldform) {
-        console.log(JSON.stringify(fieldform, null, 2));
         form.field_form = fieldform;
         setQuestions(fieldform.questions);
       }
@@ -380,8 +401,8 @@ export const CreateProject = ({navigation, route}: Props) => {
       // form.cover = resp.data.cover;
       if (resp.data.cover != undefined) {
         setImagesCharged(resp.data.cover);
-        console.log(JSON.stringify(resp.data.cover, null, 2));
       }
+      setWaitingData(false);
     } catch (err) {
       console.log('hay un error: ' + err);
     }
@@ -489,13 +510,13 @@ export const CreateProject = ({navigation, route}: Props) => {
       maxHeight: 300,
       includeBase64: true,
     }).then(response => {
-      //   console.log(JSON.stringify(response[0].sourceURL));
       const numOfImages = response.length;
       console.log(numOfImages);
       if (response && numOfImages > 0) {
         for (let i = 0; i <= numOfImages; i++) {
           const newImage = response[i];
           if (newImage) {
+            setImagesCharged([]);
             setImages(prevImages => [...prevImages, newImage]);
             setImageBlob(prevImageBlob => [
               ...prevImageBlob,
@@ -607,6 +628,7 @@ export const CreateProject = ({navigation, route}: Props) => {
    * Metodo para guardar el proyecto
    */
   const showData = async () => {
+    setWaitingData(true);
     let correct = true;
     const token = await AsyncStorage.getItem('token');
     let updatedForm = {...form};
@@ -624,7 +646,6 @@ export const CreateProject = ({navigation, route}: Props) => {
     onChange(newFieldForm, 'field_form');
     updatedForm = form;
 
-    console.log('congelado');
     try {
       const userInfo = await citmapApi.get<User>(
         '/users/authentication/user/',
@@ -650,6 +671,7 @@ export const CreateProject = ({navigation, route}: Props) => {
           formData.append('topic', updatedForm.topic[i]);
         }
       }
+
       if (updatedForm.hasTag.length > 0) {
         formData.append('hasTag', updatedForm.hasTag);
       }
@@ -681,10 +703,162 @@ export const CreateProject = ({navigation, route}: Props) => {
             },
           },
         );
+        setWaitingData(false);
         navigation.dispatch(
           CommonActions.navigate({
             name: 'ProjectPage',
             params: {id: projectCreated.data.id, isNew: true},
+          }),
+        );
+      } else {
+        showModalSave();
+      }
+    } catch (error) {
+      if (error.response) {
+        // El servidor respondió con un estado de error (por ejemplo, 4xx, 5xx)
+        console.error('Error de respuesta del servidor:', error.response.data);
+        console.error(
+          'Estado de respuesta del servidor:',
+          error.response.status,
+        );
+      } else if (error.request) {
+        // La solicitud se hizo pero no se recibió una respuesta (por ejemplo, no hay conexión)
+        console.error('Error de solicitud:', error.request);
+      } else {
+        // Se produjo un error en la configuración de la solicitud
+        console.error('Error de configuración de la solicitud:', error.message);
+      }
+    }
+  };
+  /**
+   * Metodo para editar el proyecto
+   */
+  const editData = async () => {
+    setWaitingData(true);
+    let correct = true;
+    const token = await AsyncStorage.getItem('token');
+    let updatedForm = {...form};
+    const updatedQuestions = [...questions];
+    updatedQuestions.map(x => {
+      if (x.question_text.length <= 0) {
+        correct = false;
+      }
+    });
+    try {
+      const userInfo = await citmapApi.get<User>(
+        '/users/authentication/user/',
+        {
+          headers: {
+            Authorization: token,
+          },
+        },
+      );
+      updatedForm.creator = userInfo.data.pk;
+    } catch (err) {
+      console.log('error en coger el creator');
+      console.log(err);
+    }
+    try {
+      const formData = new FormData();
+
+      // formData.append('creator', updatedForm.creator);
+      formData.append('name', updatedForm.name);
+      // formData.append('administrators', form.administrators);
+      formData.append('description', updatedForm.description);
+      if (updatedForm.topic.length > 0) {
+        for (let i = 0; i < updatedForm.topic.length; i++) {
+          formData.append('topic', updatedForm.topic[i]);
+        }
+      }
+      // if (updatedForm.hasTag.length > 0) {
+      //   formData.append('hasTag', updatedForm.hasTag);
+      // }
+
+      if (updatedForm.organizations_write.length > 0) {
+        for (let i = 0; i < updatedForm.organizations_write.length; i++) {
+          formData.append(
+            'organizations_write',
+            updatedForm.organizations_write[i],
+          );
+        }
+      }
+
+      if (updatedForm.is_private) {
+        if (isEdit) {
+          if (updatedForm.raw_password && updatedForm.raw_password.length > 0) {
+            formData.append('is_private', updatedForm.is_private);
+            formData.append('raw_password', updatedForm.raw_password);
+          }
+        }
+      } else {
+        formData.append('is_private', updatedForm.is_private);
+      }
+
+      if (imageBlob && imagesCharged.length <= 0) {
+        formData.append('cover', imageBlob[0]);
+      }
+      if (imagesCharged.length > 0 && !imageBlob) {
+        formData.append('cover', imagesCharged[0]);
+      }
+      // fieldFormData.append('field_form', JSON.stringify(updatedForm.field_form));
+      console.log(JSON.stringify(formData, null, 2));
+      if (correct) {
+        const editedProject = await citmapApi.patch(
+          `/project/${route.params.id}/`,
+          formData,
+          {
+            headers: {
+              Authorization: token,
+              'Content-Type': 'multipart/form-data',
+            },
+          },
+        );
+
+        /**
+         * si tiene id el field_form, significa que existe y se hará un patch para editar
+         * cada question tiene su id a excepción de la nueva
+         */
+        if (form.field_form.id) {
+          let newFieldForm: CreateFieldForm = {
+            questions: updatedQuestions,
+          };
+          onChange(newFieldForm, 'field_form');
+          updatedForm = form;
+          const field = await citmapApi.patch(
+            `/field_forms/${form.field_form.id}/`,
+            JSON.stringify(newFieldForm),
+            {
+              headers: {
+                Authorization: token,
+                'Content-Type': 'application/json',
+              },
+            },
+          );
+        } else {
+          /**
+           * si no tiene id el field_form, significa que no existe y se hará un post para crear de 0 pasandole el id del projecto al que pertenece
+           */
+          let newFieldForm: CreateFieldForm = {
+            project: route.params.id,
+            questions: updatedQuestions,
+          };
+          const field = await citmapApi.post(
+            `/field_forms/`,
+            JSON.stringify(newFieldForm),
+            {
+              headers: {
+                Authorization: token,
+                'Content-Type': 'application/json',
+              },
+            },
+          );
+        }
+
+        setWaitingData(false);
+        navigation.dispatch(
+          CommonActions.navigate({
+            name: 'ProjectPage',
+            params: {id: route.params.id, isNew: false},
           }),
         );
       } else {
@@ -758,9 +932,14 @@ export const CreateProject = ({navigation, route}: Props) => {
               marginVertical: RFPercentage(1),
               //   backgroundColor: 'red',
             }}>
-            <Text style={{color: 'black'}}>Imagenes del proyecto</Text>
+            <Text style={{color: 'black'}}>Imagen del proyecto</Text>
             {images.length <= 0 && imagesCharged.length <= 0 && (
-              <View style={{width: RFPercentage(41), justifyContent: 'center'}}>
+              <View
+                style={{
+                  width: RFPercentage(41),
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
                 <IconButton
                   icon="image-album"
                   iconColor="#5F4B66"
@@ -791,10 +970,10 @@ export const CreateProject = ({navigation, route}: Props) => {
                       height: RFPercentage(15),
                       width: RFPercentage(13),
                       backgroundColor: 'transparent',
-                      // alignSelf: 'flex-start',
+                      alignSelf: 'center',
                       borderRadius: 10,
                       zIndex: 1,
-                      left: RFPercentage(4),
+                      left: '34.5%',
                       borderColor: 'white',
                       borderWidth: 4,
                     }}
@@ -817,7 +996,7 @@ export const CreateProject = ({navigation, route}: Props) => {
                   </>
                 )}
 
-                {images[1] ? (
+                {/* {images[1] ? (
                   <Image
                     source={{
                       uri: 'data:image/jpeg;base64,' + images[1].data,
@@ -920,7 +1099,7 @@ export const CreateProject = ({navigation, route}: Props) => {
                         borderWidth: 4,
                       }}></View>
                   </>
-                )}
+                )} */}
 
                 <TouchableOpacity
                   style={{
@@ -975,10 +1154,10 @@ export const CreateProject = ({navigation, route}: Props) => {
                         height: RFPercentage(15),
                         width: RFPercentage(13),
                         backgroundColor: 'transparent',
-                        // alignSelf: 'flex-start',
+                        alignSelf: 'center',
                         borderRadius: 10,
                         zIndex: 1,
-                        left: RFPercentage(4),
+                        left: '34.5%',
                         borderColor: 'white',
                         borderWidth: 4,
                       }}
@@ -991,18 +1170,18 @@ export const CreateProject = ({navigation, route}: Props) => {
                         position: 'absolute',
                         height: RFPercentage(15),
                         width: RFPercentage(13),
-                        backgroundColor: 'grey',
-                        // alignSelf: 'flex-start',
+                        backgroundColor: 'transparent',
+                        alignSelf: 'center',
                         borderRadius: 10,
                         zIndex: 1,
-                        left: RFPercentage(4),
+                        left: '34.5%',
                         borderColor: 'white',
                         borderWidth: 4,
                       }}></View>
                   </>
                 )}
 
-                {imagesCharged[1] ? (
+                {/* {imagesCharged[1] ? (
                   <>
                     <Image
                       source={{
@@ -1119,13 +1298,13 @@ export const CreateProject = ({navigation, route}: Props) => {
                         borderWidth: 4,
                       }}></View>
                   </>
-                )}
+                )} */}
 
                 <TouchableOpacity
                   style={{
                     width: RFPercentage(5),
                     position: 'absolute',
-                    bottom: RFPercentage(-1),
+                    bottom: RFPercentage(-1.3),
                     left: RFPercentage(18),
                     zIndex: 999,
                   }}
@@ -1482,14 +1661,20 @@ export const CreateProject = ({navigation, route}: Props) => {
                         paddingLeft: RFPercentage(1),
                         // backgroundColor:'green'
                       }}>
-                      {true ? (
+                      {!errorPass ? (
                         <GeometryForms
                           name="circle-fill"
                           size={Size.iconSizeExtraMin}
                           color={Colors.semanticSuccessLight}
                         />
                       ) : (
-                        <></>
+                        <>
+                          <GeometryForms
+                            name="circle-fill"
+                            size={Size.iconSizeExtraMin}
+                            color={Colors.semanticDangerLight}
+                          />
+                        </>
                       )}
                     </View>
                     <View
@@ -1523,14 +1708,20 @@ export const CreateProject = ({navigation, route}: Props) => {
                         position: 'absolute',
                         paddingLeft: RFPercentage(1),
                       }}>
-                      {true ? (
+                      {!errorPass ? (
                         <GeometryForms
                           name="circle-fill"
                           size={Size.iconSizeExtraMin}
                           color={Colors.semanticSuccessLight}
                         />
                       ) : (
-                        <></>
+                        <>
+                          <GeometryForms
+                            name="circle-fill"
+                            size={Size.iconSizeExtraMin}
+                            color={Colors.semanticDangerLight}
+                          />
+                        </>
                       )}
                     </View>
                     <InputText
@@ -1673,11 +1864,21 @@ export const CreateProject = ({navigation, route}: Props) => {
                 />
               )}
               {currentStep === 3 && (
-                <CustomButton
-                  backgroundColor={Colors.primaryLigth}
-                  label={'Crear y continuar'}
-                  onPress={() => showData()}
-                />
+                <>
+                  {isEdit == true ? (
+                    <CustomButton
+                      backgroundColor={Colors.primaryLigth}
+                      label={'Editar'}
+                      onPress={() => editData()}
+                    />
+                  ) : (
+                    <CustomButton
+                      backgroundColor={Colors.primaryLigth}
+                      label={'Crear y continuar'}
+                      onPress={() => showData()}
+                    />
+                  )}
+                </>
               )}
             </View>
             {/* modal save proyect */}
@@ -1691,12 +1892,12 @@ export const CreateProject = ({navigation, route}: Props) => {
               helper={false}
             />
             <SaveProyectModal
-              visible={saveModal}
-              hideModal={hideModalSave}
-              onPress={hideModalSave}
+              visible={errorPass}
+              hideModal={hideModalErrorPass}
+              onPress={hideModalErrorPass}
               size={RFPercentage(4)}
               color={Colors.semanticWarningDark}
-              label="Ha surgido un problema, vuelva a intentarlo."
+              label="La contraseña no coincide"
               helper={false}
             />
             <InfoModal
@@ -1961,6 +2162,7 @@ export const CreateProject = ({navigation, route}: Props) => {
             </View>
           )}
         </View>
+        <Spinner visible={waitingData} />
         {/* </TouchableWithoutFeedback> */}
       </SafeAreaView>
     </KeyboardAvoidingView>
