@@ -138,11 +138,15 @@ export const AuthProvider = ({children}: any) => {
         password1: data.password1,
         password2: data.password2,
       });
-      action({
+      if(resp.data){
+        let key = 'Token ' + resp.data.token;
+        action({
         type: 'signUp',
         payload: {user: resp.data.user, token: resp.data.token},
       });
-      await AsyncStorage.setItem('token', resp.data.token);
+      await AsyncStorage.setItem('token', key);
+      }
+      
     } catch (err) {
       let textError = '';
       const dataError = JSON.stringify(err.response.data, null);
@@ -168,7 +172,8 @@ export const AuthProvider = ({children}: any) => {
 
   const recoveryPass = async (email: string) => {
     try {
-      const resp = await citmapApi.post('/authentication/password/reset/', {
+      console.log('entra en recovery')
+      const resp = await citmapApi.post('/users/authentication/password/reset/', {
         email: email,
       });
       action({

@@ -796,6 +796,7 @@ export const Profile = ({navigation}: Props) => {
 
   const userDataApi = async () => {
     const token = await AsyncStorage.getItem('token');
+    console.log(token)
     try {
       const resp = await citmapApi.get<User>('/users/authentication/user/', {
         headers: {
