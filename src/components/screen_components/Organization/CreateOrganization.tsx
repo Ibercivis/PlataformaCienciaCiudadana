@@ -481,6 +481,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
     //comprobar que todo está bien antes de crear
     if (!valid) {
       showModalSave();
+      setWaitingData(false);
     } else {
       try {
         const formData = new FormData();

@@ -1,5 +1,5 @@
 import {createStackNavigator} from '@react-navigation/stack';
-import React, {useContext} from 'react';
+import React, {useContext, useEffect} from 'react';
 import {BottomTabNavigation} from './BottomTabNavigation';
 import {CreateProject} from '../components/screen_components/Project/CreateProject';
 import {NavigationContainer} from '@react-navigation/native';
@@ -27,7 +27,13 @@ export type StackParams = {
 const Stack = createStackNavigator<StackParams>();
 
 export function MultipleNavigator() {
-  const {permissions} = useContext(PermissionsContext);
+  const {permissions, checkLocationPErmission} = useContext(PermissionsContext);
+
+  useEffect(() => {
+    if (permissions.locationStatus === 'unavailable') {
+      checkLocationPErmission();
+    }
+  }, []);
 
   if (permissions.locationStatus === 'unavailable') {
     return <LoadingScreen />;

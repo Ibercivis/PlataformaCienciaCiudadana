@@ -11,12 +11,14 @@ import Files from '../../assets/icons/project/files.svg';
 import Trash from '../../assets/icons/project/trash.svg';
 import Paperclip from '../../assets/icons/project/paperclip.svg';
 import Clipboard from '../../assets/icons/project/clipboard.svg';
-import {RFPercentage} from 'react-native-responsive-fontsize';
+import {RFPercentage, RFValue} from 'react-native-responsive-fontsize';
 import {FontFamily, FontSize} from '../../theme/fonts';
 import {Colors} from '../../theme/colors';
 import {Switch} from 'react-native-paper';
 import {useForm} from '../../hooks/useForm';
 import {Question} from '../../interfaces/interfaces';
+import { Size } from '../../theme/size';
+import { heightPercentageToDP, widthPercentageToDP } from 'react-native-responsive-screen';
 
 interface Props {
   index: number;
@@ -117,6 +119,7 @@ export const QuestionCard = ({
                   marginLeft: RFPercentage(1),
                   alignSelf: 'center',
                   color: selected ? Colors.contentQuaternaryLight : 'black',
+                  fontSize: RFPercentage(1.2),
                 }}>
                 {localResponseTypeText}
               </Text>
@@ -151,8 +154,11 @@ export const QuestionCard = ({
             </TouchableOpacity>
             <Text style={styles.separator}>|</Text>
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
-              <Text>Obligatorio</Text>
-              <Switch value={checkbox} onValueChange={onCheck} />
+              <Text style={{
+                  alignSelf: 'center',
+                  fontSize: RFPercentage(1.2),
+                }}>Obligatorio</Text>
+              <Switch style={{transform:[{scaleX: .7},{scaleY:.7}]}} value={checkbox} onValueChange={onCheck} />
             </View>
           </View>
         </View>
@@ -163,10 +169,11 @@ export const QuestionCard = ({
 
 const styles = StyleSheet.create({
   card: {
-    marginHorizontal: RFPercentage(2),
-    marginVertical: RFPercentage(1),
+    marginHorizontal: '5%',
+    marginVertical: RFValue(10, Size.globalHeight),
     alignSelf: 'center',
-    width: RFPercentage(45),
+    // width: RFValue(350, Size.globalHeight),
+    width: widthPercentageToDP('85%'),
     backgroundColor: 'white',
     borderWidth: 1,
     padding: 10,
@@ -178,7 +185,7 @@ const styles = StyleSheet.create({
       height: 1.1,
     },
     shadowOpacity: 6.2,
-    shadowRadius: 10.41,
+    shadowRadius: 2.41,
     elevation: 4,
   },
   row: {
@@ -197,7 +204,7 @@ const styles = StyleSheet.create({
     flex: 1,
     // borderBottomWidth: 1,
     // borderBottomColor: 'gray',
-    height: '70%',
+    height: heightPercentageToDP(4),
     paddingLeft: RFPercentage(2),
     fontFamily: FontFamily.NotoSansDisplayLight,
     fontWeight: 'normal',

@@ -68,9 +68,20 @@ export const AuthProvider = ({children}: any) => {
         },
       });
       keyToken = JSON.stringify(resp.config.headers.Authorization, null, 1);
+      // console.log(keyToken);
       if (resp.status !== 200) {
         await AsyncStorage.removeItem('token');
         return action({type: 'notAuthenticated'});
+      } else {
+        // console.log(JSON.stringify(resp.status, null, 2));
+        await AsyncStorage.setItem('token', keyToken);
+        action({
+          type: 'signIn',
+          payload: {
+            token: keyToken,
+            // user: resp.data.usuario,
+          },
+        });
       }
     } catch (err) {
       await AsyncStorage.removeItem('token');
@@ -78,14 +89,6 @@ export const AuthProvider = ({children}: any) => {
     }
 
     // await AsyncStorage.setItem('token', keyToken);
-
-    action({
-      type: 'signIn',
-      payload: {
-        token: token,
-        // user: resp.data.usuario,
-      },
-    });
   };
 
   const signIn = async (loginData: LoginData) => {
@@ -105,17 +108,21 @@ export const AuthProvider = ({children}: any) => {
         let key = 'Token ' + resp.data.key;
         //cuando se loggea, hay que guardar el token como "Token (token)"
         await AsyncStorage.setItem('token', key);
-      }else{
+        // console.log(JSON.stringify(resp.data, null, 2));
+        // console.log(key);
+      } else {
         action({
           type: 'addError',
-          payload: 'No se pudo iniciar sesión debido a un problema en el servidor',
+          payload:
+            'No se pudo iniciar sesión debido a un problema en el servidor',
         });
       }
-      return true
+      return true;
     } catch (err) {
       //TODO arreglar para que capture los errores bien
-      return false
       console.log(err);
+      return false;
+      
       let textError = '';
       const dataError = JSON.stringify(err.response.data, null);
       const dataErrorObj = JSON.parse(dataError);
@@ -126,7 +133,7 @@ export const AuthProvider = ({children}: any) => {
         type: 'addError',
         payload: textError,
       });
-      return false
+      return false;
     }
   };
 
@@ -138,15 +145,14 @@ export const AuthProvider = ({children}: any) => {
         password1: data.password1,
         password2: data.password2,
       });
-      if(resp.data){
+      if (resp.data) {
         let key = 'Token ' + resp.data.token;
         action({
-        type: 'signUp',
-        payload: {user: resp.data.user, token: resp.data.token},
-      });
-      await AsyncStorage.setItem('token', key);
+          type: 'signUp',
+          payload: {user: resp.data.user, token: resp.data.token},
+        });
+        await AsyncStorage.setItem('token', key);
       }
-      
     } catch (err) {
       let textError = '';
       const dataError = JSON.stringify(err.response.data, null);
@@ -172,10 +178,13 @@ export const AuthProvider = ({children}: any) => {
 
   const recoveryPass = async (email: string) => {
     try {
-      console.log('entra en recovery')
-      const resp = await citmapApi.post('/users/authentication/password/reset/', {
-        email: email,
-      });
+      console.log('entra en recovery');
+      const resp = await citmapApi.post(
+        '/users/authentication/password/reset/',
+        {
+          email: email,
+        },
+      );
       action({
         type: 'recoveryPass',
         payload: resp.data.detail,
