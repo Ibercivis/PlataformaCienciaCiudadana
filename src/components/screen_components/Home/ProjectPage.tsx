@@ -64,6 +64,8 @@ export const ProjectPage = (props: Props) => {
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [isAllCharged, setIsAllCharged] = useState(false);
   const [canEdit, setCanEdit] = useState(false);
+  const [hasPermission, setHasPermission] = useState(false);
+  const [wantParticipate, setWantParticipate] = useState(false);
   const [waitingData, setWaitingData] = useState(false);
   const isCarousel = useRef(null);
 
@@ -84,13 +86,16 @@ export const ProjectPage = (props: Props) => {
   const hideModalPass = () => setPassModal(false);
   //#endregion
 
-  const {permissions, checkLocationPErmission} = useContext(PermissionsContext);
+  const {permissions, checkLocationPErmission, askLocationPermission} =
+    useContext(PermissionsContext);
 
   useEffect(() => {
-    if (permissions.locationStatus === 'unavailable') {
-      checkLocationPErmission();
+    if (permissions.locationStatus === 'granted' && wantParticipate) {
+      console.log('le da permisos');
+      setHasPermission(true);
+      navigateToMap();
     }
-  }, []);
+  }, [permissions]);
 
   //#endregion
 
@@ -126,7 +131,7 @@ export const ProjectPage = (props: Props) => {
       // Aquí puedes cargar de nuevo los datos, por ejemplo, realizando una llamada a la API
       // Puedes usar la variable "route.params.id" para obtener el ID necesario
       getProjectApi();
-      console.log('llama en el useFocusEffect');
+      setWantParticipate(false)
       // Código para cargar los datos de la organización
     }, [props.route.params.id]),
   );
@@ -184,36 +189,25 @@ export const ProjectPage = (props: Props) => {
   /**
    * metodo para ir al mapa
    */
-  const navigation = useNavigation();
   const navigateToMap = () => {
+    setWantParticipate(true);
     if (project) {
       if (project.is_private) {
         showModalPass();
       } else {
-        console.log(props.route.name)
-        //esta linea no funciona
-        props.navigation.navigate("ParticipateMap", {id: project.id!})
-        // props.navigation.dispatch(
-        //   CommonActions.navigate({
-        //     name: 'ParticipateMap',
-        //     params: {id: project.id},
-        //   }),
-        // );
-        // props.navigation.dispatch(
-        //   CommonActions.reset({
-        //     index: 0,  // Establece el índice de la pila de navegación al número adecuado
-
-        //     routes: [
-        //       {
-        //         name: 'ParticipateMap',
-        //         params: { id: project.id }, // Puedes pasar parámetros si es necesario
-        //       },
-        //     ],
-        //   })
-        // );
-
+        if (permissions.locationStatus === 'granted') {
+          // checkLocationPErmission();
+          // props.navigation.navigate("PermissionsScreen")
+          props.navigation.navigate('ParticipateMap', {id: project.id!});
+        } else {
+          setHasPermission(false);
+        }
       }
     }
+  };
+
+  const checkLocationPermission = async () => {
+    askLocationPermission();
   };
 
   /**
@@ -320,71 +314,83 @@ export const ProjectPage = (props: Props) => {
   }
 
   return (
-    <SafeAreaView>
-      <ScrollView
-        // contentContainerStyle={{flexGrow: 1}}
-        onTouchCancel={() => hideModalSave()}
-        keyboardShouldPersistTaps="handled">
-        {/* Ocultar la barra de estado */}
-        {/* <StatusBar hidden /> */}
-        <View style={styles.textContainer}>
-          <Text style={styles.title}>{project?.name}</Text>
+    <>
+      {!hasPermission && wantParticipate ? (
+        <View style={stylesPermission.container}>
+          <Text>Permiso de ubicación requerido</Text>
+          <TouchableOpacity
+            style={stylesPermission.touchable}
+            onPress={checkLocationPermission}
+            activeOpacity={0.6}>
+            <Text style={stylesPermission.touchableText}>Dar permisos</Text>
+          </TouchableOpacity>
         </View>
+      ) : (
+        <SafeAreaView>
+          <ScrollView
+            // contentContainerStyle={{flexGrow: 1}}
+            onTouchCancel={() => hideModalSave()}
+            keyboardShouldPersistTaps="handled">
+            {/* Ocultar la barra de estado */}
+            {/* <StatusBar hidden /> */}
+            <View style={styles.textContainer}>
+              <Text style={styles.title}>{project?.name}</Text>
+            </View>
 
-        <View style={{flex: 1}}>
-          {/* first part */}
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignContent: 'center',
-              alignItems: 'center',
-            }}>
-            <Carousel
-              data={imagesCharged.length > 0 ? imagesCharged : data}
-              renderItem={x => {
-                return (
-                  <View
-                    style={{
-                      ...styles.slide,
-                      backgroundColor: 'transparent',
-                    }}>
-                    {imagesCharged.length > 0 ? (
-                      <>
-                        <Image
-                          source={{
-                            uri:
-                              'http://dev.ibercivis.es:10001' +
-                              imagesCharged[x.index].image,
-                          }}
-                          style={{
-                            width: '100%',
-                            height: '100%',
-                          }}
-                          resizeMode="cover"
-                        />
-                      </>
-                    ) : (
-                      <>
-                        <Image
-                          source={x.index}
-                          style={styles.image}
-                          resizeMode="cover"
-                        />
-                      </>
-                    )}
-                  </View>
-                );
-              }}
-              itemWidth={Size.window.width + 2}
-              sliderWidth={Size.window.height}
-              layout="default"
-              onSnapToItem={index => setCarouselIndex(index)}
-              useScrollView={true}
-              automaticallyAdjustContentInsets
-              automaticallyAdjustKeyboardInsets
-            />
-            {/* <View
+            <View style={{flex: 1}}>
+              {/* first part */}
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <Carousel
+                  data={imagesCharged.length > 0 ? imagesCharged : data}
+                  renderItem={x => {
+                    return (
+                      <View
+                        style={{
+                          ...styles.slide,
+                          backgroundColor: 'transparent',
+                        }}>
+                        {imagesCharged.length > 0 ? (
+                          <>
+                            <Image
+                              source={{
+                                uri:
+                                  'http://dev.ibercivis.es:10001' +
+                                  imagesCharged[x.index].image,
+                              }}
+                              style={{
+                                width: '100%',
+                                height: '100%',
+                              }}
+                              resizeMode="cover"
+                            />
+                          </>
+                        ) : (
+                          <>
+                            <Image
+                              source={x.index}
+                              style={styles.image}
+                              resizeMode="cover"
+                            />
+                          </>
+                        )}
+                      </View>
+                    );
+                  }}
+                  itemWidth={Size.window.width + 2}
+                  sliderWidth={Size.window.height}
+                  layout="default"
+                  onSnapToItem={index => setCarouselIndex(index)}
+                  useScrollView={true}
+                  automaticallyAdjustContentInsets
+                  automaticallyAdjustKeyboardInsets
+                />
+                {/* <View
               style={{
                 bottom: RFPercentage(0),
                 right: RFPercentage(5),
@@ -415,215 +421,225 @@ export const ProjectPage = (props: Props) => {
                 inactiveDotScale={0.6}
               />
             </View> */}
-          </View>
-          {/* half part */}
-          <View
-            style={{
-              marginVertical: RFPercentage(2),
-              marginHorizontal: RFPercentage(2.5),
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}>
-            <View
-              style={{
-                // marginTop: '15%',
-                flexDirection: 'row',
-                alignContent: 'center',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                flex: 1,
-              }}>
-              {/* personas */}
-              <TouchableOpacity
-                style={{flexDirection: 'row', justifyContent: 'space-around'}}>
-                {/* <IconBootstrap name={'plus'} size={20} color={'black'} /> */}
-                <People
-                  width={RFPercentage(2.5)}
-                  height={RFPercentage(2.5)}
-                  color={'#000000'}
-                />
-                <Text
+              </View>
+              {/* half part */}
+              <View
+                style={{
+                  marginVertical: RFPercentage(2),
+                  marginHorizontal: RFPercentage(2.5),
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}>
+                <View
                   style={{
-                    fontSize: FontSize.fontSizeText13,
-                    marginHorizontal: RFPercentage(1),
-                    alignSelf: 'center',
+                    // marginTop: '15%',
+                    flexDirection: 'row',
+                    alignContent: 'center',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flex: 1,
                   }}>
-                  1500
-                </Text>
-              </TouchableOpacity>
+                  {/* personas */}
+                  <TouchableOpacity
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-around',
+                    }}>
+                    {/* <IconBootstrap name={'plus'} size={20} color={'black'} /> */}
+                    <People
+                      width={RFPercentage(2.5)}
+                      height={RFPercentage(2.5)}
+                      color={'#000000'}
+                    />
+                    <Text
+                      style={{
+                        fontSize: FontSize.fontSizeText13,
+                        marginHorizontal: RFPercentage(1),
+                        alignSelf: 'center',
+                      }}>
+                      1500
+                    </Text>
+                  </TouchableOpacity>
 
-              {/*favorito */}
-              <TouchableOpacity
-                style={{flexDirection: 'row', justifyContent: 'space-around'}}>
-                <HeartFill
-                  width={RFPercentage(2.5)}
-                  height={RFPercentage(2.5)}
-                  color={'#ff0000'}
-                />
-                {/* {boolHelper ? (
+                  {/*favorito */}
+                  <TouchableOpacity
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-around',
+                    }}>
+                    <HeartFill
+                      width={RFPercentage(2.5)}
+                      height={RFPercentage(2.5)}
+                      color={'#ff0000'}
+                    />
+                    {/* {boolHelper ? (
                     <HeartFill width={16} height={16} color={'#ff0000'} />
                   ) : (
                     <Heart width={16} height={16} color={'#000000'} />
                   )} */}
-                <Text
-                  style={{
-                    fontSize: FontSize.fontSizeText13,
-                    marginHorizontal: RFPercentage(1),
-                    alignSelf: 'center',
-                  }}>
-                  120
-                </Text>
-              </TouchableOpacity>
+                    <Text
+                      style={{
+                        fontSize: FontSize.fontSizeText13,
+                        marginHorizontal: RFPercentage(1),
+                        alignSelf: 'center',
+                      }}>
+                      120
+                    </Text>
+                  </TouchableOpacity>
 
-              {/* boton de compartir */}
-              <TouchableOpacity
-                style={{
-                  marginLeft: RFPercentage(1),
-                  marginRight: RFPercentage(7),
-                  alignItems: 'center',
-                  alignContent: 'center',
-                  justifyContent: 'center',
-                }}
-                onPress={() => onShare()}>
-                <ShareIcon
+                  {/* boton de compartir */}
+                  <TouchableOpacity
+                    style={{
+                      marginLeft: RFPercentage(1),
+                      marginRight: RFPercentage(7),
+                      alignItems: 'center',
+                      alignContent: 'center',
+                      justifyContent: 'center',
+                    }}
+                    onPress={() => onShare()}>
+                    <ShareIcon
+                      width={RFPercentage(2.5)}
+                      height={RFPercentage(2.5)}
+                      color={'#ff0000'}
+                    />
+                  </TouchableOpacity>
+                </View>
+                {/* participar */}
+                <View
+                  style={{
+                    width: RFPercentage(12),
+                    marginHorizontal: RFPercentage(1),
+                    bottom: 2,
+                  }}>
+                  <CustomButton
+                    onPress={() => {
+                      navigateToMap();
+                    }}
+                    label="¡Participar!"
+                    backgroundColor={Colors.primaryLigth}
+                  />
+                </View>
+              </View>
+              {/* end part */}
+              <View style={{marginHorizontal: RFPercentage(2)}}>
+                <View>
+                  <View
+                    style={{
+                      // marginHorizontal: 14,
+                      marginTop: 13,
+                      marginBottom: 6,
+                    }}>
+                    <View style={{flexDirection: 'row'}}>
+                      <Text
+                        style={{
+                          // backgroundColor: 'white',
+                          marginBottom: '1%',
+                          alignSelf: 'flex-start',
+                        }}>
+                        Creado por:{' '}
+                      </Text>
+                      <Text
+                        style={{
+                          // backgroundColor: 'white',
+                          marginBottom: '1%',
+                          alignSelf: 'flex-start',
+                          fontWeight: 'bold',
+                        }}>
+                        {project?.creator}
+                      </Text>
+                    </View>
+                    <Text
+                      style={{
+                        // backgroundColor: 'white',
+                        marginBottom: '1%',
+                        alignSelf: 'flex-start',
+                        fontWeight: 'bold',
+                      }}>
+                      {project?.name}
+                    </Text>
+                    <View style={{flexDirection: 'row'}}>
+                      {hastags.map(x => {
+                        return (
+                          <Text
+                            key={x.id}
+                            style={{
+                              // backgroundColor: 'white',
+                              alignSelf: 'flex-start',
+                              color: Colors.primaryDark,
+                              marginBottom: '4%',
+                            }}>
+                            #{x.hasTag}
+                            {'   '}
+                          </Text>
+                        );
+                      })}
+                    </View>
+                    <Text
+                      style={{
+                        // backgroundColor: 'white',
+                        alignSelf: 'flex-start',
+                        marginBottom: '4%',
+                      }}>
+                      {project?.description}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+
+              {/* boton back */}
+              <TouchableOpacity style={styles.buttonBack} onPress={onBack}>
+                <Chevron
                   width={RFPercentage(2.5)}
                   height={RFPercentage(2.5)}
-                  color={'#ff0000'}
+                  fill={'#000000'}
+                />
+              </TouchableOpacity>
+              {/* boton edit */}
+              {canEdit && (
+                <TouchableOpacity
+                  style={styles.buttonEdit}
+                  onPress={() => editProyect()}>
+                  <PencilSquare
+                    width={RFPercentage(2.5)}
+                    height={RFPercentage(2.5)}
+                    fill={'#000000'}
+                  />
+                </TouchableOpacity>
+              )}
+              {/* boton download */}
+              <TouchableOpacity
+                style={canEdit ? styles.buttonDownload : styles.buttonEdit}>
+                <Download
+                  width={RFPercentage(2.5)}
+                  height={RFPercentage(2.5)}
+                  fill={'#000000'}
                 />
               </TouchableOpacity>
             </View>
-            {/* participar */}
-            <View
-              style={{
-                width: RFPercentage(12),
-                marginHorizontal: RFPercentage(1),
-                bottom: 2,
-              }}>
-              <CustomButton
-                onPress={() => navigateToMap()}
-                label="¡Participar!"
-                backgroundColor={Colors.primaryLigth}
-              />
-            </View>
-          </View>
-          {/* end part */}
-          <View style={{marginHorizontal: RFPercentage(2)}}>
-            <View>
-              <View
-                style={{
-                  // marginHorizontal: 14,
-                  marginTop: 13,
-                  marginBottom: 6,
-                }}>
-                <View style={{flexDirection: 'row'}}>
-                  <Text
-                    style={{
-                      // backgroundColor: 'white',
-                      marginBottom: '1%',
-                      alignSelf: 'flex-start',
-                    }}>
-                    Creado por:{' '}
-                  </Text>
-                  <Text
-                    style={{
-                      // backgroundColor: 'white',
-                      marginBottom: '1%',
-                      alignSelf: 'flex-start',
-                      fontWeight: 'bold',
-                    }}>
-                    {project?.creator}
-                  </Text>
-                </View>
-                <Text
-                  style={{
-                    // backgroundColor: 'white',
-                    marginBottom: '1%',
-                    alignSelf: 'flex-start',
-                    fontWeight: 'bold',
-                  }}>
-                  {project?.name}
-                </Text>
-                <View style={{flexDirection: 'row'}}>
-                  {hastags.map(x => {
-                    return (
-                      <Text
-                        key={x.id}
-                        style={{
-                          // backgroundColor: 'white',
-                          alignSelf: 'flex-start',
-                          color: Colors.primaryDark,
-                          marginBottom: '4%',
-                        }}>
-                        #{x.hasTag}
-                        {'   '}
-                      </Text>
-                    );
-                  })}
-                </View>
-                <Text
-                  style={{
-                    // backgroundColor: 'white',
-                    alignSelf: 'flex-start',
-                    marginBottom: '4%',
-                  }}>
-                  {project?.description}
-                </Text>
-              </View>
-            </View>
-          </View>
-
-          {/* boton back */}
-          <TouchableOpacity style={styles.buttonBack} onPress={onBack}>
-            <Chevron
-              width={RFPercentage(2.5)}
-              height={RFPercentage(2.5)}
-              fill={'#000000'}
-            />
-          </TouchableOpacity>
-          {/* boton edit */}
-          {canEdit && (
-            <TouchableOpacity
-              style={styles.buttonEdit}
-              onPress={() => editProyect()}>
-              <PencilSquare
-                width={RFPercentage(2.5)}
-                height={RFPercentage(2.5)}
-                fill={'#000000'}
-              />
-            </TouchableOpacity>
-          )}
-          {/* boton download */}
-          <TouchableOpacity
-            style={canEdit ? styles.buttonDownload : styles.buttonEdit}>
-            <Download
-              width={RFPercentage(2.5)}
-              height={RFPercentage(2.5)}
-              fill={'#000000'}
-            />
-          </TouchableOpacity>
-        </View>
-        <SaveProyectModal
-          visible={saveModal}
-          hideModal={hideModalSave}
-          onPress={hideModalSave}
-          size={RFPercentage(6)}
-          color={Colors.semanticSuccessLight}
-          label="¡Proyecto creado!"
-          subLabel="No olvides compartir tu proyecto para obtener una mayor
+            <SaveProyectModal
+              visible={saveModal}
+              hideModal={hideModalSave}
+              onPress={hideModalSave}
+              size={RFPercentage(6)}
+              color={Colors.semanticSuccessLight}
+              label="¡Proyecto creado!"
+              subLabel="No olvides compartir tu proyecto para obtener una mayor
           participación"
-        />
-        <PassModal
-          visible={passModal}
-          hideModal={hideModalPass}
-          onPress={hideModalPass}
-          size={RFPercentage(6)}
-          color={Colors.semanticSuccessLight}
-          label="Escribe la contraseña del proyecto"
-          setPass={value => navigateToMapPass(value)}
-        />
-        <Spinner visible={waitingData} />
-      </ScrollView>
-    </SafeAreaView>
+            />
+            <PassModal
+              visible={passModal}
+              hideModal={hideModalPass}
+              onPress={hideModalPass}
+              size={RFPercentage(6)}
+              color={Colors.semanticSuccessLight}
+              label="Escribe la contraseña del proyecto"
+              setPass={value => navigateToMapPass(value)}
+            />
+            <Spinner visible={waitingData} />
+          </ScrollView>
+        </SafeAreaView>
+      )}
+    </>
   );
 };
 
@@ -673,5 +689,26 @@ const styles = StyleSheet.create({
     top: RFPercentage(6),
     right: RFPercentage(7),
     zIndex: 999,
+  },
+});
+
+const stylesPermission = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  touchable: {
+    borderWidth: 1,
+    borderRadius: 25,
+    borderColor: 'grey',
+    margin: 5,
+    padding: 10,
+    backgroundColor: 'white',
+  },
+  touchableText: {
+    fontWeight: 'bold',
+    fontSize: 20,
+    color: 'black',
   },
 });

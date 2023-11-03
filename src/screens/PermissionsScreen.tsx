@@ -9,7 +9,21 @@ export const PermissionsScreen = () => {
     useEffect(() => {
         checkLocationPermission()
     }, [])
+
+   
+    useEffect(() => {
+      if (permissions.locationStatus === 'unavailable') {
+        checkLocationPErmission();
+      }
+    }, []);
+
+    useEffect(() => {
+      if (permissions.locationStatus === 'granted') {
+        
+      }
+    }, [permissions]);
     
+
 
     const checkLocationPermission = async () => {
         askLocationPermission();
@@ -17,10 +31,10 @@ export const PermissionsScreen = () => {
 
   return (
     <View style={styles.container}>
-        {/* <Text>Permiso de ubicación requerido</Text>
+        <Text>Permiso de ubicación requerido</Text>
         <TouchableOpacity style={styles.touchable} onPress={checkLocationPermission} activeOpacity={0.6} >
             <Text style={styles.touchableText}>Dar permisos</Text>
-        </TouchableOpacity> */}
+        </TouchableOpacity>
     </View>
   )
 }
