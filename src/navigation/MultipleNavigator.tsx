@@ -19,25 +19,12 @@ export type StackParams = {
   CreateOrganization: {
     id?: number;
   };
-  ParticipateMap: {
-    id: number;
-  };
-  PermissionsScreen: undefined;
+  
 };
 const Stack = createStackNavigator<StackParams>();
 
 export function MultipleNavigator() {
-  const {permissions, checkLocationPErmission} = useContext(PermissionsContext);
-
-  useEffect(() => {
-    if (permissions.locationStatus === 'unavailable') {
-      checkLocationPErmission();
-    }
-  }, []);
-
-  if (permissions.locationStatus === 'unavailable') {
-    return <LoadingScreen />;
-  }
+  
   return (
     // <NavigationContainer>
     <Stack.Navigator
@@ -55,11 +42,7 @@ export function MultipleNavigator() {
       <Stack.Screen name="CreateProject" component={CreateProject} />
       <Stack.Screen name="CreateOrganization" component={CreateOrganization} />
 
-      {permissions.locationStatus === 'granted' ? (
-        <Stack.Screen name="ParticipateMap" component={ParticipateMap} />
-      ) : (
-        <Stack.Screen name="PermissionsScreen" component={PermissionsScreen} />
-      )}
+      
     </Stack.Navigator>
     // </NavigationContainer>
   );

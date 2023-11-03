@@ -19,6 +19,7 @@ import {Colors} from '../../theme/colors';
 import {CustomButton} from './CustomButton';
 import {SvgIcons} from './SvgIcons';
 import {imageUrl} from '../../api/citmapApi';
+import { heightPercentageToDP, widthPercentageToDP } from 'react-native-responsive-screen';
 
 const categoryIcons = [
   require('../../assets/icons/category/Group-1.png'),
@@ -244,8 +245,9 @@ export const Card = ({
                     // backgroundColor: 'white',
                     marginBottom: 9,
                     alignSelf: 'flex-start',
+                    fontSize: FontSize.fontSizeText13
                   }}>
-                  {title}
+                  {title.length > 15 ? title.slice(0, 14) + '...': title}
                 </Text>
                 <Text
                   style={{
@@ -899,8 +901,8 @@ const style = StyleSheet.create({
   },
   importants: {
     // height: RFPercentage(30),
-    height: RFPercentage(33),
-    width: RFPercentage(23),
+    height: heightPercentageToDP(30),
+    width: widthPercentageToDP(50),
     margin: 4,
     borderRadius: 10,
     backgroundColor: 'white',
@@ -920,7 +922,7 @@ const style = StyleSheet.create({
 
   interesting: {
     height: '90%',
-    width: RFPercentage(18),
+    width: widthPercentageToDP(40),
     margin: 4,
     borderRadius: 10,
     backgroundColor: 'white',
@@ -942,8 +944,8 @@ const style = StyleSheet.create({
     // height: '100%',
     // width:'100%',
     marginTop: RFPercentage(1),
-    height: RFPercentage(12),
-    width: RFPercentage(12),
+    height: heightPercentageToDP(12),
+    width: widthPercentageToDP(27),
     // borderRadius: 10,
     alignSelf: 'center',
     // padding: '30%',
@@ -965,8 +967,8 @@ const style = StyleSheet.create({
   },
   projectFound: {
     // height: '100%',
-    width: RFPercentage(50),
-    marginVertical: RFPercentage(3),
+    width: widthPercentageToDP(100),
+    marginVertical: widthPercentageToDP(5),
     borderRadius: 10,
   },
   organizationFound: {

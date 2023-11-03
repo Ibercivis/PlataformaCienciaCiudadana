@@ -38,6 +38,7 @@ import {CustomButtonOutline} from '../components/utility/CustomButtonOutline';
 import {GeometryForms} from '../components/utility/GeometryForms';
 import {ForgotPasswordTemplate} from '../components/screen_components/Authentication/ForgotPasswordTemplate';
 import {Spinner} from '../components/utility/Spinner';
+import { heightPercentageToDP, widthPercentageToDP } from 'react-native-responsive-screen';
 
 interface Props extends StackScreenProps<any, any> {}
 
@@ -1457,7 +1458,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                     {
                       translateX: spinValue.interpolate({
                         inputRange: [0, 1],
-                        outputRange: [0, RFPercentage(-5.3)],
+                        outputRange: [0, widthPercentageToDP(-10.4)],
                       }),
                     },
                   ],
@@ -1488,7 +1489,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                       {
                         translateX: transitionSpinValue.interpolate({
                           inputRange: [0, 1],
-                          outputRange: [0, RFPercentage(-5.3)],
+                          outputRange: [0, widthPercentageToDP(-10.4)],
                         }),
                       },
                     ],

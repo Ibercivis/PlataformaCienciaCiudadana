@@ -15,7 +15,7 @@ import Back from '../../../assets/icons/map/chevron-left-map.svg';
 import MarkEnabled from '../../../assets/icons/map/mark-asset.svg';
 import MarkDisabled from '../../../assets/icons/map/mark-disabled.svg';
 import Target from '../../../assets/icons/map/target-map.svg';
-import {StackParams} from '../../../navigation/MultipleNavigator';
+import {StackParams} from '../../../navigation/HomeNavigator';
 import {StackScreenProps} from '@react-navigation/stack';
 import {HeaderComponent} from '../../HeaderComponent';
 import AsyncStorage from '@react-native-async-storage/async-storage';

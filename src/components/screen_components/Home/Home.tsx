@@ -38,6 +38,7 @@ import Stars from '../../../assets/icons/general/stars.svg';
 import Magic from '../../../assets/icons/general/magic.svg';
 import Boockmark from '../../../assets/icons/general/bookmark-star-fill.svg';
 import {Spinner} from '../../utility/Spinner';
+import { heightPercentageToDP, widthPercentageToDP } from 'react-native-responsive-screen';
 
 interface Props extends StackScreenProps<any, any> {}
 
@@ -232,6 +233,7 @@ export const Home = ({navigation}: Props) => {
   const categoryListApi = async () => {
     const MAX_RETRIES = 3;
     const token = await AsyncStorage.getItem('token');
+    console.log(token)
     let retries = 0;
     let success = false;
     while (retries < MAX_RETRIES && !success) {
@@ -263,7 +265,7 @@ export const Home = ({navigation}: Props) => {
           Authorization: token,
         },
       });
-      // console.log(JSON.stringify(resp.data));
+      console.log(JSON.stringify(resp.data));
       setNewProjectList(resp.data);
       chunkArray(resp.data, NUM_SLICE_NEW_PROJECT_LIST);
     } catch {} finally {
@@ -349,10 +351,11 @@ export const Home = ({navigation}: Props) => {
               end={{x: 1, y: 0.5}}>
               <Text
                 style={{
-                  height: 54,
+                  height: heightPercentageToDP(5),
                   width: '100%',
                   textAlignVertical: 'center',
-                  marginLeft: 24,
+                  marginLeft: widthPercentageToDP(7),
+                  marginTop:heightPercentageToDP(1.4),
                   fontFamily: FontFamily.NotoSansDisplaySemiBold,
                   fontSize: FontSize.fontSizeText18,
                 }}>
@@ -427,6 +430,7 @@ export const Home = ({navigation}: Props) => {
                         fontFamily: FontFamily.NotoSansDisplaySemiBold,
                         fontSize: FontSize.fontSizeText18,
                         marginLeft: RFPercentage(2),
+                        alignSelf:'center'
                       }}>
                       Nuevos proyectos
                     </Text>
@@ -735,13 +739,14 @@ export const Home = ({navigation}: Props) => {
                       textAlignVertical: 'center',
                       fontFamily: FontFamily.NotoSansDisplaySemiBold,
                       fontSize: FontSize.fontSizeText18,
+                      alignSelf:'center'
                     }}>
                     Resultados de busqueda
                   </Text>
                 </View>
                 <View
                   style={{
-                    marginHorizontal: RFPercentage(3),
+                    marginHorizontal: widthPercentageToDP(5.6),
                     flexDirection: 'row',
                     flexWrap: 'wrap',
                   }}>
@@ -874,7 +879,7 @@ const HomeStyles = StyleSheet.create({
   title: {
     alignSelf: 'center',
     // height: Size.globalHeight / 12,
-    marginTop: 49,
+    marginTop: heightPercentageToDP(6),
     justifyContent: 'center',
     fontSize: FontSize.fontSizeTextTitle,
     fontWeight: 'bold',
@@ -882,18 +887,18 @@ const HomeStyles = StyleSheet.create({
   },
   titleView: {
     // backgroundColor: 'red',
-    height: RFPercentage(14),
+    height: heightPercentageToDP(13),
   },
   searchView: {
     // backgroundColor: 'green',
-    height: RFPercentage(4),
+    height: heightPercentageToDP(4),
     marginBottom: 33,
     marginHorizontal: 24,
   },
   categoryView: {
     // backgroundColor: 'cyan',
     flexDirection: 'column',
-    height: RFPercentage(25),
+    height: heightPercentageToDP(25),
     marginBottom: 38,
   },
   categoryScrollView: {

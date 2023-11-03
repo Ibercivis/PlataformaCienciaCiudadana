@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -31,8 +31,13 @@ import citmapApi from '../../../api/citmapApi';
 import {HasTag} from '../../../interfaces/appInterfaces';
 import {LoadingScreen} from '../../../screens/LoadingScreen';
 import {PassModal, SaveProyectModal} from '../../utility/Modals';
-import {CommonActions, useFocusEffect} from '@react-navigation/native';
-import { Spinner } from '../../utility/Spinner';
+import {
+  CommonActions,
+  useFocusEffect,
+  useNavigation,
+} from '@react-navigation/native';
+import {Spinner} from '../../utility/Spinner';
+import {PermissionsContext} from '../../../context/PermissionsContext';
 
 const data = [
   require('../../../assets/backgrounds/login-background.jpg'),
@@ -79,6 +84,14 @@ export const ProjectPage = (props: Props) => {
   const hideModalPass = () => setPassModal(false);
   //#endregion
 
+  const {permissions, checkLocationPErmission} = useContext(PermissionsContext);
+
+  useEffect(() => {
+    if (permissions.locationStatus === 'unavailable') {
+      checkLocationPErmission();
+    }
+  }, []);
+
   //#endregion
 
   //#region USEEFECT
@@ -101,7 +114,7 @@ export const ProjectPage = (props: Props) => {
         }
       }
     }
-    setWaitingData(false)
+    setWaitingData(false);
   }, [hastags]);
 
   useEffect(() => {
@@ -113,10 +126,9 @@ export const ProjectPage = (props: Props) => {
       // Aquí puedes cargar de nuevo los datos, por ejemplo, realizando una llamada a la API
       // Puedes usar la variable "route.params.id" para obtener el ID necesario
       getProjectApi();
-      console.log('llama en el useFocusEffect')
+      console.log('llama en el useFocusEffect');
       // Código para cargar los datos de la organización
-
-    }, [props.route.params.id])
+    }, [props.route.params.id]),
   );
 
   //#endregion
@@ -172,17 +184,34 @@ export const ProjectPage = (props: Props) => {
   /**
    * metodo para ir al mapa
    */
+  const navigation = useNavigation();
   const navigateToMap = () => {
     if (project) {
       if (project.is_private) {
         showModalPass();
       } else {
-        props.navigation.dispatch(
-          CommonActions.navigate({
-            name: 'ParticipateMap',
-            params: {id: project.id},
-          }),
-        );
+        console.log(props.route.name)
+        //esta linea no funciona
+        props.navigation.navigate("ParticipateMap", {id: project.id!})
+        // props.navigation.dispatch(
+        //   CommonActions.navigate({
+        //     name: 'ParticipateMap',
+        //     params: {id: project.id},
+        //   }),
+        // );
+        // props.navigation.dispatch(
+        //   CommonActions.reset({
+        //     index: 0,  // Establece el índice de la pila de navegación al número adecuado
+
+        //     routes: [
+        //       {
+        //         name: 'ParticipateMap',
+        //         params: { id: project.id }, // Puedes pasar parámetros si es necesario
+        //       },
+        //     ],
+        //   })
+        // );
+
       }
     }
   };
@@ -233,7 +262,7 @@ export const ProjectPage = (props: Props) => {
   };
 
   const getProjectApi = async () => {
-    setWaitingData(true)
+    setWaitingData(true);
     const token = await AsyncStorage.getItem('token');
     try {
       const userInfo = await citmapApi.get<User>(
@@ -564,7 +593,8 @@ export const ProjectPage = (props: Props) => {
             </TouchableOpacity>
           )}
           {/* boton download */}
-          <TouchableOpacity style={canEdit ? styles.buttonDownload : styles.buttonEdit}>
+          <TouchableOpacity
+            style={canEdit ? styles.buttonDownload : styles.buttonEdit}>
             <Download
               width={RFPercentage(2.5)}
               height={RFPercentage(2.5)}

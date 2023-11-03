@@ -10,6 +10,11 @@ import { ProjectPage } from '../components/screen_components/Home/ProjectPage';
 import { OrganizationList } from '../components/screen_components/Home/OrganizationList';
 import { OrganizationPage } from '../components/screen_components/Home/OrganizationPage';
 import { CreateProject } from '../components/screen_components/Project/CreateProject';
+import { useContext, useEffect } from 'react';
+import { PermissionsContext } from '../context/PermissionsContext';
+import { LoadingScreen } from '../screens/LoadingScreen';
+import { ParticipateMap } from '../components/screen_components/Project/ParticipateMap';
+import { PermissionsScreen } from '../screens/PermissionsScreen';
 
 export type StackParams = {
   HomeScreen: {
@@ -68,11 +73,28 @@ export type StackParams = {
     organisationLogo: string;
     creditLogo: string;
   };
+  ParticipateMap: {
+    id: number;
+  };
+  PermissionsScreen: undefined;
 };
 
 const Stack = createStackNavigator<StackParams>();
 
 export function HomeNavigator() {
+
+  const {permissions, checkLocationPErmission} = useContext(PermissionsContext);
+
+  useEffect(() => {
+    if (permissions.locationStatus === 'unavailable') {
+      checkLocationPErmission();
+    }
+  }, []);
+
+  if (permissions.locationStatus === 'unavailable') {
+    return <LoadingScreen />;
+  }
+
   return (
     <Stack.Navigator
       screenOptions={{
@@ -87,6 +109,11 @@ export function HomeNavigator() {
       <Stack.Screen name="OrganizationList" component={OrganizationList} />
       <Stack.Screen name="ProjectPage" component={ProjectPage} />
       <Stack.Screen name="OrganizationPage" component={OrganizationPage} />
+      {permissions.locationStatus === 'granted' ? (
+        <Stack.Screen name="ParticipateMap" component={ParticipateMap} />
+      ) : (
+        <Stack.Screen name="PermissionsScreen" component={PermissionsScreen} />
+      )}
     </Stack.Navigator>
   );
 }
