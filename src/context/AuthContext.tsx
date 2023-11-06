@@ -69,17 +69,17 @@ export const AuthProvider = ({children}: any) => {
         },
       });
       keyToken = JSON.stringify(resp.config.headers.Authorization, null, 1);
-      // console.log(keyToken);
+      console.log(keyToken);
       if (resp.status !== 200) {
         await AsyncStorage.removeItem('token');
         return action({type: 'notAuthenticated'});
       } else {
         // console.log(JSON.stringify(resp.status, null, 2));
-        await AsyncStorage.setItem('token', keyToken);
+        await AsyncStorage.setItem('token', token);
         action({
           type: 'signIn',
           payload: {
-            token: keyToken,
+            token: token,
             // user: resp.data.usuario,
           },
         });
@@ -110,7 +110,7 @@ export const AuthProvider = ({children}: any) => {
         //cuando se loggea, hay que guardar el token como "Token (token)"
         await AsyncStorage.setItem('token', key);
         // console.log(JSON.stringify(resp.data, null, 2));
-        // console.log(key);
+        console.log(key);
       } else {
         action({
           type: 'addError',

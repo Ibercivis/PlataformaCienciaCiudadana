@@ -1011,8 +1011,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                         fontWeight: '600',
                       }}>
                       {
-                        translate.strings.new_project_screen[0]
-                          .project_name_helper
+                        'Nombre de usuario obligatorio'
                       }
                     </HelperText>
                   ) : (

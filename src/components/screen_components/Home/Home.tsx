@@ -162,7 +162,7 @@ export const Home = ({navigation}: Props) => {
     // si ya estaba en la lista se eliminará
     // si no está en la lista, se añadirá
     if (categorySelectedId.includes(id)) {
-      const ifCategory = categorySelectedId.filter(x => x !== id);  
+      const ifCategory = categorySelectedId.filter(x => x !== id);
       setCategorySelectedId([...ifCategory]);
     } else {
       setCategorySelectedId([...categorySelectedId, id]);
@@ -272,23 +272,30 @@ export const Home = ({navigation}: Props) => {
     let retries = 0;
     let success = false;
 
-    while (retries < MAX_RETRIES && !success) {
-      try {
-        const resp = await citmapApi.get<Topic[]>('/project/topics/', {
-          headers: {
-            Authorization: token,
-          },
-        });
-        setCategoryList(resp.data);
+    try {
+      const resp = await citmapApi.get<Topic[]>('/project/topics/', {
+        headers: {
+          Authorization: token,
+        },
+      });
+      setCategoryList(resp.data);
+      // const ob = await citmapApi.get<any>(
+      //   `/organization/${6}`,
+      //   {
+      //     headers: {
+      //       Authorization: token,
+      //     },
+      //   },
+      // );
 
-        success = true;
-        // setLoading(false);
-      } catch (err) {
-        console.log(err.response.data);
-        setErrorMessage(err);
-        retries++;
-        await new Promise<void>(resolve => setTimeout(resolve, RETRY_DELAY_MS));
-      }
+      // console.log(JSON.stringify(ob, null, 2));
+      success = true;
+      // setLoading(false);
+    } catch (err) {
+      console.log(err.response.data);
+      setErrorMessage(err);
+      retries++;
+      await new Promise<void>(resolve => setTimeout(resolve, RETRY_DELAY_MS));
     }
 
     if (!success) {
@@ -310,14 +317,11 @@ export const Home = ({navigation}: Props) => {
       token = await AsyncStorage.getItem('token');
     }
     try {
-      let resp;
-      while (!resp) {
-        resp = await citmapApi.get<ShowProject[]>('/project/', {
-          headers: {
-            Authorization: token,
-          },
-        });
-      }
+      const resp = await citmapApi.get<ShowProject[]>('/project/', {
+        headers: {
+          Authorization: token,
+        },
+      });
 
       setNewProjectList(resp.data);
       chunkArray(resp.data, NUM_SLICE_NEW_PROJECT_LIST);
@@ -365,7 +369,7 @@ export const Home = ({navigation}: Props) => {
 
   //lista de topics devuelta por cada proyecto
   const returnTopics = (list: number[]) => {
-    const returnTopic : Topic[] = [];
+    const returnTopic: Topic[] = [];
     for (const num of list) {
       const matchingTopic = categoryList.find(topic => topic.id === num);
       if (matchingTopic) {
@@ -374,7 +378,7 @@ export const Home = ({navigation}: Props) => {
     }
     // console.log(JSON.stringify(returnTopic, null, 2))
     return returnTopic;
-  }
+  };
 
   //#endregion
 
@@ -866,7 +870,6 @@ export const Home = ({navigation}: Props) => {
                   showsVerticalScrollIndicator={false}>
                   {importantProjectList.map((x, index) => {
                     // if (importantProjectList.length - 1 === index) {
-                      console.log(JSON.stringify(importantProjectList, null, 2))
                     return (
                       <Card
                         key={index}

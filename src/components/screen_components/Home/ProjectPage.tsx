@@ -257,7 +257,11 @@ export const ProjectPage = (props: Props) => {
 
   const getProjectApi = async () => {
     setWaitingData(true);
-    const token = await AsyncStorage.getItem('token');
+    let token;
+
+    while (!token) {
+      token = await AsyncStorage.getItem('token');
+    }
     try {
       const userInfo = await citmapApi.get<User>(
         '/users/authentication/user/',
@@ -276,6 +280,9 @@ export const ProjectPage = (props: Props) => {
           },
         },
       );
+
+      
+
       if (userInfo.data.pk === resp.data.creator) {
         setCanEdit(true);
       }
@@ -289,7 +296,9 @@ export const ProjectPage = (props: Props) => {
       if (props.route.params.isNew) {
         showModalSave();
       }
-    } catch {}
+    } catch (err) {
+      console.log(err.response.data);
+    }
   };
 
   const getHastagApi = async () => {

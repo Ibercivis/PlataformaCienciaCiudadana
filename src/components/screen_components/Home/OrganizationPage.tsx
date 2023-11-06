@@ -17,7 +17,7 @@ import {RFPercentage} from 'react-native-responsive-fontsize';
 import Chevron from '../../../assets/icons/general/chevron-left-1.svg';
 import {FontFamily, FontSize, FontWeight} from '../../../theme/fonts';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import citmapApi from '../../../api/citmapApi';
+import citmapApi, { baseURL } from '../../../api/citmapApi';
 import {Organization, Project, User} from '../../../interfaces/interfaces';
 import {Card} from '../../utility/Card';
 import {SaveProyectModal} from '../../utility/Modals';
@@ -93,10 +93,28 @@ export const OrganizationPage = (props: Props) => {
       token = await AsyncStorage.getItem('token');
     }
 
-    console.log(props.route.params.id)
-    console.log(token)
-
     try {
+      // const resp = await citmapApi.get<Organization>(
+      //   `/organization/${props.route.params.id}`,
+      //   {
+      //     headers: {
+      //       Authorization: token,
+      //     },
+      //   },
+      // );
+
+      const resp = await fetch(`${baseURL}/organization/${props.route.params.id}`, {
+        method: 'GET',
+        headers: {
+          // Accept: 'application/json',
+          // 'Content-Type': 'application/json',
+          Authorization: token,
+        },
+        // body: JSON.stringify({
+        //   firstParam: 'yourValue',
+        //   secondParam: 'yourOtherValue',
+        // }),
+      });
       const userInfo = await citmapApi.get<User>(
         '/users/authentication/user/',
         {
@@ -104,24 +122,22 @@ export const OrganizationPage = (props: Props) => {
             Authorization: token,
           },
         },
-      );
-      const resp = await citmapApi.get<Organization>(
-        `/organization/${props.route.params.id}`,
-        {
-          headers: {
-            Authorization: token,
-          },
+        );
+        
+        let organiza: Organization;
+        if(resp.ok){
+          organiza =  await resp.json()
+          console.log(JSON.stringify(organiza, null, 2))
+          if (userInfo.data.pk === organiza.creator) {
+            setCanEdit(true);
+          }
+          console.log(JSON.stringify(organiza, null, 2));
+          setOrganization(organiza);
         }
-      );
-
-      if (userInfo.data.pk === resp.data.creator) {
-        setCanEdit(true);
-      }
-      console.log(JSON.stringify(resp.data, null, 2));
-      setOrganization(resp.data);
+      
       projectListApi();
     } catch (err) {
-      console.log(err.response.data);
+      console.log(err);
     }
   };
 
@@ -141,9 +157,8 @@ export const OrganizationPage = (props: Props) => {
         item.organizations_write.find(x => x === props.route.params.id),
       );
       setProjectList(filteredProjects);
-    } catch (err){
-      console.log('lo que falla es project list api ' + err.response.data)
-      
+    } catch (err) {
+      console.log('lo que falla es project list api ' + err);
     }
   };
   //#endregion
@@ -286,8 +301,8 @@ export const OrganizationPage = (props: Props) => {
               borderRadius={100}
               // source={require(urii)}
               source={
-                organization?.logo !== ''
-                  ? {uri: 'http://dev.ibercivis.es:10001' + organization?.logo}
+                organization?.logo
+                  ? {uri: organization?.logo}
                   : require('../../../assets/backgrounds/nuevoproyecto.jpg')
               }
               style={{

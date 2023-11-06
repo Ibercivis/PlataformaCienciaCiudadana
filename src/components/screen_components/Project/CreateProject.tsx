@@ -391,6 +391,8 @@ export const CreateProject = ({navigation, route}: Props) => {
         },
       });
       const fieldform = dataField.data.find(x => x.project === route.params.id);
+      console.log(JSON.stringify(dataField.data, null, 2))
+      console.log(route.params.id)
       if (fieldform) {
         form.field_form = fieldform;
         setQuestions(fieldform.questions);
@@ -635,6 +637,7 @@ export const CreateProject = ({navigation, route}: Props) => {
       token = await AsyncStorage.getItem('token');
     }
     let updatedForm = {...form};
+    
     const updatedQuestions = [...questions];
     // console.log(updatedQuestions)
     updatedQuestions.map(x => {
@@ -645,9 +648,11 @@ export const CreateProject = ({navigation, route}: Props) => {
     let newFieldForm: CreateFieldForm = {
       questions: updatedQuestions,
     };
+    console.log(JSON.stringify(newFieldForm, null, 2))
     // updatedForm.field_form.questions = updatedQuestions;
     onChange(newFieldForm, 'field_form');
     updatedForm = form;
+    console.log(JSON.stringify(updatedForm.field_form, null, 2))
 
     try {
       const userInfo = await citmapApi.get<User>(
@@ -691,10 +696,11 @@ export const CreateProject = ({navigation, route}: Props) => {
       if (updatedForm.is_private) {
         formData.append('raw_password', updatedForm.raw_password);
       }
-      formData.append('field_form', JSON.stringify(updatedForm.field_form));
+      formData.append('field_form', JSON.stringify(newFieldForm));
       if (imageBlob) {
         formData.append('cover', imageBlob[0]);
       }
+      console.log(JSON.stringify(formData, null, 2))
       if (correct) {
         const projectCreated = await citmapApi.post(
           '/project/create/',
