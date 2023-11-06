@@ -732,7 +732,7 @@ export const Profile = ({navigation}: Props) => {
                   opacity,
                   fontWeight,
                   color: 'black',
-                  fontSize: FontSize.fontSizeText14,
+                  fontSize: FontSize.fontSizeText10,
                   fontFamily: FontFamily.NotoSansDisplayMedium,
                 }}>
                 {route.title}
@@ -796,7 +796,7 @@ export const Profile = ({navigation}: Props) => {
 
   const userDataApi = async () => {
     const token = await AsyncStorage.getItem('token');
-    console.log(token)
+    
     try {
       const resp = await citmapApi.get<User>('/users/authentication/user/', {
         headers: {
@@ -809,7 +809,6 @@ export const Profile = ({navigation}: Props) => {
           Authorization: token,
         },
       });
-      console.log(JSON.stringify(profile.data, null, 2))
       setUserProfile(profile.data.profile);
       form.country = profile.data.profile.country;
       form.biography = profile.data.profile.biography;
@@ -1379,6 +1378,7 @@ export const Profile = ({navigation}: Props) => {
                         backgroundColor: organization
                           ? Colors.semanticSuccessLight
                           : Colors.semanticInfoLight,
+                          
                         // height: '30%'
                         borderWidth: 0,
                       }}>
@@ -1413,13 +1413,16 @@ export const Profile = ({navigation}: Props) => {
                       <Text
                         style={{
                           width: '80%',
-                          fontSize: FontSize.fontSizeText14,
+                          fontSize: FontSize.fontSizeText13,
                           fontFamily: FontFamily.NotoSansDisplayLight,
                           fontWeight: '300',
                           color: 'white',
                           alignSelf: 'center',
                           textAlignVertical: 'center',
-                          backgroundColor: 'transparent',
+                          alignItems:'center',
+                          alignContent:'center',
+                          textAlign:'center',
+                          backgroundColor: 'blue',
                           height: Size.window.height * 0.04,
                         }}>
                         ¿Perteneces a una organización?
@@ -1428,7 +1431,7 @@ export const Profile = ({navigation}: Props) => {
                         <View
                           style={{
                             marginRight: '7%',
-                            flex: 1,
+                            // flex: 1,
                             alignItems: 'flex-end',
                             justifyContent: 'center',
                             top: '1%',
@@ -1442,7 +1445,7 @@ export const Profile = ({navigation}: Props) => {
                       )}
                     </View>
                   </TouchableOpacity>
-                  <View
+                  {/* <View
                     style={{
                       flexDirection: 'row',
                       marginVertical: RFPercentage(1),
@@ -1468,7 +1471,7 @@ export const Profile = ({navigation}: Props) => {
                       }}>
                       {visibilityOrganization}
                     </Text>
-                  </View>
+                  </View> */}
                 </View>
 
                 {/* ubicacion */}
@@ -1496,7 +1499,7 @@ export const Profile = ({navigation}: Props) => {
                       />
                     ))}
                   </Picker>
-                  <View
+                  {/* <View
                     style={{
                       flexDirection: 'row',
                       marginVertical: RFPercentage(1),
@@ -1519,7 +1522,7 @@ export const Profile = ({navigation}: Props) => {
                       }}>
                       {visibilityUbicacion}
                     </Text>
-                  </View>
+                  </View> */}
                 </View>
 
                 {/* fecha nacimiento */}
@@ -1852,7 +1855,7 @@ export const Profile = ({navigation}: Props) => {
                         fontFamily: FontFamily.NotoSansDisplayRegular,
                         // backgroundColor:'red'
                       }}>
-                      {}
+                      {user.username}
                     </Text>
                   </View>
                   <View
@@ -1877,7 +1880,7 @@ export const Profile = ({navigation}: Props) => {
                         fontSize: FontSize.fontSizeText13,
                         fontFamily: FontFamily.NotoSansDisplayRegular,
                       }}>
-                      {userProfile.country.name}
+                      {userProfile.country.name.length > 0 ? userProfile.country.name : 'Sin localización'}
                     </Text>
                   </View>
                 </View>
@@ -1903,7 +1906,7 @@ export const Profile = ({navigation}: Props) => {
                   fontFamily: FontFamily.NotoSansDisplayLight,
                   textAlign: 'left',
                 }}>
-                {userProfile.biography}
+                {userProfile.biography.length > 0 || userProfile.biography == null ? userProfile.biography : 'No hay ninguna descripción'}
               </Text>
             </View>
           </View>

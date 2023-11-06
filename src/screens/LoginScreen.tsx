@@ -39,6 +39,7 @@ import {GeometryForms} from '../components/utility/GeometryForms';
 import {ForgotPasswordTemplate} from '../components/screen_components/Authentication/ForgotPasswordTemplate';
 import {Spinner} from '../components/utility/Spinner';
 import { heightPercentageToDP, widthPercentageToDP } from 'react-native-responsive-screen';
+import { SaveProyectModal } from '../components/utility/Modals';
 
 interface Props extends StackScreenProps<any, any> {}
 
@@ -99,6 +100,10 @@ export const LoginScreen = ({navigation, route}: Props) => {
   const [password1Error, setPassword1Error] = useState(false);
   const [password2Error, setPassword2Error] = useState(false);
 
+  const [saveModal, setSaveModal] = useState(false);
+  const showModalSave = () => setSaveModal(true);
+  const hideModalSave = () => setSaveModal(false);
+
   //#endregion
 
   //#region FORGET PASS
@@ -144,6 +149,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
     if (errorMessage.length === 0) return;
     setUserError(true);
     setRecoveryPassErr(true);
+    console.log('eh, ha saltado el error en loginscreen ' + errorMessage)
   }, [errorMessage]);
 
   //#endregion
@@ -198,6 +204,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
     let valid = true;
     //valida correo
     const regex = /^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
+    const passvalidate = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
     if (formRegister.username.length <= 0) {
       valid = false;
@@ -209,11 +216,18 @@ export const LoginScreen = ({navigation, route}: Props) => {
       setMailRegisterError(true);
     }
 
+    if(!passvalidate.test(formRegister.password1)){
+      valid = false;
+      setPassword1Error(true);
+      setPassword2Error(true);
+    }
+
     if (!validatePassword(formRegister.password2)) {
       valid = false;
       setPassword1Error(true);
       setPassword2Error(true);
     }
+
 
     Keyboard.dismiss();
 
@@ -224,6 +238,8 @@ export const LoginScreen = ({navigation, route}: Props) => {
         password1: password1,
         password2: password2,
       });
+    }else{
+      showModalSave()
     }
   };
 
@@ -1049,8 +1065,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                         fontWeight: '600',
                       }}>
                       {
-                        translate.strings.new_project_screen[0]
-                          .project_name_helper
+                        'Correo electrónico invalido'
                       }
                     </HelperText>
                   ) : (
@@ -1107,8 +1122,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                         fontWeight: '600',
                       }}>
                       {
-                        translate.strings.new_project_screen[0]
-                          .project_name_helper
+                        'La contraseña ha de tener 8 digitos alfanumericos'
                       }
                     </HelperText>
                   ) : (
@@ -1165,8 +1179,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                         fontWeight: '600',
                       }}>
                       {
-                        translate.strings.new_project_screen[0]
-                          .project_name_helper
+                        'Las contraseñas no coinciden'
                       }
                     </HelperText>
                   ) : (
@@ -1594,7 +1607,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                     </TouchableOpacity>
 
                     {/* loggin buttons */}
-                    <View style={styles.loginButtonsContainer}>
+                    {/* <View style={styles.loginButtonsContainer}>
                       <CustomButtonOutline
                         backgroundColor="white"
                         fontColor="black"
@@ -1618,7 +1631,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                         }
                         onPress={() => console.log()}
                       />
-                    </View>
+                    </View> */}
 
                     {/* divider */}
                     <View
@@ -1627,6 +1640,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                         width: '100%',
                         justifyContent: 'space-between',
                         alignItems: 'center',
+                        marginTop:'5%'
                       }}>
                       <Divider style={{borderWidth: 0.6, width: '45%'}} />
                       <Text
@@ -1662,6 +1676,15 @@ export const LoginScreen = ({navigation, route}: Props) => {
               </View>
             </View>
             <Spinner visible={loading} />
+            <SaveProyectModal
+                visible={saveModal}
+                hideModal={hideModalSave}
+                onPress={hideModalSave}
+                size={RFPercentage(8)}
+                color={Colors.semanticWarningDark}
+                label="No se pudo registrar, compruebe que el correo exista e intentelo de nuevo"
+                helper={false}
+              />
           </ScrollView>
         </KeyboardAvoidingView>
       {/* </ScrollView> */}

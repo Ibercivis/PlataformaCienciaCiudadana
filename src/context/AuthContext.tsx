@@ -5,6 +5,7 @@ import {
   LoginData,
   LoginResponse,
   RegisterData,
+  RegisterResponse,
   User,
 } from '../interfaces/appInterfaces';
 import citmapApi from '../api/citmapApi';
@@ -122,7 +123,7 @@ export const AuthProvider = ({children}: any) => {
       //TODO arreglar para que capture los errores bien
       console.log(err);
       return false;
-      
+
       let textError = '';
       const dataError = JSON.stringify(err.response.data, null);
       const dataErrorObj = JSON.parse(dataError);
@@ -139,27 +140,30 @@ export const AuthProvider = ({children}: any) => {
 
   const signUp = async (data: RegisterData) => {
     try {
-      const resp = await citmapApi.post<LoginResponse>('/users/registration/', {
+      const resp = await citmapApi.post<RegisterResponse>('/users/registration/', {
         username: data.username,
         email: data.email,
         password1: data.password1,
         password2: data.password2,
       });
       if (resp.data) {
-        let key = 'Token ' + resp.data.token;
+        let key = 'Token ' + resp.data.key;
+        console.log(key) // Accede a la clave "key" del objeto
+        await AsyncStorage.setItem('token', key);
         action({
           type: 'signUp',
-          payload: {user: resp.data.user, token: resp.data.token},
+          payload: {token: key},
         });
-        await AsyncStorage.setItem('token', key);
       }
     } catch (err) {
+      console.log(err.response.data);
       let textError = '';
       const dataError = JSON.stringify(err.response.data, null);
       const dataErrorObj = JSON.parse(dataError);
       for (const x in dataErrorObj) {
         textError += dataErrorObj[x] + '\n';
       }
+      console.log(textError);
       action({
         type: 'addError',
         payload: textError,

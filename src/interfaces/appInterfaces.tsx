@@ -22,6 +22,10 @@ export interface LoginResponse {
   token: string;
 }
 
+export interface RegisterResponse {
+  key: string;
+}
+
 export interface RegisterData {
   username: string;
   email: string;

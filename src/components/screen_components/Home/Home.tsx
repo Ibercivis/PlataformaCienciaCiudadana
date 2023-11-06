@@ -43,14 +43,16 @@ import {
   heightPercentageToDP,
   widthPercentageToDP,
 } from 'react-native-responsive-screen';
-import { AuthContext } from '../../../context/AuthContext';
-import { useFocusEffect } from '@react-navigation/native';
+import {AuthContext} from '../../../context/AuthContext';
+import {useFocusEffect} from '@react-navigation/native';
+import Toast from 'react-native-toast-message';
 
 interface Props extends StackScreenProps<any, any> {}
 
 export const Home = ({navigation}: Props) => {
   //#region Variables/const
   const NUM_SLICE_NEW_PROJECT_LIST = 10;
+  const RETRY_DELAY_MS = 1000;
   const [loading, setLoading] = useState(false);
   const [categoryList, setCategoryList] = useState<Topic[]>([]); //clonar para que la que se muestre solo tenga X registros siendo la ultima el +
   const [categoriesSelected, setCategoriesSelected] = useState<Topic[]>([]);
@@ -103,6 +105,8 @@ export const Home = ({navigation}: Props) => {
   useEffect(() => {
     setLoading(true);
     categoryListApi();
+    projectListApi();
+    organizationListApi();
     setCategoriesSelected([]);
     //aquí estaba el setIsAllCharged(true);
   }, []);
@@ -112,6 +116,7 @@ export const Home = ({navigation}: Props) => {
     projectListApi();
     setRefreshing(false);
     onSearchText('');
+    organizationListApi()
     setCategoriesSelected([]);
   }, [refreshing]);
 
@@ -247,10 +252,15 @@ export const Home = ({navigation}: Props) => {
 
   const categoryListApi = async () => {
     const MAX_RETRIES = 3;
-    const token = await AsyncStorage.getItem('token');
-    console.log(token);
+    let token;
+
+    while(!token){
+      token = await AsyncStorage.getItem('token');
+    }
+
     let retries = 0;
     let success = false;
+
     while (retries < MAX_RETRIES && !success) {
       try {
         const resp = await citmapApi.get<Topic[]>('/project/topics/', {
@@ -259,33 +269,59 @@ export const Home = ({navigation}: Props) => {
           },
         });
         setCategoryList(resp.data);
-        projectListApi();
-        organizationListApi();
+
         success = true;
-        setLoading(false);
+        // setLoading(false);
       } catch (err) {
         console.log(err);
+
         retries++;
-      } finally {
-        setLoading(false);
+        await new Promise<void>(resolve => setTimeout(resolve, RETRY_DELAY_MS));
       }
+    }
+
+    if (!success) {
+      console.log('entra en el toast');
+      // setLoading(false);
+      // Si no se pudieron cargar los datos después de los intentos, muestra el Toast
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'No se han podido obtener los datos, por favor reinicie la app',
+      });
     }
   };
 
+  const toastShow = () => {
+    Toast.show({
+      type: 'error',
+      text1: 'Error',
+      text2: 'No se han podido obtener los datos, por favor reinicie la app',
+    });
+  }
+
   const projectListApi = async () => {
-    const token = await AsyncStorage.getItem('token');
+    let token;
+
+    while(!token){
+      token = await AsyncStorage.getItem('token');
+    }
     try {
-      const resp = await citmapApi.get<ShowProject[]>('/project/', {
-        headers: {
-          Authorization: token,
-        },
-      });
-      console.log(JSON.stringify(resp.data));
+      let resp;
+      while (!resp) {
+        console.log('entra en project api');
+        resp = await citmapApi.get<ShowProject[]>('/project/', {
+          headers: {
+            Authorization: token,
+          },
+        });
+      }
+
       setNewProjectList(resp.data);
       chunkArray(resp.data, NUM_SLICE_NEW_PROJECT_LIST);
+      setLoading(false);
     } catch {
     } finally {
-      setLoading(false);
     }
   };
 
@@ -298,9 +334,9 @@ export const Home = ({navigation}: Props) => {
         },
       });
       setOrganizationList(resp.data);
+      setLoading(false);
     } catch {
     } finally {
-      setLoading(false);
     }
   };
 
@@ -333,15 +369,15 @@ export const Home = ({navigation}: Props) => {
       <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
         <View style={{flex: 1}} onTouchEnd={onClickExit}>
           {/* titulo */}
-          <View style={{...HomeStyles.titleView,}}>
+          <View style={{...HomeStyles.titleView}}>
             <Text style={HomeStyles.title}>GEONITY</Text>
             <TouchableOpacity
-            onPress={() => signOut()}
+              onPress={() => toastShow()}
               style={{
                 position: 'absolute',
                 justifyContent: 'center',
                 right: widthPercentageToDP(10),
-                top: heightPercentageToDP(7)
+                top: heightPercentageToDP(7),
               }}>
               {/* <IconBootstrap name={'stars'} size={20} color={'blue'} /> */}
               <Dots

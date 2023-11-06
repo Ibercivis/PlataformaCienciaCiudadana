@@ -9,7 +9,7 @@ type AuthAction =
     }
   | {
       type: 'signUp';
-      payload: {token: string; user: User};
+      payload: {token: string};
     }
   | {
       type: 'singOut';
@@ -32,7 +32,7 @@ export const authReducer = (
         errorMessage: '',
         status: 'authenticated',
         token: action.payload.token,
-        user: action.payload.user,
+        // user: action.payload.user,
       };
 
     case 'signIn':
