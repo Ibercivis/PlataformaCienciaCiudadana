@@ -178,7 +178,11 @@ export const CreateOrganization = ({navigation, route}: Props) => {
   };
 
   const OrganizationApi = async () => {
-    const token = await AsyncStorage.getItem('token');
+    let token;
+
+    while(!token){
+      token = await AsyncStorage.getItem('token');
+    }
     try {
       const resp = await citmapApi.get<Organization>(
         `/organization/${route.params.id}`,
@@ -442,7 +446,10 @@ export const CreateOrganization = ({navigation, route}: Props) => {
     setWaitingData(true);
     let valid = true;
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i; // validación correo
-    const token = await AsyncStorage.getItem('token');
+    let token;
+    while(!token){
+      token = await AsyncStorage.getItem('token');
+    }
 
     //hace una llamada para saber qué usuario es el que está creando
     // si está editando, se puede hacer una validación para que no entre aquí
@@ -530,7 +537,11 @@ export const CreateOrganization = ({navigation, route}: Props) => {
     setWaitingData(true);
     let valid = true;
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i; // validación correo
-    const token = await AsyncStorage.getItem('token');
+    let token;
+
+    while(!token){
+      token = await AsyncStorage.getItem('token');
+    }
 
     //hace una llamada para saber qué usuario es el que está creando
     // si está editando, se puede hacer una validación para que no entre aquí

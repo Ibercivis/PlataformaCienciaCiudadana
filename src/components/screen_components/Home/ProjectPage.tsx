@@ -131,7 +131,7 @@ export const ProjectPage = (props: Props) => {
       // Aquí puedes cargar de nuevo los datos, por ejemplo, realizando una llamada a la API
       // Puedes usar la variable "route.params.id" para obtener el ID necesario
       getProjectApi();
-      setWantParticipate(false)
+      setWantParticipate(false);
       // Código para cargar los datos de la organización
     }, [props.route.params.id]),
   );
@@ -293,7 +293,11 @@ export const ProjectPage = (props: Props) => {
   };
 
   const getHastagApi = async () => {
-    const token = await AsyncStorage.getItem('token');
+    let token;
+
+    while (!token) {
+      token = await AsyncStorage.getItem('token');
+    }
     try {
       const resp = await citmapApi.get<HasTag[]>('/project/hastag/', {
         headers: {
@@ -373,7 +377,8 @@ export const ProjectPage = (props: Props) => {
                         ) : (
                           <>
                             <Image
-                              source={x.index}
+                              source={require('../../../assets/backgrounds/nuevoproyecto.jpg')}
+                              // source={x.index}
                               style={styles.image}
                               resizeMode="cover"
                             />

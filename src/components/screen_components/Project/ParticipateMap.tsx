@@ -680,7 +680,6 @@ export const ParticipateMap = ({navigation, route}: Props) => {
     setWaitingData(true);
     const token = await AsyncStorage.getItem('token');
     setColorMark('#FC5561');
-    console.log(JSON.stringify(form, null, 2));
     const formData = new FormData();
 
     // Agregar los campos a FormData
@@ -698,7 +697,6 @@ export const ParticipateMap = ({navigation, route}: Props) => {
           formData.append(image.key.toString(), image.value);
       });
     }
-    console.log(JSON.stringify(showSelectedObservation, null, 2));
 
     try {
       const marca = await citmapApi.patch(

@@ -13,7 +13,7 @@ import People from '../../../assets/icons/general/people.svg';
 import Heart from '../../../assets/icons/general/heart.svg';
 import HeartFill from '../../../assets/icons/general/heart-fill.svg';
 
-import citmapApi, { imageUrl } from '../../../api/citmapApi';
+import citmapApi, {imageUrl} from '../../../api/citmapApi';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Project, ShowProject} from '../../../interfaces/interfaces';
 import {useForm} from '../../../hooks/useForm';
@@ -39,6 +39,8 @@ export const ProjectList = (props: Props) => {
     projectListApi();
   }, [hastags]);
 
+
+
   const projectListApi = async () => {
     const token = await AsyncStorage.getItem('token');
     try {
@@ -61,6 +63,22 @@ export const ProjectList = (props: Props) => {
       });
       setHastags(resp.data);
     } catch {}
+  };
+
+  const toggleLike = async (idProject: number) => {
+    const token = await AsyncStorage.getItem('token');
+    try {
+      const resp = await citmapApi.post(
+        `/projects/${idProject}/toggle-like/`,
+        {},
+        {
+          headers: {
+            Authorization: token,
+          },
+        },
+      );
+      projectListApi();
+    } catch (err) {}
   };
 
   return (
@@ -141,12 +159,16 @@ export const ProjectList = (props: Props) => {
                   </Text>
                 </View>
                 <ImageBackground
-                  source={item.cover && item.cover[0] ? {uri: imageUrl + item.cover[0].image}: require('../../../assets/backgrounds/nuevoproyecto.jpg')}
+                  source={
+                    item.cover && item.cover[0]
+                      ? {uri: imageUrl + item.cover[0].image}
+                      : require('../../../assets/backgrounds/nuevoproyecto.jpg')
+                  }
                   style={{
                     ...style.imageBackground,
                     width: '100%',
                     height: RFPercentage(23),
-                    backgroundColor:item.cover ? 'transparent' : 'grey'
+                    backgroundColor: item.cover ? 'transparent' : 'grey',
                   }}>
                   <View
                     style={{
@@ -178,18 +200,17 @@ export const ProjectList = (props: Props) => {
                         }}>
                         1500
                       </Text>
-                      {/* <IconBootstrap name={'plus'} size={20} color={'black'} /> */}
-                      {true ? (
-                        <HeartFill width={16} height={16} color={'#ff0000'} />
-                      ) : (
-                        <Heart width={16} height={16} color={'#000000'} />
-                      )}
+                      {true? (
+                          <HeartFill width={16} height={16} color={'#ff0000'} />
+                        ) : (
+                          <Heart width={16} height={16} color={'#000000'} />
+                        )}
                       <Text
                         style={{
                           fontSize: FontSize.fontSizeText13,
                           marginHorizontal: RFPercentage(1),
                         }}>
-                        120
+                        {item.total_likes}
                       </Text>
                     </View>
                     <View
@@ -201,14 +222,23 @@ export const ProjectList = (props: Props) => {
                         paddingHorizontal: '3%',
                         paddingVertical: '2%',
                       }}>
-                      <Text
-                        style={{
-                          fontSize: FontSize.fontSizeText13,
-                          marginHorizontal: RFPercentage(1),
-                        }}>
-                        120
-                      </Text>
-                      <Heart width={16} height={16} color={'#000000'} />
+                      <TouchableOpacity
+                        onPress={() =>toggleLike(item.id)}
+                        style={{flexDirection: 'row'}}>
+                        {/* <IconBootstrap name={'plus'} size={20} color={'black'} /> */}
+                        {item.is_liked_by_user ? (
+                          <HeartFill width={16} height={16} color={'#ff0000'} />
+                        ) : (
+                          <Heart width={16} height={16} color={'#000000'} />
+                        )}
+                        <Text
+                          style={{
+                            fontSize: FontSize.fontSizeText13,
+                            marginHorizontal: RFPercentage(1),
+                          }}>
+                          {item.total_likes}
+                        </Text>
+                      </TouchableOpacity>
                     </View>
                   </View>
                 </ImageBackground>

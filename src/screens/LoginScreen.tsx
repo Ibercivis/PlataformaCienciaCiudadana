@@ -149,7 +149,6 @@ export const LoginScreen = ({navigation, route}: Props) => {
     if (errorMessage.length === 0) return;
     setUserError(true);
     setRecoveryPassErr(true);
-    console.log('eh, ha saltado el error en loginscreen ' + errorMessage)
   }, [errorMessage]);
 
   //#endregion

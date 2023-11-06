@@ -75,6 +75,7 @@ export const Home = ({navigation}: Props) => {
   // const onSearchCategory = useRef(false);
   const [refreshing, setRefreshing] = useState(false);
   const [isAllCharged, setIsAllCharged] = useState(false);
+  const [errMessage, setErrMessage] = useState('');
   const [categorySelectedId, setCategorySelectedId] = useState<number[]>([]);
 
   const {onChange, form} = useForm({
@@ -116,7 +117,7 @@ export const Home = ({navigation}: Props) => {
     projectListApi();
     setRefreshing(false);
     onSearchText('');
-    organizationListApi()
+    organizationListApi();
     setCategoriesSelected([]);
   }, [refreshing]);
 
@@ -128,6 +129,11 @@ export const Home = ({navigation}: Props) => {
       setOnSearch(false);
     }
   }, [categorySelectedId]);
+
+  useEffect(() => {
+    if (errorMessage.length === 0) return;
+    console.log('eh, ha saltado el error en home ' + errorMessage);
+  }, [errorMessage]);
 
   //#endregion
 
@@ -156,11 +162,7 @@ export const Home = ({navigation}: Props) => {
     // si ya estaba en la lista se eliminará
     // si no está en la lista, se añadirá
     if (categorySelectedId.includes(id)) {
-      const ifCategory = categorySelectedId.filter(x => x !== id);
-      console.log(
-        'Los filtrados, si existe en la lista, se borra' +
-          JSON.stringify(ifCategory),
-      );
+      const ifCategory = categorySelectedId.filter(x => x !== id);  
       setCategorySelectedId([...ifCategory]);
     } else {
       setCategorySelectedId([...categorySelectedId, id]);
@@ -187,7 +189,7 @@ export const Home = ({navigation}: Props) => {
       setOnSearch(false);
     } else {
       const filtered = newProjectList.filter(project =>
-        project.hasTag.some(id =>
+        project.topic.some(id =>
           categorySelectedId.some(hasta => hasta === id),
         ),
       );
@@ -249,12 +251,21 @@ export const Home = ({navigation}: Props) => {
   };
 
   //#region ApiCalls
+  const setErrorMessage = (errMsg: any) => {
+    let textError = '';
+    const dataError = JSON.stringify(errMsg.response.data, null);
+    const dataErrorObj = JSON.parse(dataError);
+    for (const x in dataErrorObj) {
+      textError += dataErrorObj[x] + '\n';
+    }
+    setErrMessage(textError);
+  };
 
   const categoryListApi = async () => {
     const MAX_RETRIES = 3;
     let token;
 
-    while(!token){
+    while (!token) {
       token = await AsyncStorage.getItem('token');
     }
 
@@ -273,43 +284,34 @@ export const Home = ({navigation}: Props) => {
         success = true;
         // setLoading(false);
       } catch (err) {
-        console.log(err);
-
+        console.log(err.response.data);
+        setErrorMessage(err);
         retries++;
         await new Promise<void>(resolve => setTimeout(resolve, RETRY_DELAY_MS));
       }
     }
 
     if (!success) {
-      console.log('entra en el toast');
       // setLoading(false);
       // Si no se pudieron cargar los datos después de los intentos, muestra el Toast
       Toast.show({
         type: 'error',
         text1: 'Error',
-        text2: 'No se han podido obtener los datos, por favor reinicie la app',
+        // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+        text2: errMessage,
       });
     }
   };
 
-  const toastShow = () => {
-    Toast.show({
-      type: 'error',
-      text1: 'Error',
-      text2: 'No se han podido obtener los datos, por favor reinicie la app',
-    });
-  }
-
   const projectListApi = async () => {
     let token;
 
-    while(!token){
+    while (!token) {
       token = await AsyncStorage.getItem('token');
     }
     try {
       let resp;
       while (!resp) {
-        console.log('entra en project api');
         resp = await citmapApi.get<ShowProject[]>('/project/', {
           headers: {
             Authorization: token,
@@ -320,13 +322,18 @@ export const Home = ({navigation}: Props) => {
       setNewProjectList(resp.data);
       chunkArray(resp.data, NUM_SLICE_NEW_PROJECT_LIST);
       setLoading(false);
-    } catch {
+    } catch (err) {
+      console.log(err.response.data);
     } finally {
     }
   };
 
   const organizationListApi = async () => {
-    const token = await AsyncStorage.getItem('token');
+    let token;
+
+    while (!token) {
+      token = await AsyncStorage.getItem('token');
+    }
     try {
       const resp = await citmapApi.get<Organization[]>('/organization/', {
         headers: {
@@ -356,6 +363,19 @@ export const Home = ({navigation}: Props) => {
     } catch (err) {}
   };
 
+  //lista de topics devuelta por cada proyecto
+  const returnTopics = (list: number[]) => {
+    const returnTopic : Topic[] = [];
+    for (const num of list) {
+      const matchingTopic = categoryList.find(topic => topic.id === num);
+      if (matchingTopic) {
+        returnTopic.push(matchingTopic);
+      }
+    }
+    // console.log(JSON.stringify(returnTopic, null, 2))
+    return returnTopic;
+  }
+
   //#endregion
 
   //#endregion
@@ -372,7 +392,7 @@ export const Home = ({navigation}: Props) => {
           <View style={{...HomeStyles.titleView}}>
             <Text style={HomeStyles.title}>GEONITY</Text>
             <TouchableOpacity
-              onPress={() => toastShow()}
+              onPress={() => signOut()}
               style={{
                 position: 'absolute',
                 justifyContent: 'center',
@@ -581,6 +601,7 @@ export const Home = ({navigation}: Props) => {
                         fontFamily: FontFamily.NotoSansDisplaySemiBold,
                         fontSize: FontSize.fontSizeText18,
                         marginLeft: RFPercentage(2),
+                        alignSelf: 'center',
                       }}>
                       Proyectos destacados
                     </Text>
@@ -664,6 +685,7 @@ export const Home = ({navigation}: Props) => {
                         fontFamily: FontFamily.NotoSansDisplaySemiBold,
                         fontSize: FontSize.fontSizeText18,
                         marginLeft: RFPercentage(2),
+                        alignSelf: 'center',
                       }}>
                       Te puede interesar...
                     </Text>
@@ -734,6 +756,7 @@ export const Home = ({navigation}: Props) => {
                         fontFamily: FontFamily.NotoSansDisplaySemiBold,
                         fontSize: FontSize.fontSizeText18,
                         marginLeft: RFPercentage(2),
+                        alignSelf: 'center',
                       }}>
                       Organizaciones destacadas
                     </Text>
@@ -843,6 +866,7 @@ export const Home = ({navigation}: Props) => {
                   showsVerticalScrollIndicator={false}>
                   {importantProjectList.map((x, index) => {
                     // if (importantProjectList.length - 1 === index) {
+                      console.log(JSON.stringify(importantProjectList, null, 2))
                     return (
                       <Card
                         key={index}
@@ -853,6 +877,7 @@ export const Home = ({navigation}: Props) => {
                         totalLikes={x.total_likes ? x.total_likes : 0}
                         boolHelper={x.is_liked_by_user}
                         description={x.description}
+                        list={returnTopics(x.topic)}
                         onPress={() => {
                           onProjectPress(x.id);
                         }}
@@ -934,6 +959,7 @@ export const Home = ({navigation}: Props) => {
           </View>
         )}
         <Spinner visible={loading} />
+        <Toast />
       </SafeAreaView>
     </>
   );

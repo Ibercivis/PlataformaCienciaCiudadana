@@ -630,7 +630,10 @@ export const CreateProject = ({navigation, route}: Props) => {
   const showData = async () => {
     setWaitingData(true);
     let correct = true;
-    const token = await AsyncStorage.getItem('token');
+    let token;
+    while(!token){
+      token = await AsyncStorage.getItem('token');
+    }
     let updatedForm = {...form};
     const updatedQuestions = [...questions];
     // console.log(updatedQuestions)
@@ -736,7 +739,10 @@ export const CreateProject = ({navigation, route}: Props) => {
   const editData = async () => {
     setWaitingData(true);
     let correct = true;
-    const token = await AsyncStorage.getItem('token');
+    let token;
+    while(!token){
+      token = await AsyncStorage.getItem('token');
+    }
     let updatedForm = {...form};
     const updatedQuestions = [...questions];
     updatedQuestions.map(x => {

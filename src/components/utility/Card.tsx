@@ -19,7 +19,11 @@ import {Colors} from '../../theme/colors';
 import {CustomButton} from './CustomButton';
 import {SvgIcons} from './SvgIcons';
 import {imageUrl} from '../../api/citmapApi';
-import { heightPercentageToDP, widthPercentageToDP } from 'react-native-responsive-screen';
+import {
+  heightPercentageToDP,
+  widthPercentageToDP,
+} from 'react-native-responsive-screen';
+import {Topic} from '../../interfaces/appInterfaces';
 
 const categoryIcons = [
   require('../../assets/icons/category/Group-1.png'),
@@ -48,6 +52,7 @@ interface Props {
   styleProp?: ViewStyle;
   pressed?: boolean;
   cover?: string;
+  list?: Topic[];
 }
 export const Card = ({
   type,
@@ -62,6 +67,7 @@ export const Card = ({
   totalLikes = 0,
   cover,
   styleProp,
+  list = [],
 }: Props) => {
   const cardType = () => {
     switch (type) {
@@ -245,9 +251,9 @@ export const Card = ({
                     // backgroundColor: 'white',
                     marginBottom: 9,
                     alignSelf: 'flex-start',
-                    fontSize: FontSize.fontSizeText13
+                    fontSize: FontSize.fontSizeText13,
                   }}>
-                  {title.length > 15 ? title.slice(0, 14) + '...': title}
+                  {title.length > 15 ? title.slice(0, 14) + '...' : title}
                 </Text>
                 <Text
                   style={{
@@ -304,11 +310,9 @@ export const Card = ({
       case 'importantsPlus':
         return (
           <TouchableOpacity style={style.importants} onPress={onPress}>
-            <View style={{alignItems: 'center',
-            height: '100%',}}>
+            <View style={{alignItems: 'center', height: '100%'}}>
               <View
                 style={{
-                  
                   alignSelf: 'center',
                   padding: '30%',
                   backgroundColor: 'transparent',
@@ -452,22 +456,22 @@ export const Card = ({
         return (
           <TouchableOpacity
             activeOpacity={0.5}
-            style={{...style.touchableOrganization, 
-            //   shadowColor: '#000',
-            // shadowOffset: {
-            //   width: 0,
-            //   height: 0.1,
-            // },
-            // shadowOpacity: 0.2,
-            // shadowRadius: 1.41,
-            // elevation: 1,
-          }}
+            style={{
+              ...style.touchableOrganization,
+              //   shadowColor: '#000',
+              // shadowOffset: {
+              //   width: 0,
+              //   height: 0.1,
+              // },
+              // shadowOpacity: 0.2,
+              // shadowRadius: 1.41,
+              // elevation: 1,
+            }}
             onPress={onPress}>
             <View>
               <View
                 style={{
                   ...style.imageBackgroundOrganization,
-                   
                 }}>
                 <Plus
                   style={{alignSelf: 'center', bottom: RFPercentage(-2)}}
@@ -519,7 +523,7 @@ export const Card = ({
                   }}>
                   {title}
                 </Text>
-                <Text
+                {/* <Text
                   style={{
                     // backgroundColor: 'white',
                     alignSelf: 'flex-start',
@@ -527,7 +531,23 @@ export const Card = ({
                     marginBottom: '2%',
                   }}>
                   {auxString}
-                </Text>
+                </Text> */}
+                <View
+                  style={{
+                    // marginHorizontal: widthPercentageToDP(5.6),
+                    flexDirection: 'row',
+                    flexWrap: 'wrap',
+                  }}>
+                  {list.map(value => {
+                    return (
+                      <Text
+                        key={value.id}
+                        style={{color: Colors.semanticInfoDark}}>
+                        #{value.topic}{' '}
+                      </Text>
+                    );
+                  })}
+                </View>
                 <Text
                   style={{
                     // backgroundColor: 'red',
@@ -598,7 +618,7 @@ export const Card = ({
                       // paddingHorizontal: '3%',
                       paddingVertical: '2%',
                       flex: 1,
-                      alignItems:'center',
+                      alignItems: 'center',
                     }}>
                     <Text
                       style={{
@@ -801,27 +821,20 @@ export const Card = ({
 
                   {/*favorito */}
                   <TouchableOpacity
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-around',
-                    }}>
-                    <HeartFill
-                      width={RFPercentage(2)}
-                      height={RFPercentage(2)}
-                      color={'#ff0000'}
-                    />
-                    {/* {boolHelper ? (
-                    <HeartFill width={16} height={16} color={'#ff0000'} />
-                  ) : (
-                    <Heart width={16} height={16} color={'#000000'} />
-                  )} */}
+                    onPress={onLike}
+                    style={{flexDirection: 'row'}}>
+                    {/* <IconBootstrap name={'plus'} size={20} color={'black'} /> */}
+                    {boolHelper ? (
+                      <HeartFill width={16} height={16} color={'#ff0000'} />
+                    ) : (
+                      <Heart width={16} height={16} color={'#000000'} />
+                    )}
                     <Text
                       style={{
                         fontSize: FontSize.fontSizeText13,
                         marginHorizontal: RFPercentage(1),
-                        alignSelf: 'center',
                       }}>
-                      120
+                      {totalLikes}
                     </Text>
                   </TouchableOpacity>
 
@@ -857,8 +870,6 @@ export const Card = ({
     </>
   );
 };
-
-
 
 const style = StyleSheet.create({
   container: {},

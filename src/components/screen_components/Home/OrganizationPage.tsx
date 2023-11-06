@@ -24,7 +24,7 @@ import {SaveProyectModal} from '../../utility/Modals';
 import {Colors} from '../../../theme/colors';
 import NotContribution from '../../../assets/icons/profile/No hay contribuciones.svg';
 import PencilSquare from '../../../assets/icons/general/pencil-square-1.svg';
-import { CommonActions, useFocusEffect } from '@react-navigation/native';
+import {CommonActions, useFocusEffect} from '@react-navigation/native';
 
 interface Props extends StackScreenProps<StackParams, 'OrganizationPage'> {}
 
@@ -54,10 +54,7 @@ export const OrganizationPage = (props: Props) => {
       // Aquí puedes cargar de nuevo los datos, por ejemplo, realizando una llamada a la API
       // Puedes usar la variable "route.params.id" para obtener el ID necesario
       getOrganizationApi();
-      console.log('llama en el useFocusEffect')
-      // Código para cargar los datos de la organización
-
-    }, [props.route.params.id])
+    }, [props.route.params.id]),
   );
 
   //#endregion
@@ -71,10 +68,10 @@ export const OrganizationPage = (props: Props) => {
     props.navigation.goBack();
   };
 
-   /**
+  /**
    * metodo para ir a la edición del proyecto
    */
-   const editProyect = () => {
+  const editProyect = () => {
     if (organization) {
       props.navigation.dispatch(
         CommonActions.navigate({
@@ -90,17 +87,16 @@ export const OrganizationPage = (props: Props) => {
   //#region API CALLS
 
   const getOrganizationApi = async () => {
-    const token = await AsyncStorage.getItem('token');
-    try {
-      const resp = await citmapApi.get<Organization>(
-        `/organization/${props.route.params.id}`,
-        {
-          headers: {
-            Authorization: token,
-          },
-        },
-      );
+    let token;
 
+    while (!token) {
+      token = await AsyncStorage.getItem('token');
+    }
+
+    console.log(props.route.params.id)
+    console.log(token)
+
+    try {
       const userInfo = await citmapApi.get<User>(
         '/users/authentication/user/',
         {
@@ -109,18 +105,32 @@ export const OrganizationPage = (props: Props) => {
           },
         },
       );
+      const resp = await citmapApi.get<Organization>(
+        `/organization/${props.route.params.id}`,
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
 
       if (userInfo.data.pk === resp.data.creator) {
         setCanEdit(true);
       }
-
+      console.log(JSON.stringify(resp.data, null, 2));
       setOrganization(resp.data);
       projectListApi();
-    } catch {}
+    } catch (err) {
+      console.log(err.response.data);
+    }
   };
 
   const projectListApi = async () => {
-    const token = await AsyncStorage.getItem('token');
+    let token;
+
+    while (!token) {
+      token = await AsyncStorage.getItem('token');
+    }
     try {
       const resp = await citmapApi.get<Project[]>('/project/', {
         headers: {
@@ -131,7 +141,10 @@ export const OrganizationPage = (props: Props) => {
         item.organizations_write.find(x => x === props.route.params.id),
       );
       setProjectList(filteredProjects);
-    } catch {}
+    } catch (err){
+      console.log('lo que falla es project list api ' + err.response.data)
+      
+    }
   };
   //#endregion
 
@@ -150,13 +163,15 @@ export const OrganizationPage = (props: Props) => {
               backgroundColor: organization?.cover ? 'transparent' : 'grey',
             }}>
             <Image
-              source={{
-                uri: organization?.cover,
-              }}
+              source={
+                organization?.cover
+                  ? {uri: organization?.cover}
+                  : require('../../../assets/backgrounds/nuevoproyecto.jpg')
+              }
               style={{
                 width: '100%',
                 height: '100%',
-                // resizeMode: 'cover',
+                resizeMode: 'cover',
               }}
             />
           </View>
@@ -270,9 +285,11 @@ export const OrganizationPage = (props: Props) => {
             <ImageBackground
               borderRadius={100}
               // source={require(urii)}
-              source={{
-                uri: organization?.logo,
-              }}
+              source={
+                organization?.logo !== ''
+                  ? {uri: 'http://dev.ibercivis.es:10001' + organization?.logo}
+                  : require('../../../assets/backgrounds/nuevoproyecto.jpg')
+              }
               style={{
                 height: RFPercentage(17),
                 width: RFPercentage(17),
