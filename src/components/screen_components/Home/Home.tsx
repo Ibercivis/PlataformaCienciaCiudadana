@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -35,10 +35,16 @@ import {LoadingScreen} from '../../../screens/LoadingScreen';
 import PeopleFill from '../../../assets/icons/general/people-fill.svg';
 import HeartFill from '../../../assets/icons/general/heart-fill.svg';
 import Stars from '../../../assets/icons/general/stars.svg';
+import Dots from '../../../assets/icons/general/three-dots-vertical.svg';
 import Magic from '../../../assets/icons/general/magic.svg';
 import Boockmark from '../../../assets/icons/general/bookmark-star-fill.svg';
 import {Spinner} from '../../utility/Spinner';
-import { heightPercentageToDP, widthPercentageToDP } from 'react-native-responsive-screen';
+import {
+  heightPercentageToDP,
+  widthPercentageToDP,
+} from 'react-native-responsive-screen';
+import { AuthContext } from '../../../context/AuthContext';
+import { useFocusEffect } from '@react-navigation/native';
 
 interface Props extends StackScreenProps<any, any> {}
 
@@ -73,6 +79,9 @@ export const Home = ({navigation}: Props) => {
     searchText: '',
   });
 
+  const {signIn, signOut, signUp, errorMessage, removeError, recoveryPass} =
+    useContext(AuthContext);
+
   //#endregion
 
   //#region UseEffects
@@ -83,6 +92,12 @@ export const Home = ({navigation}: Props) => {
   useEffect(() => {
     SplashScreen.hide();
   }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      categoryListApi();
+    }, [loading]),
+  );
 
   //TODO llamada a la api para coger cada elemento
   useEffect(() => {
@@ -233,7 +248,7 @@ export const Home = ({navigation}: Props) => {
   const categoryListApi = async () => {
     const MAX_RETRIES = 3;
     const token = await AsyncStorage.getItem('token');
-    console.log(token)
+    console.log(token);
     let retries = 0;
     let success = false;
     while (retries < MAX_RETRIES && !success) {
@@ -268,7 +283,8 @@ export const Home = ({navigation}: Props) => {
       console.log(JSON.stringify(resp.data));
       setNewProjectList(resp.data);
       chunkArray(resp.data, NUM_SLICE_NEW_PROJECT_LIST);
-    } catch {} finally {
+    } catch {
+    } finally {
       setLoading(false);
     }
   };
@@ -282,7 +298,8 @@ export const Home = ({navigation}: Props) => {
         },
       });
       setOrganizationList(resp.data);
-    } catch {} finally {
+    } catch {
+    } finally {
       setLoading(false);
     }
   };
@@ -316,8 +333,23 @@ export const Home = ({navigation}: Props) => {
       <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
         <View style={{flex: 1}} onTouchEnd={onClickExit}>
           {/* titulo */}
-          <View style={HomeStyles.titleView}>
+          <View style={{...HomeStyles.titleView,}}>
             <Text style={HomeStyles.title}>GEONITY</Text>
+            <TouchableOpacity
+            onPress={() => signOut()}
+              style={{
+                position: 'absolute',
+                justifyContent: 'center',
+                right: widthPercentageToDP(10),
+                top: heightPercentageToDP(7)
+              }}>
+              {/* <IconBootstrap name={'stars'} size={20} color={'blue'} /> */}
+              <Dots
+                width={RFPercentage(1.8)}
+                height={RFPercentage(1.8)}
+                fill={'#000000'}
+              />
+            </TouchableOpacity>
           </View>
           {/* barra de busqueda */}
           <View style={HomeStyles.searchView}>
@@ -355,7 +387,7 @@ export const Home = ({navigation}: Props) => {
                   width: '100%',
                   textAlignVertical: 'center',
                   marginLeft: widthPercentageToDP(7),
-                  marginTop:heightPercentageToDP(1.4),
+                  marginTop: heightPercentageToDP(1.4),
                   fontFamily: FontFamily.NotoSansDisplaySemiBold,
                   fontSize: FontSize.fontSizeText18,
                 }}>
@@ -430,7 +462,7 @@ export const Home = ({navigation}: Props) => {
                         fontFamily: FontFamily.NotoSansDisplaySemiBold,
                         fontSize: FontSize.fontSizeText18,
                         marginLeft: RFPercentage(2),
-                        alignSelf:'center'
+                        alignSelf: 'center',
                       }}>
                       Nuevos proyectos
                     </Text>
@@ -739,7 +771,7 @@ export const Home = ({navigation}: Props) => {
                       textAlignVertical: 'center',
                       fontFamily: FontFamily.NotoSansDisplaySemiBold,
                       fontSize: FontSize.fontSizeText18,
-                      alignSelf:'center'
+                      alignSelf: 'center',
                     }}>
                     Resultados de busqueda
                   </Text>
