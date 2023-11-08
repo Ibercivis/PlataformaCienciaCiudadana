@@ -9,6 +9,8 @@ import {
   TouchableOpacity,
   RefreshControl,
   Modal,
+  Platform,
+  StatusBar,
 } from 'react-native';
 import {StackScreenProps} from '@react-navigation/stack';
 import {Size} from '../../../theme/size';
@@ -49,6 +51,18 @@ import {useFocusEffect} from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 
 interface Props extends StackScreenProps<any, any> {}
+
+let notchHeight = 0;
+
+if (Platform.OS === 'ios') {
+  // En dispositivos iOS, usa la barra de estado para obtener la altura del notch.
+  notchHeight = StatusBar.currentHeight || 0;
+} else if (Platform.OS === 'android') {
+  // En dispositivos Android, puedes hacer ajustes específicos según la marca/modelo del dispositivo
+  // o utilizar algún módulo de terceros que proporcione información sobre el notch.
+  // Aquí asumiremos una altura fija para fines de ejemplo.
+  notchHeight = heightPercentageToDP(1); // Ajusta esta altura según tus necesidades.
+}
 
 export const Home = ({navigation}: Props) => {
   //#region Variables/const
@@ -110,6 +124,9 @@ export const Home = ({navigation}: Props) => {
   useFocusEffect(
     React.useCallback(() => {
       categoryListApi();
+      setRefreshing(false);
+      onSearchText('');
+      setCategoriesSelected([]);
     }, [loading]),
   );
 
@@ -984,18 +1001,30 @@ export const Home = ({navigation}: Props) => {
               position: 'absolute',
               justifyContent: 'center',
               alignItems: 'center',
+              backgroundColor:'white',
+              width: widthPercentageToDP(20),
               right: widthPercentageToDP(8),
-              top: heightPercentageToDP(12),
+              top: heightPercentageToDP(3)+notchHeight,
+              // right: RFPercentage(5),
+              // top: RFPercentage(4),
               borderRadius: 10,
-              borderWidth: 1
+              borderWidth: 1,
             }}>
             <View
-              style={{backgroundColor: 'white', paddingHorizontal: widthPercentageToDP(2), borderRadius: 10}}>
-              <TouchableOpacity style={{marginVertical: heightPercentageToDP(1)}} onPress={signOut}>
+              style={{
+                backgroundColor: 'white',
+                paddingHorizontal: widthPercentageToDP(2),
+                borderRadius: 10,
+              }}>
+              <TouchableOpacity
+                style={{marginVertical: heightPercentageToDP(1)}}
+                onPress={signOut}>
                 <Text>Logout</Text>
               </TouchableOpacity>
               {/* Otras opciones de menú aquí */}
-              <TouchableOpacity style={{marginVertical: heightPercentageToDP(1)}}  onPress={ocultarMenu}>
+              <TouchableOpacity
+                style={{marginVertical: heightPercentageToDP(1)}}
+                onPress={ocultarMenu}>
                 <Text>Cancelar</Text>
               </TouchableOpacity>
             </View>
