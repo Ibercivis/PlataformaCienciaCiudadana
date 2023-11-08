@@ -50,24 +50,15 @@ import {
 import {AuthContext} from '../../../context/AuthContext';
 import {useFocusEffect} from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface Props extends StackScreenProps<any, any> {}
 
-let notchHeight = 0;
-
-if (Platform.OS === 'ios') {
-  // En dispositivos iOS, usa la barra de estado para obtener la altura del notch.
-  notchHeight = StatusBar.currentHeight || 0;
-  console.log(notchHeight)
-} else if (Platform.OS === 'android') {
-  // En dispositivos Android, puedes hacer ajustes específicos según la marca/modelo del dispositivo
-  // o utilizar algún módulo de terceros que proporcione información sobre el notch.
-  // Aquí asumiremos una altura fija para fines de ejemplo.
-  notchHeight = heightPercentageToDP(1); // Ajusta esta altura según tus necesidades.
-}
-
 export const Home = ({navigation}: Props) => {
   //#region Variables/const
+  let notchHeight = 0;
+  const insets = useSafeAreaInsets();
+
   const NUM_SLICE_NEW_PROJECT_LIST = 10;
   const RETRY_DELAY_MS = 1000;
   const [loading, setLoading] = useState(false);
@@ -1005,13 +996,13 @@ export const Home = ({navigation}: Props) => {
           onRequestClose={ocultarMenu}>
           <View
             style={{
-              position: 'absolute',
+              position: 'relative',
               justifyContent: 'center',
               alignItems: 'center',
               backgroundColor:'white',
               width: widthPercentageToDP(20),
-              right: widthPercentageToDP(8),
-              top: heightPercentageToDP(12),
+              left: widthPercentageToDP(70),
+              top: Platform.OS === 'ios' ? insets.top + heightPercentageToDP(6): heightPercentageToDP(6),
               // right: RFPercentage(5),
               // top: RFPercentage(4),
               borderRadius: 10,
