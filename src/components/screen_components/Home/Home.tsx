@@ -11,6 +11,7 @@ import {
   Modal,
   Platform,
   StatusBar,
+  KeyboardAvoidingView,
 } from 'react-native';
 import {StackScreenProps} from '@react-navigation/stack';
 import {Size} from '../../../theme/size';
@@ -57,6 +58,7 @@ let notchHeight = 0;
 if (Platform.OS === 'ios') {
   // En dispositivos iOS, usa la barra de estado para obtener la altura del notch.
   notchHeight = StatusBar.currentHeight || 0;
+  console.log(notchHeight)
 } else if (Platform.OS === 'android') {
   // En dispositivos Android, puedes hacer ajustes específicos según la marca/modelo del dispositivo
   // o utilizar algún módulo de terceros que proporcione información sobre el notch.
@@ -418,7 +420,12 @@ export const Home = ({navigation}: Props) => {
 
   return (
     <>
-      <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
+    <KeyboardAvoidingView
+      keyboardVerticalOffset={RFPercentage(2)}
+      style={{flex: 1, backgroundColor: 'transparent'}}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Ajusta la vista por encima del teclado
+    >
+      <SafeAreaView style={{flexGrow: 1, backgroundColor: 'white'}}>
         <View style={{flex: 1}} onTouchEnd={onClickExit}>
           {/* titulo */}
           <View style={{...HomeStyles.titleView}}>
@@ -1004,7 +1011,7 @@ export const Home = ({navigation}: Props) => {
               backgroundColor:'white',
               width: widthPercentageToDP(20),
               right: widthPercentageToDP(8),
-              top: heightPercentageToDP(3)+notchHeight,
+              top: heightPercentageToDP(12),
               // right: RFPercentage(5),
               // top: RFPercentage(4),
               borderRadius: 10,
@@ -1031,6 +1038,7 @@ export const Home = ({navigation}: Props) => {
           </View>
         </Modal>
       </SafeAreaView>
+      </KeyboardAvoidingView>
     </>
   );
 };
