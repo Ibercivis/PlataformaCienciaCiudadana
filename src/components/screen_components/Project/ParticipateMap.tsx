@@ -37,6 +37,7 @@ import {CustomButtonOutline} from '../../utility/CustomButtonOutline';
 import {CustomButton} from '../../utility/CustomButton';
 import {FontSize} from '../../../theme/fonts';
 import {useDateTime} from '../../../hooks/useDateTime';
+import Toast from 'react-native-toast-message';
 
 Mapbox.setWellKnownTileServer('mapbox');
 Mapbox.setAccessToken(
@@ -79,6 +80,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
   const [infoModal, setInfoModal] = useState(false);
   const showModalInfo = () => setInfoModal(true);
   const hideModalInfo = () => setInfoModal(false);
+
   const [errorValidate, setErrorValidate] = useState(false);
   const showModalValidate = () => setErrorValidate(true);
   const hideModalCValidate = () => setErrorValidate(false);
@@ -405,11 +407,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
    * @param id corresponde al identificador de la pregunta
    * @param type es el typo de respuesta esperado
    */
-  const onChangeText = (
-    value: any,
-    id: number,
-    type: string,
-  ) => {
+  const onChangeText = (value: any, id: number, type: string) => {
     console.log(JSON.stringify(form.data, null, 2));
     if (type === 'IMG') {
       // Busca si ya existe un elemento en form.images con la misma clave (id).
@@ -529,14 +527,13 @@ export const ParticipateMap = ({navigation, route}: Props) => {
     setSelectedObservation(clearSelectedObservation);
     const token = await AsyncStorage.getItem('token');
     try {
-
       let newFormData: ObservationDataForm[] = [];
       questions.forEach(question => {
         newFormData.push({
           key: question.id!.toString(),
-          value: ''
-        })
-      })
+          value: '',
+        });
+      });
       // se crea la nueva observación sin respuestas ni nada
       const createdObservation: CreateObservation = {
         field_form: fieldForm.id,
@@ -591,18 +588,24 @@ export const ParticipateMap = ({navigation, route}: Props) => {
       const updatedQuestions = [...questions];
       //hay que recorrer las question y si es obligatorio, y no se ha escrito, se hace un false para que no guarde y muestre un error
       updatedQuestions.forEach((question, index) => {
-        console.log(question);
-        if(question.mandatory){
-          console.log('mandatory true');
-          console.log('id de question ' + question.id);
-          if(form.data.some(data => data.key === question.id?.toString())){
-            console.log('no es valido');
-          }
+        if (question.mandatory) {
+          console.log('es true el mandatory');
+          form.data.map(x => {
+            if (x.key === question.id?.toString()) {
+              console.log('tienen mismo id');
+              if (x.value === '' || x.value === undefined) {
+                console.log('está vacío');
+                validate = false;
+              }
+            }
+          });
         }
-        
       });
-      if(validate){
-        formData.append('data', JSON.stringify(form.data));
+
+      const newFormFiltered = form.data.filter(x => x.value !== '');
+
+      if (validate) {
+        formData.append('data', JSON.stringify(newFormFiltered));
       }
 
       if (form.images) {
@@ -610,28 +613,33 @@ export const ParticipateMap = ({navigation, route}: Props) => {
           formData.append(image.key.toString(), image.value);
         });
       }
-      // console.log(JSON.stringify(formData, null, 2));
+      console.log(JSON.stringify(newFormFiltered, null, 2));
 
       try {
-        if(validate){
-          console.log('entra porque es valido')
-        //   const marca = await citmapApi.post('/observations/', formData, {
-        //   headers: {
-        //     'Content-Type': 'multipart/form-data',
-        //     Authorization: token,
-        //   },
-        // });
-        // console.log('si crea la marca' + JSON.stringify(marca, null, 2));
-        // setIsCreatingObservation(false);
-        // setShowSelectedObservation(clearSelectedObservation());
-        // setObservationListCreator([]);
-        // setObservationList([]);
-        // await getObservation();
-        // setShowMap(true);
-        }else{
-          showModalValidate()
+        if (validate) {
+          const marca = await citmapApi.post('/observations/', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              Authorization: token,
+            },
+          });
+          console.log('si crea la marca' + JSON.stringify(marca.data, null, 2));
+          setIsCreatingObservation(false);
+          setShowSelectedObservation(clearSelectedObservation());
+          setObservationListCreator([]);
+          setObservationList([]);
+          await getObservation();
+          setShowMap(true);
+        } else {
+          // showModalValidate();
+          Toast.show({
+            type: 'error',
+            text1: 'Error',
+            // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+            text2: 'Los campos obligatorios tienen que ser rellenados',
+          });
         }
-        
+
         setWaitingData(false);
       } catch (error) {
         setWaitingData(false);
@@ -718,6 +726,12 @@ export const ParticipateMap = ({navigation, route}: Props) => {
       setShowMap(true);
       setWaitingData(false);
     } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+        text2: 'Los campos obligatorios tienen que ser rellenados',
+      });
       setWaitingData(false);
       if (error.response) {
         // Se recibió una respuesta del servidor con un código de estado de error
@@ -1146,11 +1160,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                             question={x}
                             index={index + 1}
                             onChangeText={value =>
-                              onChangeText(
-                                value,
-                                x.id!,
-                                x.answer_type,
-                              )
+                              onChangeText(value, x.id!, x.answer_type)
                             }
                             showModal={value => {
                               if (value) {
@@ -1330,16 +1340,19 @@ export const ParticipateMap = ({navigation, route}: Props) => {
               subLabel2="Una vez hayas aceptado la solicitud, podrás añadir la organzación a tu biografía."
               helper={false}
             />
-            <SaveProyectModal
-                visible={errorValidate}
-                hideModal={hideModalCValidate}
-                onPress={hideModalCValidate}
-                size={RFPercentage(8)}
-                color={Colors.semanticWarningDark}
-                label="Hay campos obligatorios sin rellenar."
-                helper={false}
-              />
           </View>
+          {/* <View>
+            <SaveProyectModal
+              visible={errorValidate}
+              hideModal={hideModalCValidate}
+              onPress={hideModalCValidate}
+              size={RFPercentage(8)}
+              color={Colors.semanticWarningDark}
+              label="Hay campos obligatorios sin rellenar."
+              helper={false}
+            />
+          </View> */}
+          <Toast position='bottom' />
           <Spinner visible={waitingData} />
         </>
       ) : (

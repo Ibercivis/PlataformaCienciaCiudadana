@@ -8,6 +8,7 @@ import {
   FlatList,
   TouchableOpacity,
   RefreshControl,
+  Modal,
 } from 'react-native';
 import {StackScreenProps} from '@react-navigation/stack';
 import {Size} from '../../../theme/size';
@@ -84,6 +85,16 @@ export const Home = ({navigation}: Props) => {
 
   const {signIn, signOut, signUp, errorMessage, removeError, recoveryPass} =
     useContext(AuthContext);
+
+  const [menuVisible, setMenuVisible] = useState(false);
+
+  const mostrarMenu = () => {
+    setMenuVisible(true);
+  };
+
+  const ocultarMenu = () => {
+    setMenuVisible(false);
+  };
 
   //#endregion
 
@@ -396,7 +407,7 @@ export const Home = ({navigation}: Props) => {
           <View style={{...HomeStyles.titleView}}>
             <Text style={HomeStyles.title}>GEONITY</Text>
             <TouchableOpacity
-              onPress={() => signOut()}
+              onPress={() => mostrarMenu()}
               style={{
                 position: 'absolute',
                 justifyContent: 'center',
@@ -963,6 +974,33 @@ export const Home = ({navigation}: Props) => {
         )}
         <Spinner visible={loading} />
         <Toast />
+        <Modal
+          visible={menuVisible}
+          transparent
+          animationType="none"
+          onRequestClose={ocultarMenu}>
+          <View
+            style={{
+              position: 'absolute',
+              justifyContent: 'center',
+              alignItems: 'center',
+              right: widthPercentageToDP(8),
+              top: heightPercentageToDP(12),
+              borderRadius: 10,
+              borderWidth: 1
+            }}>
+            <View
+              style={{backgroundColor: 'white', paddingHorizontal: widthPercentageToDP(2), borderRadius: 10}}>
+              <TouchableOpacity style={{marginVertical: heightPercentageToDP(1)}} onPress={signOut}>
+                <Text>Logout</Text>
+              </TouchableOpacity>
+              {/* Otras opciones de menú aquí */}
+              <TouchableOpacity style={{marginVertical: heightPercentageToDP(1)}}  onPress={ocultarMenu}>
+                <Text>Cancelar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
       </SafeAreaView>
     </>
   );
