@@ -506,6 +506,9 @@ const style = StyleSheet.create({
     top: RFPercentage(4),
     left: RFPercentage(2),
     zIndex: 999,
+    backgroundColor: 'white',
+    borderRadius: 100,
+    padding: RFPercentage(1.2)
   },
   title: {
     position: 'absolute',
@@ -527,5 +530,8 @@ const style = StyleSheet.create({
     top: RFPercentage(4),
     right: RFPercentage(2),
     zIndex: 999,
+    backgroundColor: 'white',
+    borderRadius: 100,
+    padding: RFPercentage(1.2)
   },
 });

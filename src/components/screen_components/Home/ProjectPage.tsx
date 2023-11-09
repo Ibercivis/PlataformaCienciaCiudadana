@@ -701,18 +701,27 @@ const styles = StyleSheet.create({
     top: RFPercentage(6),
     left: RFPercentage(2),
     zIndex: 999,
+    backgroundColor: 'white',
+    borderRadius: 100,
+    padding: RFPercentage(1.2)
   },
   buttonEdit: {
     position: 'absolute',
     top: RFPercentage(6),
     right: RFPercentage(2),
     zIndex: 999,
+    backgroundColor: 'white',
+    borderRadius: 100,
+    padding: RFPercentage(1.2)
   },
   buttonDownload: {
     position: 'absolute',
     top: RFPercentage(6),
-    right: RFPercentage(7),
+    right: RFPercentage(8),
     zIndex: 999,
+    backgroundColor: 'white',
+    borderRadius: 100,
+    padding: RFPercentage(1.2)
   },
 });
 
