@@ -736,7 +736,7 @@ export const Card = ({
                   width: '30%',
                   // alignContent: 'center',
                   // alignItems: 'center',
-                  // backgroundColor: 'blue',
+                  backgroundColor: 'transparent',
                 }}>
                 <ImageBackground
                   // borderRadius={10}
@@ -745,7 +745,7 @@ export const Card = ({
                   // source={require(urii)}
                   source={
                     cover !== ''
-                      ? {uri: cover}
+                      ? {uri:  imageUrl +cover}
                       : require('../../assets/backgrounds/nuevoproyecto.jpg')
                   }
                   style={{height: '100%'}}>
@@ -784,7 +784,7 @@ export const Card = ({
                     fontSize: FontSize.fontSizeText13,
                     height: '60%',
                   }}>
-                  {description}
+                  {description.length > 120 ? description.slice(0, 120) + '...' : description}
                 </Text>
                 <View
                   style={{
@@ -956,7 +956,7 @@ const style = StyleSheet.create({
     // width:'100%',
     marginTop: RFPercentage(1),
     height: heightPercentageToDP(12),
-    width: widthPercentageToDP(27),
+    width: widthPercentageToDP(25),
     // borderRadius: 10,
     alignSelf: 'center',
     // padding: '30%',

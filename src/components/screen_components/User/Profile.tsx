@@ -1425,7 +1425,7 @@ export const Profile = ({navigation}: Props) => {
                           alignItems:'center',
                           alignContent:'center',
                           textAlign:'center',
-                          backgroundColor: 'blue',
+                          // backgroundColor: 'blue',
                           height: Size.window.height * 0.04,
                         }}>
                         ¿Perteneces a una organización?

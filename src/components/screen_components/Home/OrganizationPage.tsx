@@ -17,8 +17,8 @@ import {RFPercentage} from 'react-native-responsive-fontsize';
 import Chevron from '../../../assets/icons/general/chevron-left-1.svg';
 import {FontFamily, FontSize, FontWeight} from '../../../theme/fonts';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import citmapApi, { baseURL } from '../../../api/citmapApi';
-import {Organization, Project, User} from '../../../interfaces/interfaces';
+import citmapApi, {baseURL} from '../../../api/citmapApi';
+import {Organization, Project, ShowProject, User} from '../../../interfaces/interfaces';
 import {Card} from '../../utility/Card';
 import {SaveProyectModal} from '../../utility/Modals';
 import {Colors} from '../../../theme/colors';
@@ -31,7 +31,7 @@ interface Props extends StackScreenProps<StackParams, 'OrganizationPage'> {}
 export const OrganizationPage = (props: Props) => {
   //#region CONST
   const [organization, setOrganization] = useState<Organization>();
-  const [projectList, setProjectList] = useState<Project[]>([]);
+  const [projectList, setProjectList] = useState<ShowProject[]>([]);
   const [canEdit, setCanEdit] = useState(false);
   /**
    * Elementos del modal
@@ -103,18 +103,21 @@ export const OrganizationPage = (props: Props) => {
       //   },
       // );
 
-      const resp = await fetch(`${baseURL}/organization/${props.route.params.id}`, {
-        method: 'GET',
-        headers: {
-          // Accept: 'application/json',
-          // 'Content-Type': 'application/json',
-          Authorization: token,
+      const resp = await fetch(
+        `${baseURL}/organization/${props.route.params.id}`,
+        {
+          method: 'GET',
+          headers: {
+            // Accept: 'application/json',
+            // 'Content-Type': 'application/json',
+            Authorization: token,
+          },
+          // body: JSON.stringify({
+          //   firstParam: 'yourValue',
+          //   secondParam: 'yourOtherValue',
+          // }),
         },
-        // body: JSON.stringify({
-        //   firstParam: 'yourValue',
-        //   secondParam: 'yourOtherValue',
-        // }),
-      });
+      );
       const userInfo = await citmapApi.get<User>(
         '/users/authentication/user/',
         {
@@ -122,19 +125,17 @@ export const OrganizationPage = (props: Props) => {
             Authorization: token,
           },
         },
-        );
-        
-        let organiza: Organization;
-        if(resp.ok){
-          organiza =  await resp.json()
-          console.log(JSON.stringify(organiza, null, 2))
-          if (userInfo.data.pk === organiza.creator) {
-            setCanEdit(true);
-          }
-          console.log(JSON.stringify(organiza, null, 2));
-          setOrganization(organiza);
+      );
+
+      let organiza: Organization;
+      if (resp.ok) {
+        organiza = await resp.json();
+        if (userInfo.data.pk === organiza.creator) {
+          setCanEdit(true);
         }
-      
+        setOrganization(organiza);
+      }
+
       projectListApi();
     } catch (err) {
       console.log(err);
@@ -148,14 +149,26 @@ export const OrganizationPage = (props: Props) => {
       token = await AsyncStorage.getItem('token');
     }
     try {
-      const resp = await citmapApi.get<Project[]>('/project/', {
+      const resp = await citmapApi.get<ShowProject[]>('/project/', {
         headers: {
           Authorization: token,
         },
       });
-      const filteredProjects = resp.data.filter(item =>
-        item.organizations_write.find(x => x === props.route.params.id),
-      );
+
+      const filteredProjectsSet = new Set<ShowProject>();
+
+      resp.data.forEach(project => {
+        // Verificar si organizations_write existe y contiene el ID
+        if (project.organizations) {
+          if (project.organizations.some(orgID => orgID.id === props.route.params.id)) {
+            filteredProjectsSet.add(project);
+          }
+        }
+      });
+
+      const filteredProjects: ShowProject[] = Array.from(filteredProjectsSet);
+
+      console.log(JSON.stringify(filteredProjects, null, 2));
       setProjectList(filteredProjects);
     } catch (err) {
       console.log('lo que falla es project list api ' + err);
@@ -393,6 +406,9 @@ export const OrganizationPage = (props: Props) => {
               style={{flex: 1}}
               contentContainerStyle={{alignItems: 'center'}}>
               {projectList.map((item, index) => {
+                if( item.cover && item.cover[0]){
+                  console.log(item.cover[0].image)
+                }
                 return (
                   <Card
                     key={index}
@@ -400,6 +416,7 @@ export const OrganizationPage = (props: Props) => {
                     categoryImage={index}
                     title={item.name}
                     description={item.description}
+                    cover={item.cover &&  item.cover[0] ? item.cover[0].image : ''}
                     onPress={() =>
                       props.navigation.navigate('ProjectPage', {id: item.id!})
                     }

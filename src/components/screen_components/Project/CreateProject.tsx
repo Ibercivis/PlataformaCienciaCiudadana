@@ -48,6 +48,7 @@ import {useForm} from '../../../hooks/useForm';
 import {InfoModal, SaveProyectModal} from '../../utility/Modals';
 import {CommonActions} from '@react-navigation/native';
 import {Spinner} from '../../utility/Spinner';
+import { widthPercentageToDP } from 'react-native-responsive-screen';
 
 interface Props extends StackScreenProps<StackParams, 'CreateProject'> {}
 
@@ -1406,13 +1407,13 @@ export const CreateProject = ({navigation, route}: Props) => {
                   <View
                     key={x.id}
                     style={{
-                      width: RFPercentage(41),
+                      width: widthPercentageToDP(80),
                       flexDirection: 'row',
                       alignItems: 'center',
                       justifyContent: 'space-between',
                       marginVertical: RFPercentage(1),
                     }}>
-                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                    <View style={{flexDirection: 'row', alignItems: 'center', width:widthPercentageToDP(41)}}>
                       <View style={{}}>
                         <Hashtag
                           fill={'black'}

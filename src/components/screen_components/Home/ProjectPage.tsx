@@ -175,15 +175,25 @@ export const ProjectPage = (props: Props) => {
    */
   const onBack = () => {
     // props.navigation.popToTop();
-    if (!props.route.params.fromProfile) {
-      props.navigation.popToTop();
-    } else {
-      props.navigation.dispatch(
-        CommonActions.navigate({
-          name: 'HomeNavigator',
-        }),
-      );
-    }
+    // if (!props.route.params.fromProfile) {
+    //   props.navigation.popToTop();
+    // } else {
+    //   props.navigation.dispatch(
+    //     CommonActions.navigate({
+    //       name: 'HomeNavigator',
+    //     }),
+    //   );
+    // }
+    props.navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [
+          {
+            name: 'HomeNavigator',
+          }
+        ],
+      }),
+    );
   };
 
   /**
