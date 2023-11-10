@@ -165,7 +165,7 @@ export const Card = ({
                 // source={require(urii)}
                 source={
                   cover !== ''
-                    ? {uri: cover}
+                    ? {uri: imageUrl +cover}
                     : require('../../assets/backgrounds/nuevoproyecto.jpg')
                 }
                 style={{
@@ -234,7 +234,7 @@ export const Card = ({
                 <Image
                   source={
                     cover !== ''
-                      ? {uri: cover}
+                      ? {uri:imageUrl + cover}
                       : require('../../assets/backgrounds/nuevoproyecto.jpg')
                   }
                   style={{
@@ -345,7 +345,7 @@ export const Card = ({
                 // source={require(urii)}
                 source={
                   cover !== ''
-                    ? {uri: cover}
+                    ? {uri:imageUrl + cover}
                     : require('../../assets/backgrounds/nuevoproyecto.jpg')
                 }
                 style={{...style.imageBackground}}>
@@ -915,6 +915,7 @@ const style = StyleSheet.create({
     height: heightPercentageToDP(30),
     width: widthPercentageToDP(50),
     margin: 4,
+    paddingBottom: heightPercentageToDP(2),
     borderRadius: 10,
     backgroundColor: 'white',
     shadowColor: '#000',

@@ -25,7 +25,7 @@ import PencilSquare from '../../../assets/icons/general/pencil-square-1.svg';
 import Download from '../../../assets/icons/general/Vector-1.svg';
 import {CustomButton} from '../../utility/CustomButton';
 import {Colors} from '../../../theme/colors';
-import {Project, User} from '../../../interfaces/interfaces';
+import {Project, User, UserInfo} from '../../../interfaces/interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import citmapApi from '../../../api/citmapApi';
 import {HasTag} from '../../../interfaces/appInterfaces';
@@ -70,8 +70,10 @@ export const ProjectPage = (props: Props) => {
   const isCarousel = useRef(null);
 
   const [project, setProject] = useState<Project>();
+  const [creator, setCreator] = useState('');
   const [hastags, setHastags] = useState<HasTag[]>([]);
   const [imagesCharged, setImagesCharged] = useState<any[]>([]);
+  const [isValidPass, setIsValidPass] = useState(true);
   const [pass, setPass] = useState<PassValidate>({pass: '', pass2: ''});
 
   //#region MODAL NEW
@@ -190,7 +192,7 @@ export const ProjectPage = (props: Props) => {
         routes: [
           {
             name: 'HomeNavigator',
-          }
+          },
         ],
       }),
     );
@@ -200,11 +202,12 @@ export const ProjectPage = (props: Props) => {
    * metodo para ir al mapa
    */
   const navigateToMap = () => {
-    setWantParticipate(true);
     if (project) {
       if (project.is_private) {
+        
         showModalPass();
       } else {
+        setWantParticipate(true);
         if (permissions.locationStatus === 'granted') {
           // checkLocationPErmission();
           // props.navigation.navigate("PermissionsScreen")
@@ -249,17 +252,23 @@ export const ProjectPage = (props: Props) => {
               },
             },
           );
-          console.log(isValid);
           if (isValid.data) {
-            props.navigation.dispatch(
-              CommonActions.navigate({
-                name: 'ParticipateMap',
-                params: {id: 6},
-              }),
-            );
+            setIsValidPass(true)
+            hideModalPass()
+            if (permissions.locationStatus === 'granted') {
+              props.navigation.dispatch(
+                CommonActions.navigate({
+                  name: 'ParticipateMap',
+                  params: {id: 6},
+                }),
+              );
+            } else {
+              setHasPermission(false);
+            }
           }
         } catch (err) {
           console.log('password erronea');
+          setIsValidPass(false)
         }
       }
     }
@@ -291,7 +300,16 @@ export const ProjectPage = (props: Props) => {
         },
       );
 
-      
+      const creatoruser = await citmapApi.get<UserInfo>(
+        `/users/${resp.data.creator}/`,
+        {
+          headers: {
+            Authorization: token,
+          },
+        },
+      );
+
+      setCreator(creatoruser.data.username);
 
       if (userInfo.data.pk === resp.data.creator) {
         setCanEdit(true);
@@ -569,7 +587,7 @@ export const ProjectPage = (props: Props) => {
                           alignSelf: 'flex-start',
                           fontWeight: 'bold',
                         }}>
-                        {project?.creator}
+                        {creator}
                       </Text>
                     </View>
                     <Text
@@ -655,6 +673,7 @@ export const ProjectPage = (props: Props) => {
               hideModal={hideModalPass}
               onPress={hideModalPass}
               size={RFPercentage(6)}
+              helper={isValidPass}
               color={Colors.semanticSuccessLight}
               label="Escribe la contraseña del proyecto"
               setPass={value => navigateToMapPass(value)}
@@ -703,7 +722,7 @@ const styles = StyleSheet.create({
     zIndex: 999,
     backgroundColor: 'white',
     borderRadius: 100,
-    padding: RFPercentage(1.2)
+    padding: RFPercentage(1.2),
   },
   buttonEdit: {
     position: 'absolute',
@@ -712,7 +731,7 @@ const styles = StyleSheet.create({
     zIndex: 999,
     backgroundColor: 'white',
     borderRadius: 100,
-    padding: RFPercentage(1.2)
+    padding: RFPercentage(1.2),
   },
   buttonDownload: {
     position: 'absolute',
@@ -721,7 +740,7 @@ const styles = StyleSheet.create({
     zIndex: 999,
     backgroundColor: 'white',
     borderRadius: 100,
-    padding: RFPercentage(1.2)
+    padding: RFPercentage(1.2),
   },
 });
 

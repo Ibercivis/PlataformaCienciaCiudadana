@@ -49,6 +49,7 @@ import {InfoModal, SaveProyectModal} from '../../utility/Modals';
 import {CommonActions} from '@react-navigation/native';
 import {Spinner} from '../../utility/Spinner';
 import { widthPercentageToDP } from 'react-native-responsive-screen';
+import Toast from 'react-native-toast-message';
 
 interface Props extends StackScreenProps<StackParams, 'CreateProject'> {}
 
@@ -534,9 +535,14 @@ export const CreateProject = ({navigation, route}: Props) => {
         setActiveImageIndex(0);
         setIsImageCarged(true);
       }
-      console.log(imageBlob);
-      // setImageBlob()
-    });
+    }).catch(err => {
+      Toast.show({
+        type: 'info',
+        text1: 'Image',
+        // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+        text2: 'Imagen no seleccionada',
+      });
+    });;
   };
 
   //#endregion
@@ -722,6 +728,12 @@ export const CreateProject = ({navigation, route}: Props) => {
         );
       } else {
         showModalSave();
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+          text2: 'Error al crear el proyecto',
+        });
       }
     } catch (error) {
       if (error.response) {
@@ -731,12 +743,30 @@ export const CreateProject = ({navigation, route}: Props) => {
           'Estado de respuesta del servidor:',
           error.response.status,
         );
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+          text2: error.response.data,
+        });
       } else if (error.request) {
         // La solicitud se hizo pero no se recibió una respuesta (por ejemplo, no hay conexión)
         console.error('Error de solicitud:', error.request);
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+          text2: error.request,
+        });
       } else {
         // Se produjo un error en la configuración de la solicitud
         console.error('Error de configuración de la solicitud:', error.message);
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+          text2:  error.message,
+        });
       }
     }
   };
@@ -876,6 +906,12 @@ export const CreateProject = ({navigation, route}: Props) => {
         );
       } else {
         showModalSave();
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+          text2: 'No se ha podido editar el proyecto',
+        });
       }
     } catch (error) {
       if (error.response) {
@@ -885,12 +921,30 @@ export const CreateProject = ({navigation, route}: Props) => {
           'Estado de respuesta del servidor:',
           error.response.status,
         );
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+          text2: error.response.data,
+        });
       } else if (error.request) {
         // La solicitud se hizo pero no se recibió una respuesta (por ejemplo, no hay conexión)
         console.error('Error de solicitud:', error.request);
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+          text2: error.request,
+        });
       } else {
         // Se produjo un error en la configuración de la solicitud
         console.error('Error de configuración de la solicitud:', error.message);
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+          text2:  error.message,
+        });
       }
     }
   };
@@ -2176,6 +2230,7 @@ export const CreateProject = ({navigation, route}: Props) => {
           )}
         </View>
         <Spinner visible={waitingData} />
+        <Toast />
         {/* </TouchableWithoutFeedback> */}
       </SafeAreaView>
     </KeyboardAvoidingView>

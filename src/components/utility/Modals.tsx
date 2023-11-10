@@ -787,7 +787,7 @@ export const PassModal = ({
                       justifyContent: 'center',
                     }}>
                     <View style={{marginRight: '9%'}}>
-                      <Info width={size} height={size} fill={color} />
+                      <Info width={size} height={size} fill={'black'} />
                     </View>
                     <View style={{width: '60%'}}>
                       <Text
@@ -817,6 +817,7 @@ export const PassModal = ({
                       <Text style={{color: 'black'}}>Password </Text>
                       <InputText
                         // isInputText={() => setIsInputText(!isInputText)}
+                        isValid={helper}
                         label={'Escriba la contraseña'}
                         inputType={true}
                         multiline={false}
@@ -826,9 +827,9 @@ export const PassModal = ({
                       />
                     </View>
                     <TouchableOpacity
-                      activeOpacity={0.9}
+                      activeOpacity={0.5}
                       style={{
-                        backgroundColor: 'transparent',
+                        backgroundColor: 'white',
                         marginTop: '4%',
                         borderWidth: 1,
                         borderRadius: 10,
@@ -836,7 +837,7 @@ export const PassModal = ({
                         paddingVertical: RFPercentage(1),
                       }}
                       onPress={() => {
-                        hideModal(), setPass!(password);
+                        setPass!(password);
                       }}>
                       <Text
                         style={{

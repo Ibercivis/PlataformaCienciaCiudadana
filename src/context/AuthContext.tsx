@@ -122,7 +122,7 @@ export const AuthProvider = ({children}: any) => {
     } catch (err) {
       //TODO arreglar para que capture los errores bien
       console.log(err);
-      return false;
+      // return false;
 
       let textError = '';
       const dataError = JSON.stringify(err.response.data, null);

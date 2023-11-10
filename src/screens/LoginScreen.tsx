@@ -40,6 +40,7 @@ import {ForgotPasswordTemplate} from '../components/screen_components/Authentica
 import {Spinner} from '../components/utility/Spinner';
 import { heightPercentageToDP, widthPercentageToDP } from 'react-native-responsive-screen';
 import { SaveProyectModal } from '../components/utility/Modals';
+import Toast from 'react-native-toast-message';
 
 interface Props extends StackScreenProps<any, any> {}
 
@@ -149,6 +150,12 @@ export const LoginScreen = ({navigation, route}: Props) => {
     if (errorMessage.length === 0) return;
     setUserError(true);
     setRecoveryPassErr(true);
+    Toast.show({
+      type: 'error',
+      text1: 'Error',
+      // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+      text2: errorMessage,
+    });
   }, [errorMessage]);
 
   //#endregion
@@ -1213,7 +1220,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                 </View>
 
                 {/* loggin buttons */}
-                <View style={styles.loginButtonsContainer}>
+                {/* <View style={styles.loginButtonsContainer}>
                   <CustomButtonOutline
                     backgroundColor="white"
                     fontColor="black"
@@ -1237,7 +1244,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                     }
                     onPress={() => console.log()}
                   />
-                </View>
+                </View> */}
 
                 {/* back */}
                 <View style={{marginHorizontal: '26%', marginTop: '1%'}}>
@@ -1674,6 +1681,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
               </View>
             </View>
             <Spinner visible={loading} />
+            
             <SaveProyectModal
                 visible={saveModal}
                 hideModal={hideModalSave}
@@ -1684,6 +1692,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                 helper={false}
               />
           </ScrollView>
+          <Toast position='bottom' />
         </KeyboardAvoidingView>
       {/* </ScrollView> */}
       {/* <LoginTemplate navigation={navigation} route={route} /> */}

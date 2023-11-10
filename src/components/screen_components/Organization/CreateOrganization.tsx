@@ -36,6 +36,7 @@ import citmapApi from '../../../api/citmapApi';
 import {useForm} from '../../../hooks/useForm';
 import {CommonActions} from '@react-navigation/native';
 import {Spinner} from '../../utility/Spinner';
+import Toast from 'react-native-toast-message';
 
 interface Props extends StackScreenProps<StackParams, 'CreateOrganization'> {}
 
@@ -290,7 +291,21 @@ export const CreateOrganization = ({navigation, route}: Props) => {
         } else {
           showModalControlSizeImage();
         }
+      }else{
+        Toast.show({
+          type: 'info',
+          text1: 'Image',
+          // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+          text2: 'Imagen no seleccionada',
+        });
       }
+    }).catch(err => {
+      Toast.show({
+        type: 'info',
+        text1: 'Image',
+        // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+        text2: 'Imagen no seleccionada',
+      });
     });
   };
 
@@ -319,7 +334,14 @@ export const CreateOrganization = ({navigation, route}: Props) => {
           showModalControlSizeImage();
         }
       }
-    });
+    }).catch(err => {
+      Toast.show({
+        type: 'info',
+        text1: 'Image',
+        // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+        text2: 'Imagen no seleccionada',
+      });
+    });;
   };
 
   const handleInputChangeUser = (text: string) => {
@@ -528,8 +550,39 @@ export const CreateOrganization = ({navigation, route}: Props) => {
             params: {id: organizationCreated.data.id, isNew: true},
           }),
         );
-      } catch (err) {
-        console.log(err);
+      } catch (error) {
+        if (error.response) {
+          // El servidor respondió con un estado de error (por ejemplo, 4xx, 5xx)
+          console.error('Error de respuesta del servidor:', error.response.data);
+          console.error(
+            'Estado de respuesta del servidor:',
+            error.response.status,
+          );
+          Toast.show({
+            type: 'error',
+            text1: 'Error',
+            // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+            text2: error.response.data,
+          });
+        } else if (error.request) {
+          // La solicitud se hizo pero no se recibió una respuesta (por ejemplo, no hay conexión)
+          console.error('Error de solicitud:', error.request);
+          Toast.show({
+            type: 'error',
+            text1: 'Error',
+            // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+            text2: error.request,
+          });
+        } else {
+          // Se produjo un error en la configuración de la solicitud
+          console.error('Error de configuración de la solicitud:', error.message);
+          Toast.show({
+            type: 'error',
+            text1: 'Error',
+            // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+            text2:  error.message,
+          });
+        }
       }
     }
   };
@@ -624,8 +677,39 @@ export const CreateOrganization = ({navigation, route}: Props) => {
             params: {id: route.params.id, isNew: false},
           }),
         );
-      } catch (err) {
-        console.log(err);
+      } catch (error) {
+        if (error.response) {
+          // El servidor respondió con un estado de error (por ejemplo, 4xx, 5xx)
+          console.error('Error de respuesta del servidor:', error.response.data);
+          console.error(
+            'Estado de respuesta del servidor:',
+            error.response.status,
+          );
+          Toast.show({
+            type: 'error',
+            text1: 'Error',
+            // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+            text2: error.response.data,
+          });
+        } else if (error.request) {
+          // La solicitud se hizo pero no se recibió una respuesta (por ejemplo, no hay conexión)
+          console.error('Error de solicitud:', error.request);
+          Toast.show({
+            type: 'error',
+            text1: 'Error',
+            // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+            text2: error.request,
+          });
+        } else {
+          // Se produjo un error en la configuración de la solicitud
+          console.error('Error de configuración de la solicitud:', error.message);
+          Toast.show({
+            type: 'error',
+            text1: 'Error',
+            // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+            text2:  error.message,
+          });
+        }
       }
     }
   };
@@ -1143,6 +1227,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
             </ScrollView>
           </View>
           <Spinner visible={waitingData} />
+          <Toast />
         </SafeAreaView>
       </KeyboardAvoidingView>
     </>

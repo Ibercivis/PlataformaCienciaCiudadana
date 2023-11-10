@@ -1,13 +1,16 @@
 import 'react-native-gesture-handler';
 
 import React from 'react';
-import {Provider as PaperProvider} from 'react-native-paper';
+
+
+
 import {PermissionsProvider} from './src/context/PermissionsContext';
 import {NavigationContainer, DefaultTheme} from '@react-navigation/native';
 import {Navigator} from './src/navigation/Navigator';
 import {AuthProvider} from './src/context/AuthContext';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {ModalProvider} from './src/context/ModalContext';
+import { PaperProvider } from 'react-native-paper';
 
 const App = () => {
   const tema = DefaultTheme;

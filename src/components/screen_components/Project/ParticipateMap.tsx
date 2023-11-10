@@ -588,6 +588,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
       const updatedQuestions = [...questions];
       //hay que recorrer las question y si es obligatorio, y no se ha escrito, se hace un false para que no guarde y muestre un error
       updatedQuestions.forEach((question, index) => {
+        if(question.answer_type === 'IMG'){ return }
         if (question.mandatory) {
           console.log('es true el mandatory');
           form.data.map(x => {
@@ -613,7 +614,9 @@ export const ParticipateMap = ({navigation, route}: Props) => {
           formData.append(image.key.toString(), image.value);
         });
       }
-      console.log(JSON.stringify(newFormFiltered, null, 2));
+     
+      // console.log(JSON.stringify(newFormFiltered, null, 2));
+      // console.log(JSON.stringify(newFormFiltered, null, 2));
 
       try {
         if (validate) {
@@ -623,7 +626,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
               Authorization: token,
             },
           });
-          console.log('si crea la marca' + JSON.stringify(marca.data, null, 2));
+          
           setIsCreatingObservation(false);
           setShowSelectedObservation(clearSelectedObservation());
           setObservationListCreator([]);
@@ -642,6 +645,12 @@ export const ParticipateMap = ({navigation, route}: Props) => {
 
         setWaitingData(false);
       } catch (error) {
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+          text2: 'Los campos obligatorios tienen que ser rellenados',
+        });
         setWaitingData(false);
         if (error.response) {
           // Se recibió una respuesta del servidor con un código de estado de error
@@ -705,7 +714,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
           formData.append(image.key.toString(), image.value);
       });
     }
-
+    console.log(JSON.stringify(formData, null, 2));
     try {
       const marca = await citmapApi.patch(
         `/observations/${showSelectedObservation.id}/`,
@@ -989,7 +998,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                             position: 'absolute',
                             top: RFPercentage(2),
                           }}>
-                          <Text style={{color: 'black'}}>
+                          <Text style={{color: 'black', fontSize: FontSize.fontSizeText10}}>
                             Marcador Nº {selectedObservation.id}
                           </Text>
                         </View>

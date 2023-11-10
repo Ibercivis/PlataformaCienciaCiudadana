@@ -131,19 +131,18 @@ export const globalStyles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignContent: 'center',
-    borderColor: 'white',
+    borderColor: '#c9c4c4',
     borderRadius: 10,
-    borderWidth: 1.2,
+    borderWidth: 1,
     marginTop: '2.5%',
     overflow: 'hidden',
     shadowColor: 'rgba(0,0,0,0.25)',
     shadowOffset: {
-      width: 0,
-      height: 2,
+      width: 10,
+      height: 10,
     },
-    shadowOpacity: 1,
-    shadowRadius: 4,
-
-    elevation: 1.25,
+    shadowOpacity: 10,
+    shadowRadius: 10,
+    elevation: 0,
   },
 });

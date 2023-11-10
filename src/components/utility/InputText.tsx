@@ -68,7 +68,7 @@ export const InputText = ({
   isValid = true,
 }: Props) => {
   // variable que establece por defecto el color del input cuando no es presionado y que al ser presionado, cambiará
-  const [onBlurInput, setOnBlurInput] = useState('transparent');
+  const [onBlurInput, setOnBlurInput] = useState('#c9c4c4');
   const [onBlurTextInput, setOnBlurTextInput] = useState('#c9c4c4');
   const [iconColorFocus, setIconColorFocus] = useState('#c9c4c4');
   const {passwordVisibility, rightIcon, handlePasswordVisibility} =
@@ -86,14 +86,15 @@ export const InputText = ({
    * Establece el color del borde del input y del placeholder a gris cuando se sale del focus
    */
   const customBlurColor = () => {
-    setOnBlurInput('transparent');
+    setOnBlurInput('#c9c4c4');
     setOnBlurTextInput('#c9c4c4');
     setIconColorFocus('#c9c4c4');
   };
 
   return (
     // <View style={styles.container}>
-    <View style={{...globalStyles.inputContainer, borderColor: isValid ? onBlurInput : Colors.semanticWarningDark, width:'100%' }}>
+    <View style={{...globalStyles.inputContainer, 
+    borderColor: isValid ? onBlurInput : Colors.semanticWarningDark, width:'100%' }}>
       {iconLeft && (
         <View
           style={{
@@ -107,9 +108,9 @@ export const InputText = ({
         </View>
       )}
       <TextInput
-      theme={{
-        fonts: {FontFamily: FontFamily.NotoSansDisplayLight},
-      }}
+      // theme={{
+      //   fonts: {FontFamily: FontFamily.NotoSansDisplayLight},
+      // }}
         style={{
           width: '80%',
           fontSize: FontSize.fontSizeText13,
