@@ -188,3 +188,5 @@ Step 3: Now in this android folder, run this command
 
 There! you’ll find the apk file in the following path:
 yourProject/android/app/build/outputs/apk/debug/app-debug.apk
+
+https://www.npmjs.com/package/react-native-fs esto está documentado, es para la descarga de proyectos

@@ -8,6 +8,8 @@ import {
   Share,
   TouchableOpacity,
   StatusBar,
+  Platform,
+  PermissionsAndroid,
 } from 'react-native';
 import {Text} from 'react-native-paper';
 import {RFPercentage} from 'react-native-responsive-fontsize';
@@ -38,6 +40,8 @@ import {
 } from '@react-navigation/native';
 import {Spinner} from '../../utility/Spinner';
 import {PermissionsContext} from '../../../context/PermissionsContext';
+import Toast from 'react-native-toast-message';
+import RNFS from 'react-native-fs';
 
 const data = [
   require('../../../assets/backgrounds/login-background.jpg'),
@@ -204,7 +208,6 @@ export const ProjectPage = (props: Props) => {
   const navigateToMap = () => {
     if (project) {
       if (project.is_private) {
-        
         showModalPass();
       } else {
         setWantParticipate(true);
@@ -253,8 +256,8 @@ export const ProjectPage = (props: Props) => {
             },
           );
           if (isValid.data) {
-            setIsValidPass(true)
-            hideModalPass()
+            setIsValidPass(true);
+            hideModalPass();
             if (permissions.locationStatus === 'granted') {
               props.navigation.dispatch(
                 CommonActions.navigate({
@@ -268,10 +271,98 @@ export const ProjectPage = (props: Props) => {
           }
         } catch (err) {
           console.log('password erronea');
-          setIsValidPass(false)
+          setIsValidPass(false);
         }
       }
     }
+  };
+
+  const downloadProjectObservations = async () => {
+    try {
+      let token;
+
+      while (!token) {
+        token = await AsyncStorage.getItem('token');
+      }
+      const download = await citmapApi.get(
+        `/project/${project?.id}/download_observations/`,
+        {
+          headers: {
+            Authorization: token,
+          },
+          responseType: 'blob',
+        },
+      );
+
+      const hasPermission = await requestStoragePermission();
+      if (!hasPermission) {
+        console.log('No se concedieron los permisos de almacenamiento');
+        Toast.show({
+          type: 'error',
+          text1: 'Sin permisos',
+          text2: 'No se concedieron los permisos de almacenamiento',
+        });
+        return;
+      }
+
+      // console.log(JSON.stringify(download.data, null, 2));
+     
+      await saveFile(download.data, `observations${Date.now()}.csv`);
+    } catch (error) {
+      console.log(error);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Error en la descarga del servidor',
+      });
+    }
+  };
+
+  const saveFile = async (fileBlob: any, filename: any) => {
+    const path = `${RNFS.DownloadDirectoryPath}/${filename}`;
+    
+    const file = new Blob([fileBlob], { type: 'text/csv', lastModified: Date.now() });
+    const reader = new FileReader();
+    reader.onload = () => {
+        RNFS.writeFile(path, reader.result as string, 'utf8')
+            .then(() => {
+                console.log(`Archivo guardado en: ${path}`);
+                Toast.show({
+                  type: 'info',
+                  text1: 'Descarga completada',
+                  text2: `Archivo guardado en: ${path}`,
+                });
+            })
+            .catch(error => {
+                console.error('Error al guardar el archivo:', error);
+            });
+    };
+    reader.onerror = error => console.error('Error al leer el archivo:', error);
+    reader.readAsText(file);
+};
+
+  const requestStoragePermission = async () => {
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+          {
+            title: 'Permiso de Almacenamiento',
+            message:
+              'La app necesita acceso al almacenamiento para descargar archivos.',
+            buttonNeutral: 'Preguntar Luego',
+            buttonNegative: 'Cancelar',
+            buttonPositive: 'Aceptar',
+          },
+        );
+        return granted === PermissionsAndroid.RESULTS.GRANTED;
+      } catch (err) {
+        console.warn(err);
+        return false;
+      }
+    }
+
+    return true;
   };
 
   const getProjectApi = async () => {
@@ -650,7 +741,8 @@ export const ProjectPage = (props: Props) => {
               )}
               {/* boton download */}
               <TouchableOpacity
-                style={canEdit ? styles.buttonDownload : styles.buttonEdit}>
+                style={canEdit ? styles.buttonDownload : styles.buttonEdit}
+                onPress={downloadProjectObservations}>
                 <Download
                   width={RFPercentage(2.5)}
                   height={RFPercentage(2.5)}
@@ -682,6 +774,7 @@ export const ProjectPage = (props: Props) => {
           </ScrollView>
         </SafeAreaView>
       )}
+      <Toast position="bottom" />
     </>
   );
 };

@@ -268,7 +268,7 @@ export const Card = ({
                 </Text>
                 <View
                   style={{
-                    marginTop: '15%',
+                    marginTop: heightPercentageToDP(2.5),
                     flexDirection: 'row',
                     alignContent: 'center',
                     justifyContent: 'space-between',

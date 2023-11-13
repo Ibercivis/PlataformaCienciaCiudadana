@@ -780,6 +780,79 @@ export const ParticipateMap = ({navigation, route}: Props) => {
     }
   };
 
+  const onDeleteObservation = async () => {
+    let token;
+    while(!token){
+      token = await AsyncStorage.getItem('token');
+    }
+    try {
+      const marca = await citmapApi.delete(
+        `/observations/${showSelectedObservation.id}/`,
+        {
+          headers: {
+            Authorization: token,
+          },
+        },
+      );
+      Toast.show({
+        type: 'success',
+        text1: 'Borrado',
+        // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+        text2: 'Marca borrada con éxito',
+      });
+      setIsCreatingObservation(false);
+      setShowSelectedObservation(clearSelectedObservation());
+      setObservationListCreator([]);
+      setObservationList([]);
+      await getObservation();
+      setShowMap(true);
+      setWaitingData(false);
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+        text2: 'No se pudo borrar la marca',
+      });
+      setWaitingData(false);
+      if (error.response) {
+        // Se recibió una respuesta del servidor con un código de estado de error
+
+        if (error.response.status === 400) {
+          console.log(
+            'Error 400: Solicitud incorrecta - La solicitud tiene un formato incorrecto o faltan datos.',
+          );
+        } else if (error.response.status === 401) {
+          console.log(
+            'Error 401: No autorizado - La solicitud requiere autenticación.',
+          );
+        } else if (error.response.status === 403) {
+          console.log(
+            'Error 403: Prohibido - No tienes permiso para acceder a este recurso.',
+          );
+        } else if (error.response.status === 404) {
+          console.log(
+            'Error 404: No encontrado - El recurso solicitado no existe en el servidor.',
+          );
+        } else {
+          console.log(`Error ${error.response.status}: Error en la solicitud.`);
+        }
+
+        // Puedes acceder a detalles adicionales de la respuesta del servidor:
+        console.log('Mensaje del servidor:', error.response.data);
+        console.log('Encabezados de respuesta:', error.response.headers);
+      } else if (error.request) {
+        // La solicitud se realizó, pero no se recibió una respuesta
+        console.log(
+          'Error de red: No se pudo recibir una respuesta del servidor.',
+        );
+      } else {
+        // Se produjo un error durante la configuración de la solicitud
+        console.log('Error de configuración de la solicitud:', error.message);
+      }
+    }
+  }
+
   //#endregion
 
   //#region BUTTONS
@@ -1015,10 +1088,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                             fontSize={FontSize.fontSizeText10}
                             height={RFPercentage(3)}
                             onPress={() => {
-                              setShowMap(false),
-                                console.log(
-                                  JSON.stringify(selectedObservation, null, 2),
-                                );
+                              setShowMap(false)
                             }}
                             label="Ver más"
                             backgroundColor={Colors.primaryLigth}
@@ -1279,6 +1349,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                   */}
                   {userInfo.pk === showSelectedObservation.creator &&
                   !isCreatingObservation ? (
+                    <>
                     <View
                       style={{
                         width: '70%',
@@ -1292,6 +1363,21 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                         backgroundColor={Colors.primaryLigth}
                       />
                     </View>
+                    <View
+                      style={{
+                        width: '70%',
+                        marginHorizontal: RFPercentage(1),
+                        marginBottom: '5%',
+                      }}>
+                      <CustomButton
+                        disabled={onlyRead}
+                        onPress={() => onDeleteObservation()}
+                        label="Borrar marca"
+                        backgroundColor={Colors.semanticDangerLight}
+                      />
+                    </View>
+                    </>
+                    
                   ) : userInfo.pk !== showSelectedObservation.creator &&
                     !isCreatingObservation ? (
                     <View

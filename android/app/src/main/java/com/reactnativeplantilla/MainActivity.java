@@ -8,6 +8,8 @@ import org.devio.rn.splashscreen.SplashScreen;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
 
+import com.rnfs.RNFSPackage;
+
 public class MainActivity extends ReactActivity {
 
   /**
