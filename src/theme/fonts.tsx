@@ -13,14 +13,15 @@ export const FontSize = {
   
   // TODOS LOS FONT SIZE TENDRO DE LA APP TIENEN QUE SER APLICADOS CON /fontScale usando const {fontScale} = useWindowDimensions();
   // Esto se usa para que escale el tamaño de letras con las diferentes pantallas
-  fontSizeText10: 10,
-  // fontSizeText10: RFPercentage(1.3),
+  // fontSizeText10: 10,
+  fontSizeText10: RFPercentage(1.3),
   fontSizeText13: 13,
   // fontSizeText13: RFPercentage(1.7),
   // fontSizeText14: 14,
   fontSizeText14: RFPercentage(1.8),
-  fontSizeText18: 18,
+  fontSizeText15: RFPercentage(2),
   fontSizeText17: RFPercentage(2.3),
+  fontSizeText18: 18,
   fontSizeText20: 20,
   // fontSizeText20: RFPercentage(2.7),
 };

@@ -26,6 +26,7 @@ interface Props {
   iconColor?: string;
   outlineColor?: string;
   disabled?: boolean;
+  borderRadius?: number;
 }
 
 export const CustomButton = ({
@@ -42,6 +43,7 @@ export const CustomButton = ({
   fontFamily = FontFamily.NotoSansDisplayMedium,
   outlineColor,
   disabled = false,
+  borderRadius = 12,
 }: Props) => {
   const {fontScale} = useWindowDimensions();
   return (
@@ -53,6 +55,7 @@ export const CustomButton = ({
         ...styles.touchable,
         height: height,
         backgroundColor: backgroundColor,
+        borderRadius: borderRadius,
         borderColor: outlineColor,
         borderWidth: outlineColor ? 1 : 0,
       }}>
@@ -104,7 +107,7 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'center',
     
-    borderRadius: 12,
+    
     // marginBottom: '4%',
     // marginHorizontal: '2%',
     marginTop: '2.5%',

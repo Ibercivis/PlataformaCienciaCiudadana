@@ -14,7 +14,7 @@ import People from '../../assets/icons/general/people.svg';
 import Heart from '../../assets/icons/general/heart.svg';
 import HeartFill from '../../assets/icons/general/heart-fill.svg';
 import Plus from '../../assets/icons/general/plus-lg.svg';
-import {FontSize, FontWeight} from '../../theme/fonts';
+import {FontFamily, FontSize, FontWeight} from '../../theme/fonts';
 import {Colors} from '../../theme/colors';
 import {CustomButton} from './CustomButton';
 import {SvgIcons} from './SvgIcons';
@@ -26,12 +26,12 @@ import {
 import {Topic} from '../../interfaces/appInterfaces';
 
 const categoryIcons = [
+  require('../../assets/icons/category/Group-6.png'),
   require('../../assets/icons/category/Group-1.png'),
   require('../../assets/icons/category/Group-2.png'),
-  require('../../assets/icons/category/Group-3.png'),
   require('../../assets/icons/category/Group-4.png'),
+  require('../../assets/icons/category/Group-3.png'),
   require('../../assets/icons/category/Group-5.png'),
-  require('../../assets/icons/category/Group-6.png'),
   require('../../assets/icons/category/Group-7.png'),
   require('../../assets/icons/category/Group-8.png'),
   require('../../assets/icons/category/Group.png'),
@@ -92,7 +92,7 @@ export const Card = ({
                     alignContent: 'center',
                     alignItems: 'center',
                     alignSelf: 'center',
-                    padding: '30%',
+                    padding: '2%',
                   }}>
                   {/* <Image
                     style={{alignSelf: 'center'}}
@@ -101,7 +101,7 @@ export const Card = ({
                   <SvgIcons
                     id={categoryImage}
                     color={pressed ? '#fff' : '#000'}
-                    size={RFPercentage(7)}
+                    size={RFPercentage(12)}
                   />
                 </View>
                 <View
@@ -112,7 +112,7 @@ export const Card = ({
                     height: '26%',
                     flexDirection: 'row',
                     marginHorizontal: '2%',
-                    marginBottom: '3%',
+                    marginBottom: '9%',
                   }}>
                   <Text
                     style={{
@@ -165,7 +165,7 @@ export const Card = ({
                 // source={require(urii)}
                 source={
                   cover !== ''
-                    ? {uri: imageUrl +cover}
+                    ? {uri: imageUrl + cover}
                     : require('../../assets/backgrounds/nuevoproyecto.jpg')
                 }
                 style={{
@@ -179,12 +179,15 @@ export const Card = ({
                       marginBottom: '5%',
                       marginLeft: '10%',
                       marginRight: '10%',
-                      marginTop: RFPercentage(4),
+                      marginTop: RFPercentage(7),
                       backgroundColor: 'white',
                       alignSelf: 'flex-start',
                       paddingHorizontal: RFPercentage(0.5),
+                      fontSize: FontSize.fontSizeText13,
+                      color: 'black',
+                      fontFamily: FontFamily.NotoSansDisplayMedium,
                     }}>
-                    {title}
+                    {title.length > 20 ? title.slice(0, 20) + '...' : title}
                   </Text>
                 </View>
               </ImageBackground>
@@ -222,7 +225,10 @@ export const Card = ({
         );
       case 'importants':
         return (
-          <TouchableOpacity style={style.importants} onPress={onPress}>
+          <TouchableOpacity
+            style={style.importants}
+            onPress={onPress}
+            activeOpacity={0.8}>
             <View>
               <View
                 style={{
@@ -234,32 +240,44 @@ export const Card = ({
                 <Image
                   source={
                     cover !== ''
-                      ? {uri:imageUrl + cover}
+                      ? {uri: imageUrl + cover}
                       : require('../../assets/backgrounds/nuevoproyecto.jpg')
                   }
                   style={{
                     width: '100%',
                     height: '100%',
+                    borderTopLeftRadius: 10,
+                    borderTopRightRadius: 10,
                     // resizeMode: 'cover',
                   }}
                 />
               </View>
               <View
-                style={{marginHorizontal: 14, marginTop: 13, marginBottom: 6}}>
+                style={{
+                  marginHorizontal: RFPercentage(2),
+                  marginTop: RFPercentage(1.4),
+                  marginBottom: 6,
+                }}>
                 <Text
                   style={{
                     // backgroundColor: 'white',
-                    marginBottom: 9,
+                    marginBottom: RFPercentage(0.4),
                     alignSelf: 'flex-start',
-                    fontSize: FontSize.fontSizeText13,
+                    fontSize: FontSize.fontSizeText15,
+                    fontWeight: '600',
+                    color: 'black',
+                    fontFamily: FontFamily.NotoSansDisplayMedium,
                   }}>
-                  {title.length > 15 ? title.slice(0, 14) + '...' : title}
+                  {title.length > 25 ? title.slice(0, 25) + '...' : title}
                 </Text>
                 <Text
                   style={{
                     // backgroundColor: 'white',
                     alignSelf: 'flex-start',
                     color: 'blue',
+                    fontSize: FontSize.fontSizeText13,
+                    // fontWeight: '500',
+                    fontFamily: FontFamily.NotoSansDisplayRegular,
                   }}>
                   {/* {description} */}
                   {description.length > 20
@@ -271,7 +289,7 @@ export const Card = ({
                     marginTop: heightPercentageToDP(2.5),
                     flexDirection: 'row',
                     alignContent: 'center',
-                    justifyContent: 'space-between',
+                    // justifyContent: 'space-between',
                     // backgroundColor:'red'
                   }}>
                   {/* <IconBootstrap name={'plus'} size={20} color={'black'} /> */}
@@ -286,13 +304,22 @@ export const Card = ({
                     </Text>
                   </View>
                   <TouchableOpacity
+                    activeOpacity={1}
                     onPress={onLike}
-                    style={{flexDirection: 'row'}}>
+                    style={{
+                      flexDirection: 'row',
+                      backgroundColor: 'transparent',
+                      marginLeft: RFPercentage(2),
+                    }}>
                     {/* <IconBootstrap name={'plus'} size={20} color={'black'} /> */}
                     {boolHelper ? (
-                      <HeartFill width={16} height={16} color={'#ff0000'} />
+                      <View style={{top: 1}}>
+                        <HeartFill width={16} height={16} color={'#ff0000'} />
+                      </View>
                     ) : (
-                      <Heart width={16} height={16} color={'#000000'} />
+                      <View style={{top: 1}}>
+                        <Heart width={16} height={16} color={'#000000'} />
+                      </View>
                     )}
                     <Text
                       style={{
@@ -345,7 +372,7 @@ export const Card = ({
                 // source={require(urii)}
                 source={
                   cover !== ''
-                    ? {uri:imageUrl + cover}
+                    ? {uri: imageUrl + cover}
                     : require('../../assets/backgrounds/nuevoproyecto.jpg')
                 }
                 style={{...style.imageBackground}}>
@@ -353,14 +380,19 @@ export const Card = ({
                   <Text
                     style={{
                       // textAlign: 'center',
-                      marginBottom: '5%',
+                      marginBottom: '4%',
                       marginLeft: '10%',
                       marginRight: '10%',
-                      marginTop: RFPercentage(8),
+                      marginTop: RFPercentage(12),
+                      paddingHorizontal: RFPercentage(0.5),
                       backgroundColor: 'white',
                       alignSelf: 'flex-start',
+                      fontSize: FontSize.fontSizeText15,
+                      fontWeight: '600',
+                      color: 'black',
+                      fontFamily: FontFamily.NotoSansDisplayMedium,
                     }}>
-                    {title}
+                    {title.length > 25 ? title.slice(0, 25) + '...' : title}
                   </Text>
                   <Text
                     style={{
@@ -368,10 +400,13 @@ export const Card = ({
                       marginBottom: '5%',
                       marginLeft: '10%',
                       marginRight: '10%',
-                      //   marginTop: 50,
-                      backgroundColor: 'blue',
+                      paddingHorizontal: RFPercentage(0.5),
+                      backgroundColor: Colors.primaryLigth,
                       alignSelf: 'flex-start',
                       color: 'white',
+                      fontSize: FontSize.fontSizeText13,
+                      fontWeight: '600',
+                      fontFamily: FontFamily.NotoSansDisplayRegular,
                     }}>
                     {description.length > 20
                       ? description.slice(0, 20) + '...'
@@ -445,8 +480,12 @@ export const Card = ({
                     //   backgroundColor: 'red',
                     alignSelf: 'center',
                     justifyContent: 'center',
+                    fontSize: FontSize.fontSizeText15,
+                    fontWeight: 'normal',
+                    color: 'black',
+                    fontFamily: FontFamily.NotoSansDisplayMedium,
                   }}>
-                  {title}
+                  {title.length > 25 ? title.slice(0, 25) + '...' : title}
                 </Text>
               </View>
             </View>
@@ -518,10 +557,14 @@ export const Card = ({
                 <Text
                   style={{
                     // backgroundColor: 'blue',
-                    marginBottom: '1%',
+                    // marginBottom: '1%',x
                     alignSelf: 'flex-start',
+                    fontSize: FontSize.fontSizeText17,
+                    // fontWeight: '600',
+                    color: 'black',
+                    fontFamily: FontFamily.NotoSansDisplayMedium,
                   }}>
-                  {title}
+                  {title.length > 25 ? title.slice(0, 25) + '...' : title}
                 </Text>
                 {/* <Text
                   style={{
@@ -553,6 +596,7 @@ export const Card = ({
                     // backgroundColor: 'red',
                     alignSelf: 'flex-start',
                     marginBottom: '2%',
+                    marginTop: RFPercentage(2),
                     // padding: RFPercentage(1)
                   }}>
                   {description}
@@ -733,7 +777,7 @@ export const Card = ({
               <View
                 style={{
                   alignSelf: 'center',
-                  width: '30%',
+                  width: '36%',
                   // alignContent: 'center',
                   // alignItems: 'center',
                   backgroundColor: 'transparent',
@@ -745,7 +789,7 @@ export const Card = ({
                   // source={require(urii)}
                   source={
                     cover !== ''
-                      ? {uri:  imageUrl +cover}
+                      ? {uri: imageUrl + cover}
                       : require('../../assets/backgrounds/nuevoproyecto.jpg')
                   }
                   style={{height: '100%'}}>
@@ -754,11 +798,12 @@ export const Card = ({
                       style={{
                         // textAlign: 'center',
                         marginBottom: '1%',
-                        marginLeft: '10%',
-                        marginRight: '10%',
-                        top: RFPercentage(9),
+                        marginLeft: '4%',
+                        marginRight: '4%',
+                        top: RFPercentage(13),
                         backgroundColor: 'white',
                         alignSelf: 'flex-start',
+                        paddingHorizontal: RFPercentage(0.5)
                       }}>
                       {/* {title} */}
                       {title.length > 20 ? title.slice(0, 20) + '...' : title}
@@ -773,18 +818,21 @@ export const Card = ({
                   // marginHorizontal: RFPercentage(1),
                   marginTop: RFPercentage(1),
                   // marginBottom: 6,
-                  width: '70%',
+                  width: '100%',
                 }}>
                 <Text
                   style={{
-                    // backgroundColor: 'white',
+                    // backgroundColor: 'red',
                     alignSelf: 'stretch',
                     marginTop: '4%',
                     marginHorizontal: RFPercentage(2),
                     fontSize: FontSize.fontSizeText13,
                     height: '60%',
+                    width:'60%'
                   }}>
-                  {description.length > 120 ? description.slice(0, 120) + '...' : description}
+                  {description.length > 120
+                    ? description.slice(0, 120) + '...'
+                    : description}
                 </Text>
                 <View
                   style={{
@@ -793,7 +841,7 @@ export const Card = ({
                     flexDirection: 'row',
                     alignContent: 'center',
                     alignItems: 'center',
-                    justifyContent: 'space-between',
+                    // justifyContent: 'space-between',
                     alignSelf: 'stretch',
                     height: '30%',
                   }}>
@@ -841,17 +889,20 @@ export const Card = ({
                   {/* ver mas */}
                   <View
                     style={{
-                      width: RFPercentage(10),
-                      marginHorizontal: RFPercentage(0),
+                      width: RFPercentage(9),
+                      left: RFPercentage(5),
                       bottom: 2,
                       borderRadius: 100,
                     }}>
                     <CustomButton
+                    height={RFPercentage(3.4)}
+                      borderRadius={11}
                       onPress={() => console.log('pressed')}
                       label="Ver más "
                       backgroundColor={Colors.primaryLigth}
                       iconRight="arrow-right"
                       iconColor="white"
+                      fontSize={FontSize.fontSizeText10}
                     />
                   </View>
                 </View>
@@ -876,8 +927,8 @@ const style = StyleSheet.create({
   category: {
     height: RFPercentage(15),
     width: RFPercentage(11.5),
-    marginHorizontal: 4,
-    marginVertical: 4,
+    // marginHorizontal: 4,
+    marginVertical: RFPercentage(1),
     backgroundColor: 'white',
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
@@ -890,6 +941,7 @@ const style = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 1.41,
     elevation: 2,
+    marginRight: RFPercentage(2),
   },
   newProject: {
     height: RFPercentage(13),
@@ -912,8 +964,8 @@ const style = StyleSheet.create({
   },
   importants: {
     // height: RFPercentage(30),
-    height: heightPercentageToDP(30),
-    width: widthPercentageToDP(50),
+    height: heightPercentageToDP(38),
+    width: widthPercentageToDP(52),
     margin: 4,
     paddingBottom: heightPercentageToDP(2),
     borderRadius: 10,
@@ -928,13 +980,13 @@ const style = StyleSheet.create({
     elevation: 2,
   },
   imageBackgroundImportants: {
-    height: '57%',
+    height: '68%',
     // borderRadius: 10,
   },
 
   interesting: {
     height: '90%',
-    width: widthPercentageToDP(40),
+    width: widthPercentageToDP(38),
     margin: 4,
     borderRadius: 10,
     backgroundColor: 'white',
@@ -956,17 +1008,25 @@ const style = StyleSheet.create({
     // height: '100%',
     // width:'100%',
     marginTop: RFPercentage(1),
-    height: heightPercentageToDP(12),
-    width: widthPercentageToDP(25),
+    height: heightPercentageToDP(13),
+    width: widthPercentageToDP(27),
     // borderRadius: 10,
     alignSelf: 'center',
     // padding: '30%',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 0.1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 7,
   },
   touchableOrganization: {
     // height: '100%',
-    width: RFPercentage(18),
-    margin: 4,
-    borderRadius: 100,
+    width: RFPercentage(16),
+    margin: widthPercentageToDP(0.7),
+    // borderRadius: 100,
     backgroundColor: 'white',
     // shadowColor: '#000',
     // shadowOffset: {
@@ -991,8 +1051,8 @@ const style = StyleSheet.create({
     // borderRadius: 10,
   },
   projectOrganization: {
-    width: '95%',
-    height: RFPercentage(17),
+    width: '82%',
+    height: RFPercentage(19),
     alignSelf: 'center',
     // backgroundColor:'green',
     marginVertical: RFPercentage(3),

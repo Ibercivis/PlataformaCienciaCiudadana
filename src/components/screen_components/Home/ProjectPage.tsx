@@ -22,12 +22,17 @@ import {FontSize} from '../../../theme/fonts';
 import HeartFill from '../../../assets/icons/general/heart-fill.svg';
 import ShareIcon from '../../../assets/icons/general/share.svg';
 import People from '../../../assets/icons/general/people.svg';
-import Chevron from '../../../assets/icons/general/chevron-left-1.svg';
-import PencilSquare from '../../../assets/icons/general/pencil-square-1.svg';
-import Download from '../../../assets/icons/general/Vector-1.svg';
+import Chevron from '../../../assets/icons/general/chevron-left-1_circle_new.svg';
+import PencilSquare from '../../../assets/icons/general/pencil-square.svg';
+import Download from '../../../assets/icons/general/cloud-download.svg';
 import {CustomButton} from '../../utility/CustomButton';
 import {Colors} from '../../../theme/colors';
-import {Project, User, UserInfo} from '../../../interfaces/interfaces';
+import {
+  Organization,
+  Project,
+  User,
+  UserInfo,
+} from '../../../interfaces/interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import citmapApi from '../../../api/citmapApi';
 import {HasTag} from '../../../interfaces/appInterfaces';
@@ -74,6 +79,7 @@ export const ProjectPage = (props: Props) => {
   const isCarousel = useRef(null);
 
   const [project, setProject] = useState<Project>();
+  const [organization, setOrganization] = useState<Organization[]>([]);
   const [creator, setCreator] = useState('');
   const [hastags, setHastags] = useState<HasTag[]>([]);
   const [imagesCharged, setImagesCharged] = useState<any[]>([]);
@@ -265,6 +271,7 @@ export const ProjectPage = (props: Props) => {
                   params: {id: 6},
                 }),
               );
+              // props.navigation.replace('ParticipateMap', {id: 6});
             } else {
               setHasPermission(false);
             }
@@ -306,7 +313,7 @@ export const ProjectPage = (props: Props) => {
       }
 
       // console.log(JSON.stringify(download.data, null, 2));
-     
+
       await saveFile(download.data, `observations${Date.now()}.csv`);
     } catch (error) {
       console.log(error);
@@ -320,26 +327,29 @@ export const ProjectPage = (props: Props) => {
 
   const saveFile = async (fileBlob: any, filename: any) => {
     const path = `${RNFS.DownloadDirectoryPath}/${filename}`;
-    
-    const file = new Blob([fileBlob], { type: 'text/csv', lastModified: Date.now() });
+
+    const file = new Blob([fileBlob], {
+      type: 'text/csv',
+      lastModified: Date.now(),
+    });
     const reader = new FileReader();
     reader.onload = () => {
-        RNFS.writeFile(path, reader.result as string, 'utf8')
-            .then(() => {
-                console.log(`Archivo guardado en: ${path}`);
-                Toast.show({
-                  type: 'info',
-                  text1: 'Descarga completada',
-                  text2: `Archivo guardado en: ${path}`,
-                });
-            })
-            .catch(error => {
-                console.error('Error al guardar el archivo:', error);
-            });
+      RNFS.writeFile(path, reader.result as string, 'utf8')
+        .then(() => {
+          console.log(`Archivo guardado en: ${path}`);
+          Toast.show({
+            type: 'info',
+            text1: 'Descarga completada',
+            text2: `Archivo guardado en: ${path}`,
+          });
+        })
+        .catch(error => {
+          console.error('Error al guardar el archivo:', error);
+        });
     };
     reader.onerror = error => console.error('Error al leer el archivo:', error);
     reader.readAsText(file);
-};
+  };
 
   const requestStoragePermission = async () => {
     if (Platform.OS === 'android') {
@@ -400,10 +410,26 @@ export const ProjectPage = (props: Props) => {
         },
       );
 
+      const organiza = await citmapApi.get<Organization[]>(`/organization/`, {
+        headers: {
+          Authorization: token,
+        },
+      });
+
       setCreator(creatoruser.data.username);
 
-      if (userInfo.data.pk === resp.data.creator) {
+      if (
+        userInfo.data != undefined &&
+        userInfo.data.pk === resp.data.creator
+      ) {
         setCanEdit(true);
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+          text2: 'Datos no cargados',
+        });
       }
       setProject(resp.data);
       if (resp.data.cover) {
@@ -414,6 +440,20 @@ export const ProjectPage = (props: Props) => {
       }
       if (props.route.params.isNew) {
         showModalSave();
+      }
+
+      if (organiza.data?.length > 0 && resp.data?.organizations_write?.length > 0) {
+        const newListOrga = organiza.data.filter(x =>
+          resp.data.organizations_write.includes(x.id),
+        );
+        setOrganization(newListOrga);
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+          text2: 'Datos no cargados de organización',
+        });
       }
     } catch (err) {
       console.log(err.response.data);
@@ -648,7 +688,7 @@ export const ProjectPage = (props: Props) => {
                     onPress={() => {
                       navigateToMap();
                     }}
-                    label="¡Participar!"
+                    label="¡Ver mapa!"
                     backgroundColor={Colors.primaryLigth}
                   />
                 </View>
@@ -715,6 +755,44 @@ export const ProjectPage = (props: Props) => {
                       }}>
                       {project?.description}
                     </Text>
+
+                    <View style={{flexDirection: 'row'}}>
+                      <Text
+                        style={{
+                          // backgroundColor: 'white',
+                          marginBottom: '1%',
+                          alignSelf: 'flex-start',
+                        }}>
+                        Organización:{' '}
+                      </Text>
+                      {organization && organization.length > 0 ? (
+                        <>
+                          {organization.map(x => {
+                            return (
+                              <Text
+                                style={{
+                                  // backgroundColor: 'white',
+                                  marginBottom: '1%',
+                                  alignSelf: 'flex-start',
+                                  fontWeight: 'bold',
+                                }}>
+                                {x.principalName}{' '}
+                              </Text>
+                            );
+                          })}
+                        </>
+                      ) : (
+                        <Text
+                          style={{
+                            // backgroundColor: 'white',
+                            marginBottom: '1%',
+                            // alignSelf: 'flex-start',
+                            fontWeight: 'bold',
+                          }}>
+                          No hay una organización vinculada
+                        </Text>
+                      )}
+                    </View>
                   </View>
                 </View>
               </View>
@@ -722,8 +800,8 @@ export const ProjectPage = (props: Props) => {
               {/* boton back */}
               <TouchableOpacity style={styles.buttonBack} onPress={onBack}>
                 <Chevron
-                  width={RFPercentage(2.5)}
-                  height={RFPercentage(2.5)}
+                  width={RFPercentage(5)}
+                  height={RFPercentage(5)}
                   fill={'#000000'}
                 />
               </TouchableOpacity>
@@ -733,8 +811,8 @@ export const ProjectPage = (props: Props) => {
                   style={styles.buttonEdit}
                   onPress={() => editProyect()}>
                   <PencilSquare
-                    width={RFPercentage(2.5)}
-                    height={RFPercentage(2.5)}
+                    width={RFPercentage(5)}
+                    height={RFPercentage(5)}
                     fill={'#000000'}
                   />
                 </TouchableOpacity>
@@ -744,8 +822,8 @@ export const ProjectPage = (props: Props) => {
                 style={canEdit ? styles.buttonDownload : styles.buttonEdit}
                 onPress={downloadProjectObservations}>
                 <Download
-                  width={RFPercentage(2.5)}
-                  height={RFPercentage(2.5)}
+                  width={RFPercentage(5)}
+                  height={RFPercentage(5)}
                   fill={'#000000'}
                 />
               </TouchableOpacity>
@@ -793,9 +871,10 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   textContainer: {
+    alignItems: 'stretch',
     position: 'absolute',
-    top: RFPercentage(28),
-    left: RFPercentage(5),
+    bottom: RFPercentage(30),
+    left: RFPercentage(2),
     right: RFPercentage(5),
     // backgroundColor: 'black',
     padding: RFPercentage(1),
@@ -807,13 +886,17 @@ const styles = StyleSheet.create({
     fontSize: RFPercentage(3.5),
     fontWeight: 'bold',
     textAlign: 'left',
+    textShadowColor: 'black', // Color del contorno
+    textShadowOffset: {width: 2, height: 2}, // Ajusta según sea necesario
+    textShadowRadius: 2,
+    // backgroundColor: 'white'
   },
   buttonBack: {
     position: 'absolute',
     top: RFPercentage(6),
     left: RFPercentage(2),
     zIndex: 999,
-    backgroundColor: 'white',
+    // backgroundColor: 'white',
     borderRadius: 100,
     padding: RFPercentage(1.2),
   },
@@ -822,7 +905,7 @@ const styles = StyleSheet.create({
     top: RFPercentage(6),
     right: RFPercentage(2),
     zIndex: 999,
-    backgroundColor: 'white',
+    // backgroundColor: 'white',
     borderRadius: 100,
     padding: RFPercentage(1.2),
   },
@@ -831,7 +914,7 @@ const styles = StyleSheet.create({
     top: RFPercentage(6),
     right: RFPercentage(8),
     zIndex: 999,
-    backgroundColor: 'white',
+    // backgroundColor: 'white',
     borderRadius: 100,
     padding: RFPercentage(1.2),
   },

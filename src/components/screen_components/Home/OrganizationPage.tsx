@@ -14,17 +14,23 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {StackParams} from '../../../navigation/HomeNavigator';
 import {StackScreenProps} from '@react-navigation/stack';
 import {RFPercentage} from 'react-native-responsive-fontsize';
-import Chevron from '../../../assets/icons/general/chevron-left-1.svg';
+import Chevron from '../../../assets/icons/general/chevron-left-1 circle.svg';
 import {FontFamily, FontSize, FontWeight} from '../../../theme/fonts';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import citmapApi, {baseURL} from '../../../api/citmapApi';
-import {Organization, Project, ShowProject, User} from '../../../interfaces/interfaces';
+import {
+  Organization,
+  Project,
+  ShowProject,
+  User,
+} from '../../../interfaces/interfaces';
 import {Card} from '../../utility/Card';
 import {SaveProyectModal} from '../../utility/Modals';
 import {Colors} from '../../../theme/colors';
 import NotContribution from '../../../assets/icons/profile/No hay contribuciones.svg';
-import PencilSquare from '../../../assets/icons/general/pencil-square-1.svg';
+import PencilSquare from '../../../assets/icons/general/pencil-square.svg';
 import {CommonActions, useFocusEffect} from '@react-navigation/native';
+import { heightPercentageToDP } from 'react-native-responsive-screen';
 
 interface Props extends StackScreenProps<StackParams, 'OrganizationPage'> {}
 
@@ -160,7 +166,11 @@ export const OrganizationPage = (props: Props) => {
       resp.data.forEach(project => {
         // Verificar si organizations_write existe y contiene el ID
         if (project.organizations) {
-          if (project.organizations.some(orgID => orgID.id === props.route.params.id)) {
+          if (
+            project.organizations.some(
+              orgID => orgID.id === props.route.params.id,
+            )
+          ) {
             filteredProjectsSet.add(project);
           }
         }
@@ -206,9 +216,9 @@ export const OrganizationPage = (props: Props) => {
           {/* boton back */}
           <TouchableOpacity style={style.buttonBack} onPress={onBack}>
             <Chevron
-              width={RFPercentage(3.5)}
-              height={RFPercentage(3.5)}
-              fill={'#000000'}
+              width={RFPercentage(5)}
+              height={RFPercentage(5)}
+              fill={'#ffffff'}
             />
           </TouchableOpacity>
 
@@ -218,8 +228,8 @@ export const OrganizationPage = (props: Props) => {
               style={style.buttonEdit}
               onPress={() => editProyect()}>
               <PencilSquare
-                width={RFPercentage(2.5)}
-                height={RFPercentage(2.5)}
+                width={RFPercentage(5)}
+                height={RFPercentage(5)}
                 fill={'#000000'}
               />
             </TouchableOpacity>
@@ -231,8 +241,8 @@ export const OrganizationPage = (props: Props) => {
           <View style={style.organizationInfoContainer}>
             <View
               style={{
-                height: '50%',
-                width: '100%',
+                height: heightPercentageToDP(8),
+                width: '80%',
                 alignItems: 'center',
                 alignContent: 'center',
                 alignSelf: 'center',
@@ -250,6 +260,9 @@ export const OrganizationPage = (props: Props) => {
                     alignItems: 'center',
                     alignContent: 'center',
                     alignSelf: 'center',
+                    fontFamily: FontFamily.NotoSansDisplayMedium,
+                    color: 'black',
+                    fontSize: FontSize.fontSizeText17,
                   }}>
                   {projectList.length}
                 </Text>
@@ -274,6 +287,9 @@ export const OrganizationPage = (props: Props) => {
                     alignItems: 'center',
                     alignContent: 'center',
                     alignSelf: 'center',
+                    fontFamily: FontFamily.NotoSansDisplayMedium,
+                    color: 'black',
+                    fontSize: FontSize.fontSizeText17,
                   }}>
                   {organization?.members.length}
                 </Text>
@@ -289,8 +305,9 @@ export const OrganizationPage = (props: Props) => {
             </View>
             <View
               style={{
-                height: '50%',
-                width: '100%',
+                height: organization?.description ? 'auto' : 0,
+                width: '80%',
+                marginTop: '3%',
                 // backgroundColor: 'purple',
                 alignItems: 'center',
                 alignContent: 'center',
@@ -303,6 +320,9 @@ export const OrganizationPage = (props: Props) => {
                   alignContent: 'center',
                   alignSelf: 'center',
                   textAlign: 'center',
+                  fontFamily: FontFamily.NotoSansDisplayMedium,
+                    color: 'black',
+                    fontSize: FontSize.fontSizeText13
                 }}>
                 {organization?.description}
               </Text>
@@ -329,36 +349,11 @@ export const OrganizationPage = (props: Props) => {
                   : Colors.contentPrimaryDark,
               }}
             />
-            {/* {!organization?.logo === null ? (
-              <ImageBackground
-                borderRadius={100}
-                // source={require(urii)}
-                source={{
-                  uri: organization?.logo,
-                }}
-                style={{
-                  height: RFPercentage(17),
-                  width: RFPercentage(17),
-                  zIndex: 1,
-                }}
-              />
-            ) : (
-              <ImageBackground
-                borderRadius={100}
-                // source={require(urii)}
-                source={require('../../../assets/backgrounds/login-background.jpg')}
-                style={{
-                  height: RFPercentage(17),
-                  width: RFPercentage(17),
-                  zIndex: 1,
-                }}
-              />
-            )} */}
           </View>
         </View>
 
         {/* contenedor proyectos */}
-        <View style={style.projectView}>
+        <View style={{...style.projectView,  height: 'auto'}}>
           <Text
             style={{
               fontSize: FontSize.fontSizeText20,
@@ -370,7 +365,8 @@ export const OrganizationPage = (props: Props) => {
           </Text>
           {projectList.length <= 0 ? (
             <>
-              <View style={{alignItems: 'center', marginTop: '7%'}}>
+              <View
+                style={{alignItems: 'center', marginTop: '7%', opacity: 0.5}}>
                 <Text
                   style={{
                     color: 'black',
@@ -404,10 +400,10 @@ export const OrganizationPage = (props: Props) => {
           ) : (
             <ScrollView
               style={{flex: 1}}
-              contentContainerStyle={{alignItems: 'center'}}>
+              contentContainerStyle={{alignItems: 'center', height: 'auto'}}>
               {projectList.map((item, index) => {
-                if( item.cover && item.cover[0]){
-                  console.log(item.cover[0].image)
+                if (item.cover && item.cover[0]) {
+                  console.log(item.cover[0].image);
                 }
                 return (
                   <Card
@@ -416,7 +412,9 @@ export const OrganizationPage = (props: Props) => {
                     categoryImage={index}
                     title={item.name}
                     description={item.description}
-                    cover={item.cover &&  item.cover[0] ? item.cover[0].image : ''}
+                    cover={
+                      item.cover && item.cover[0] ? item.cover[0].image : ''
+                    }
                     onPress={() =>
                       props.navigation.navigate('ProjectPage', {id: item.id!})
                     }
@@ -487,28 +485,31 @@ const style = StyleSheet.create({
   },
   organizationContainer: {
     backgroundColor: 'transparent',
-    height: RFPercentage(65),
+    marginBottom:'5%',
+    // height: RFPercentage(65),
     // borderBottomWidth: 1,
     alignItems: 'center',
     alignContent: 'center',
   },
   organizationInfoContainer: {
     // backgroundColor: 'yellow',
-    top: RFPercentage(-67),
+    
+    marginTop: RFPercentage(-67),
     alignItems: 'center',
     alignContent: 'center',
     width: RFPercentage(45),
-    height: RFPercentage(25),
+    height: 'auto',
   },
   projectView: {backgroundColor: 'transparent'},
   buttonBack: {
     position: 'absolute',
     top: RFPercentage(4),
     left: RFPercentage(2),
-    zIndex: 999,
-    backgroundColor: 'white',
+    zIndex: 10,
+    // backgroundColor: 'black',
+    // opacity: 0.4,
     borderRadius: 100,
-    padding: RFPercentage(1.2)
+    padding: RFPercentage(1.2),
   },
   title: {
     position: 'absolute',
@@ -524,14 +525,17 @@ const style = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     textAlignVertical: 'center',
+    textShadowColor: 'black', // Color del contorno
+    textShadowOffset: {width: 1, height: 1}, // Ajusta según sea necesario
+    textShadowRadius: 2,
   },
   buttonEdit: {
     position: 'absolute',
     top: RFPercentage(4),
     right: RFPercentage(2),
     zIndex: 999,
-    backgroundColor: 'white',
+    // backgroundColor: 'white',
     borderRadius: 100,
-    padding: RFPercentage(1.2)
+    padding: RFPercentage(1.2),
   },
 });

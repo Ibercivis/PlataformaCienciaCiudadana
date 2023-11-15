@@ -22,7 +22,7 @@ import {HasTag, Projects, Topic} from '../../../interfaces/appInterfaces';
 import SplashScreen from 'react-native-splash-screen';
 import {Card} from '../../utility/Card';
 import {InputText} from '../../utility/InputText';
-import {FontFamily, FontSize} from '../../../theme/fonts';
+import { FontFamily, FontSize, fonts } from '../../../theme/fonts';
 import {IconBootstrap} from '../../utility/IconBootstrap';
 import {RFPercentage} from 'react-native-responsive-fontsize';
 import {Checkbox} from 'react-native-paper';
@@ -52,6 +52,8 @@ import {useFocusEffect} from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import NotCreated from '../../../assets/icons/profile/No hay creados.svg';
+import Geonity from '../../../assets/icons/general/Geonity-Tittle.svg';
+import {CustomButton} from '../../utility/CustomButton';
 
 interface Props extends StackScreenProps<any, any> {}
 
@@ -128,8 +130,8 @@ export const Home = ({navigation}: Props) => {
   useEffect(() => {
     setLoading(true);
     categoryListApi();
-    projectListApi();
-    organizationListApi();
+    // projectListApi();
+    // organizationListApi();
     setCategoriesSelected([]);
     //aquí estaba el setIsAllCharged(true);
   }, []);
@@ -270,7 +272,11 @@ export const Home = ({navigation}: Props) => {
   const rows = splitDataIntoRows(newProjectList, 2);
 
   const chunkArray = (list: ShowProject[], chunkSize: number) => {
-    setNewProjectListSliced(list.slice(0, chunkSize));
+    if (list.length > 5) {
+      setNewProjectListSliced(list.slice(0, chunkSize));
+    } else {
+      setNewProjectListSliced(list);
+    }
   };
 
   //#region ApiCalls
@@ -285,7 +291,6 @@ export const Home = ({navigation}: Props) => {
   };
 
   const categoryListApi = async () => {
-    const MAX_RETRIES = 3;
     let token;
 
     while (!token) {
@@ -314,6 +319,7 @@ export const Home = ({navigation}: Props) => {
       // console.log(JSON.stringify(ob, null, 2));
       success = true;
       // setLoading(false);
+      projectListApi()
     } catch (err) {
       console.log(err.response.data);
       setErrorMessage(err);
@@ -348,7 +354,8 @@ export const Home = ({navigation}: Props) => {
 
       setNewProjectList(resp.data);
       chunkArray(resp.data, NUM_SLICE_NEW_PROJECT_LIST);
-      setLoading(false);
+      // setLoading(false);
+      organizationListApi()
     } catch (err) {
       console.log(err.response.data);
     } finally {
@@ -374,8 +381,38 @@ export const Home = ({navigation}: Props) => {
     }
   };
 
+  /**
+   *  TODO cambiar estado del heart del fav mas rapidamente
+   * @param idProject
+   */
   const toggleLike = async (idProject: number) => {
-    const token = await AsyncStorage.getItem('token');
+    const projectIndex = newProjectList.findIndex(
+      project => project.id === idProject,
+    );
+
+    // Si se encontró el proyecto en la lista
+    if (projectIndex !== -1) {
+      // Crea una copia del proyecto en esa posición y cambia el valor del booleano
+      const updatedProjectList = [...newProjectList];
+      updatedProjectList[projectIndex] = {
+        ...updatedProjectList[projectIndex],
+        is_liked_by_user: !updatedProjectList[projectIndex].is_liked_by_user,
+        total_likes:
+          !updatedProjectList[projectIndex].is_liked_by_user == true
+            ? updatedProjectList[projectIndex].total_likes! + 1
+            : updatedProjectList[projectIndex].total_likes! - 1,
+      };
+
+      // Actualiza el estado o la variable con la nueva lista
+      setNewProjectList(updatedProjectList);
+
+      // Puedes realizar otras acciones necesarias aquí
+    }
+
+    let token;
+    while (!token) {
+      token = await AsyncStorage.getItem('token');
+    }
     try {
       const resp = await citmapApi.post(
         `/projects/${idProject}/toggle-like/`,
@@ -386,15 +423,14 @@ export const Home = ({navigation}: Props) => {
           },
         },
       );
-      
-        Toast.show({
+
+      Toast.show({
         type: 'success',
         text1: 'Like',
         // text2: 'No se han podido obtener los datos, por favor reinicie la app',
         text2: resp.data.message,
       });
-     
-      
+
       onRefresh();
     } catch (err) {}
   };
@@ -500,7 +536,14 @@ export const Home = ({navigation}: Props) => {
           <View style={{flex: 1}} onTouchEnd={onClickExit}>
             {/* titulo */}
             <View style={{...HomeStyles.titleView}}>
-              <Text style={HomeStyles.title}>GEONITY</Text>
+              {/* <Text style={HomeStyles.title}>Geonity</Text> */}
+              <View style={HomeStyles.title}>
+                <Geonity
+                  height={heightPercentageToDP(43)}
+                  width={widthPercentageToDP(43)}
+                  fill={'black'}
+                />
+              </View>
               <TouchableOpacity
                 onPress={() => mostrarMenu()}
                 style={{
@@ -521,7 +564,7 @@ export const Home = ({navigation}: Props) => {
             <View style={HomeStyles.searchView}>
               <InputText
                 iconLeft="search"
-                label={'search'}
+                label={'Buscar proyectos'}
                 keyboardType="email-address"
                 multiline={false}
                 numOfLines={1}
@@ -553,20 +596,22 @@ export const Home = ({navigation}: Props) => {
                     width: '100%',
                     textAlignVertical: 'center',
                     marginLeft: widthPercentageToDP(7),
-                    marginTop: heightPercentageToDP(1.4),
+                    marginTop: heightPercentageToDP(1),
                     fontFamily: FontFamily.NotoSansDisplaySemiBold,
                     fontSize: FontSize.fontSizeText18,
+                    color: 'black',
                   }}>
                   Categorías
                 </Text>
                 <ScrollView
                   style={HomeStyles.categoryScrollView}
+                  contentContainerStyle={{paddingLeft: widthPercentageToDP(7)}}
                   horizontal={true}
                   nestedScrollEnabled={true}
                   showsHorizontalScrollIndicator={false}>
-                  {categoryList.slice(0, 5).map((x, index) => {
+                  {categoryList.slice(0, 9).map((x, index) => {
                     const isChecked = categoriesSelected.includes(x);
-                    if (categoryList.slice(0, 5).length - 1 === index) {
+                    if (categoryList.slice(0, 9).length - 1 === index) {
                       return (
                         <Card
                           key={index}
@@ -574,6 +619,9 @@ export const Home = ({navigation}: Props) => {
                           categoryImage={0}
                           onPress={() => {
                             onCategoryPress();
+                            // Condición para mostrar u ocultar la barra de pestañas
+                            // const newTabBarVisibility = !navigation.dangerouslyGetState().routes[0].state?.index;
+                            // navigation.setParams({ tabBarVisible: newTabBarVisibility });
                           }}
                         />
                       );
@@ -617,8 +665,8 @@ export const Home = ({navigation}: Props) => {
                         }}>
                         {/* <IconBootstrap name={'stars'} size={20} color={'blue'} /> */}
                         <Stars
-                          width={RFPercentage(1.8)}
-                          height={RFPercentage(1.8)}
+                          width={RFPercentage(2.5)}
+                          height={RFPercentage(2.5)}
                           fill={'#2b4ce0'}
                         />
                       </View>
@@ -629,6 +677,7 @@ export const Home = ({navigation}: Props) => {
                           fontSize: FontSize.fontSizeText18,
                           marginLeft: RFPercentage(2),
                           alignSelf: 'center',
+                          color: 'black',
                         }}>
                         Nuevos proyectos
                       </Text>
@@ -638,6 +687,9 @@ export const Home = ({navigation}: Props) => {
                     ) : (
                       <ScrollView
                         style={HomeStyles.newProjectScrollView}
+                        contentContainerStyle={{
+                          paddingLeft: widthPercentageToDP(7),
+                        }}
                         horizontal
                         showsVerticalScrollIndicator={false}
                         showsHorizontalScrollIndicator={false}
@@ -651,7 +703,7 @@ export const Home = ({navigation}: Props) => {
                           data={newProjectListSliced}
                           renderItem={({item, index}) => {
                             if (
-                              newProjectListSliced.length > 1 &&
+                              newProjectListSliced.length > 5 &&
                               newProjectListSliced.length - 1 === index
                             ) {
                               return (
@@ -704,8 +756,8 @@ export const Home = ({navigation}: Props) => {
                         }}>
                         {/* <IconBootstrap name={'stars'} size={20} color={'blue'} /> */}
                         <PeopleFill
-                          width={RFPercentage(1.8)}
-                          height={RFPercentage(1.8)}
+                          width={RFPercentage(2.5)}
+                          height={RFPercentage(2.5)}
                           fill={'#2b4ce0'}
                         />
                       </View>
@@ -716,6 +768,7 @@ export const Home = ({navigation}: Props) => {
                           fontSize: FontSize.fontSizeText18,
                           marginLeft: RFPercentage(2),
                           alignSelf: 'center',
+                          color: 'black',
                         }}>
                         Proyectos destacados
                       </Text>
@@ -726,14 +779,16 @@ export const Home = ({navigation}: Props) => {
                     ) : (
                       <FlatList
                         style={HomeStyles.importantProjectScrollView}
+                        contentContainerStyle={{
+                          paddingLeft: widthPercentageToDP(7),
+                        }}
                         horizontal={true}
                         showsHorizontalScrollIndicator={false}
                         data={newProjectList.slice(0, 10)}
                         renderItem={({item, index}) => {
                           if (
-                            newProjectList.length > 1 &&
-                            newProjectList.slice(0, 10).length - 1 ===
-                            index
+                            newProjectList.length > 5 &&
+                            newProjectList.slice(0, 10).length - 1 === index
                           ) {
                             return (
                               <Card
@@ -766,7 +821,11 @@ export const Home = ({navigation}: Props) => {
                                 }}
                                 title={item.name}
                                 boolHelper={item.is_liked_by_user}
-                                description={item.description}
+                                description={
+                                  item.organizations.length > 0
+                                    ? item.organizations[0].principalName
+                                    : 'Sin organización'
+                                }
                                 totalLikes={
                                   item.total_likes ? item.total_likes : 0
                                 }
@@ -798,8 +857,8 @@ export const Home = ({navigation}: Props) => {
                           top: 1,
                         }}>
                         <Magic
-                          width={RFPercentage(1.8)}
-                          height={RFPercentage(1.8)}
+                          width={RFPercentage(2.5)}
+                          height={RFPercentage(2.5)}
                           fill={'#2b4ce0'}
                         />
                       </View>
@@ -810,6 +869,7 @@ export const Home = ({navigation}: Props) => {
                           fontSize: FontSize.fontSizeText18,
                           marginLeft: RFPercentage(2),
                           alignSelf: 'center',
+                          color: 'black',
                         }}>
                         Te puede interesar...
                       </Text>
@@ -820,14 +880,16 @@ export const Home = ({navigation}: Props) => {
                     ) : (
                       <ScrollView
                         style={HomeStyles.interestingScrollView}
+                        contentContainerStyle={{
+                          paddingLeft: widthPercentageToDP(7),
+                        }}
                         horizontal={true}
                         showsHorizontalScrollIndicator={false}
                         nestedScrollEnabled={true}>
                         {newProjectList.slice(0, 10).map((x, index) => {
                           if (
-                            newProjectList.length > 1 &&
-                            newProjectList.slice(0, 10).length - 1 ===
-                            index
+                            newProjectList.length > 5 &&
+                            newProjectList.slice(0, 10).length - 1 === index
                           ) {
                             return (
                               <Card
@@ -852,7 +914,11 @@ export const Home = ({navigation}: Props) => {
                                   x.cover && x.cover[0] ? x.cover[0].image : ''
                                 }
                                 title={x.name}
-                                description={x.description}
+                                description={
+                                  x.organizations.length > 0
+                                    ? x.organizations[0].principalName
+                                    : 'Sin organización'
+                                }
                               />
                             );
                           }
@@ -878,8 +944,8 @@ export const Home = ({navigation}: Props) => {
                           top: 1,
                         }}>
                         <Boockmark
-                          width={RFPercentage(1.8)}
-                          height={RFPercentage(1.8)}
+                          width={RFPercentage(2.5)}
+                          height={RFPercentage(2.5)}
                           fill={'#2b4ce0'}
                         />
                       </View>
@@ -890,6 +956,7 @@ export const Home = ({navigation}: Props) => {
                           fontSize: FontSize.fontSizeText18,
                           marginLeft: RFPercentage(2),
                           alignSelf: 'center',
+                          color: 'black',
                         }}>
                         Organizaciones destacadas
                       </Text>
@@ -899,14 +966,16 @@ export const Home = ({navigation}: Props) => {
                     ) : (
                       <ScrollView
                         style={HomeStyles.importantOrganizationScrollView}
+                        contentContainerStyle={{
+                          paddingLeft: widthPercentageToDP(7),
+                        }}
                         horizontal={true}
                         nestedScrollEnabled={true}
                         showsHorizontalScrollIndicator={false}>
                         {organizationList.slice(0, 5).map((x, index) => {
                           if (
-                            organizationList.length > 1 &&
-                            organizationList.slice(0, 5).length - 1 ===
-                            index
+                            organizationList.length > 5 &&
+                            organizationList.slice(0, 5).length - 1 === index
                           ) {
                             return (
                               <Card
@@ -956,7 +1025,7 @@ export const Home = ({navigation}: Props) => {
                       height: 54,
                       width: '100%',
                       marginLeft: RFPercentage(3),
-                      marginBottom: RFPercentage(2),
+                      // marginBottom: RFPercentage(1),
                     }}>
                     <View
                       style={{
@@ -973,11 +1042,12 @@ export const Home = ({navigation}: Props) => {
                     <Text
                       style={{
                         textAlignVertical: 'center',
-                        fontFamily: FontFamily.NotoSansDisplaySemiBold,
-                        fontSize: FontSize.fontSizeText18,
+                        fontFamily: FontFamily.NotoSansDisplayRegular,
+                        fontSize: FontSize.fontSizeText20,
                         alignSelf: 'center',
+                        color:'black'
                       }}>
-                      Resultados de busqueda
+                      PROYECTOS ENCONTRADOS
                     </Text>
                   </View>
                   <View
@@ -990,7 +1060,7 @@ export const Home = ({navigation}: Props) => {
                       return (
                         <Text
                           key={value.id}
-                          style={{color: Colors.semanticInfoDark}}>
+                          style={{color: Colors.semanticInfoDark, fontSize: FontSize.fontSizeText17, }}>
                           #{value.topic}{' '}
                         </Text>
                       );
@@ -1047,9 +1117,9 @@ export const Home = ({navigation}: Props) => {
                 <TouchableOpacity
                   style={{
                     borderRadius: 50,
-                    backgroundColor: 'grey',
-                    height: 8,
-                    width: '10%',
+                    backgroundColor: Colors.contentSecondaryDark,
+                    height: heightPercentageToDP(0.8),
+                    width: '17%',
                   }}></TouchableOpacity>
               </View>
               <View
@@ -1060,11 +1130,15 @@ export const Home = ({navigation}: Props) => {
                   marginHorizontal: RFPercentage(4),
                 }}>
                 <View>
-                  <Text>Categorías</Text>
+                  <Text style={{
+                    fontSize: FontSize.fontSizeText17,
+                    fontFamily: FontFamily.NotoSansDisplaySemiBold,
+                    color: 'black'
+                  }}>Todas las categorías</Text>
                 </View>
                 <View>
                   <TouchableOpacity onPress={() => setShowCategoryList(false)}>
-                    <Text style={{color: Colors.lightblue}}>Cerrar</Text>
+                    <Text style={{color: Colors.primaryLigth}}>Cerrar</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -1090,16 +1164,42 @@ export const Home = ({navigation}: Props) => {
                         // justifyContent: 'space-between',
                       }}>
                       <Checkbox
+                        uncheckedColor={'#838383'}
+                        color={Colors.primaryLigth}
                         status={isChecked ? 'checked' : 'unchecked'}
                         onPress={() => {
                           setCheckCategories(item);
                         }}
                       />
-                      <Text>{item.topic}</Text>
+                      <Text style={{color: 'black'}}>{item.topic}</Text>
                     </View>
                   ); //aquí poner el plus
                 }}
               />
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  marginTop: '3%',
+                  marginHorizontal: widthPercentageToDP(8),
+                  alignContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <TouchableOpacity
+                  onPress={() => {
+                    setCategorySelectedId([]);
+                    setCategoriesSelected([]);
+                  }}>
+                  <Text style={{color: Colors.primaryLigth}}>Limpiar todo</Text>
+                </TouchableOpacity>
+                <View style={{width: widthPercentageToDP(20)}}>
+                  <CustomButton
+                    backgroundColor={Colors.primaryLigth}
+                    label={'Aplicar'}
+                    onPress={() => setShowCategoryList(false)}
+                  />
+                </View>
+              </View>
             </View>
           )}
           <Spinner visible={loading} />
@@ -1159,12 +1259,13 @@ const HomeStyles = StyleSheet.create({
   },
   title: {
     alignSelf: 'center',
-    // height: Size.globalHeight / 12,
-    marginTop: heightPercentageToDP(6),
+    // backgroundColor:'red',
+    height: heightPercentageToDP(10),
+    marginTop: heightPercentageToDP(2.9),
     justifyContent: 'center',
-    fontSize: FontSize.fontSizeTextTitle,
-    fontWeight: 'bold',
-    FontFamily: FontFamily.NotoSansDisplayRegular,
+    // fontSize: FontSize.fontSizeTextTitle,
+    // fontWeight: 'bold',
+    // FontFamily: FontFamily.NotoSansDisplayRegular,
   },
   titleView: {
     // backgroundColor: 'red',
@@ -1174,17 +1275,20 @@ const HomeStyles = StyleSheet.create({
     // backgroundColor: 'green',
     height: heightPercentageToDP(4),
     marginBottom: 33,
-    marginHorizontal: 24,
+    marginHorizontal: widthPercentageToDP(6),
   },
   categoryView: {
     // backgroundColor: 'cyan',
     flexDirection: 'column',
     height: heightPercentageToDP(25),
-    marginBottom: 38,
+    marginBottom: heightPercentageToDP(4),
+    // flex: 1,
   },
   categoryScrollView: {
     // height: '20%',
-    marginHorizontal: 24,
+    // marginHorizontal: 24,
+    // paddingLeft: widthPercentageToDP(5.7),
+    // marginRight: widthPercentageToDP(2)
   },
   newProjectView: {
     // backgroundColor: 'yellow',
@@ -1193,26 +1297,26 @@ const HomeStyles = StyleSheet.create({
     // height: '20%',
   },
   newProjectScrollView: {
-    marginHorizontal: 24,
+    // marginHorizontal: 24,
     // height: Size.globalHeight / 4,
   },
   importantProjectView: {
     // backgroundColor: 'brown',
-    marginBottom: RFPercentage(0),
-    height: heightPercentageToDP(47),
+    marginBottom: RFPercentage(3),
+    height: heightPercentageToDP(50),
     // height: '27%',
   },
   importantProjectScrollView: {
-    marginHorizontal: RFPercentage(3),
+    // marginHorizontal: RFPercentage(3),
     // height: RFPercentage(50),
   },
   interestingView: {
     // backgroundColor: 'purple',
     marginBottom: RFPercentage(3),
-    height: '20%',
+    height: '22%',
   },
   interestingScrollView: {
-    marginHorizontal: 24,
+    // marginHorizontal: 24,
     // height: Size.globalHeight / 2,
   },
   importantOrganizationView: {
@@ -1223,23 +1327,31 @@ const HomeStyles = StyleSheet.create({
     // , backgroundColor: 'red',
   },
   importantOrganizationScrollView: {
-    marginHorizontal: 24,
-    height: '25%',
+    // marginHorizontal: 24,
+    height: '20%',
   },
 
   showCategoryView: {
     position: 'absolute',
     backgroundColor: 'white',
-    height: RFPercentage(80),
+    height: RFPercentage(75),
     width: '100%',
     zIndex: 200,
     bottom: 0,
     alignSelf: 'center',
-    borderTopWidth: 1,
-    borderLeftWidth: 1,
-    borderRightWidth: 1,
+    // borderTopWidth: 1,
+    // borderLeftWidth: 1,
+    // borderRightWidth: 1,
     borderTopRightRadius: 34,
     borderTopLeftRadius: 34,
     paddingVertical: '5%',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 0.1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 7,
   },
 });

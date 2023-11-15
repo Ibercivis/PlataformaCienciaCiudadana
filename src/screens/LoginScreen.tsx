@@ -170,7 +170,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
       correo: form.userName,
       password: form.password,
     });
-    setLoading(state);
+    setLoading(false);
   };
 
   //TODO mover todo esto a un contexto para que se pueda controlar el logout desde cualquier lado

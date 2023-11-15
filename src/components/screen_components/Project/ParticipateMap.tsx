@@ -38,6 +38,7 @@ import {CustomButton} from '../../utility/CustomButton';
 import {FontSize} from '../../../theme/fonts';
 import {useDateTime} from '../../../hooks/useDateTime';
 import Toast from 'react-native-toast-message';
+import { project } from '../../../../react-native.config';
 
 Mapbox.setWellKnownTileServer('mapbox');
 Mapbox.setAccessToken(
@@ -93,6 +94,8 @@ export const ParticipateMap = ({navigation, route}: Props) => {
     timestamp: '',
     images: [],
   });
+
+  const [project, setProject] = useState<ShowProject>()
 
   /**
    * un field form que pertenece a un proyecto, contiene questions
@@ -286,6 +289,8 @@ export const ParticipateMap = ({navigation, route}: Props) => {
         },
       );
 
+      setProject(resp.data);
+
       const userInfo = await citmapApi.get<User>(
         '/users/authentication/user/',
         {
@@ -309,7 +314,14 @@ export const ParticipateMap = ({navigation, route}: Props) => {
           setQuestions(single.questions);
         }
       }
-    } catch {}
+    } catch(err) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+        text2: 'No se han podido obtener pas questiones',
+      });
+    }
   };
 
   /**
@@ -1176,7 +1188,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                   left: '2%',
                   top: '5%',
                 }}
-                onPress={() => navigation.goBack()}>
+                onPress={() => {navigation.replace('ProjectPage',{id: route.params.id} )}}>
                 <Back height={RFPercentage(6)} />
               </TouchableOpacity>
               {/* COMPASS */}
@@ -1203,7 +1215,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
           ) : (
             <>
               <HeaderComponent
-                title={'proyect name'}
+                title={project!.name}
                 onPressLeft={() => {
                   setShowMap(true);
                   cancelCreationObservation();
@@ -1244,6 +1256,12 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                             showModal={value => {
                               if (value) {
                                 console.log('la imagen pesa demasiado');
+                                Toast.show({
+                                  type: 'error',
+                                  text1: 'Image',
+                                  // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+                                  text2: 'La imagen pesa demasiado. Peso máximo, 4MB',
+                                });
                               }
                             }}
                           />
@@ -1388,7 +1406,11 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                       }}>
                       <CustomButton
                         disabled={onlyRead}
-                        onPress={() => onSaveObservation()}
+                        onPress={() => {
+                          if(onlyRead != true){
+                            onSaveObservation()
+                          }
+                        }}
                         label="Finalizar"
                         backgroundColor={
                           showSelectedObservation.id <= 0

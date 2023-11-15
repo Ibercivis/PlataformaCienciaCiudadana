@@ -61,6 +61,9 @@ import NotCreated from '../../../assets/icons/profile/No hay creados.svg';
 import NotLiked from '../../../assets/icons/profile/No hay me gusta.svg';
 import {CommonActions, useNavigation} from '@react-navigation/native';
 import {Country} from '../../../interfaces/interfaces';
+import {heightPercentageToDP} from 'react-native-responsive-screen';
+import {Spinner} from '../../utility/Spinner';
+import Toast from 'react-native-toast-message';
 
 interface Props extends StackScreenProps<any, any> {}
 
@@ -184,7 +187,7 @@ export const Profile = ({navigation}: Props) => {
           renderItem={({item, index}) => {
             return (
               <TouchableOpacity
-                key={item.id}
+                key={index}
                 activeOpacity={0.5}
                 style={styles.projectFound}
                 onPress={() => navigateTo(item.id)}>
@@ -207,7 +210,7 @@ export const Profile = ({navigation}: Props) => {
                       }}>
                       {item.name}
                     </Text>
-                    <View style={{flexDirection: 'row'}}>
+                    {/* <View style={{flexDirection: 'row'}}>
                       {item.hasTag.map((x, i) => {
                         const matchingHastag = hastags.find(
                           hastag => hastag.id === x,
@@ -227,7 +230,7 @@ export const Profile = ({navigation}: Props) => {
                           );
                         }
                       })}
-                    </View>
+                    </View> */}
                     <Text
                       style={{
                         alignSelf: 'flex-start',
@@ -374,7 +377,7 @@ export const Profile = ({navigation}: Props) => {
           renderItem={({item, index}) => {
             return (
               <TouchableOpacity
-                key={item.id}
+                key={index}
                 activeOpacity={0.5}
                 style={styles.projectFound}
                 onPress={() => navigateTo(item.id)}>
@@ -397,7 +400,7 @@ export const Profile = ({navigation}: Props) => {
                       }}>
                       {item.name}
                     </Text>
-                    <View style={{flexDirection: 'row'}}>
+                    {/* <View style={{flexDirection: 'row'}}>
                       {item.hasTag.map((x, i) => {
                         const matchingHastag = hastags.find(
                           hastag => hastag.id === x,
@@ -417,7 +420,7 @@ export const Profile = ({navigation}: Props) => {
                           );
                         }
                       })}
-                    </View>
+                    </View> */}
                     <Text
                       style={{
                         alignSelf: 'flex-start',
@@ -558,7 +561,7 @@ export const Profile = ({navigation}: Props) => {
           renderItem={({item, index}) => {
             return (
               <TouchableOpacity
-                key={item.id}
+                key={index}
                 activeOpacity={0.5}
                 style={styles.projectFound}
                 onPress={() => navigateTo(item.id)}>
@@ -581,7 +584,7 @@ export const Profile = ({navigation}: Props) => {
                       }}>
                       {item.name}
                     </Text>
-                    <View style={{flexDirection: 'row'}}>
+                    {/* <View style={{flexDirection: 'row'}}>
                       {item.hasTag.map((x, i) => {
                         const matchingHastag = hastags.find(
                           hastag => hastag.id === x,
@@ -601,7 +604,7 @@ export const Profile = ({navigation}: Props) => {
                           );
                         }
                       })}
-                    </View>
+                    </View> */}
                     <Text
                       style={{
                         alignSelf: 'flex-start',
@@ -772,10 +775,6 @@ export const Profile = ({navigation}: Props) => {
     getOrganizationApi();
   }, [userProfile]);
 
-  useEffect(() => {
-    setIsAllCharged(true);
-  }, [createdProjects]);
-
   //#endregion
 
   //#region api
@@ -787,7 +786,6 @@ export const Profile = ({navigation}: Props) => {
           Authorization: token,
         },
       });
-      setProjectList(resp.data);
       setLikedProject(resp.data.filter(x => x.is_liked_by_user === true));
       setContributionProject(resp.data);
       setCreatedProject(resp.data.filter(x => x.creator === user.pk));
@@ -863,6 +861,7 @@ export const Profile = ({navigation}: Props) => {
           setSelectedCountry(country);
         }
       }
+      setIsAllCharged(true);
     } catch {}
   };
 
@@ -983,21 +982,36 @@ export const Profile = ({navigation}: Props) => {
       maxWidth: 300,
       maxHeight: 300,
       includeBase64: true,
-    }).then(response => {
-      if (response && response.data) {
-        if (response.size < 4 * 1024 * 1024) {
-          const newImage = response;
-          setProfileImage(response);
-          setProfileImageBlob({
-            uri: newImage.path, // Debes ajustar esto según la estructura de response
-            type: newImage.mime, // Tipo MIME de la imagen
-            name: 'cover.jpg', // Nombre de archivo de la imagen (puedes cambiarlo)
-          });
-        } else {
-          showModalControlSizeImage();
+    })
+      .then(response => {
+        if (response && response.data) {
+          if (response.size < 4 * 1024 * 1024) {
+            const newImage = response;
+            setProfileImage(response);
+            setProfileImageBlob({
+              uri: newImage.path, // Debes ajustar esto según la estructura de response
+              type: newImage.mime, // Tipo MIME de la imagen
+              name: 'cover.jpg', // Nombre de archivo de la imagen (puedes cambiarlo)
+            });
+          } else {
+            // showModalControlSizeImage();
+            Toast.show({
+              type: 'error',
+              text1: 'Image',
+              // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+              text2: 'La imagen pesa demasiado. Peso máximo, 4MB',
+            });
+          }
         }
-      }
-    });
+      })
+      .catch(err => {
+        Toast.show({
+          type: 'info',
+          text1: 'Image',
+          // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+          text2: 'Imagen no seleccionada',
+        });
+      });
   };
 
   const iconVisibility = (text: String) => {
@@ -1057,6 +1071,7 @@ export const Profile = ({navigation}: Props) => {
    * tras esto, llama a cambiar pass
    */
   const saveProfile = async () => {
+    setIsAllCharged(false);
     if (userEdit) {
       const token = await AsyncStorage.getItem('token');
 
@@ -1076,6 +1091,14 @@ export const Profile = ({navigation}: Props) => {
             'Content-Type': 'multipart/form-data',
           },
         });
+        if (resp) {
+          Toast.show({
+            type: 'success',
+            text1: 'Guardado exitoso',
+            // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+            // text2: '',
+          });
+        }
       } catch (error) {
         if (error.response) {
           // Se recibió una respuesta del servidor con un código de estado de error
@@ -1101,7 +1124,12 @@ export const Profile = ({navigation}: Props) => {
               `Error ${error.response.status}: Error en la solicitud.`,
             );
           }
-
+          Toast.show({
+            type: 'error',
+            text1: 'Error de guardado',
+            // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+            text2: error.response.data,
+          });
           // Puedes acceder a detalles adicionales de la respuesta del servidor:
           console.log('Mensaje del servidor:', error.response.data);
           console.log('Encabezados de respuesta:', error.response.headers);
@@ -1110,12 +1138,25 @@ export const Profile = ({navigation}: Props) => {
           console.log(
             'Error de red: No se pudo recibir una respuesta del servidor.',
           );
+          Toast.show({
+            type: 'error',
+            text1: 'Error de guardado',
+            // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+            text2: error.request,
+          });
         } else {
           // Se produjo un error durante la configuración de la solicitud
           console.log('Error de configuración de la solicitud:', error.message);
+          Toast.show({
+            type: 'error',
+            text1: 'Error de guardado',
+            // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+            text2: error.message,
+          });
         }
       } finally {
         setUserEdit(!userEdit);
+        setIsAllCharged(true);
       }
     }
   };
@@ -1130,9 +1171,9 @@ export const Profile = ({navigation}: Props) => {
 
   //#endregion
 
-  if (!isAllCharged) {
-    return <LoadingScreen />;
-  }
+  // if (!isAllCharged) {
+  //   return <LoadingScreen />;
+  // }
 
   return (
     <>
@@ -1293,6 +1334,7 @@ export const Profile = ({navigation}: Props) => {
                     width: '80%',
                     // height: 200,
                     marginVertical: RFPercentage(1),
+                    marginHorizontal: RFPercentage(5),
                   }}>
                   <Text style={{color: 'black'}}>Biografía</Text>
                   <InputText
@@ -1381,7 +1423,7 @@ export const Profile = ({navigation}: Props) => {
                         backgroundColor: organization
                           ? Colors.semanticSuccessLight
                           : Colors.semanticInfoLight,
-                          
+
                         // height: '30%'
                         borderWidth: 0,
                       }}>
@@ -1422,9 +1464,9 @@ export const Profile = ({navigation}: Props) => {
                           color: 'white',
                           alignSelf: 'center',
                           textAlignVertical: 'center',
-                          alignItems:'center',
-                          alignContent:'center',
-                          textAlign:'center',
+                          alignItems: 'center',
+                          alignContent: 'center',
+                          textAlign: 'center',
                           // backgroundColor: 'blue',
                           height: Size.window.height * 0.04,
                         }}>
@@ -1714,50 +1756,56 @@ export const Profile = ({navigation}: Props) => {
                 height: RFPercentage(15),
                 flexDirection: 'row',
                 marginTop: RFPercentage(3),
+                // borderRadius: 40
               }}>
               {/* foto de perfil */}
               <View
                 style={{
-                  width: RFPercentage(15),
+                  width: RFPercentage(13),
                   // height: '100%',
-                  height: RFPercentage(14.4),
+                  height: RFPercentage(13),
                   marginRight: RFPercentage(1),
+                  marginLeft: RFPercentage(1),
+                  // borderRadius: 40
                 }}>
                 {/* TODO aquí cambiar a la imagen que viene de base de datos */}
                 {profileImage ? (
                   <>
                     <Image
+                      borderRadius={100}
                       source={{
                         uri: 'data:image/jpeg;base64,' + profileImage.data,
                       }}
                       style={{
                         height: '100%',
                         maxWidth: RFPercentage(14),
-                        borderRadius: 10,
-                        // borderRadius: 50,
+                        // borderRadius: 10,
+                        borderRadius: 50,
                         resizeMode: 'cover',
                       }}
                     />
                   </>
-                ): profileImageCharged ? (
+                ) : profileImageCharged ? (
                   <>
                     <Image
+                      borderRadius={100}
                       source={{
                         uri: profileImageCharged,
                       }}
                       style={{
                         height: '100%',
                         maxWidth: RFPercentage(14),
-                        borderRadius: 10,
-                        // borderRadius: 50,
+                        // borderRadius: 10,
+                        borderRadius: 50,
                         resizeMode: 'cover',
+                        top: heightPercentageToDP(1),
                       }}
                     />
                   </>
-                )  : (
+                ) : (
                   <>
                     <Image
-                      borderRadius={10}
+                      borderRadius={100}
                       // source={require(urii)}
                       source={require('../../../assets/backgrounds/login-background.jpg')}
                       style={{
@@ -1883,7 +1931,9 @@ export const Profile = ({navigation}: Props) => {
                         fontSize: FontSize.fontSizeText13,
                         fontFamily: FontFamily.NotoSansDisplayRegular,
                       }}>
-                      {userProfile.country.name.length > 0 ? userProfile.country.name : 'Sin localización'}
+                      {userProfile.country.name.length > 0
+                        ? userProfile.country.name
+                        : 'Sin localización'}
                     </Text>
                   </View>
                 </View>
@@ -1909,7 +1959,10 @@ export const Profile = ({navigation}: Props) => {
                   fontFamily: FontFamily.NotoSansDisplayLight,
                   textAlign: 'left',
                 }}>
-                {userProfile.biography.length > 0 || userProfile.biography == null ? userProfile.biography : 'No hay ninguna descripción'}
+                {userProfile.biography.length > 0 ||
+                userProfile.biography == null
+                  ? userProfile.biography
+                  : 'No hay ninguna descripción'}
               </Text>
             </View>
           </View>
@@ -1923,8 +1976,11 @@ export const Profile = ({navigation}: Props) => {
 
             //   initialLayout={{width: RFPercentage(20)}}
           />
+          <Spinner visible={!isAllCharged} />
+          
         </SafeAreaView>
       )}
+      <Toast position="bottom" />
     </>
   );
 };

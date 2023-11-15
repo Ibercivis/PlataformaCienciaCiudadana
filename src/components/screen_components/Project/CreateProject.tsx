@@ -48,7 +48,7 @@ import {useForm} from '../../../hooks/useForm';
 import {InfoModal, SaveProyectModal} from '../../utility/Modals';
 import {CommonActions} from '@react-navigation/native';
 import {Spinner} from '../../utility/Spinner';
-import { widthPercentageToDP } from 'react-native-responsive-screen';
+import {widthPercentageToDP} from 'react-native-responsive-screen';
 import Toast from 'react-native-toast-message';
 
 interface Props extends StackScreenProps<StackParams, 'CreateProject'> {}
@@ -393,8 +393,8 @@ export const CreateProject = ({navigation, route}: Props) => {
         },
       });
       const fieldform = dataField.data.find(x => x.project === route.params.id);
-      console.log(JSON.stringify(dataField.data, null, 2))
-      console.log(route.params.id)
+      console.log(JSON.stringify(dataField.data, null, 2));
+      console.log(route.params.id);
       if (fieldform) {
         form.field_form = fieldform;
         setQuestions(fieldform.questions);
@@ -513,36 +513,46 @@ export const CreateProject = ({navigation, route}: Props) => {
       maxWidth: 300,
       maxHeight: 300,
       includeBase64: true,
-    }).then(response => {
-      const numOfImages = response.length;
-      console.log(numOfImages);
-      if (response && numOfImages > 0) {
-        for (let i = 0; i <= numOfImages; i++) {
-          const newImage = response[i];
-          if (newImage) {
-            setImagesCharged([]);
-            setImages(prevImages => [...prevImages, newImage]);
-            setImageBlob(prevImageBlob => [
-              ...prevImageBlob,
-              {
-                uri: newImage.path,
-                type: newImage.mime,
-                name: i + 'cover.jpg',
-              },
-            ]);
+    })
+      .then(response => {
+        const numOfImages = response.length;
+        if (response && numOfImages > 0) {
+          if (response[0].size < 4 * 1024 * 1024) {
+            for (let i = 0; i <= numOfImages; i++) {
+              const newImage = response[i];
+              if (newImage) {
+                setImagesCharged([]);
+                setImages(prevImages => [...prevImages, newImage]);
+                setImageBlob(prevImageBlob => [
+                  ...prevImageBlob,
+                  {
+                    uri: newImage.path,
+                    type: newImage.mime,
+                    name: i + 'cover.jpg',
+                  },
+                ]);
+              }
+            }
+            setActiveImageIndex(0);
+            setIsImageCarged(true);
+          } else {
+            Toast.show({
+              type: 'error',
+              text1: 'Image',
+              // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+              text2: 'La imagen pesa demasiado. Peso máximo, 4MB',
+            });
           }
         }
-        setActiveImageIndex(0);
-        setIsImageCarged(true);
-      }
-    }).catch(err => {
-      Toast.show({
-        type: 'info',
-        text1: 'Image',
-        // text2: 'No se han podido obtener los datos, por favor reinicie la app',
-        text2: 'Imagen no seleccionada',
+      })
+      .catch(err => {
+        Toast.show({
+          type: 'info',
+          text1: 'Image',
+          // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+          text2: 'Imagen no seleccionada',
+        });
       });
-    });;
   };
 
   //#endregion
@@ -640,11 +650,11 @@ export const CreateProject = ({navigation, route}: Props) => {
     setWaitingData(true);
     let correct = true;
     let token;
-    while(!token){
+    while (!token) {
       token = await AsyncStorage.getItem('token');
     }
     let updatedForm = {...form};
-    
+
     const updatedQuestions = [...questions];
     // console.log(updatedQuestions)
     updatedQuestions.map(x => {
@@ -655,11 +665,11 @@ export const CreateProject = ({navigation, route}: Props) => {
     let newFieldForm: CreateFieldForm = {
       questions: updatedQuestions,
     };
-    console.log(JSON.stringify(newFieldForm, null, 2))
+    console.log(JSON.stringify(newFieldForm, null, 2));
     // updatedForm.field_form.questions = updatedQuestions;
     onChange(newFieldForm, 'field_form');
     updatedForm = form;
-    console.log(JSON.stringify(updatedForm.field_form, null, 2))
+    console.log(JSON.stringify(updatedForm.field_form, null, 2));
 
     try {
       const userInfo = await citmapApi.get<User>(
@@ -704,10 +714,10 @@ export const CreateProject = ({navigation, route}: Props) => {
         formData.append('raw_password', updatedForm.raw_password);
       }
       formData.append('field_form', JSON.stringify(newFieldForm));
-      if (imageBlob) {
+      if (imageBlob[0]) {
         formData.append('cover', imageBlob[0]);
       }
-      console.log(JSON.stringify(formData, null, 2))
+      // console.log(JSON.stringify(formData, null, 2))
       if (correct) {
         const projectCreated = await citmapApi.post(
           '/project/create/',
@@ -765,9 +775,11 @@ export const CreateProject = ({navigation, route}: Props) => {
           type: 'error',
           text1: 'Error',
           // text2: 'No se han podido obtener los datos, por favor reinicie la app',
-          text2:  error.message,
+          text2: error.message,
         });
       }
+    } finally {
+      setWaitingData(false);
     }
   };
   /**
@@ -777,7 +789,7 @@ export const CreateProject = ({navigation, route}: Props) => {
     setWaitingData(true);
     let correct = true;
     let token;
-    while(!token){
+    while (!token) {
       token = await AsyncStorage.getItem('token');
     }
     let updatedForm = {...form};
@@ -943,9 +955,11 @@ export const CreateProject = ({navigation, route}: Props) => {
           type: 'error',
           text1: 'Error',
           // text2: 'No se han podido obtener los datos, por favor reinicie la app',
-          text2:  error.message,
+          text2: error.message,
         });
       }
+    } finally {
+      setWaitingData(false);
     }
   };
 
@@ -1467,7 +1481,12 @@ export const CreateProject = ({navigation, route}: Props) => {
                       justifyContent: 'space-between',
                       marginVertical: RFPercentage(1),
                     }}>
-                    <View style={{flexDirection: 'row', alignItems: 'center', width:widthPercentageToDP(41)}}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        width: widthPercentageToDP(41),
+                      }}>
                       <View style={{}}>
                         <Hashtag
                           fill={'black'}
@@ -1667,8 +1686,8 @@ export const CreateProject = ({navigation, route}: Props) => {
                   marginLeft: '3%',
                   //   backgroundColor:'green'
                 }}>
-                Si lo activas, bla bla bla balbla bla bla balbla bla bla balbla
-                bla bla balbla bla bla balbla bla bla balbla bla bla bal
+                Si lo activas, la base de datos de tu proyecto no podrá ser
+                descargada por ningún usuario y pasará a estar oculta.
               </Text>
               <View
                 style={{
@@ -1694,8 +1713,8 @@ export const CreateProject = ({navigation, route}: Props) => {
                   marginLeft: '3%',
                   //   backgroundColor:'green'
                 }}>
-                Si lo activas, bla bla bla balbla bla bla balbla bla bla balbla
-                bla bla balbla bla bla balbla bla bla balbla bla bla bal
+                Si lo activas, tu proyecto pasará a ser privado. Solamente se
+                podrá participar a través de una contraseña.
               </Text>
             </View>
           </View>
@@ -2007,11 +2026,18 @@ export const CreateProject = ({navigation, route}: Props) => {
                   marginHorizontal: RFPercentage(4),
                 }}>
                 <View>
-                  <Text>Categorías</Text>
+                  <Text
+                    style={{
+                      fontSize: FontSize.fontSizeText17,
+                      fontFamily: FontFamily.NotoSansDisplaySemiBold,
+                      color: 'black',
+                    }}>
+                    Categorías
+                  </Text>
                 </View>
                 <View>
                   <TouchableOpacity onPress={() => setShowCategoryList(false)}>
-                    <Text style={{color: Colors.lightblue}}>Cerrar</Text>
+                    <Text style={{color: Colors.primaryLigth}}>Cerrar</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -2037,6 +2063,8 @@ export const CreateProject = ({navigation, route}: Props) => {
                         // justifyContent: 'space-between',
                       }}>
                       <Checkbox
+                        uncheckedColor={'#838383'}
+                        color={Colors.primaryLigth}
                         status={isChecked ? 'checked' : 'unchecked'}
                         onPress={() => {
                           setCheckCategories(item);
@@ -2247,6 +2275,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,
+    marginTop: RFPercentage(1),
   },
   stepDot: {
     width: 10,

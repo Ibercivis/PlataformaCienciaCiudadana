@@ -78,6 +78,8 @@ export const CardAnswerMap = ({
           setImages(undefined);
         }
       }
+    }).catch(err => {
+      showModal(true)
     });
   };
 
@@ -105,7 +107,7 @@ export const CardAnswerMap = ({
                 </View>
                 
               </View>{obligatory && (
-                  <View style={{justifyContent:'flex-end', position:'absolute', right:RFPercentage(2), bottom: RFPercentage(11.4)}}>
+                  <View style={{justifyContent:'flex-end', position:'relative', left:RFPercentage(35), bottom: RFPercentage(2)}}>
                     <Text style={{fontSize: FontSize.fontSizeText10}}>Obligatoria</Text>
                   </View>
                 )}
@@ -153,7 +155,7 @@ export const CardAnswerMap = ({
                 </View>
               </View>
               {obligatory && (
-                  <View style={{justifyContent:'flex-end', position:'absolute', right:RFPercentage(2), bottom: RFPercentage(11.4)}}>
+                  <View style={{justifyContent:'flex-end',position:'relative', left:RFPercentage(35), bottom: RFPercentage(2)}}>
                     <Text style={{fontSize: FontSize.fontSizeText10}}>Obligatoria</Text>
                   </View>
                 )}
@@ -193,7 +195,7 @@ export const CardAnswerMap = ({
                 </View>
               </View>
               {obligatory && (
-                  <View style={{justifyContent:'flex-end', position:'absolute', right:RFPercentage(2), bottom: RFPercentage(11.4)}}>
+                  <View style={{justifyContent:'flex-end', position:'relative', left:RFPercentage(35), bottom: RFPercentage(2)}}>
                     <Text style={{fontSize: FontSize.fontSizeText10}}>Obligatoria</Text>
                   </View>
                 )}
@@ -202,7 +204,7 @@ export const CardAnswerMap = ({
                   style={{
                     // marginVertical: RFPercentage(1),
                     alignItems: 'center',
-                    marginTop: '5%',
+                    marginTop: '1%',
                     width: '60%',
                     height: '80%',
                   }}>
@@ -330,7 +332,17 @@ export const CardAnswerMap = ({
                     </View>
                   )}
                   {value && onlyRead && (
-                    <ImageBackground
+                    <View  style={{
+                      width: '95%',
+                      height: '110%',
+                      marginTop: '6%',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      borderRadius: 10,
+                      padding: '2%',
+                      backgroundColor: value ? 'transparent' : 'grey',
+                    }}>
+                      <ImageBackground
                       borderRadius={10}
                       // source={require(urii)}
                       source={
@@ -340,14 +352,12 @@ export const CardAnswerMap = ({
                       }
                       style={{
                         width: '100%',
-                        height: '100%',
-                        // marginTop: '4%',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        borderRadius: 10,
-                        padding: '2%',
-                        backgroundColor: value ? 'transparent' : 'grey',
-                      }}></ImageBackground>
+                          height: '100%',
+                          borderRadius: 10,
+                          // resizeMode: 'cover',
+                      }}/>
+                    </View>
+                    
                   )}
                 </View>
               </View>

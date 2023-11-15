@@ -181,7 +181,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
   const OrganizationApi = async () => {
     let token;
 
-    while(!token){
+    while (!token) {
       token = await AsyncStorage.getItem('token');
     }
     try {
@@ -275,38 +275,46 @@ export const CreateOrganization = ({navigation, route}: Props) => {
       maxWidth: 300,
       maxHeight: 300,
       includeBase64: true,
-    }).then(response => {
-      //   console.log(JSON.stringify(response[0].sourceURL));
-      if (response && response.data) {
-        if (response.size < 4 * 1024 * 1024) {
-          const newImage = response;
-          setProfileImage(response);
-          form.logo = newImage;
-          setProfileImageBlob({
-            uri: newImage.path, // Debes ajustar esto según la estructura de response
-            type: newImage.mime, // Tipo MIME de la imagen
-            name: 'profile.jpg', // Nombre de archivo de la imagen (puedes cambiarlo)
-          });
-          setProfileImageCharged(undefined);
+    })
+      .then(response => {
+        //   console.log(JSON.stringify(response[0].sourceURL));
+        if (response && response.data) {
+          if (response.size < 4 * 1024 * 1024) {
+            const newImage = response;
+            setProfileImage(response);
+            form.logo = newImage;
+            setProfileImageBlob({
+              uri: newImage.path, // Debes ajustar esto según la estructura de response
+              type: newImage.mime, // Tipo MIME de la imagen
+              name: 'profile.jpg', // Nombre de archivo de la imagen (puedes cambiarlo)
+            });
+            setProfileImageCharged(undefined);
+          } else {
+            // showModalControlSizeImage();
+            Toast.show({
+              type: 'error',
+              text1: 'Image',
+              // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+              text2: 'La imagen pesa demasiado. Peso máximo, 4MB',
+            });
+          }
         } else {
-          showModalControlSizeImage();
+          Toast.show({
+            type: 'info',
+            text1: 'Image',
+            // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+            text2: 'Imagen no seleccionada',
+          });
         }
-      }else{
+      })
+      .catch(err => {
         Toast.show({
           type: 'info',
           text1: 'Image',
           // text2: 'No se han podido obtener los datos, por favor reinicie la app',
           text2: 'Imagen no seleccionada',
         });
-      }
-    }).catch(err => {
-      Toast.show({
-        type: 'info',
-        text1: 'Image',
-        // text2: 'No se han podido obtener los datos, por favor reinicie la app',
-        text2: 'Imagen no seleccionada',
       });
-    });
   };
 
   const openPortadaPhoto = () => {
@@ -317,31 +325,39 @@ export const CreateOrganization = ({navigation, route}: Props) => {
       maxWidth: 300,
       maxHeight: 300,
       includeBase64: true,
-    }).then(response => {
-      //   console.log(JSON.stringify(response[0].sourceURL));
-      if (response && response.data) {
-        if (response.size < 4 * 1024 * 1024) {
-          const newImage = response;
-          setOrganizationImage(response);
-          form.cover = newImage;
-          setOrganizationImageBlob({
-            uri: newImage.path, // Debes ajustar esto según la estructura de response
-            type: newImage.mime, // Tipo MIME de la imagen
-            name: 'cover.jpg', // Nombre de archivo de la imagen (puedes cambiarlo)
-          });
-          setOrganizationImageCharged(undefined);
-        } else {
-          showModalControlSizeImage();
+    })
+      .then(response => {
+        //   console.log(JSON.stringify(response[0].sourceURL));
+        if (response && response.data) {
+          if (response.size < 4 * 1024 * 1024) {
+            const newImage = response;
+            setOrganizationImage(response);
+            form.cover = newImage;
+            setOrganizationImageBlob({
+              uri: newImage.path, // Debes ajustar esto según la estructura de response
+              type: newImage.mime, // Tipo MIME de la imagen
+              name: 'cover.jpg', // Nombre de archivo de la imagen (puedes cambiarlo)
+            });
+            setOrganizationImageCharged(undefined);
+          } else {
+            // showModalControlSizeImage();
+            Toast.show({
+              type: 'error',
+              text1: 'Image',
+              // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+              text2: 'La imagen pesa demasiado. Peso máximo, 4MB',
+            });
+          }
         }
-      }
-    }).catch(err => {
-      Toast.show({
-        type: 'info',
-        text1: 'Image',
-        // text2: 'No se han podido obtener los datos, por favor reinicie la app',
-        text2: 'Imagen no seleccionada',
+      })
+      .catch(err => {
+        Toast.show({
+          type: 'info',
+          text1: 'Image',
+          // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+          text2: 'Imagen no seleccionada',
+        });
       });
-    });;
   };
 
   const handleInputChangeUser = (text: string) => {
@@ -469,7 +485,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
     let valid = true;
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i; // validación correo
     let token;
-    while(!token){
+    while (!token) {
       token = await AsyncStorage.getItem('token');
     }
 
@@ -553,7 +569,10 @@ export const CreateOrganization = ({navigation, route}: Props) => {
       } catch (error) {
         if (error.response) {
           // El servidor respondió con un estado de error (por ejemplo, 4xx, 5xx)
-          console.error('Error de respuesta del servidor:', error.response.data);
+          console.error(
+            'Error de respuesta del servidor:',
+            error.response.data,
+          );
           console.error(
             'Estado de respuesta del servidor:',
             error.response.status,
@@ -575,14 +594,19 @@ export const CreateOrganization = ({navigation, route}: Props) => {
           });
         } else {
           // Se produjo un error en la configuración de la solicitud
-          console.error('Error de configuración de la solicitud:', error.message);
+          console.error(
+            'Error de configuración de la solicitud:',
+            error.message,
+          );
           Toast.show({
             type: 'error',
             text1: 'Error',
             // text2: 'No se han podido obtener los datos, por favor reinicie la app',
-            text2:  error.message,
+            text2: error.message,
           });
         }
+      } finally {
+        setWaitingData(false);
       }
     }
   };
@@ -592,7 +616,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i; // validación correo
     let token;
 
-    while(!token){
+    while (!token) {
       token = await AsyncStorage.getItem('token');
     }
 
@@ -680,7 +704,10 @@ export const CreateOrganization = ({navigation, route}: Props) => {
       } catch (error) {
         if (error.response) {
           // El servidor respondió con un estado de error (por ejemplo, 4xx, 5xx)
-          console.error('Error de respuesta del servidor:', error.response.data);
+          console.error(
+            'Error de respuesta del servidor:',
+            error.response.data,
+          );
           console.error(
             'Estado de respuesta del servidor:',
             error.response.status,
@@ -702,14 +729,19 @@ export const CreateOrganization = ({navigation, route}: Props) => {
           });
         } else {
           // Se produjo un error en la configuración de la solicitud
-          console.error('Error de configuración de la solicitud:', error.message);
+          console.error(
+            'Error de configuración de la solicitud:',
+            error.message,
+          );
           Toast.show({
             type: 'error',
             text1: 'Error',
             // text2: 'No se han podido obtener los datos, por favor reinicie la app',
-            text2:  error.message,
+            text2: error.message,
           });
         }
+      } finally {
+        setWaitingData(false);
       }
     }
   };

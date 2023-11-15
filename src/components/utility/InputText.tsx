@@ -94,12 +94,13 @@ export const InputText = ({
   return (
     // <View style={styles.container}>
     <View style={{...globalStyles.inputContainer, 
-    borderColor: isValid ? onBlurInput : Colors.semanticWarningDark, width:'100%' }}>
+    borderColor: isValid ? onBlurInput : Colors.semanticWarningDark, width:'100%'
+     }}>
       {iconLeft && (
         <View
           style={{
-            flex: 1,
-            marginHorizontal: '5%',
+            // flex: 1,
+            marginLeft: '5%',
             // alignItems: 'center',
             justifyContent: 'center',
             top: 1,
@@ -133,10 +134,11 @@ export const InputText = ({
         keyboardType={keyboardType}
         multiline={multiline}
         numberOfLines={numOfLines}
-        selectionColor={Colors.primary}
+        // selectionColor={Colors.primary}
+        editable={true}
         value={value}
         maxLength={maxLength}
-        onChangeText={value => onChangeText(value)}
+        onChangeText={(value: any) => onChangeText(value)}
         onBlur={customBlurColor}
         onFocus={customFocus}
       />

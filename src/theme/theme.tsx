@@ -135,14 +135,14 @@ export const globalStyles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     marginTop: '2.5%',
-    overflow: 'hidden',
-    shadowColor: 'rgba(0,0,0,0.25)',
-    shadowOffset: {
-      width: 10,
-      height: 10,
-    },
-    shadowOpacity: 10,
-    shadowRadius: 10,
-    elevation: 0,
+    // overflow: 'hidden',
+    // shadowColor: 'rgba(0,0,0,0.25)',
+    // shadowOffset: {
+    //   width: 1,
+    //   height: 1,
+    // },
+    // shadowOpacity: 10,
+    // shadowRadius: 10,
+    // elevation: 0,
   },
 });

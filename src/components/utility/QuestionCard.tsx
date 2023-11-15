@@ -92,11 +92,12 @@ export const QuestionCard = ({
             onFocus={onFocus}
             style={{
               ...styles.input,
-              borderColor: selected ? 'black' : 'transparent',
+              borderColor: selected ? 'black' : '#c9c4c4',
             }}
             placeholder="Escribe tu pregunta"
             value={questionText}
             onChangeText={text => onChangeText('question_text', text)}
+            textAlignVertical='center'
           />
         </View>
         <View style={{...styles.row, justifyContent: 'space-between'}}>
@@ -228,7 +229,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 4,
 
-    elevation: 1.25,
+    // elevation: 1.25,
   },
   icon: {
     width: 24,
