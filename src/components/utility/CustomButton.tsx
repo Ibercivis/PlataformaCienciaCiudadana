@@ -32,7 +32,7 @@ interface Props {
 export const CustomButton = ({
   label = '',
   onPress,
-  backgroundColor = Colors.secondary,
+  backgroundColor = 'transparent',
   fontColor = '#fff',
   iconLeft = '',
   iconRight = '',

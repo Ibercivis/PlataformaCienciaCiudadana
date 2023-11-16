@@ -15,6 +15,7 @@ import { PaperProvider } from 'react-native-paper';
 const App = () => {
   const tema = DefaultTheme;
   tema.colors.background = 'white';
+  tema.colors.text = 'black';
   return (
     <AppAuth>
       <AppState>

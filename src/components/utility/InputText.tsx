@@ -116,6 +116,7 @@ export const InputText = ({
           width: '80%',
           fontSize: FontSize.fontSizeText13,
           fontFamily: FontFamily.NotoSansDisplayLight,
+          color: 'black',
           fontWeight: '300',
           alignSelf: 'center',
           backgroundColor: 'transparent',
@@ -134,7 +135,7 @@ export const InputText = ({
         keyboardType={keyboardType}
         multiline={multiline}
         numberOfLines={numOfLines}
-        // selectionColor={Colors.primary}
+        selectionColor={Colors.primary}
         editable={true}
         value={value}
         maxLength={maxLength}

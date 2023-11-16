@@ -20,6 +20,7 @@ import Carousel, {Pagination} from 'react-native-snap-carousel';
 import {ScrollView} from 'react-native';
 import {FontSize} from '../../../theme/fonts';
 import HeartFill from '../../../assets/icons/general/heart-fill.svg';
+import Heart from '../../../assets/icons/general/heart.svg';
 import ShareIcon from '../../../assets/icons/general/share.svg';
 import People from '../../../assets/icons/general/people.svg';
 import Chevron from '../../../assets/icons/general/chevron-left-1_circle_new.svg';
@@ -29,13 +30,13 @@ import {CustomButton} from '../../utility/CustomButton';
 import {Colors} from '../../../theme/colors';
 import {
   Organization,
-  Project,
+  ShowProject,
   User,
   UserInfo,
 } from '../../../interfaces/interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import citmapApi from '../../../api/citmapApi';
-import {HasTag} from '../../../interfaces/appInterfaces';
+import {HasTag, Topic} from '../../../interfaces/appInterfaces';
 import {LoadingScreen} from '../../../screens/LoadingScreen';
 import {PassModal, SaveProyectModal} from '../../utility/Modals';
 import {
@@ -47,6 +48,7 @@ import {Spinner} from '../../utility/Spinner';
 import {PermissionsContext} from '../../../context/PermissionsContext';
 import Toast from 'react-native-toast-message';
 import RNFS from 'react-native-fs';
+import { heightPercentageToDP } from 'react-native-responsive-screen';
 
 const data = [
   require('../../../assets/backgrounds/login-background.jpg'),
@@ -78,10 +80,10 @@ export const ProjectPage = (props: Props) => {
   const [waitingData, setWaitingData] = useState(false);
   const isCarousel = useRef(null);
 
-  const [project, setProject] = useState<Project>();
+  const [project, setProject] = useState<ShowProject>();
   const [organization, setOrganization] = useState<Organization[]>([]);
   const [creator, setCreator] = useState('');
-  const [hastags, setHastags] = useState<HasTag[]>([]);
+  const [hastags, setHastags] = useState<Topic[]>([]);
   const [imagesCharged, setImagesCharged] = useState<any[]>([]);
   const [isValidPass, setIsValidPass] = useState(true);
   const [pass, setPass] = useState<PassValidate>({pass: '', pass2: ''});
@@ -135,7 +137,9 @@ export const ProjectPage = (props: Props) => {
   }, [hastags]);
 
   useEffect(() => {
-    getHastagApi();
+    if (project) {
+      getHastagApi();
+    }
   }, [project]);
 
   useFocusEffect(
@@ -392,7 +396,7 @@ export const ProjectPage = (props: Props) => {
         },
       );
 
-      const resp = await citmapApi.get<Project>(
+      const resp = await citmapApi.get<ShowProject>(
         `/project/${props.route.params.id}`,
         {
           headers: {
@@ -432,6 +436,7 @@ export const ProjectPage = (props: Props) => {
         });
       }
       setProject(resp.data);
+      // console.log(JSON.stringify(resp.data, null, 2));
       if (resp.data.cover) {
         setImagesCharged(resp.data.cover);
       }
@@ -442,19 +447,22 @@ export const ProjectPage = (props: Props) => {
         showModalSave();
       }
 
-      if (organiza.data?.length > 0 && resp.data?.organizations_write?.length > 0) {
-        const newListOrga = organiza.data.filter(x =>
-          resp.data.organizations_write.includes(x.id),
-        );
-        setOrganization(newListOrga);
-      } else {
-        Toast.show({
-          type: 'error',
-          text1: 'Error',
-          // text2: 'No se han podido obtener los datos, por favor reinicie la app',
-          text2: 'Datos no cargados de organización',
-        });
-      }
+      // if (
+      //   organiza.data?.length > 0 &&
+      //   resp.data?.organizations_write?.length > 0
+      // ) {
+      //   const newListOrga = organiza.data.filter(x =>
+      //     resp.data.organizations_write.includes(x.id),
+      //   );
+      //   setOrganization(newListOrga);
+      // } else {
+      //   Toast.show({
+      //     type: 'error',
+      //     text1: 'Error',
+      //     // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+      //     text2: 'Datos no cargados de organización',
+      //   });
+      // }
     } catch (err) {
       console.log(err.response.data);
     }
@@ -467,16 +475,46 @@ export const ProjectPage = (props: Props) => {
       token = await AsyncStorage.getItem('token');
     }
     try {
-      const resp = await citmapApi.get<HasTag[]>('/project/hastag/', {
+      const resp = await citmapApi.get<Topic[]>('/project/topics/', {
         headers: {
           Authorization: token,
         },
       });
+
       const filteredHashtags = resp.data.filter(hasTag =>
-        project?.hasTag.includes(hasTag.id),
+        project?.topic.includes(hasTag.id),
       );
       setHastags(filteredHashtags);
     } catch {}
+  };
+
+  /**
+   *  TODO cambiar estado del heart del fav mas rapidamente
+   * @param idProject
+   */
+  const toggleLike = async () => {
+    let token;
+    while (!token) {
+      token = await AsyncStorage.getItem('token');
+    }
+    try {
+      const resp = await citmapApi.post(
+        `/projects/${project?.id}/toggle-like/`,
+        {},
+        {
+          headers: {
+            Authorization: token,
+          },
+        },
+      );
+
+      Toast.show({
+        type: 'success',
+        text1: 'Like',
+        // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+        text2: resp.data.message,
+      });
+    } catch (err) {}
   };
 
   //#endregion
@@ -636,27 +674,36 @@ export const ProjectPage = (props: Props) => {
 
                   {/*favorito */}
                   <TouchableOpacity
+                    onPress={toggleLike}
                     style={{
                       flexDirection: 'row',
                       justifyContent: 'space-around',
                     }}>
-                    <HeartFill
+                    {/* <HeartFill
                       width={RFPercentage(2.5)}
                       height={RFPercentage(2.5)}
                       color={'#ff0000'}
-                    />
-                    {/* {boolHelper ? (
-                    <HeartFill width={16} height={16} color={'#ff0000'} />
-                  ) : (
-                    <Heart width={16} height={16} color={'#000000'} />
-                  )} */}
+                    /> */}
+                    {project?.is_liked_by_user ? (
+                      <HeartFill
+                        width={RFPercentage(2.5)}
+                        height={RFPercentage(2.5)}
+                        color={'#ff0000'}
+                      />
+                    ) : (
+                      <Heart
+                        width={RFPercentage(2.5)}
+                        height={RFPercentage(2.5)}
+                        color={'#000000'}
+                      />
+                    )}
                     <Text
                       style={{
                         fontSize: FontSize.fontSizeText13,
                         marginHorizontal: RFPercentage(1),
                         alignSelf: 'center',
                       }}>
-                      120
+                      {project?.total_likes}
                     </Text>
                   </TouchableOpacity>
 
@@ -731,32 +778,6 @@ export const ProjectPage = (props: Props) => {
                       {project?.name}
                     </Text>
                     <View style={{flexDirection: 'row'}}>
-                      {hastags.map(x => {
-                        return (
-                          <Text
-                            key={x.id}
-                            style={{
-                              // backgroundColor: 'white',
-                              alignSelf: 'flex-start',
-                              color: Colors.primaryDark,
-                              marginBottom: '4%',
-                            }}>
-                            #{x.hasTag}
-                            {'   '}
-                          </Text>
-                        );
-                      })}
-                    </View>
-                    <Text
-                      style={{
-                        // backgroundColor: 'white',
-                        alignSelf: 'flex-start',
-                        marginBottom: '4%',
-                      }}>
-                      {project?.description}
-                    </Text>
-
-                    <View style={{flexDirection: 'row'}}>
                       <Text
                         style={{
                           // backgroundColor: 'white',
@@ -765,11 +786,13 @@ export const ProjectPage = (props: Props) => {
                         }}>
                         Organización:{' '}
                       </Text>
-                      {organization && organization.length > 0 ? (
+                      {project?.organizations &&
+                      project?.organizations.length > 0 ? (
                         <>
-                          {organization.map(x => {
+                          {project.organizations.map((x, i) => {
                             return (
                               <Text
+                                key={i}
                                 style={{
                                   // backgroundColor: 'white',
                                   marginBottom: '1%',
@@ -793,6 +816,33 @@ export const ProjectPage = (props: Props) => {
                         </Text>
                       )}
                     </View>
+                    <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+                      {hastags.map((x, i) => {
+                        return (
+                          <Text
+                            key={i}
+                            style={{
+                              // backgroundColor: 'white',
+                              alignSelf: 'flex-start',
+                              color: Colors.primaryDark,
+                              // marginBottom: '4%',
+                              lineHeight: 17,
+                            }}>
+                            #{x.topic}
+                            {'   '}
+                          </Text>
+                        );
+                      })}
+                    </View>
+                    <Text
+                      style={{
+                        // backgroundColor: 'white',
+                        alignSelf: 'flex-start',
+                        marginBottom: '4%',
+                        color: 'black',
+                      }}>
+                      {project?.description}
+                    </Text>
                   </View>
                 </View>
               </View>
@@ -863,7 +913,7 @@ const styles = StyleSheet.create({
     height: RFPercentage(55),
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'red',
+    
     zIndex: 0,
   },
   image: {
@@ -873,13 +923,15 @@ const styles = StyleSheet.create({
   textContainer: {
     alignItems: 'stretch',
     position: 'absolute',
-    bottom: RFPercentage(30),
+    // top: heightPercentageToDP(50),
+    marginTop: heightPercentageToDP(43),
     left: RFPercentage(2),
     right: RFPercentage(5),
     // backgroundColor: 'black',
     padding: RFPercentage(1),
     // borderRadius: 10,
     zIndex: 1,
+    color: 'black',
   },
   title: {
     color: 'white',

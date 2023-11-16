@@ -21,15 +21,16 @@ import {RFPercentage} from 'react-native-responsive-fontsize';
 import {HeaderComponent} from '../../HeaderComponent';
 import {StackParams} from '../../../navigation/HomeNavigator';
 import {StackScreenProps} from '@react-navigation/stack';
-import {HasTag} from '../../../interfaces/appInterfaces';
-import {FontSize} from '../../../theme/fonts';
+import {HasTag, Topic} from '../../../interfaces/appInterfaces';
+import {FontFamily, FontSize} from '../../../theme/fonts';
+import {widthPercentageToDP} from 'react-native-responsive-screen';
 
 interface Props extends StackScreenProps<StackParams, 'ProjectList'> {}
 
 export const ProjectList = (props: Props) => {
   const [projectList, setProjectList] = useState<ShowProject[]>([]); // partir la lista en 2
 
-  const [hastags, setHastags] = useState<HasTag[]>([]);
+  const [topic, setTopic] = useState<Topic[]>([]);
 
   useEffect(() => {
     getHastagApi();
@@ -37,9 +38,7 @@ export const ProjectList = (props: Props) => {
 
   useEffect(() => {
     projectListApi();
-  }, [hastags]);
-
-
+  }, [topic]);
 
   const projectListApi = async () => {
     const token = await AsyncStorage.getItem('token');
@@ -56,12 +55,12 @@ export const ProjectList = (props: Props) => {
   const getHastagApi = async () => {
     const token = await AsyncStorage.getItem('token');
     try {
-      const resp = await citmapApi.get<HasTag[]>('/project/hastag/', {
+      const resp = await citmapApi.get<Topic[]>('/project/topics/', {
         headers: {
           Authorization: token,
         },
       });
-      setHastags(resp.data);
+      setTopic(resp.data);
     } catch {}
   };
 
@@ -84,7 +83,7 @@ export const ProjectList = (props: Props) => {
   return (
     <View style={{flex: 1, padding: RFPercentage(2)}}>
       <HeaderComponent
-        title={'Listado'}
+        title={props.route.params?.title ? props.route.params.title : 'Listado'}
         onPressLeft={() => props.navigation.goBack()}
         onPressRight={() => console.log('jaja')}
         rightIcon={false}
@@ -106,14 +105,17 @@ export const ProjectList = (props: Props) => {
                 props.navigation.navigate('ProjectPage', {id: item.id})
               }>
               <View
-                style={{
-                  paddingHorizontal: RFPercentage(3),
-                  // width:'100%',
-                  // backgroundColor:'green'
-                }}>
+                style={
+                  {
+                    // paddingHorizontal: RFPercentage(3),
+                    // width:'100%',
+                    // backgroundColor:'green'
+                  }
+                }>
                 <View
                   style={{
                     // marginHorizontal: RFPercentage(2),
+                    paddingHorizontal: RFPercentage(2),
                     width: '100%',
                     marginTop: RFPercentage(2),
                     marginBottom: 6,
@@ -121,19 +123,19 @@ export const ProjectList = (props: Props) => {
                   <Text
                     style={{
                       // backgroundColor: 'blue',
+                      fontSize: FontSize.fontSizeText17,
+                      fontWeight: '600',
                       color: 'black',
-                      fontWeight: 'bold',
+                      fontFamily: FontFamily.NotoSansDisplaySemiBold,
                       marginBottom: '1%',
                       alignSelf: 'flex-start',
                     }}>
                     {item.name}
                   </Text>
-                  <View style={{flexDirection: 'row'}}>
-                    {item.hasTag.map((x, index) => {
-                      const matchingHastag = hastags.find(
-                        hastag => hastag.id === x,
-                      );
-                      if (matchingHastag) {
+                  <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+                    {item.topic.map((x, index) => {
+                      const matching = topic.find(topic => topic.id === x);
+                      if (matching) {
                         return (
                           <Text
                             key={index}
@@ -142,23 +144,29 @@ export const ProjectList = (props: Props) => {
                               alignSelf: 'flex-start',
                               color: 'blue',
                               marginBottom: '2%',
+                              lineHeight: 15,
                             }}>
-                            #{matchingHastag.hasTag}
+                            #{matching.topic}
                             {'  '}
                           </Text>
                         );
                       }
                     })}
                   </View>
-                  <Text
-                    style={{
-                      alignSelf: 'flex-start',
-                      marginBottom: '2%',
-                    }}>
-                    {item.description}
-                  </Text>
+                  <View style={{flexWrap: 'wrap'}}>
+                    <Text
+                      style={{
+                        alignSelf: 'flex-start',
+                        flexWrap: 'wrap',
+                        marginBottom: '2%',
+                      }}>
+                      {item.description}
+                    </Text>
+                  </View>
                 </View>
                 <ImageBackground
+                borderBottomLeftRadius={10}
+                borderBottomRightRadius={10}
                   source={
                     item.cover && item.cover[0]
                       ? {uri: imageUrl + item.cover[0].image}
@@ -200,11 +208,11 @@ export const ProjectList = (props: Props) => {
                         }}>
                         1500
                       </Text>
-                      {true? (
-                          <HeartFill width={16} height={16} color={'#ff0000'} />
-                        ) : (
-                          <Heart width={16} height={16} color={'#000000'} />
-                        )}
+                      {true ? (
+                        <HeartFill width={16} height={16} color={'#ff0000'} />
+                      ) : (
+                        <Heart width={16} height={16} color={'#000000'} />
+                      )}
                       <Text
                         style={{
                           fontSize: FontSize.fontSizeText13,
@@ -213,7 +221,7 @@ export const ProjectList = (props: Props) => {
                         {item.total_likes}
                       </Text>
                     </View>
-                    <View
+                    {/* <View
                       style={{
                         flexDirection: 'row',
                         backgroundColor: 'white',
@@ -223,9 +231,8 @@ export const ProjectList = (props: Props) => {
                         paddingVertical: '2%',
                       }}>
                       <TouchableOpacity
-                        onPress={() =>toggleLike(item.id)}
+                        onPress={() => toggleLike(item.id)}
                         style={{flexDirection: 'row'}}>
-                        {/* <IconBootstrap name={'plus'} size={20} color={'black'} /> */}
                         {item.is_liked_by_user ? (
                           <HeartFill width={16} height={16} color={'#ff0000'} />
                         ) : (
@@ -239,7 +246,7 @@ export const ProjectList = (props: Props) => {
                           {item.total_likes}
                         </Text>
                       </TouchableOpacity>
-                    </View>
+                    </View> */}
                   </View>
                 </ImageBackground>
               </View>
@@ -253,9 +260,19 @@ export const ProjectList = (props: Props) => {
 
 const style = StyleSheet.create({
   projectFound: {
-    width: RFPercentage(50),
-    marginVertical: RFPercentage(3),
+    width: widthPercentageToDP(90),
+    // width: '90%',
+    marginVertical: RFPercentage(1),
     borderRadius: 10,
+    backgroundColor: 'white',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 4.41,
+    elevation: 4,
   },
   imageBackground: {
     height: '100%',

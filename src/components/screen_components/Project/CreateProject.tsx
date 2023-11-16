@@ -42,13 +42,14 @@ import {GeometryForms} from '../../utility/GeometryForms';
 import PlusSquare from '../../../assets/icons/general/plus-square.svg';
 import PlusImg from '../../../assets/icons/general/Plus-img.svg';
 import PlusBlue from '../../../assets/icons/project/plus-circle-blue.svg';
+import Delete from '../../../assets/icons/project/trash.svg';
 import {QuestionCard} from '../../utility/QuestionCard';
 import {IconTemp} from '../../IconTemp';
 import {useForm} from '../../../hooks/useForm';
 import {InfoModal, SaveProyectModal} from '../../utility/Modals';
 import {CommonActions} from '@react-navigation/native';
 import {Spinner} from '../../utility/Spinner';
-import {widthPercentageToDP} from 'react-native-responsive-screen';
+import {heightPercentageToDP, widthPercentageToDP} from 'react-native-responsive-screen';
 import Toast from 'react-native-toast-message';
 
 interface Props extends StackScreenProps<StackParams, 'CreateProject'> {}
@@ -117,6 +118,7 @@ export const CreateProject = ({navigation, route}: Props) => {
   const [errPass, setErrPass] = useState(true);
   const [isSwitchOnProject, setIsSwitchOnProject] = useState(false);
   const [rawPassword, setRawPassword] = useState('');
+  const [rawPassword2, setRawPassword2] = useState('');
 
   const [errorPass, setErrorPass] = useState(false);
   const showModalErrorPass = () => setErrorPass(true);
@@ -268,6 +270,14 @@ export const CreateProject = ({navigation, route}: Props) => {
         break;
       case 2:
         if (!errPass) {
+          showModalErrorPass();
+          isValid = false;
+        }
+        if (rawPassword.length > 0 && rawPassword2.length <= 0) {
+          showModalErrorPass();
+          isValid = false;
+        }
+        if (rawPassword2.length > 0 && rawPassword.length <= 0) {
           showModalErrorPass();
           isValid = false;
         }
@@ -566,6 +576,7 @@ export const CreateProject = ({navigation, route}: Props) => {
   };
 
   const validatePassword = (value: any) => {
+    setRawPassword2(value);
     if (value === rawPassword) {
       onChange(value, 'raw_password');
       setErrPass(true);
@@ -717,7 +728,7 @@ export const CreateProject = ({navigation, route}: Props) => {
       if (imageBlob[0]) {
         formData.append('cover', imageBlob[0]);
       }
-      // console.log(JSON.stringify(formData, null, 2))
+      console.log(JSON.stringify(formData, null, 2));
       if (correct) {
         const projectCreated = await citmapApi.post(
           '/project/create/',
@@ -1504,13 +1515,15 @@ export const CreateProject = ({navigation, route}: Props) => {
                       </Text>
                     </View>
 
-                    <View style={{width: RFPercentage(8)}}>
+                    <View style={{width: RFPercentage(6)}}>
                       <CustomButton
                         backgroundColor={'transparent'}
                         label={'Eliminar'}
                         onPress={() => setCheckCategories(x)}
                         fontColor="red"
                         outlineColor="red"
+                        fontSize={RFPercentage(1.2)}
+                        height={RFPercentage(3)}
                       />
                     </View>
                   </View>
@@ -1621,13 +1634,15 @@ export const CreateProject = ({navigation, route}: Props) => {
                       </Text>
                     </View>
                     {/* que elimine de la lista */}
-                    <View style={{width: '20%', marginLeft: '5%'}}>
+                    <View style={{width: RFPercentage(6), marginLeft: '10%', alignContent:'center', justifyContent: 'center'}}>
                       <CustomButton
                         onPress={() => moveItemToSuggestions(index)}
                         backgroundColor="transparen"
                         fontColor="red"
                         label="Eliminar"
                         outlineColor="red"
+                        fontSize={RFPercentage(1.2)}
+                        height={RFPercentage(3)}
                       />
                     </View>
                   </View>
@@ -1775,6 +1790,7 @@ export const CreateProject = ({navigation, route}: Props) => {
                         numOfLines={1}
                         isSecureText={true}
                         onChangeText={value => setRawPassword(value)}
+                        value={rawPassword}
                       />
                     </View>
                   </View>
@@ -1818,6 +1834,7 @@ export const CreateProject = ({navigation, route}: Props) => {
                       numOfLines={1}
                       isSecureText={true}
                       onChangeText={value => validatePassword(value)}
+                      value={rawPassword2}
                     />
                   </View>
                 </>
@@ -1901,9 +1918,30 @@ export const CreateProject = ({navigation, route}: Props) => {
     >
       <SafeAreaView style={{flexGrow: 1}}>
         <HeaderComponent
-          title={'Crear un nuevo proyecto'}
+          title={isEdit ? 'Editar proyecto' : 'Crear un nuevo proyecto'}
           onPressLeft={() => navigation.goBack()}
-          rightIcon={false}
+          rightIcon={true}
+          renderRight={() => {
+            return (
+              <TouchableOpacity activeOpacity={0.5} onPress={() => console.log('borrar')}>
+                <View
+                  style={{
+                    justifyContent: 'center',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginRight: RFPercentage(3),
+                    marginTop: RFPercentage(0.4)
+                  }}>
+                  {/* <IconTemp name="arrow-left" size={Size.iconSizeMedium} /> */}
+                  <Delete
+                    width={RFPercentage(2.5)}
+                    height={RFPercentage(2.5)}
+                    fill={Colors.semanticDangerLight}
+                  />
+                </View>
+              </TouchableOpacity>
+            );
+          }}
         />
         {/* <TouchableWithoutFeedback onPress={handlePressOutside}> */}
         <View style={styles.container}>
@@ -1937,7 +1975,9 @@ export const CreateProject = ({navigation, route}: Props) => {
             <View style={styles.buttonContainer}>
               {currentStep > 1 && (
                 <CustomButton
-                  backgroundColor={Colors.primaryLigth}
+                  backgroundColor={'white'}
+                  outlineColor={'black'}
+                  fontColor='black'
                   label={'Volver'}
                   onPress={handlePrevStep}
                 />
@@ -1954,7 +1994,7 @@ export const CreateProject = ({navigation, route}: Props) => {
                   {isEdit == true ? (
                     <CustomButton
                       backgroundColor={Colors.primaryLigth}
-                      label={'Editar'}
+                      label={'Guardar cambios'}
                       onPress={() => editData()}
                     />
                   ) : (
@@ -2278,8 +2318,8 @@ const styles = StyleSheet.create({
     marginTop: RFPercentage(1),
   },
   stepDot: {
-    width: 10,
-    height: 10,
+    width: widthPercentageToDP(2),
+    height: heightPercentageToDP(1),
     borderRadius: 5,
     backgroundColor: 'lightgray',
     marginHorizontal: 5,

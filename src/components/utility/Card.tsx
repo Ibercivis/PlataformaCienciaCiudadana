@@ -25,19 +25,19 @@ import {
 } from 'react-native-responsive-screen';
 import {Topic} from '../../interfaces/appInterfaces';
 
-const categoryIcons = [
-  require('../../assets/icons/category/Group-6.png'),
-  require('../../assets/icons/category/Group-1.png'),
-  require('../../assets/icons/category/Group-2.png'),
-  require('../../assets/icons/category/Group-4.png'),
-  require('../../assets/icons/category/Group-3.png'),
-  require('../../assets/icons/category/Group-5.png'),
-  require('../../assets/icons/category/Group-7.png'),
-  require('../../assets/icons/category/Group-8.png'),
-  require('../../assets/icons/category/Group.png'),
-  require('../../assets/icons/category/Group-1.png'),
-  require('../../assets/icons/category/Group-1.png'),
-];
+// const categoryIcons = [
+//   require('../../assets/icons/category/Group-6.png'),
+//   require('../../assets/icons/category/Group-1.png'),
+//   require('../../assets/icons/category/Group-2.png'),
+//   require('../../assets/icons/category/Group-4.png'),
+//   require('../../assets/icons/category/Group-3.png'),
+//   require('../../assets/icons/category/Group-5.png'),
+//   require('../../assets/icons/category/Group-7.png'),
+//   require('../../assets/icons/category/Group-8.png'),
+//   require('../../assets/icons/category/Group.png'),
+//   require('../../assets/icons/category/Group-1.png'),
+//   require('../../assets/icons/category/Group-1.png'),
+// ];
 
 interface Props {
   type?: string;
@@ -177,7 +177,7 @@ export const Card = ({
                     style={{
                       // textAlign: 'center',
                       marginBottom: '5%',
-                      marginLeft: '10%',
+                      marginLeft: '5%',
                       marginRight: '10%',
                       marginTop: RFPercentage(7),
                       backgroundColor: 'white',
@@ -299,6 +299,7 @@ export const Card = ({
                       style={{
                         fontSize: FontSize.fontSizeText13,
                         marginHorizontal: RFPercentage(1),
+                        color: 'black',
                       }}>
                       1500
                     </Text>
@@ -325,6 +326,7 @@ export const Card = ({
                       style={{
                         fontSize: FontSize.fontSizeText13,
                         marginHorizontal: RFPercentage(1),
+                        color: 'black',
                       }}>
                       {totalLikes}
                     </Text>
@@ -381,7 +383,7 @@ export const Card = ({
                     style={{
                       // textAlign: 'center',
                       marginBottom: '4%',
-                      marginLeft: '10%',
+                      marginLeft: '5%',
                       marginRight: '10%',
                       marginTop: RFPercentage(12),
                       paddingHorizontal: RFPercentage(0.5),
@@ -398,7 +400,7 @@ export const Card = ({
                     style={{
                       // textAlign: 'center',
                       marginBottom: '5%',
-                      marginLeft: '10%',
+                      marginLeft: '5%',
                       marginRight: '10%',
                       paddingHorizontal: RFPercentage(0.5),
                       backgroundColor: Colors.primaryLigth,
@@ -513,9 +515,9 @@ export const Card = ({
                   ...style.imageBackgroundOrganization,
                 }}>
                 <Plus
-                  style={{alignSelf: 'center', bottom: RFPercentage(-2)}}
-                  height={60}
-                  width={60}
+                  style={{alignSelf: 'center', bottom: RFPercentage(-4)}}
+                  height={RFPercentage(6)}
+                  width={RFPercentage(6)}
                 />
               </View>
               <View style={{alignItems: 'stretch'}}>
@@ -528,6 +530,10 @@ export const Card = ({
                     marginTop: '5%',
                     alignSelf: 'center',
                     justifyContent: 'center',
+                    fontSize: FontSize.fontSizeText15,
+                    fontWeight: 'normal',
+                    color: 'black',
+                    fontFamily: FontFamily.NotoSansDisplayMedium,
                   }}>
                   Más...
                 </Text>
@@ -543,13 +549,14 @@ export const Card = ({
             onPress={onPress}>
             <View
               style={{
-                paddingHorizontal: RFPercentage(3),
+                // paddingHorizontal: RFPercentage(3),
                 // width:'100%',
                 // backgroundColor:'green'
               }}>
               <View
                 style={{
                   // marginHorizontal: RFPercentage(2),
+                  paddingHorizontal: RFPercentage(2),
                   width: '100%',
                   marginTop: RFPercentage(2),
                   marginBottom: 6,
@@ -598,6 +605,7 @@ export const Card = ({
                     marginBottom: '2%',
                     marginTop: RFPercentage(2),
                     // padding: RFPercentage(1)
+                    // color: 'black',
                   }}>
                   {description}
                 </Text>
@@ -605,6 +613,8 @@ export const Card = ({
               <ImageBackground
                 // borderRadius={10}
                 // source={require(urii)}
+                borderBottomLeftRadius={10}
+                borderBottomRightRadius={10}
                 source={
                   cover
                     ? {uri: imageUrl + cover}
@@ -651,7 +661,7 @@ export const Card = ({
                       {totalLikes}
                     </Text>
                   </View>
-                  <TouchableOpacity
+                  {/* <TouchableOpacity
                     onPress={onLike}
                     style={{
                       flexDirection: 'row',
@@ -677,7 +687,7 @@ export const Card = ({
                     ) : (
                       <Heart width={16} height={16} color={'#000000'} />
                     )}
-                  </TouchableOpacity>
+                  </TouchableOpacity> */}
                 </View>
               </ImageBackground>
             </View>
@@ -747,7 +757,7 @@ export const Card = ({
                     marginBottom: '1%',
                     alignSelf: 'flex-start',
                     fontWeight: 'bold',
-                    fontSize: FontSize.fontSizeText14,
+                    fontSize: FontSize.fontSizeText15,
                   }}>
                   {title}
                 </Text>
@@ -759,9 +769,11 @@ export const Card = ({
                     marginBottom: '4%',
                     fontSize: FontSize.fontSizeText13,
                   }}>
-                  {description.length > 30
-                    ? description.slice(0, 30) + '...'
+                  {description.length > 150
+                    ? description.slice(0, 150) + '...'
                     : description}
+
+                    
                 </Text>
               </View>
             </View>
@@ -925,10 +937,10 @@ export const Card = ({
 const style = StyleSheet.create({
   container: {},
   category: {
-    height: RFPercentage(15),
+    height: heightPercentageToDP(15),
     width: RFPercentage(11.5),
     // marginHorizontal: 4,
-    marginVertical: RFPercentage(1),
+    // marginVertical: RFPercentage(1),
     backgroundColor: 'white',
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
@@ -940,8 +952,8 @@ const style = StyleSheet.create({
     },
     shadowOpacity: 0.2,
     shadowRadius: 1.41,
-    elevation: 2,
-    marginRight: RFPercentage(2),
+    elevation: 1,
+    // marginRight: RFPercentage(2),
   },
   newProject: {
     height: RFPercentage(13),
@@ -966,7 +978,7 @@ const style = StyleSheet.create({
     // height: RFPercentage(30),
     height: heightPercentageToDP(38),
     width: widthPercentageToDP(52),
-    margin: 4,
+    // margin: 4,
     paddingBottom: heightPercentageToDP(2),
     borderRadius: 10,
     backgroundColor: 'white',
@@ -1010,17 +1022,18 @@ const style = StyleSheet.create({
     marginTop: RFPercentage(1),
     height: heightPercentageToDP(13),
     width: widthPercentageToDP(27),
-    // borderRadius: 10,
+    borderRadius: 100,
     alignSelf: 'center',
     // padding: '30%',
-    shadowColor: '#000',
+    backgroundColor: 'white',
+    shadowColor: '#000000',
     shadowOffset: {
       width: 0,
       height: 0.1,
     },
     shadowOpacity: 0.2,
     shadowRadius: 1.41,
-    elevation: 7,
+    elevation: 4,
   },
   touchableOrganization: {
     // height: '100%',
@@ -1038,16 +1051,26 @@ const style = StyleSheet.create({
     // elevation: 1,
   },
   projectFound: {
-    // height: '100%',
-    width: widthPercentageToDP(100),
-    marginVertical: widthPercentageToDP(5),
+    width: widthPercentageToDP(90),
+    // width: '90%',
+    marginVertical: RFPercentage(1),
     borderRadius: 10,
+    backgroundColor: 'white',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 4.41,
+    elevation: 4,
   },
   organizationFound: {
     // height: '100%',
     flexShrink: 1,
     width: '100%',
-    marginVertical: RFPercentage(2),
+    marginTop:'4%',
+    // marginVertical: RFPercentage(2),
     // borderRadius: 10,
   },
   projectOrganization: {

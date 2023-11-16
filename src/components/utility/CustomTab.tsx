@@ -75,7 +75,7 @@ const CustomTab = ({
             <>
               <View
                 style={{
-                  marginHorizontal: '1%',
+                  marginHorizontal: '10%',
                   justifyContent: 'center',
                   // top: RFPercentage(0.18),
                   alignSelf: 'center',

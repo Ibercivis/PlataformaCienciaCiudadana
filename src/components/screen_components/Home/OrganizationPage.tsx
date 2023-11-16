@@ -513,7 +513,7 @@ const style = StyleSheet.create({
   },
   title: {
     position: 'absolute',
-    top: RFPercentage(5),
+    marginTop: heightPercentageToDP(5),
     left: RFPercentage(5),
     right: RFPercentage(5),
     zIndex: 3,

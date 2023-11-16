@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useLayoutEffect, useRef, useState} from 'react';
 import {useLocation} from '../../../hooks/useLocation';
 import {LoadingScreen} from '../../../screens/LoadingScreen';
 import Mapbox from '@rnmapbox/maps';
@@ -38,7 +38,8 @@ import {CustomButton} from '../../utility/CustomButton';
 import {FontSize} from '../../../theme/fonts';
 import {useDateTime} from '../../../hooks/useDateTime';
 import Toast from 'react-native-toast-message';
-import { project } from '../../../../react-native.config';
+import {project} from '../../../../react-native.config';
+import { useNavigation } from '@react-navigation/native';
 
 Mapbox.setWellKnownTileServer('mapbox');
 Mapbox.setAccessToken(
@@ -69,6 +70,31 @@ export const ParticipateMap = ({navigation, route}: Props) => {
   } = useLocation();
 
   const {currentISODateTime} = useDateTime();
+  const nav = useNavigation();
+
+  // useLayoutEffect(() => {
+  //   navigation.getParent()?.setOptions({
+  //     tabBarStyle: {
+  //       display: "none",
+  //     }
+  //   });
+  //   return () => navigation.getParent()?.setOptions({
+  //     tabBarStyle: undefined
+  //   });
+  // }, [navigation]);
+
+  useEffect(() => {
+    nav.getParent()?.setOptions({
+      tabBarStyle: {
+        // display: "none",
+        opacity: 0
+      }
+    });
+    return () => nav.getParent()?.setOptions({
+      tabBarStyle: undefined
+    });
+  }, [nav])
+  
 
   //#region VARIABLES
   // map refs
@@ -95,7 +121,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
     images: [],
   });
 
-  const [project, setProject] = useState<ShowProject>()
+  const [project, setProject] = useState<ShowProject>();
 
   /**
    * un field form que pertenece a un proyecto, contiene questions
@@ -314,7 +340,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
           setQuestions(single.questions);
         }
       }
-    } catch(err) {
+    } catch (err) {
       Toast.show({
         type: 'error',
         text1: 'Error',
@@ -420,7 +446,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
    * @param type es el typo de respuesta esperado
    */
   const onChangeText = (value: any, id: number, type: string) => {
-    console.log(JSON.stringify(form.data, null, 2));
+    // console.log(JSON.stringify(form.data, null, 2));
     if (type === 'IMG') {
       // Busca si ya existe un elemento en form.images con la misma clave (id).
       const existingImageIndex = form.images!.findIndex(
@@ -600,7 +626,9 @@ export const ParticipateMap = ({navigation, route}: Props) => {
       const updatedQuestions = [...questions];
       //hay que recorrer las question y si es obligatorio, y no se ha escrito, se hace un false para que no guarde y muestre un error
       updatedQuestions.forEach((question, index) => {
-        if(question.answer_type === 'IMG'){ return }
+        if (question.answer_type === 'IMG') {
+          return;
+        }
         if (question.mandatory) {
           console.log('es true el mandatory');
           form.data.map(x => {
@@ -623,12 +651,13 @@ export const ParticipateMap = ({navigation, route}: Props) => {
 
       if (form.images) {
         form.images.forEach(image => {
-          formData.append(image.key.toString(), image.value);
+          if (image.key !== undefined)
+            formData.append(image.key.toString(), image.value);
         });
       }
-     
-      // console.log(JSON.stringify(newFormFiltered, null, 2));
-      // console.log(JSON.stringify(newFormFiltered, null, 2));
+
+      console.log(JSON.stringify(formData, null, 2));
+      console.log(JSON.stringify(form.images, null, 2));
 
       try {
         if (validate) {
@@ -638,7 +667,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
               Authorization: token,
             },
           });
-          
+
           setIsCreatingObservation(false);
           setShowSelectedObservation(clearSelectedObservation());
           setObservationListCreator([]);
@@ -701,6 +730,8 @@ export const ParticipateMap = ({navigation, route}: Props) => {
           // Se produjo un error durante la configuración de la solicitud
           console.log('Error de configuración de la solicitud:', error.message);
         }
+      } finally {
+        setWaitingData(false);
       }
     }
   };
@@ -719,13 +750,20 @@ export const ParticipateMap = ({navigation, route}: Props) => {
     if (form.data) {
       formData.append('data', JSON.stringify(form.data));
     }
-
+    console.log(JSON.stringify(showSelectedObservation, null, 2));
     if (form.images) {
       form.images.forEach(image => {
         if (image.key !== undefined)
           formData.append(image.key.toString(), image.value);
       });
-    }
+    } 
+    // if (showSelectedObservation.images && showSelectedObservation.images.length> 0) {
+    //   console.log('entra en images')
+    //   showSelectedObservation.images.forEach(image => {
+    //     if (image.id !== undefined)
+    //       formData.append(image.id.toString(), image.image);
+    //   });
+    // }
     console.log(JSON.stringify(formData, null, 2));
     try {
       const marca = await citmapApi.patch(
@@ -794,7 +832,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
 
   const onDeleteObservation = async () => {
     let token;
-    while(!token){
+    while (!token) {
       token = await AsyncStorage.getItem('token');
     }
     try {
@@ -863,7 +901,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
         console.log('Error de configuración de la solicitud:', error.message);
       }
     }
-  }
+  };
 
   //#endregion
 
@@ -964,6 +1002,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                 <Camera
                   ref={reference => (cameraRef.current = reference!)}
                   zoomLevel={15}
+                  maxZoomLevel={200}
                   centerCoordinate={initialPositionArray}
                   followUserLocation={followView.current}
                   followUserMode={UserTrackingMode.FollowWithHeading}
@@ -1083,7 +1122,11 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                             position: 'absolute',
                             top: RFPercentage(2),
                           }}>
-                          <Text style={{color: 'black', fontSize: FontSize.fontSizeText10}}>
+                          <Text
+                            style={{
+                              color: 'black',
+                              fontSize: FontSize.fontSizeText10,
+                            }}>
                             Marcador Nº {selectedObservation.id}
                           </Text>
                         </View>
@@ -1100,7 +1143,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                             fontSize={FontSize.fontSizeText10}
                             height={RFPercentage(3)}
                             onPress={() => {
-                              setShowMap(false)
+                              setShowMap(false);
                             }}
                             label="Ver más"
                             backgroundColor={Colors.primaryLigth}
@@ -1188,7 +1231,9 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                   left: '2%',
                   top: '5%',
                 }}
-                onPress={() => {navigation.replace('ProjectPage',{id: route.params.id} )}}>
+                onPress={() => {
+                  navigation.replace('ProjectPage', {id: route.params.id});
+                }}>
                 <Back height={RFPercentage(6)} />
               </TouchableOpacity>
               {/* COMPASS */}
@@ -1260,7 +1305,8 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                                   type: 'error',
                                   text1: 'Image',
                                   // text2: 'No se han podido obtener los datos, por favor reinicie la app',
-                                  text2: 'La imagen pesa demasiado. Peso máximo, 4MB',
+                                  text2:
+                                    'La imagen pesa demasiado. Peso máximo, 4MB',
                                 });
                               }
                             }}
@@ -1368,34 +1414,33 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                   {userInfo.pk === showSelectedObservation.creator &&
                   !isCreatingObservation ? (
                     <>
-                    <View
-                      style={{
-                        width: '70%',
-                        marginHorizontal: RFPercentage(1),
-                        marginBottom: '5%',
-                      }}>
-                      <CustomButton
-                        disabled={onlyRead}
-                        onPress={() => onEditObservation()}
-                        label="Guardar"
-                        backgroundColor={Colors.primaryLigth}
-                      />
-                    </View>
-                    <View
-                      style={{
-                        width: '70%',
-                        marginHorizontal: RFPercentage(1),
-                        marginBottom: '5%',
-                      }}>
-                      <CustomButton
-                        disabled={onlyRead}
-                        onPress={() => onDeleteObservation()}
-                        label="Borrar marca"
-                        backgroundColor={Colors.semanticDangerLight}
-                      />
-                    </View>
+                      <View
+                        style={{
+                          width: '70%',
+                          marginHorizontal: RFPercentage(1),
+                          marginBottom: '5%',
+                        }}>
+                        <CustomButton
+                          disabled={onlyRead}
+                          onPress={() => onEditObservation()}
+                          label="Guardar"
+                          backgroundColor={Colors.primaryLigth}
+                        />
+                      </View>
+                      <View
+                        style={{
+                          width: '70%',
+                          marginHorizontal: RFPercentage(1),
+                          marginBottom: '5%',
+                        }}>
+                        <CustomButton
+                          disabled={onlyRead}
+                          onPress={() => onDeleteObservation()}
+                          label="Borrar marca"
+                          backgroundColor={Colors.semanticDangerLight}
+                        />
+                      </View>
                     </>
-                    
                   ) : userInfo.pk !== showSelectedObservation.creator &&
                     !isCreatingObservation ? (
                     <View
@@ -1405,11 +1450,11 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                         marginBottom: '5%',
                       }}>
                       <CustomButton
-                        disabled={onlyRead}
+                        disabled={true}
                         onPress={() => {
-                          if(onlyRead != true){
-                            onSaveObservation()
-                          }
+                          // if(onlyRead != true){
+                          //   onSaveObservation()
+                          // }
                         }}
                         label="Finalizar"
                         backgroundColor={
@@ -1469,7 +1514,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
               helper={false}
             />
           </View> */}
-          <Toast position='bottom' />
+          <Toast position="bottom" />
           <Spinner visible={waitingData} />
         </>
       ) : (

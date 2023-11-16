@@ -166,6 +166,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
   const loggin = async () => {
     setLoading(true);
     Keyboard.dismiss();
+    console.log(JSON.stringify(form, null, 2))
     const state = await signIn({
       correo: form.userName,
       password: form.password,

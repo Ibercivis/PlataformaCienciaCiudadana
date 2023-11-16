@@ -83,7 +83,7 @@ const CenterButtonTab = () => {
           <View style={styles.modalViewContainer}>
             <View style={styles.modalHeader}>
               <View style={{flexDirection: 'row'}}>
-                <View style={{justifyContent:'center', marginRight:'5%', top: RFPercentage(0.2)}}>
+                <View style={{justifyContent:'center', marginRight:'3%', top: RFPercentage(0.2)}}>
                   <PlusSquare
                     width={RFPercentage(2.2)}
                     height={RFPercentage(2.2)}
@@ -97,7 +97,7 @@ const CenterButtonTab = () => {
                     fontSize: FontSize.fontSizeText20,
                     fontWeight: 'bold',
                     textAlignVertical:'center',
-                    marginLeft: '3%'
+                    marginLeft: '2%'
                   }}>
                   ¿Qué desea hacer?
                 </Text>
@@ -133,10 +133,13 @@ const CenterButtonTab = () => {
                           marginLeft: '10%',
                           marginRight: '10%',
                           // marginTop: RFPercentage(8),
+                          // paddingTop: '4%',
+                          textAlignVertical:'center',
                           backgroundColor: 'white',
                           alignSelf: 'center',
-                          padding: '2%',
+                          padding: '4%',
                           borderRadius: 7,
+                          color:'black'
                         }}>
                         Crear un nuevo proyecto
                       </Text>
@@ -161,8 +164,9 @@ const CenterButtonTab = () => {
                           // marginTop: RFPercentage(8),
                           backgroundColor: 'white',
                           alignSelf: 'center',
-                          padding: '2%',
+                          padding: '4%',
                           borderRadius: 7,
+                          color:'black'
                         }}>
                         Crear una nueva organización
                       </Text>
@@ -325,7 +329,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginHorizontal: '3%',
+    marginHorizontal: '0.5%',
     marginBottom: RFPercentage(2),
   },
 

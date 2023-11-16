@@ -144,7 +144,7 @@ export const Profile = ({navigation}: Props) => {
   //#region tabs
   const Contribution = () => (
     <>
-      {contributionProject.length <= 0 ? (
+      {contributionProject && contributionProject.length <= 0 ? (
         <>
           <View style={{alignItems: 'center', marginTop: '7%'}}>
             <Text
@@ -210,7 +210,7 @@ export const Profile = ({navigation}: Props) => {
                       }}>
                       {item.name}
                     </Text>
-                    {/* <View style={{flexDirection: 'row'}}>
+                    <View style={{flexDirection: 'row'}}>
                       {item.hasTag.map((x, i) => {
                         const matchingHastag = hastags.find(
                           hastag => hastag.id === x,
@@ -230,7 +230,7 @@ export const Profile = ({navigation}: Props) => {
                           );
                         }
                       })}
-                    </View> */}
+                    </View>
                     <Text
                       style={{
                         alignSelf: 'flex-start',
@@ -335,7 +335,7 @@ export const Profile = ({navigation}: Props) => {
   );
   const Liked = () => (
     <>
-      {likedProject.length <= 0 ? (
+      {likedProject && likedProject.length <= 0 ? (
         <>
           <View style={{alignItems: 'center', marginTop: '7%'}}>
             <Text
@@ -400,7 +400,7 @@ export const Profile = ({navigation}: Props) => {
                       }}>
                       {item.name}
                     </Text>
-                    {/* <View style={{flexDirection: 'row'}}>
+                    <View style={{flexDirection: 'row'}}>
                       {item.hasTag.map((x, i) => {
                         const matchingHastag = hastags.find(
                           hastag => hastag.id === x,
@@ -420,7 +420,7 @@ export const Profile = ({navigation}: Props) => {
                           );
                         }
                       })}
-                    </View> */}
+                    </View>
                     <Text
                       style={{
                         alignSelf: 'flex-start',
@@ -520,7 +520,7 @@ export const Profile = ({navigation}: Props) => {
   );
   const Created = () => (
     <>
-      {createdProjects.length <= 0 ? (
+      {createdProjects && createdProjects.length <= 0 ? (
         <>
           <View style={{alignItems: 'center', marginTop: '7%'}}>
             <Text
@@ -584,7 +584,7 @@ export const Profile = ({navigation}: Props) => {
                       }}>
                       {item.name}
                     </Text>
-                    {/* <View style={{flexDirection: 'row'}}>
+                    <View style={{flexDirection: 'row'}}>
                       {item.hasTag.map((x, i) => {
                         const matchingHastag = hastags.find(
                           hastag => hastag.id === x,
@@ -604,7 +604,7 @@ export const Profile = ({navigation}: Props) => {
                           );
                         }
                       })}
-                    </View> */}
+                    </View>
                     <Text
                       style={{
                         alignSelf: 'flex-start',
@@ -725,7 +725,6 @@ export const Profile = ({navigation}: Props) => {
             ),
           });
           const fontWeight = '500';
-
           return (
             <TouchableOpacity
               style={styles.tabItem}
@@ -735,9 +734,12 @@ export const Profile = ({navigation}: Props) => {
                   opacity,
                   fontWeight,
                   color: 'black',
-                  fontSize: FontSize.fontSizeText10,
+                  fontSize: route.title.length <= 9 ? FontSize.fontSizeText15 : FontSize.fontSizeText13,
                   fontFamily: FontFamily.NotoSansDisplayMedium,
-                }}>
+                }}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+                >
                 {route.title}
               </Animated.Text>
               <View
@@ -1844,7 +1846,13 @@ export const Profile = ({navigation}: Props) => {
                           color: 'black',
                           fontSize: FontSize.fontSizeText18,
                         }}>
-                        {userProfile.participated_projects.length}
+                        {
+                          userProfile.participated_projects && userProfile.participated_projects.length > 0 ? (
+                            userProfile.participated_projects.length
+                          ) : (
+                            0
+                          )
+                        }
                       </Text>
                     </View>
                     <View style={styles.viewDataProfile}>
@@ -1854,7 +1862,13 @@ export const Profile = ({navigation}: Props) => {
                           color: 'black',
                           fontSize: FontSize.fontSizeText18,
                         }}>
-                        {userProfile.created_projects.length}
+                          {
+                          userProfile.created_projects && userProfile.created_projects.length > 0? (
+                            userProfile.created_projects.length
+                          ) : (
+                            0
+                          )
+                        }
                       </Text>
                     </View>
                   </View>
@@ -1931,7 +1945,7 @@ export const Profile = ({navigation}: Props) => {
                         fontSize: FontSize.fontSizeText13,
                         fontFamily: FontFamily.NotoSansDisplayRegular,
                       }}>
-                      {userProfile.country.name.length > 0
+                      {userProfile.country && userProfile.country.name && userProfile.country.name.length > 0
                         ? userProfile.country.name
                         : 'Sin localización'}
                     </Text>
@@ -1959,7 +1973,7 @@ export const Profile = ({navigation}: Props) => {
                   fontFamily: FontFamily.NotoSansDisplayLight,
                   textAlign: 'left',
                 }}>
-                {userProfile.biography.length > 0 ||
+                {userProfile.biography && userProfile.biography.length > 0 ||
                 userProfile.biography == null
                   ? userProfile.biography
                   : 'No hay ninguna descripción'}

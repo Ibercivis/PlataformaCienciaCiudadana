@@ -22,7 +22,7 @@ import {HasTag, Projects, Topic} from '../../../interfaces/appInterfaces';
 import SplashScreen from 'react-native-splash-screen';
 import {Card} from '../../utility/Card';
 import {InputText} from '../../utility/InputText';
-import { FontFamily, FontSize, fonts } from '../../../theme/fonts';
+import {FontFamily, FontSize, fonts} from '../../../theme/fonts';
 import {IconBootstrap} from '../../utility/IconBootstrap';
 import {RFPercentage} from 'react-native-responsive-fontsize';
 import {Checkbox} from 'react-native-paper';
@@ -306,6 +306,7 @@ export const Home = ({navigation}: Props) => {
           Authorization: token,
         },
       });
+      //TODO ORDENAR
       setCategoryList(resp.data);
       // const ob = await citmapApi.get<any>(
       //   `/organization/${6}`,
@@ -319,7 +320,7 @@ export const Home = ({navigation}: Props) => {
       // console.log(JSON.stringify(ob, null, 2));
       success = true;
       // setLoading(false);
-      projectListApi()
+      projectListApi();
     } catch (err) {
       console.log(err.response.data);
       setErrorMessage(err);
@@ -355,7 +356,8 @@ export const Home = ({navigation}: Props) => {
       setNewProjectList(resp.data);
       chunkArray(resp.data, NUM_SLICE_NEW_PROJECT_LIST);
       // setLoading(false);
-      organizationListApi()
+      organizationListApi();
+      // console.log(JSON.stringify(resp.data, null, 2))
     } catch (err) {
       console.log(err.response.data);
     } finally {
@@ -596,7 +598,8 @@ export const Home = ({navigation}: Props) => {
                     width: '100%',
                     textAlignVertical: 'center',
                     marginLeft: widthPercentageToDP(7),
-                    marginTop: heightPercentageToDP(1),
+                    marginTop: heightPercentageToDP(2),
+                    marginBottom: heightPercentageToDP(1),
                     fontFamily: FontFamily.NotoSansDisplaySemiBold,
                     fontSize: FontSize.fontSizeText18,
                     color: 'black',
@@ -613,33 +616,48 @@ export const Home = ({navigation}: Props) => {
                     const isChecked = categoriesSelected.includes(x);
                     if (categoryList.slice(0, 9).length - 1 === index) {
                       return (
-                        <Card
+                        <View
                           key={index}
-                          type="categoryPlus"
-                          categoryImage={0}
-                          onPress={() => {
-                            onCategoryPress();
-                            // Condición para mostrar u ocultar la barra de pestañas
-                            // const newTabBarVisibility = !navigation.dangerouslyGetState().routes[0].state?.index;
-                            // navigation.setParams({ tabBarVisible: newTabBarVisibility });
-                          }}
-                        />
+                          style={{
+                            marginRight: RFPercentage(1.2),
+                            borderRadius: 10,
+                          }}>
+                          <Card
+                            key={index}
+                            type="categoryPlus"
+                            categoryImage={0}
+                            onPress={() => {
+                              onCategoryPress();
+                              // Condición para mostrar u ocultar la barra de pestañas
+                              // const newTabBarVisibility = !navigation.dangerouslyGetState().routes[0].state?.index;
+                              // navigation.setParams({ tabBarVisible: newTabBarVisibility });
+                            }}
+                          />
+                        </View>
                       );
                     } else {
                       return (
-                        <Card
+                        <View
                           key={index}
-                          type="category"
-                          categoryImage={x.id}
-                          title={x.topic}
-                          onPress={() => {
-                            // categoryFilter(x.id);
-                            setCheckCategories(x);
-                          }}
-                          pressed={
-                            isChecked //si tiene el id en la lista de seleccionados
-                          }
-                        />
+                          style={{
+                            marginRight: RFPercentage(1.2),
+                            borderRadius: 40,
+                            opacity: 1,
+                          }}>
+                          <Card
+                            key={index}
+                            type="category"
+                            categoryImage={x.id}
+                            title={x.topic}
+                            onPress={() => {
+                              // categoryFilter(x.id);
+                              setCheckCategories(x);
+                            }}
+                            pressed={
+                              isChecked //si tiene el id en la lista de seleccionados
+                            }
+                          />
+                        </View>
                       );
                     }
                   })}
@@ -654,14 +672,14 @@ export const Home = ({navigation}: Props) => {
                         flexDirection: 'row',
                         height: 54,
                         width: '100%',
-                        marginLeft: 24,
+                        marginLeft: RFPercentage(3),
                         marginBottom: RFPercentage(2),
                       }}>
                       <View
                         style={{
                           marginHorizontal: '1%',
                           justifyContent: 'center',
-                          top: 1,
+                          // top: 1,
                         }}>
                         {/* <IconBootstrap name={'stars'} size={20} color={'blue'} /> */}
                         <Stars
@@ -707,29 +725,45 @@ export const Home = ({navigation}: Props) => {
                               newProjectListSliced.length - 1 === index
                             ) {
                               return (
-                                <Card
+                                <View
                                   key={index}
-                                  type="newProjectsPlus"
-                                  categoryImage={index}
-                                  onPress={() => {
-                                    navigation.navigate('ProjectList');
-                                  }}
-                                />
+                                  style={{
+                                    marginRight: widthPercentageToDP(0.5),
+                                    borderRadius: 40,
+                                    opacity: 1,
+                                  }}>
+                                  <Card
+                                    key={index}
+                                    type="newProjectsPlus"
+                                    categoryImage={index}
+                                    onPress={() => {
+                                      navigation.navigate('ProjectList', {title: 'Nuevos proyectos'});
+                                    }}
+                                  />
+                                </View>
                               ); //aquí poner el plus
                             } else {
                               return (
-                                <Card
+                                <View
                                   key={index}
-                                  type="newProjects"
-                                  cover={
-                                    item.cover && item.cover[0]
-                                      ? item.cover[0].image
-                                      : ''
-                                  }
-                                  categoryImage={index}
-                                  title={item.name}
-                                  onPress={() => onProjectPress(item.id)}
-                                />
+                                  style={{
+                                    marginRight: widthPercentageToDP(0.5),
+                                    borderRadius: 40,
+                                    opacity: 1,
+                                  }}>
+                                  <Card
+                                    key={index}
+                                    type="newProjects"
+                                    cover={
+                                      item.cover && item.cover[0]
+                                        ? item.cover[0].image
+                                        : ''
+                                    }
+                                    categoryImage={index}
+                                    title={item.name}
+                                    onPress={() => onProjectPress(item.id)}
+                                  />
+                                </View>
                               );
                             }
                           }}
@@ -791,46 +825,62 @@ export const Home = ({navigation}: Props) => {
                             newProjectList.slice(0, 10).length - 1 === index
                           ) {
                             return (
-                              <Card
+                              <View
                                 key={index}
-                                type="importantsPlus"
-                                categoryImage={index}
-                                cover={
-                                  item.cover && item.cover[0]
-                                    ? item.cover[0].image
-                                    : ''
-                                }
-                                onPress={() => {
-                                  navigation.navigate('ProjectList');
-                                }}
-                              />
+                                style={{
+                                  marginRight: widthPercentageToDP(2.3),
+                                  borderRadius: 40,
+                                  opacity: 1,
+                                }}>
+                                <Card
+                                  key={index}
+                                  type="importantsPlus"
+                                  categoryImage={index}
+                                  cover={
+                                    item.cover && item.cover[0]
+                                      ? item.cover[0].image
+                                      : ''
+                                  }
+                                  onPress={() => {
+                                    navigation.navigate('ProjectList', {title: 'Proyectos destacados'});
+                                  }}
+                                />
+                              </View>
                             );
                           } else {
                             return (
-                              <Card
+                              <View
                                 key={index}
-                                type="importants"
-                                categoryImage={index}
-                                cover={
-                                  item.cover && item.cover[0]
-                                    ? item.cover[0].image
-                                    : ''
-                                }
-                                onPress={() => {
-                                  onProjectPress(item.id);
-                                }}
-                                title={item.name}
-                                boolHelper={item.is_liked_by_user}
-                                description={
-                                  item.organizations.length > 0
-                                    ? item.organizations[0].principalName
-                                    : 'Sin organización'
-                                }
-                                totalLikes={
-                                  item.total_likes ? item.total_likes : 0
-                                }
-                                onLike={() => toggleLike(item.id)}
-                              />
+                                style={{
+                                  marginRight: widthPercentageToDP(2.3),
+                                  borderRadius: 40,
+                                  opacity: 1,
+                                }}>
+                                <Card
+                                  key={index}
+                                  type="importants"
+                                  categoryImage={index}
+                                  cover={
+                                    item.cover && item.cover[0]
+                                      ? item.cover[0].image
+                                      : ''
+                                  }
+                                  onPress={() => {
+                                    onProjectPress(item.id);
+                                  }}
+                                  title={item.name}
+                                  boolHelper={item.is_liked_by_user}
+                                  description={
+                                    item.organizations.length > 0
+                                      ? item.organizations[0].principalName
+                                      : 'Sin organización'
+                                  }
+                                  totalLikes={
+                                    item.total_likes ? item.total_likes : 0
+                                  }
+                                  onLike={() => toggleLike(item.id)}
+                                />
+                              </View>
                             );
                           }
                         }}
@@ -892,34 +942,52 @@ export const Home = ({navigation}: Props) => {
                             newProjectList.slice(0, 10).length - 1 === index
                           ) {
                             return (
-                              <Card
+                              <View
                                 key={index}
-                                type="interestingPlus"
-                                categoryImage={index}
-                                onPress={() => {
-                                  navigation.navigate('ProjectList');
-                                }}
-                              />
+                                style={{
+                                  marginRight: widthPercentageToDP(0.5),
+                                  borderRadius: 40,
+                                  opacity: 1,
+                                }}>
+                                <Card
+                                  key={index}
+                                  type="interestingPlus"
+                                  categoryImage={index}
+                                  onPress={() => {
+                                    navigation.navigate('ProjectList', {title: 'Te puede interesar...'});
+                                  }}
+                                />
+                              </View>
                             );
                           } else {
                             return (
-                              <Card
+                              <View
                                 key={index}
-                                type="interesting"
-                                categoryImage={index}
-                                onPress={() => {
-                                  onProjectPress(x.id);
-                                }}
-                                cover={
-                                  x.cover && x.cover[0] ? x.cover[0].image : ''
-                                }
-                                title={x.name}
-                                description={
-                                  x.organizations.length > 0
-                                    ? x.organizations[0].principalName
-                                    : 'Sin organización'
-                                }
-                              />
+                                style={{
+                                  marginRight: widthPercentageToDP(0.5),
+                                  borderRadius: 40,
+                                  opacity: 1,
+                                }}>
+                                <Card
+                                  key={index}
+                                  type="interesting"
+                                  categoryImage={index}
+                                  onPress={() => {
+                                    onProjectPress(x.id);
+                                  }}
+                                  cover={
+                                    x.cover && x.cover[0]
+                                      ? x.cover[0].image
+                                      : ''
+                                  }
+                                  title={x.name}
+                                  description={
+                                    x.organizations.length > 0
+                                      ? x.organizations[0].principalName
+                                      : 'Sin organización'
+                                  }
+                                />
+                              </View>
                             );
                           }
                         })}
@@ -978,30 +1046,46 @@ export const Home = ({navigation}: Props) => {
                             organizationList.slice(0, 5).length - 1 === index
                           ) {
                             return (
-                              <Card
+                              <View
                                 key={index}
-                                type="organizationPlus"
-                                categoryImage={index}
-                                onPress={() =>
-                                  navigation.navigate('OrganizationList')
-                                }
-                              />
+                                style={{
+                                  marginRight: widthPercentageToDP(0.5),
+                                  borderRadius: 40,
+                                  opacity: 1,
+                                }}>
+                                <Card
+                                  key={index}
+                                  type="organizationPlus"
+                                  categoryImage={index}
+                                  onPress={() =>
+                                    navigation.navigate('OrganizationList')
+                                  }
+                                />
+                              </View>
                             );
                           } else {
                             return (
-                              <Card
+                              <View
                                 key={index}
-                                type="organization"
-                                categoryImage={index}
-                                cover={x.cover ? x.cover : ''}
-                                title={x.principalName}
-                                description={x.description}
-                                onPress={() =>
-                                  navigation.navigate('OrganizationPage', {
-                                    id: x.id,
-                                  })
-                                }
-                              />
+                                style={{
+                                  marginRight: widthPercentageToDP(0.5),
+                                  borderRadius: 40,
+                                  opacity: 1,
+                                }}>
+                                <Card
+                                  key={index}
+                                  type="organization"
+                                  categoryImage={index}
+                                  cover={x.cover ? x.cover : ''}
+                                  title={x.principalName}
+                                  description={x.description}
+                                  onPress={() =>
+                                    navigation.navigate('OrganizationPage', {
+                                      id: x.id,
+                                    })
+                                  }
+                                />
+                              </View>
                             );
                           }
                         })}
@@ -1045,7 +1129,7 @@ export const Home = ({navigation}: Props) => {
                         fontFamily: FontFamily.NotoSansDisplayRegular,
                         fontSize: FontSize.fontSizeText20,
                         alignSelf: 'center',
-                        color:'black'
+                        color: 'black',
                       }}>
                       PROYECTOS ENCONTRADOS
                     </Text>
@@ -1060,7 +1144,10 @@ export const Home = ({navigation}: Props) => {
                       return (
                         <Text
                           key={value.id}
-                          style={{color: Colors.semanticInfoDark, fontSize: FontSize.fontSizeText17, }}>
+                          style={{
+                            color: Colors.semanticInfoDark,
+                            fontSize: FontSize.fontSizeText17,
+                          }}>
                           #{value.topic}{' '}
                         </Text>
                       );
@@ -1130,11 +1217,14 @@ export const Home = ({navigation}: Props) => {
                   marginHorizontal: RFPercentage(4),
                 }}>
                 <View>
-                  <Text style={{
-                    fontSize: FontSize.fontSizeText17,
-                    fontFamily: FontFamily.NotoSansDisplaySemiBold,
-                    color: 'black'
-                  }}>Todas las categorías</Text>
+                  <Text
+                    style={{
+                      fontSize: FontSize.fontSizeText17,
+                      fontFamily: FontFamily.NotoSansDisplaySemiBold,
+                      color: 'black',
+                    }}>
+                    Todas las categorías
+                  </Text>
                 </View>
                 <View>
                   <TouchableOpacity onPress={() => setShowCategoryList(false)}>
@@ -1285,10 +1375,11 @@ const HomeStyles = StyleSheet.create({
     // flex: 1,
   },
   categoryScrollView: {
-    // height: '20%',
+    // height: heightPercentageToDP(10),
     // marginHorizontal: 24,
     // paddingLeft: widthPercentageToDP(5.7),
     // marginRight: widthPercentageToDP(2)
+    // backgroundColor: 'red'
   },
   newProjectView: {
     // backgroundColor: 'yellow',

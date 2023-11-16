@@ -36,7 +36,7 @@ export const OrganizationList = (props: Props) => {
   return (
     <View style={{flex: 1, padding: RFPercentage(2)}}>
       <HeaderComponent
-        title={'Listado'}
+        title={'Organizaciones destacadas'}
         onPressLeft={() => props.navigation.goBack()}
         onPressRight={() => console.log('jaja')}
         rightIcon={false}

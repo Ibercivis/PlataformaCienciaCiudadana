@@ -23,76 +23,58 @@ export const SvgIcons = ({id, size, color = '#000'}: Props) => {
   switch (id) {
     case 1:
       return (
-        <Animales
-          width={size}
-          height={size}
-          fill={color}
-        />
+        <Ecologia width={size} height={size} fill={color} stroke={color} />
       );
     case 2:
       return (
-        <Biodiversidad
-          width={size}
-          height={size}
-          fill={color}
-        />
+        <Biodiversidad width={size} height={size} fill={color} stroke={color} />
       );
     case 3:
       return (
-        <Biologia
-          width={size}
-          height={size}
-          fill={color}
-        />
+        <Educacion width={size} height={size} fill={color} stroke={color} />
       );
     case 4:
+      return (
+        <Biologia width={size} height={size} fill={color} stroke={color} />
+      );
+    case 5:
       return (
         <CienciasSociales
           width={size}
           height={size}
           fill={color}
+          // stroke={color}
         />
       );
-    case 5:
+    case 6:
       return (
         <ClimaMeteorologia
           width={size}
           height={size}
           fill={color}
-        />
-      );
-    case 6:
-      return (
-        <Ecologia
-          width={size}
-          height={size}
-          fill={color}
+          // stroke={color}
         />
       );
     case 7:
       return (
-        <Educacion
+        <Animales
           width={size}
           height={size}
           fill={color}
+          // stroke={color}
         />
       );
     case 8:
-      return (
-        <OceanoAguaMarTierra
-          width={size}
-          height={size}
-          fill={color}
-        />
-      );
-    case 9:
       return (
         <SaludMedicina
           width={size}
           height={size}
           fill={color}
+          // stroke={color}
         />
       );
+    case 9:
+      return <OceanoAguaMarTierra width={size} height={size} fill={color} />;
 
     default:
       return <Animales width={size} height={size} fill={color} />;
