@@ -42,6 +42,7 @@ interface Props extends StackScreenProps<StackParams, 'CreateOrganization'> {}
 
 export const CreateOrganization = ({navigation, route}: Props) => {
   // variables de las imagenes
+  const MAX_CHARACTERS = 500;
   const [profileImage, setProfileImage] = useState<any>();
   const [profileImageBlob, setProfileImageBlob] = useState<any>();
   const [profileImageCharged, setProfileImageCharged] = useState<any>();
@@ -772,7 +773,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
               contentContainerStyle={{
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '100%',
+                width: '85%',
               }}
               ref={scrollViewRef}>
               {/* contenido principal */}
@@ -837,6 +838,8 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                             bottom: RFPercentage(-1),
                             left: RFPercentage(7),
                             zIndex: 999,
+                            backgroundColor: 'white',
+                            borderRadius: 50,
                           }}>
                           <PlusImg
                             width={RFPercentage(4)}
@@ -893,6 +896,8 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                             bottom: RFPercentage(-1),
                             left: RFPercentage(7),
                             zIndex: 999,
+                            backgroundColor: 'white',
+                            borderRadius: 50,
                           }}>
                           <PlusImg
                             width={RFPercentage(4)}
@@ -947,6 +952,8 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                             bottom: RFPercentage(-1),
                             left: RFPercentage(17),
                             zIndex: 999,
+                            backgroundColor: 'white',
+                            borderRadius: 50,
                           }}>
                           <PlusImg
                             width={RFPercentage(4)}
@@ -1004,6 +1011,8 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                             bottom: RFPercentage(-1),
                             left: RFPercentage(17),
                             zIndex: 999,
+                            backgroundColor: 'white',
+                            borderRadius: 50,
                           }}>
                           <PlusImg
                             width={RFPercentage(4)}
@@ -1070,7 +1079,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                     label={'Presenta tu organización en la biografia'}
                     keyboardType="default"
                     multiline={true}
-                    maxLength={300}
+                    maxLength={MAX_CHARACTERS}
                     numOfLines={5}
                     onChangeText={value => {
                       onChange(value, 'description'),
@@ -1078,6 +1087,27 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                     }}
                     value={form.description}
                   />
+                  <View
+                    style={{
+                      // width: '80%',
+                      marginRight: '1%',
+                      justifyContent: 'flex-end',
+                      alignItems: 'flex-end',
+                      flexDirection: 'row',
+                    }}>
+                    
+                    <Text
+                      style={{
+                        color:
+                          form.description.length <= MAX_CHARACTERS
+                            ? 'black'
+                            : 'red',
+                            fontSize: FontSize.fontSizeText13
+                      }}>
+                      {form.description.length}
+                    </Text>
+                    <Text style={{fontSize: FontSize.fontSizeText13}}>/{MAX_CHARACTERS}</Text>
+                  </View>
                 </View>
                 {/* integrantes */}
                 <View

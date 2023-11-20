@@ -48,7 +48,7 @@ import {Spinner} from '../../utility/Spinner';
 import {PermissionsContext} from '../../../context/PermissionsContext';
 import Toast from 'react-native-toast-message';
 import RNFS from 'react-native-fs';
-import { heightPercentageToDP } from 'react-native-responsive-screen';
+import {heightPercentageToDP} from 'react-native-responsive-screen';
 
 const data = [
   require('../../../assets/backgrounds/login-background.jpg'),
@@ -78,6 +78,8 @@ export const ProjectPage = (props: Props) => {
   const [hasPermission, setHasPermission] = useState(false);
   const [wantParticipate, setWantParticipate] = useState(false);
   const [waitingData, setWaitingData] = useState(false);
+  const [like, setLike] = useState(false);
+  const [numlike, setNumlike] = useState(0);
   const isCarousel = useRef(null);
 
   const [project, setProject] = useState<ShowProject>();
@@ -105,7 +107,6 @@ export const ProjectPage = (props: Props) => {
 
   useEffect(() => {
     if (permissions.locationStatus === 'granted' && wantParticipate) {
-      console.log('le da permisos');
       setHasPermission(true);
       navigateToMap();
     }
@@ -272,7 +273,7 @@ export const ProjectPage = (props: Props) => {
               props.navigation.dispatch(
                 CommonActions.navigate({
                   name: 'ParticipateMap',
-                  params: {id: 6},
+                  params: {id: project.id!},
                 }),
               );
               // props.navigation.replace('ParticipateMap', {id: 6});
@@ -428,14 +429,16 @@ export const ProjectPage = (props: Props) => {
       ) {
         setCanEdit(true);
       } else {
-        Toast.show({
-          type: 'error',
-          text1: 'Error',
-          // text2: 'No se han podido obtener los datos, por favor reinicie la app',
-          text2: 'Datos no cargados',
-        });
+        // Toast.show({
+        //   type: 'error',
+        //   text1: 'Error',
+        //   // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+        //   text2: 'Datos no cargados',
+        // });
       }
       setProject(resp.data);
+      if (resp.data.is_liked_by_user) setLike(resp.data.is_liked_by_user);
+      if (resp.data.total_likes) setNumlike(resp.data.total_likes);
       // console.log(JSON.stringify(resp.data, null, 2));
       if (resp.data.cover) {
         setImagesCharged(resp.data.cover);
@@ -507,7 +510,19 @@ export const ProjectPage = (props: Props) => {
           },
         },
       );
-
+      // getProjectApi()
+      // const updatedProject = project;
+      // if (updatedProject) {
+      //   console.log(JSON.stringify(updatedProject, null, 2));
+      //   updatedProject.is_liked_by_user = !updatedProject.is_liked_by_user;
+      //   setProject(updatedProject);
+      // }
+      if(like){
+        setNumlike(numlike-1)
+      }else{
+        setNumlike(numlike+1)
+      }
+      setLike(!like)
       Toast.show({
         type: 'success',
         text1: 'Like',
@@ -667,8 +682,9 @@ export const ProjectPage = (props: Props) => {
                         fontSize: FontSize.fontSizeText13,
                         marginHorizontal: RFPercentage(1),
                         alignSelf: 'center',
+                        color: Colors.textColorPrimary
                       }}>
-                      1500
+                      {project?.contributions}
                     </Text>
                   </TouchableOpacity>
 
@@ -684,7 +700,7 @@ export const ProjectPage = (props: Props) => {
                       height={RFPercentage(2.5)}
                       color={'#ff0000'}
                     /> */}
-                    {project?.is_liked_by_user ? (
+                    {like ? (
                       <HeartFill
                         width={RFPercentage(2.5)}
                         height={RFPercentage(2.5)}
@@ -702,8 +718,9 @@ export const ProjectPage = (props: Props) => {
                         fontSize: FontSize.fontSizeText13,
                         marginHorizontal: RFPercentage(1),
                         alignSelf: 'center',
+                        color: Colors.textColorPrimary
                       }}>
-                      {project?.total_likes}
+                      {numlike}
                     </Text>
                   </TouchableOpacity>
 
@@ -755,6 +772,7 @@ export const ProjectPage = (props: Props) => {
                           // backgroundColor: 'white',
                           marginBottom: '1%',
                           alignSelf: 'flex-start',
+                          color: Colors.textColorPrimary
                         }}>
                         Creado por:{' '}
                       </Text>
@@ -763,6 +781,7 @@ export const ProjectPage = (props: Props) => {
                           // backgroundColor: 'white',
                           marginBottom: '1%',
                           alignSelf: 'flex-start',
+                          color: Colors.textColorPrimary,
                           fontWeight: 'bold',
                         }}>
                         {creator}
@@ -774,6 +793,7 @@ export const ProjectPage = (props: Props) => {
                         marginBottom: '1%',
                         alignSelf: 'flex-start',
                         fontWeight: 'bold',
+                        color: Colors.textColorPrimary
                       }}>
                       {project?.name}
                     </Text>
@@ -783,6 +803,7 @@ export const ProjectPage = (props: Props) => {
                           // backgroundColor: 'white',
                           marginBottom: '1%',
                           alignSelf: 'flex-start',
+                          color: Colors.textColorPrimary
                         }}>
                         Organización:{' '}
                       </Text>
@@ -798,6 +819,7 @@ export const ProjectPage = (props: Props) => {
                                   marginBottom: '1%',
                                   alignSelf: 'flex-start',
                                   fontWeight: 'bold',
+                                  color: Colors.textColorPrimary
                                 }}>
                                 {x.principalName}{' '}
                               </Text>
@@ -811,12 +833,18 @@ export const ProjectPage = (props: Props) => {
                             marginBottom: '1%',
                             // alignSelf: 'flex-start',
                             fontWeight: 'bold',
+                            color: Colors.textColorPrimary
                           }}>
                           No hay una organización vinculada
                         </Text>
                       )}
                     </View>
-                    <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        flexWrap: 'wrap',
+                        marginTop: '4%',
+                      }}>
                       {hastags.map((x, i) => {
                         return (
                           <Text
@@ -840,6 +868,7 @@ export const ProjectPage = (props: Props) => {
                         alignSelf: 'flex-start',
                         marginBottom: '4%',
                         color: 'black',
+                        marginTop: '7%',
                       }}>
                       {project?.description}
                     </Text>
@@ -913,7 +942,7 @@ const styles = StyleSheet.create({
     height: RFPercentage(55),
     alignItems: 'center',
     justifyContent: 'center',
-    
+
     zIndex: 0,
   },
   image: {

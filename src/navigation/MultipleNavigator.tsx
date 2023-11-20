@@ -26,12 +26,10 @@ const Stack = createStackNavigator<StackParams>();
 export function MultipleNavigator() {
   
   return (
-    // <NavigationContainer>
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
         headerStyle: {
-          // backgroundColor: 'transparent',
           zIndex: -999,
         },
       }}>
@@ -44,6 +42,5 @@ export function MultipleNavigator() {
 
       
     </Stack.Navigator>
-    // </NavigationContainer>
   );
 }

@@ -100,15 +100,15 @@ export const CardAnswerMap = ({
             <View style={{flexDirection: 'column'}}>
               <View style={{flexDirection: 'row'}}>
                 <View style={{marginHorizontal: '2%'}}>
-                  <Text>{num}</Text>
+                  <Text style={{color: Colors.textColorPrimary}}>{num}</Text>
                 </View>
                 <View>
-                  <Text>{item.question_text}</Text>
+                  <Text style={{color: Colors.textColorPrimary}}>{item.question_text}</Text>
                 </View>
                 
               </View>{obligatory && (
                   <View style={{justifyContent:'flex-end', position:'relative', left:RFPercentage(35), bottom: RFPercentage(2)}}>
-                    <Text style={{fontSize: FontSize.fontSizeText10}}>Obligatoria</Text>
+                    <Text style={{fontSize: FontSize.fontSizeText10, color: Colors.textColorPrimary}}>Obligatoria</Text>
                   </View>
                 )}
               <View style={{}}>
@@ -129,7 +129,7 @@ export const CardAnswerMap = ({
                   <View style={styles.container}>
                     <TextInput
                       disabled={onlyRead}
-                      style={[styles.input, {borderBottomColor: '#bab9b9'}]}
+                      style={[styles.input, {borderBottomColor: '#bab9b9', color: Colors.textColorPrimary}]}
                       placeholder={value || item.question_text}
                       placeholderTextColor={value ? '#000000' : '#bab9b9'}
                       onChangeText={value => onChangeText(value)}
@@ -148,15 +148,15 @@ export const CardAnswerMap = ({
             <View style={{flexDirection: 'column'}}>
               <View style={{flexDirection: 'row'}}>
                 <View style={{marginHorizontal: '2%'}}>
-                  <Text>{num}</Text>
+                  <Text style={{color: Colors.textColorPrimary}}>{num}</Text>
                 </View>
                 <View>
-                  <Text>{item.question_text}</Text>
+                  <Text style={{color: Colors.textColorPrimary}}>{item.question_text}</Text>
                 </View>
               </View>
               {obligatory && (
                   <View style={{justifyContent:'flex-end',position:'relative', left:RFPercentage(35), bottom: RFPercentage(2)}}>
-                    <Text style={{fontSize: FontSize.fontSizeText10}}>Obligatoria</Text>
+                    <Text style={{fontSize: FontSize.fontSizeText10, color: Colors.textColorPrimary}}>Obligatoria</Text>
                   </View>
                 )}
               <View style={{}}>
@@ -168,7 +168,7 @@ export const CardAnswerMap = ({
                   <View style={styles.container}>
                     <TextInput
                       disabled={onlyRead}
-                      style={[styles.input, {borderBottomColor: '#bab9b9'}]}
+                      style={[styles.input, {borderBottomColor: '#bab9b9', color: Colors.textColorPrimary}]}
                       keyboardType="number-pad"
                       placeholder={value || item.question_text}
                       placeholderTextColor={value ? '#000000' : '#bab9b9'}
@@ -234,7 +234,8 @@ export const CardAnswerMap = ({
                           position: 'absolute',
                           bottom: RFPercentage(-1),
                           left: RFPercentage(17),
-                          zIndex: 999,
+                          zIndex: 999,backgroundColor: 'white',
+                          borderRadius: 50
                         }}>
                         <PlusImg
                           width={RFPercentage(4)}
@@ -278,7 +279,8 @@ export const CardAnswerMap = ({
                           position: 'absolute',
                           bottom: RFPercentage(-1),
                           left: RFPercentage(17),
-                          zIndex: 999,
+                          zIndex: 999,backgroundColor: 'white',
+                          borderRadius: 50
                         }}>
                         <PlusImg
                           width={RFPercentage(4)}
@@ -321,7 +323,8 @@ export const CardAnswerMap = ({
                           position: 'absolute',
                           bottom: RFPercentage(-1),
                           left: RFPercentage(17),
-                          zIndex: 999,
+                          zIndex: 999,backgroundColor: 'white',
+                          borderRadius: 50
                         }}>
                         <PlusImg
                           width={RFPercentage(4)}

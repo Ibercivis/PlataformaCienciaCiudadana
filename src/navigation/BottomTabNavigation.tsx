@@ -64,12 +64,12 @@ const CenterButtonTab = () => {
         // width: RFPercentage(5),
         // height: RFPercentage(5),
         // borderRadius: 35,
-        backgroundColor: 'transparent', // Customize the button color
+        backgroundColor: 'white', // Customize the button color
         marginVertical: RFPercentage(1),
       }}>
       <PlusSquare
-        width={RFPercentage(3)}
-        height={RFPercentage(3)}
+        width={RFPercentage(3.2)}
+        height={RFPercentage(3.2)}
         fill={'#000000'}
       />
       {/* <Text style={{color: 'white'}}>Botón</Text> */}

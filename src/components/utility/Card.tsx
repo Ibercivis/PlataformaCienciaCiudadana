@@ -48,6 +48,7 @@ interface Props {
   description?: string;
   auxString?: string;
   totalLikes?: number;
+  contribution?: number;
   boolHelper?: boolean;
   styleProp?: ViewStyle;
   pressed?: boolean;
@@ -64,7 +65,8 @@ export const Card = ({
   auxString = '',
   boolHelper = false,
   pressed = false,
-  totalLikes = 0,
+  totalLikes = 0, 
+  contribution = 0, 
   cover,
   styleProp,
   list = [],
@@ -150,6 +152,7 @@ export const Card = ({
                   marginBottom: '5%',
                   marginLeft: '10%',
                   marginRight: '5%',
+                  color: Colors.textColorPrimary
                 }}>
                 Más...
               </Text>
@@ -201,21 +204,30 @@ export const Card = ({
               <View style={{alignItems: 'center'}}>
                 <View
                   style={{
-                    marginTop: 18,
+                    marginTop: RFPercentage(2.4),
+                    marginBottom: RFPercentage(1),
                     // backgroundColor: 'cyan',
                     alignItems: 'center',
                     justifyContent: 'center',
                     width: '30%',
                     height: '50%',
                   }}>
-                  <IconBootstrap name={'plus'} size={20} color={'black'} />
+                  <Plus
+                  style={{alignSelf: 'center'}}
+                  height={RFPercentage(5)}
+                  width={RFPercentage(5)}
+                />
                 </View>
                 <Text
                   style={{
                     // textAlign: 'center',
-                    marginBottom: '5%',
+                    // marginBottom: '5%',
                     marginLeft: '10%',
                     marginRight: '5%',
+                    fontSize: FontSize.fontSizeText13,
+                    fontWeight: 'normal',
+                    color: 'black',
+                    fontFamily: FontFamily.NotoSansDisplayMedium,
                   }}>
                   Más...
                 </Text>
@@ -301,7 +313,7 @@ export const Card = ({
                         marginHorizontal: RFPercentage(1),
                         color: 'black',
                       }}>
-                      1500
+                      {contribution}
                     </Text>
                   </View>
                   <TouchableOpacity
@@ -349,7 +361,11 @@ export const Card = ({
                   marginTop: 0,
                   marginBottom: RFPercentage(0.6),
                 }}>
-                <Plus height={60} width={60} />
+                <Plus
+                  style={{alignSelf: 'center'}}
+                  height={RFPercentage(10)}
+                  width={RFPercentage(10)}
+                />
               </View>
               <View
                 style={{marginHorizontal: 14, marginBottom: RFPercentage(2)}}>
@@ -358,6 +374,10 @@ export const Card = ({
                     marginBottom: RFPercentage(3.1),
                     // marginLeft: '10%',
                     // marginRight: '5%',
+                    fontSize: FontSize.fontSizeText15,
+                    fontWeight: 'normal',
+                    color: 'black',
+                    fontFamily: FontFamily.NotoSansDisplayMedium,
                   }}>
                   Más...
                 </Text>
@@ -437,6 +457,10 @@ export const Card = ({
                 <Text
                   style={{
                     marginBottom: RFPercentage(3.1),
+                    fontSize: FontSize.fontSizeText15,
+                    fontWeight: 'normal',
+                    color: 'black',
+                    fontFamily: FontFamily.NotoSansDisplayMedium,
                   }}>
                   Más...
                 </Text>
@@ -478,7 +502,7 @@ export const Card = ({
                     marginBottom: '7%',
                     marginLeft: '10%',
                     marginRight: '10%',
-                    marginTop: '5%',
+                    marginTop: '10%',
                     //   backgroundColor: 'red',
                     alignSelf: 'center',
                     justifyContent: 'center',
@@ -516,8 +540,8 @@ export const Card = ({
                 }}>
                 <Plus
                   style={{alignSelf: 'center', bottom: RFPercentage(-4)}}
-                  height={RFPercentage(6)}
-                  width={RFPercentage(6)}
+                  height={RFPercentage(5.5)}
+                  width={RFPercentage(5.5)}
                 />
               </View>
               <View style={{alignItems: 'stretch'}}>
@@ -604,10 +628,13 @@ export const Card = ({
                     alignSelf: 'flex-start',
                     marginBottom: '2%',
                     marginTop: RFPercentage(2),
+                    color: Colors.textColorPrimary
                     // padding: RFPercentage(1)
                     // color: 'black',
                   }}>
-                  {description}
+                  {description.length > 100
+                    ? description.slice(0, 100) + '...'
+                    : description}
                 </Text>
               </View>
               <ImageBackground
@@ -648,8 +675,9 @@ export const Card = ({
                       style={{
                         fontSize: FontSize.fontSizeText13,
                         marginHorizontal: RFPercentage(1),
+                        color: Colors.textColorPrimary
                       }}>
-                      1500
+                      {contribution}
                     </Text>
                     {/* <IconBootstrap name={'plus'} size={20} color={'black'} /> */}
                     <Heart width={16} height={16} color={'#000000'} />
@@ -657,6 +685,7 @@ export const Card = ({
                       style={{
                         fontSize: FontSize.fontSizeText13,
                         marginHorizontal: RFPercentage(1),
+                        color: Colors.textColorPrimary
                       }}>
                       {totalLikes}
                     </Text>
@@ -875,7 +904,7 @@ export const Card = ({
                         marginHorizontal: RFPercentage(1),
                         alignSelf: 'center',
                       }}>
-                      1500
+                      {contribution}
                     </Text>
                   </TouchableOpacity>
 
@@ -938,7 +967,7 @@ const style = StyleSheet.create({
   container: {},
   category: {
     height: heightPercentageToDP(15),
-    width: RFPercentage(11.5),
+    width: RFPercentage(12.5),
     // marginHorizontal: 4,
     // marginVertical: RFPercentage(1),
     backgroundColor: 'white',

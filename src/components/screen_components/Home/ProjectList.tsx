@@ -160,7 +160,9 @@ export const ProjectList = (props: Props) => {
                         flexWrap: 'wrap',
                         marginBottom: '2%',
                       }}>
-                      {item.description}
+                      {item.description.length > 150
+                    ? item.description.slice(0, 150) + '...'
+                    : item.description}
                     </Text>
                   </View>
                 </View>

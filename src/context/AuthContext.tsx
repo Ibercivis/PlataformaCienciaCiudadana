@@ -69,7 +69,7 @@ export const AuthProvider = ({children}: any) => {
         },
       });
       keyToken = JSON.stringify(resp.config.headers.Authorization, null, 1);
-      console.log(keyToken);
+      // console.log(keyToken);
       if (resp.status !== 200) {
         await AsyncStorage.removeItem('token');
         return action({type: 'notAuthenticated'});

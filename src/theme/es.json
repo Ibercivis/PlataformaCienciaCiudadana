@@ -12,7 +12,7 @@
     "login_screen": [
       {
         "title": "Inicio de sesión",
-        "mail_input": "Correo electrónico",
+        "mail_input": "Nombre de usuario",
         "password_input": "Contraseña",
         "recovery_password": "¿Has olvidado la ",
         "or_login": "O logear con...",
@@ -22,7 +22,9 @@
         "loggin_google": "Continuar con Google",
         "loggin_apple": "Continuar con Apple",
         "loggin_microsoft": "Continuar con Microsoft",
-        "subtitle": "¡Bienvenid@!"
+        "subtitle": "¡Bienvenid@!",
+        "subtitle_register": "¡Vamos a empezar!",
+        "subtitle_problems": ""
       }
     ],
     "register_screen": [
@@ -35,7 +37,7 @@
         "password2_input": "Confirmar contraseña",
         "have_account": "¿Ya tienes una cuenta?",
         "enter": " Entrar",
-        "register_button": "Continuar",
+        "register_button": "Crear cuenta",
         "register_google": "Continuar con Google",
         "register_apple": "Continuar con Apple",
         "register_microsoft": "Continuar con Microsoft"

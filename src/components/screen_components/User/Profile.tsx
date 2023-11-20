@@ -61,7 +61,7 @@ import NotCreated from '../../../assets/icons/profile/No hay creados.svg';
 import NotLiked from '../../../assets/icons/profile/No hay me gusta.svg';
 import {CommonActions, useNavigation} from '@react-navigation/native';
 import {Country} from '../../../interfaces/interfaces';
-import {heightPercentageToDP} from 'react-native-responsive-screen';
+import {heightPercentageToDP, widthPercentageToDP} from 'react-native-responsive-screen';
 import {Spinner} from '../../utility/Spinner';
 import Toast from 'react-native-toast-message';
 
@@ -70,6 +70,7 @@ interface Props extends StackScreenProps<any, any> {}
 export const Profile = ({navigation}: Props) => {
   //#region Variables
   // const navigation = useNavigation();
+  const MAX_CHARACTERS = 300;
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     {key: 'one', title: 'Contribuciones'},
@@ -88,6 +89,7 @@ export const Profile = ({navigation}: Props) => {
   );
   const [likedProject, setLikedProject] = useState<ShowProject[]>([]);
   const [organization, setOrganization] = useState<Organization[]>([]);
+  const [organizationUser, setOrganizationUser] = useState<Organization>();
   const [countries, setCountries] = useState<[]>([]);
   const [hastags, setHastags] = useState<HasTag[]>([]);
 
@@ -187,30 +189,41 @@ export const Profile = ({navigation}: Props) => {
           renderItem={({item, index}) => {
             return (
               <TouchableOpacity
-                key={index}
-                activeOpacity={0.5}
-                style={styles.projectFound}
-                onPress={() => navigateTo(item.id)}>
+              key={index}
+              activeOpacity={0.5}
+              style={style.projectFound}
+              onPress={() =>
+                navigateTo(item.id)
+              }>
+              <View
+                style={
+                  {
+                    // paddingHorizontal: RFPercentage(3),
+                    // width:'100%',
+                    // backgroundColor:'green'
+                  }
+                }>
                 <View
                   style={{
-                    paddingHorizontal: RFPercentage(3),
+                    // marginHorizontal: RFPercentage(2),
+                    paddingHorizontal: RFPercentage(2),
+                    width: '100%',
+                    marginTop: RFPercentage(2),
+                    marginBottom: 6,
                   }}>
-                  <View
+                  <Text
                     style={{
-                      width: '100%',
-                      marginTop: RFPercentage(2),
-                      marginBottom: 6,
+                      // backgroundColor: 'blue',
+                      fontSize: FontSize.fontSizeText17,
+                      fontWeight: '600',
+                      color: 'black',
+                      fontFamily: FontFamily.NotoSansDisplaySemiBold,
+                      marginBottom: '1%',
+                      alignSelf: 'flex-start',
                     }}>
-                    <Text
-                      style={{
-                        color: 'black',
-                        fontWeight: 'bold',
-                        marginBottom: '1%',
-                        alignSelf: 'flex-start',
-                      }}>
-                      {item.name}
-                    </Text>
-                    <View style={{flexDirection: 'row'}}>
+                    {item.name}
+                  </Text>
+                  <View style={{flexDirection: 'row', flexWrap:'wrap'}}>
                       {item.hasTag.map((x, i) => {
                         const matchingHastag = hastags.find(
                           hastag => hastag.id === x,
@@ -231,102 +244,106 @@ export const Profile = ({navigation}: Props) => {
                         }
                       })}
                     </View>
+                  <View style={{flexWrap: 'wrap'}}>
                     <Text
                       style={{
                         alignSelf: 'flex-start',
+                        flexWrap: 'wrap',
                         marginBottom: '2%',
                       }}>
-                      {item.description}
+                      {item.description.length > 150
+                    ? item.description.slice(0, 150) + '...'
+                    : item.description}
                     </Text>
                   </View>
-
-                  <ImageBackground
-                    // source={require('../../../assets/backgrounds/login-background.jpg')}
-                    source={
-                      item.cover && item.cover[0]
-                        ? {uri: imageUrl + item.cover[0].image}
-                        : require('../../../assets/backgrounds/nuevoproyecto.jpg')
-                    }
+                </View>
+                <ImageBackground
+                borderBottomLeftRadius={10}
+                borderBottomRightRadius={10}
+                  source={
+                    item.cover && item.cover[0]
+                      ? {uri: imageUrl + item.cover[0].image}
+                      : require('../../../assets/backgrounds/nuevoproyecto.jpg')
+                  }
+                  style={{
+                    ...style.imageBackground,
+                    width: '100%',
+                    height: RFPercentage(23),
+                    backgroundColor: item.cover ? 'transparent' : 'grey',
+                  }}>
+                  <View
                     style={{
-                      ...styles.imageBackground,
+                      position: 'absolute',
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      alignSelf: 'center',
+                      bottom: 2,
+                      left: 0,
+                      right: 0,
+                      justifyContent: 'space-between',
+                      // marginHorizontal: RFPercentage(1),
                       width: '100%',
-                      height: RFPercentage(23),
                     }}>
                     <View
                       style={{
-                        position: 'absolute',
                         flexDirection: 'row',
-                        alignItems: 'center',
-                        alignSelf: 'center',
-                        bottom: 2,
-                        left: 0,
-                        right: 0,
-                        justifyContent: 'space-between',
-                        // marginHorizontal: RFPercentage(1),
-                        width: '100%',
+                        backgroundColor: 'white',
+                        borderRadius: 15,
+                        margin: '2%',
+                        paddingHorizontal: '3%',
+                        paddingVertical: '2%',
                       }}>
-                      <View
+                      <People width={16} height={16} color={'#000000'} />
+                      <Text
                         style={{
-                          flexDirection: 'row',
-                          backgroundColor: 'white',
-                          borderRadius: 15,
-                          margin: '2%',
-                          paddingHorizontal: '3%',
-                          paddingVertical: '2%',
+                          fontSize: FontSize.fontSizeText13,
+                          marginHorizontal: RFPercentage(1),
                         }}>
-                        <People width={16} height={16} color={'#000000'} />
-                        <Text
-                          style={{
-                            fontSize: FontSize.fontSizeText13,
-                            marginHorizontal: RFPercentage(1),
-                          }}>
-                          1500
-                        </Text>
-                        {/* <IconBootstrap name={'plus'} size={20} color={'black'} /> */}
-                        {/* {true ? (
-                            <HeartFill
-                              width={16}
-                              height={16}
-                              color={'#ff0000'}
-                            />
-                          ) : (
-                            <Heart width={16} height={16} color={'#000000'} />
-                          )} */}
+                        {item.contributions}
+                      </Text>
+                      {item.is_liked_by_user ? (
+                        <HeartFill width={16} height={16} color={'#ff0000'} />
+                      ) : (
                         <Heart width={16} height={16} color={'#000000'} />
-                        <Text
-                          style={{
-                            fontSize: FontSize.fontSizeText13,
-                            marginHorizontal: RFPercentage(1),
-                          }}>
-                          120
-                        </Text>
-                      </View>
-                      <View
+                      )}
+                      <Text
                         style={{
-                          flexDirection: 'row',
-                          backgroundColor: 'white',
-                          borderRadius: 15,
-                          margin: '2%',
-                          paddingHorizontal: '3%',
-                          paddingVertical: '2%',
+                          fontSize: FontSize.fontSizeText13,
+                          marginHorizontal: RFPercentage(1),
                         }}>
-                        <Text
-                          style={{
-                            fontSize: FontSize.fontSizeText13,
-                            marginHorizontal: RFPercentage(1),
-                          }}>
-                          120
-                        </Text>
+                        {item.total_likes}
+                      </Text>
+                    </View>
+                    {/* <View
+                      style={{
+                        flexDirection: 'row',
+                        backgroundColor: 'white',
+                        borderRadius: 15,
+                        margin: '2%',
+                        paddingHorizontal: '3%',
+                        paddingVertical: '2%',
+                      }}>
+                      <TouchableOpacity
+                        onPress={() => toggleLike(item.id)}
+                        style={{flexDirection: 'row'}}>
                         {item.is_liked_by_user ? (
                           <HeartFill width={16} height={16} color={'#ff0000'} />
                         ) : (
                           <Heart width={16} height={16} color={'#000000'} />
                         )}
-                      </View>
-                    </View>
-                  </ImageBackground>
-                </View>
-              </TouchableOpacity>
+                        <Text
+                          style={{
+                            fontSize: FontSize.fontSizeText13,
+                            marginHorizontal: RFPercentage(1),
+                          }}>
+                          {item.total_likes}
+                        </Text>
+                      </TouchableOpacity>
+                    </View> */}
+                  </View>
+                </ImageBackground>
+              </View>
+            </TouchableOpacity>
             );
           }}
         />
@@ -377,30 +394,41 @@ export const Profile = ({navigation}: Props) => {
           renderItem={({item, index}) => {
             return (
               <TouchableOpacity
-                key={index}
-                activeOpacity={0.5}
-                style={styles.projectFound}
-                onPress={() => navigateTo(item.id)}>
+              key={index}
+              activeOpacity={0.5}
+              style={style.projectFound}
+              onPress={() =>
+                navigateTo(item.id)
+              }>
+              <View
+                style={
+                  {
+                    // paddingHorizontal: RFPercentage(3),
+                    // width:'100%',
+                    // backgroundColor:'green'
+                  }
+                }>
                 <View
                   style={{
-                    paddingHorizontal: RFPercentage(3),
+                    // marginHorizontal: RFPercentage(2),
+                    paddingHorizontal: RFPercentage(2),
+                    width: '100%',
+                    marginTop: RFPercentage(2),
+                    marginBottom: 6,
                   }}>
-                  <View
+                  <Text
                     style={{
-                      width: '100%',
-                      marginTop: RFPercentage(2),
-                      marginBottom: 6,
+                      // backgroundColor: 'blue',
+                      fontSize: FontSize.fontSizeText17,
+                      fontWeight: '600',
+                      color: 'black',
+                      fontFamily: FontFamily.NotoSansDisplaySemiBold,
+                      marginBottom: '1%',
+                      alignSelf: 'flex-start',
                     }}>
-                    <Text
-                      style={{
-                        color: 'black',
-                        fontWeight: 'bold',
-                        marginBottom: '1%',
-                        alignSelf: 'flex-start',
-                      }}>
-                      {item.name}
-                    </Text>
-                    <View style={{flexDirection: 'row'}}>
+                    {item.name}
+                  </Text>
+                  <View style={{flexDirection: 'row', flexWrap:'wrap'}}>
                       {item.hasTag.map((x, i) => {
                         const matchingHastag = hastags.find(
                           hastag => hastag.id === x,
@@ -421,79 +449,93 @@ export const Profile = ({navigation}: Props) => {
                         }
                       })}
                     </View>
+                  <View style={{flexWrap: 'wrap'}}>
                     <Text
                       style={{
                         alignSelf: 'flex-start',
+                        flexWrap: 'wrap',
                         marginBottom: '2%',
                       }}>
-                      {item.description}
+                      {item.description.length > 150
+                    ? item.description.slice(0, 150) + '...'
+                    : item.description}
                     </Text>
                   </View>
-                  <ImageBackground
-                    // source={require('../../../assets/backgrounds/login-background.jpg')}
-                    source={
-                      item.cover && item.cover[0]
-                        ? {uri: imageUrl + item.cover[0].image}
-                        : require('../../../assets/backgrounds/nuevoproyecto.jpg')
-                    }
+                </View>
+                <ImageBackground
+                borderBottomLeftRadius={10}
+                borderBottomRightRadius={10}
+                  source={
+                    item.cover && item.cover[0]
+                      ? {uri: imageUrl + item.cover[0].image}
+                      : require('../../../assets/backgrounds/nuevoproyecto.jpg')
+                  }
+                  style={{
+                    ...style.imageBackground,
+                    width: '100%',
+                    height: RFPercentage(23),
+                    backgroundColor: item.cover ? 'transparent' : 'grey',
+                  }}>
+                  <View
                     style={{
-                      ...styles.imageBackground,
+                      position: 'absolute',
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      alignSelf: 'center',
+                      bottom: 2,
+                      left: 0,
+                      right: 0,
+                      justifyContent: 'space-between',
+                      // marginHorizontal: RFPercentage(1),
                       width: '100%',
-                      height: RFPercentage(23),
                     }}>
                     <View
                       style={{
-                        position: 'absolute',
                         flexDirection: 'row',
-                        alignItems: 'center',
-                        alignSelf: 'center',
-                        bottom: 2,
-                        left: 0,
-                        right: 0,
-                        justifyContent: 'space-between',
-                        // marginHorizontal: RFPercentage(1),
-                        width: '100%',
+                        backgroundColor: 'white',
+                        borderRadius: 15,
+                        margin: '2%',
+                        paddingHorizontal: '3%',
+                        paddingVertical: '2%',
                       }}>
-                      <View
+                      <People width={16} height={16} color={'#000000'} />
+                      <Text
                         style={{
-                          flexDirection: 'row',
-                          backgroundColor: 'white',
-                          borderRadius: 15,
-                          margin: '2%',
-                          paddingHorizontal: '3%',
-                          paddingVertical: '2%',
+                          fontSize: FontSize.fontSizeText13,
+                          marginHorizontal: RFPercentage(1),
                         }}>
-                        <People width={16} height={16} color={'#000000'} />
-                        <Text
-                          style={{
-                            fontSize: FontSize.fontSizeText13,
-                            marginHorizontal: RFPercentage(1),
-                          }}>
-                          1500
-                        </Text>
-                        {/* <IconBootstrap name={'plus'} size={20} color={'black'} /> */}
-                        {false ? (
+                        {item.contributions}
+                      </Text>
+                      {true ? (
+                        <HeartFill width={16} height={16} color={'#ff0000'} />
+                      ) : (
+                        <Heart width={16} height={16} color={'#000000'} />
+                      )}
+                      <Text
+                        style={{
+                          fontSize: FontSize.fontSizeText13,
+                          marginHorizontal: RFPercentage(1),
+                        }}>
+                        {item.total_likes}
+                      </Text>
+                    </View>
+                    {/* <View
+                      style={{
+                        flexDirection: 'row',
+                        backgroundColor: 'white',
+                        borderRadius: 15,
+                        margin: '2%',
+                        paddingHorizontal: '3%',
+                        paddingVertical: '2%',
+                      }}>
+                      <TouchableOpacity
+                        onPress={() => toggleLike(item.id)}
+                        style={{flexDirection: 'row'}}>
+                        {item.is_liked_by_user ? (
                           <HeartFill width={16} height={16} color={'#ff0000'} />
                         ) : (
                           <Heart width={16} height={16} color={'#000000'} />
                         )}
-                        <Text
-                          style={{
-                            fontSize: FontSize.fontSizeText13,
-                            marginHorizontal: RFPercentage(1),
-                          }}>
-                          120
-                        </Text>
-                      </View>
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          backgroundColor: 'white',
-                          borderRadius: 15,
-                          margin: '2%',
-                          paddingHorizontal: '3%',
-                          paddingVertical: '2%',
-                        }}>
                         <Text
                           style={{
                             fontSize: FontSize.fontSizeText13,
@@ -501,17 +543,12 @@ export const Profile = ({navigation}: Props) => {
                           }}>
                           {item.total_likes}
                         </Text>
-                        {/* <Heart width={16} height={16} color={'#000000'} /> */}
-                        {item.is_liked_by_user ? (
-                          <HeartFill width={16} height={16} color={'#ff0000'} />
-                        ) : (
-                          <Heart width={16} height={16} color={'#000000'} />
-                        )}
-                      </View>
-                    </View>
-                  </ImageBackground>
-                </View>
-              </TouchableOpacity>
+                      </TouchableOpacity>
+                    </View> */}
+                  </View>
+                </ImageBackground>
+              </View>
+            </TouchableOpacity>
             );
           }}
         />
@@ -561,30 +598,41 @@ export const Profile = ({navigation}: Props) => {
           renderItem={({item, index}) => {
             return (
               <TouchableOpacity
-                key={index}
-                activeOpacity={0.5}
-                style={styles.projectFound}
-                onPress={() => navigateTo(item.id)}>
+              key={index}
+              activeOpacity={0.5}
+              style={style.projectFound}
+              onPress={() =>
+                navigateTo(item.id)
+              }>
+              <View
+                style={
+                  {
+                    // paddingHorizontal: RFPercentage(3),
+                    // width:'100%',
+                    // backgroundColor:'green'
+                  }
+                }>
                 <View
                   style={{
-                    paddingHorizontal: RFPercentage(3),
+                    // marginHorizontal: RFPercentage(2),
+                    paddingHorizontal: RFPercentage(2),
+                    width: '100%',
+                    marginTop: RFPercentage(2),
+                    marginBottom: 6,
                   }}>
-                  <View
+                  <Text
                     style={{
-                      width: '100%',
-                      marginTop: RFPercentage(2),
-                      marginBottom: 6,
+                      // backgroundColor: 'blue',
+                      fontSize: FontSize.fontSizeText17,
+                      fontWeight: '600',
+                      color: 'black',
+                      fontFamily: FontFamily.NotoSansDisplaySemiBold,
+                      marginBottom: '1%',
+                      alignSelf: 'flex-start',
                     }}>
-                    <Text
-                      style={{
-                        color: 'black',
-                        fontWeight: 'bold',
-                        marginBottom: '1%',
-                        alignSelf: 'flex-start',
-                      }}>
-                      {item.name}
-                    </Text>
-                    <View style={{flexDirection: 'row'}}>
+                    {item.name}
+                  </Text>
+                  <View style={{flexDirection: 'row', flexWrap:'wrap'}}>
                       {item.hasTag.map((x, i) => {
                         const matchingHastag = hastags.find(
                           hastag => hastag.id === x,
@@ -605,79 +653,93 @@ export const Profile = ({navigation}: Props) => {
                         }
                       })}
                     </View>
+                  <View style={{flexWrap: 'wrap'}}>
                     <Text
                       style={{
                         alignSelf: 'flex-start',
+                        flexWrap: 'wrap',
                         marginBottom: '2%',
                       }}>
-                      {item.description}
+                      {item.description.length > 150
+                    ? item.description.slice(0, 150) + '...'
+                    : item.description}
                     </Text>
                   </View>
-                  <ImageBackground
-                    // source={require('../../../assets/backgrounds/login-background.jpg')}
-                    source={
-                      item.cover && item.cover[0]
-                        ? {uri: imageUrl + item.cover[0].image}
-                        : require('../../../assets/backgrounds/nuevoproyecto.jpg')
-                    }
+                </View>
+                <ImageBackground
+                borderBottomLeftRadius={10}
+                borderBottomRightRadius={10}
+                  source={
+                    item.cover && item.cover[0]
+                      ? {uri: imageUrl + item.cover[0].image}
+                      : require('../../../assets/backgrounds/nuevoproyecto.jpg')
+                  }
+                  style={{
+                    ...style.imageBackground,
+                    width: '100%',
+                    height: RFPercentage(23),
+                    backgroundColor: item.cover ? 'transparent' : 'grey',
+                  }}>
+                  <View
                     style={{
-                      ...styles.imageBackground,
+                      position: 'absolute',
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      alignSelf: 'center',
+                      bottom: 2,
+                      left: 0,
+                      right: 0,
+                      justifyContent: 'space-between',
+                      // marginHorizontal: RFPercentage(1),
                       width: '100%',
-                      height: RFPercentage(23),
                     }}>
                     <View
                       style={{
-                        position: 'absolute',
                         flexDirection: 'row',
-                        alignItems: 'center',
-                        alignSelf: 'center',
-                        bottom: 2,
-                        left: 0,
-                        right: 0,
-                        justifyContent: 'space-between',
-                        // marginHorizontal: RFPercentage(1),
-                        width: '100%',
+                        backgroundColor: 'white',
+                        borderRadius: 15,
+                        margin: '2%',
+                        paddingHorizontal: '3%',
+                        paddingVertical: '2%',
                       }}>
-                      <View
+                      <People width={16} height={16} color={'#000000'} />
+                      <Text
                         style={{
-                          flexDirection: 'row',
-                          backgroundColor: 'white',
-                          borderRadius: 15,
-                          margin: '2%',
-                          paddingHorizontal: '3%',
-                          paddingVertical: '2%',
+                          fontSize: FontSize.fontSizeText13,
+                          marginHorizontal: RFPercentage(1),
                         }}>
-                        <People width={16} height={16} color={'#000000'} />
-                        <Text
-                          style={{
-                            fontSize: FontSize.fontSizeText13,
-                            marginHorizontal: RFPercentage(1),
-                          }}>
-                          1500
-                        </Text>
-                        {/* <IconBootstrap name={'plus'} size={20} color={'black'} /> */}
-                        {true ? (
+                        {item.contributions}
+                      </Text>
+                      {item.is_liked_by_user ? (
+                        <HeartFill width={16} height={16} color={'#ff0000'} />
+                      ) : (
+                        <Heart width={16} height={16} color={'#000000'} />
+                      )}
+                      <Text
+                        style={{
+                          fontSize: FontSize.fontSizeText13,
+                          marginHorizontal: RFPercentage(1),
+                        }}>
+                        {item.total_likes}
+                      </Text>
+                    </View>
+                    {/* <View
+                      style={{
+                        flexDirection: 'row',
+                        backgroundColor: 'white',
+                        borderRadius: 15,
+                        margin: '2%',
+                        paddingHorizontal: '3%',
+                        paddingVertical: '2%',
+                      }}>
+                      <TouchableOpacity
+                        onPress={() => toggleLike(item.id)}
+                        style={{flexDirection: 'row'}}>
+                        {item.is_liked_by_user ? (
                           <HeartFill width={16} height={16} color={'#ff0000'} />
                         ) : (
                           <Heart width={16} height={16} color={'#000000'} />
                         )}
-                        <Text
-                          style={{
-                            fontSize: FontSize.fontSizeText13,
-                            marginHorizontal: RFPercentage(1),
-                          }}>
-                          120
-                        </Text>
-                      </View>
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          backgroundColor: 'white',
-                          borderRadius: 15,
-                          margin: '2%',
-                          paddingHorizontal: '3%',
-                          paddingVertical: '2%',
-                        }}>
                         <Text
                           style={{
                             fontSize: FontSize.fontSizeText13,
@@ -685,17 +747,12 @@ export const Profile = ({navigation}: Props) => {
                           }}>
                           {item.total_likes}
                         </Text>
-                        {/* <Heart width={16} height={16} color={'#000000'} /> */}
-                        {item.is_liked_by_user ? (
-                          <HeartFill width={16} height={16} color={'#ff0000'} />
-                        ) : (
-                          <Heart width={16} height={16} color={'#000000'} />
-                        )}
-                      </View>
-                    </View>
-                  </ImageBackground>
-                </View>
-              </TouchableOpacity>
+                      </TouchableOpacity>
+                    </View> */}
+                  </View>
+                </ImageBackground>
+              </View>
+            </TouchableOpacity>
             );
           }}
         />
@@ -734,12 +791,14 @@ export const Profile = ({navigation}: Props) => {
                   opacity,
                   fontWeight,
                   color: 'black',
-                  fontSize: route.title.length <= 9 ? FontSize.fontSizeText15 : FontSize.fontSizeText13,
+                  fontSize:
+                    route.title.length <= 9
+                      ? FontSize.fontSizeText15
+                      : FontSize.fontSizeText13,
                   fontFamily: FontFamily.NotoSansDisplayMedium,
                 }}
                 numberOfLines={1}
-                ellipsizeMode="tail"
-                >
+                ellipsizeMode="tail">
                 {route.title}
               </Animated.Text>
               <View
@@ -789,7 +848,7 @@ export const Profile = ({navigation}: Props) => {
         },
       });
       setLikedProject(resp.data.filter(x => x.is_liked_by_user === true));
-      setContributionProject(resp.data);
+      setContributionProject(resp.data.filter(x => x.contributions));
       setCreatedProject(resp.data.filter(x => x.creator === user.pk));
     } catch {}
   };
@@ -845,6 +904,9 @@ export const Profile = ({navigation}: Props) => {
         },
       });
       setOrganization(resp.data);
+      if(resp.data){
+
+      }
     } catch {}
   };
 
@@ -1320,6 +1382,7 @@ export const Profile = ({navigation}: Props) => {
                   }}>
                   <Text style={{color: 'black'}}>Nombre de usuario</Text>
                   <InputText
+                    editable={false}
                     // isInputText={() => setIsInputText(!isInputText)}
                     label={'Nombre de usuario'}
                     keyboardType="default"
@@ -1344,11 +1407,30 @@ export const Profile = ({navigation}: Props) => {
                     label={'Biografía'}
                     keyboardType="default"
                     multiline={true}
-                    maxLength={300}
+                    maxLength={MAX_CHARACTERS}
                     numOfLines={5}
                     onChangeText={value => onChange(value, 'biography')}
                     value={form.biography}
                   />
+                  <View
+                    style={{
+                      // width: '80%',
+                      justifyContent: 'flex-end',
+                      alignItems: 'flex-end',
+                      flexDirection: 'row',
+                    }}>
+                    <Text
+                      style={{
+                        color:
+                          form.biography.length <= MAX_CHARACTERS
+                            ? 'black'
+                            : 'red',
+                            fontSize: FontSize.fontSizeText13
+                      }}>
+                      {form.biography.length}
+                    </Text>
+                    <Text style={{fontSize: FontSize.fontSizeText13}}>/{MAX_CHARACTERS}</Text>
+                  </View>
                 </View>
 
                 {/* email */}
@@ -1846,13 +1928,10 @@ export const Profile = ({navigation}: Props) => {
                           color: 'black',
                           fontSize: FontSize.fontSizeText18,
                         }}>
-                        {
-                          userProfile.participated_projects && userProfile.participated_projects.length > 0 ? (
-                            userProfile.participated_projects.length
-                          ) : (
-                            0
-                          )
-                        }
+                        {userProfile.participated_projects &&
+                        userProfile.participated_projects.length > 0
+                          ? userProfile.participated_projects.length
+                          : 0}
                       </Text>
                     </View>
                     <View style={styles.viewDataProfile}>
@@ -1862,13 +1941,10 @@ export const Profile = ({navigation}: Props) => {
                           color: 'black',
                           fontSize: FontSize.fontSizeText18,
                         }}>
-                          {
-                          userProfile.created_projects && userProfile.created_projects.length > 0? (
-                            userProfile.created_projects.length
-                          ) : (
-                            0
-                          )
-                        }
+                        {userProfile.created_projects &&
+                        userProfile.created_projects.length > 0
+                          ? userProfile.created_projects.length
+                          : 0}
                       </Text>
                     </View>
                   </View>
@@ -1945,7 +2021,9 @@ export const Profile = ({navigation}: Props) => {
                         fontSize: FontSize.fontSizeText13,
                         fontFamily: FontFamily.NotoSansDisplayRegular,
                       }}>
-                      {userProfile.country && userProfile.country.name && userProfile.country.name.length > 0
+                      {userProfile.country &&
+                      userProfile.country.name &&
+                      userProfile.country.name.length > 0
                         ? userProfile.country.name
                         : 'Sin localización'}
                     </Text>
@@ -1973,7 +2051,7 @@ export const Profile = ({navigation}: Props) => {
                   fontFamily: FontFamily.NotoSansDisplayLight,
                   textAlign: 'left',
                 }}>
-                {userProfile.biography && userProfile.biography.length > 0 ||
+                {(userProfile.biography && userProfile.biography.length > 0) ||
                 userProfile.biography == null
                   ? userProfile.biography
                   : 'No hay ninguna descripción'}
@@ -1991,7 +2069,6 @@ export const Profile = ({navigation}: Props) => {
             //   initialLayout={{width: RFPercentage(20)}}
           />
           <Spinner visible={!isAllCharged} />
-          
         </SafeAreaView>
       )}
       <Toast position="bottom" />
@@ -2042,6 +2119,28 @@ const styles = StyleSheet.create({
     width: RFPercentage(50),
     marginVertical: RFPercentage(3),
     borderRadius: 10,
+  },
+  imageBackground: {
+    height: '100%',
+    borderRadius: 10,
+  },
+});
+
+const style = StyleSheet.create({
+  projectFound: {
+    width: widthPercentageToDP(90),
+    // width: '90%',
+    marginVertical: RFPercentage(1),
+    borderRadius: 10,
+    backgroundColor: 'white',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 4.41,
+    elevation: 4,
   },
   imageBackground: {
     height: '100%',

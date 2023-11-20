@@ -1124,8 +1124,8 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                           }}>
                           <Text
                             style={{
-                              color: 'black',
-                              fontSize: FontSize.fontSizeText10,
+                              color: Colors.textColorPrimary,
+                              fontSize: FontSize.fontSizeText13,
                             }}>
                             Marcador Nº {selectedObservation.id}
                           </Text>
@@ -1166,7 +1166,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                     <View>
                       <Text
                         style={{
-                          color: 'black',
+                          color: Colors.textColorPrimary,
                           fontSize: FontSize.fontSizeText17,
                         }}>
                         ¿Quieres confirmar el marcador?
@@ -1300,7 +1300,6 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                             }
                             showModal={value => {
                               if (value) {
-                                console.log('la imagen pesa demasiado');
                                 Toast.show({
                                   type: 'error',
                                   text1: 'Image',

@@ -46,10 +46,13 @@ import Delete from '../../../assets/icons/project/trash.svg';
 import {QuestionCard} from '../../utility/QuestionCard';
 import {IconTemp} from '../../IconTemp';
 import {useForm} from '../../../hooks/useForm';
-import {InfoModal, SaveProyectModal} from '../../utility/Modals';
+import {DeleteModal, InfoModal, SaveProyectModal} from '../../utility/Modals';
 import {CommonActions} from '@react-navigation/native';
 import {Spinner} from '../../utility/Spinner';
-import {heightPercentageToDP, widthPercentageToDP} from 'react-native-responsive-screen';
+import {
+  heightPercentageToDP,
+  widthPercentageToDP,
+} from 'react-native-responsive-screen';
 import Toast from 'react-native-toast-message';
 
 interface Props extends StackScreenProps<StackParams, 'CreateProject'> {}
@@ -58,6 +61,7 @@ export const CreateProject = ({navigation, route}: Props) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isEdit, setIsEdit] = useState(false);
   const totalSteps = 3;
+  const MAX_CHARACTERS = 1000;
   const {fontScale} = useWindowDimensions();
   const {form, onChange} = useForm<Project>({
     hasTag: [],
@@ -163,6 +167,9 @@ export const CreateProject = ({navigation, route}: Props) => {
   const [saveModal, setSaveModal] = useState(false);
   const showModalSave = () => setSaveModal(true);
   const hideModalSave = () => setSaveModal(false);
+  const [deleteModal, setDelete] = useState(false);
+  const showModalDelete = () => setDelete(true);
+  const hideModalDelete = () => setDelete(false);
   // const { modalVisible, setModalVisible, changeVisibility} = useModal();
 
   /**
@@ -263,7 +270,10 @@ export const CreateProject = ({navigation, route}: Props) => {
           isValid = false;
           setNameValidate(false);
         }
-        if (form.description.length <= 0) {
+        if (
+          form.description.length <= 0 ||
+          form.description.length > MAX_CHARACTERS
+        ) {
           isValid = false;
           setDescriptionValidate(false);
         }
@@ -728,7 +738,7 @@ export const CreateProject = ({navigation, route}: Props) => {
       if (imageBlob[0]) {
         formData.append('cover', imageBlob[0]);
       }
-      console.log(JSON.stringify(formData, null, 2));
+      // console.log(JSON.stringify(formData, null, 2));
       if (correct) {
         const projectCreated = await citmapApi.post(
           '/project/create/',
@@ -1006,9 +1016,64 @@ export const CreateProject = ({navigation, route}: Props) => {
 
   //#endregion
 
+  const onDeleteProject = async () => {
+    try {
+      let token;
+      while (!token) {
+        token = await AsyncStorage.getItem('token');
+      }
+      const resp = await citmapApi.delete(
+        `/project/${route.params.id}/`,
+        {
+          headers: {
+            Authorization: token,
+          },
+        },
+      );
+      console.log(JSON.stringify(resp.data, null, 2))
+      Toast.show({
+        type: 'success',
+        text1: 'Proyecto borrado con éxito.',
+      });
+      hideModalDelete();
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [
+            {
+              name: 'MultipleNavigator',
+            },
+          ],
+        }),
+      );
+    } catch (err) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error en el borrado.',
+      });
+    }
+  };
+
   //#endregion
 
   //#region RENDERS
+
+  /**
+   * TODO servirá para cambiar el texto de color
+   * @param indice
+   * @returns
+   */
+  const obtenerEstiloTexto = (indice: number) => {
+    return indice >= 200 ? {color: 'red'} : {};
+  };
+
+  const renderizarTexto = () => {
+    return form.description.split('').map((caracter, index) => (
+      <Text key={index} style={[obtenerEstiloTexto(index)]}>
+        {caracter}
+      </Text>
+    ));
+  };
 
   const firstScreen = () => {
     return (
@@ -1016,7 +1081,8 @@ export const CreateProject = ({navigation, route}: Props) => {
         <View
           style={{
             alignItems: 'center',
-            // width: '80%',
+            // width: widthPercentageToDP(85)
+            width: '85%',
           }}>
           {/* imagenes */}
           <View
@@ -1195,11 +1261,13 @@ export const CreateProject = ({navigation, route}: Props) => {
 
                 <TouchableOpacity
                   style={{
-                    width: RFPercentage(5),
+                    width: RFPercentage(4),
                     position: 'absolute',
                     bottom: RFPercentage(-1),
                     left: RFPercentage(18),
                     zIndex: 999,
+                    backgroundColor: 'white',
+                    borderRadius: 50,
                   }}
                   onPress={() => selectImage()}>
                   {/* <IconButton
@@ -1211,7 +1279,7 @@ export const CreateProject = ({navigation, route}: Props) => {
                   <PlusBlue
                     width={RFPercentage(4)}
                     height={RFPercentage(4)}
-                    fill={'#0059ff'}
+                    fill={'#ffffff'}
                   />
                 </TouchableOpacity>
                 {/* <Button
@@ -1394,11 +1462,13 @@ export const CreateProject = ({navigation, route}: Props) => {
 
                 <TouchableOpacity
                   style={{
-                    width: RFPercentage(5),
+                    width: RFPercentage(4),
                     position: 'absolute',
                     bottom: RFPercentage(-1.3),
                     left: RFPercentage(18),
                     zIndex: 999,
+                    backgroundColor: 'white',
+                    borderRadius: 50,
                   }}
                   onPress={() => selectImage()}>
                   {/* <IconButton
@@ -1444,8 +1514,9 @@ export const CreateProject = ({navigation, route}: Props) => {
           {/* descripcion del proyecto */}
           <View
             style={{
-              width: '100%',
-              marginVertical: RFPercentage(1),
+              // width: '80%',
+              // width: widthPercentageToDP(71),
+              marginVertical: RFPercentage(2),
             }}>
             <Text style={{color: 'black'}}>Descripción del proyecto</Text>
             <InputText
@@ -1453,13 +1524,41 @@ export const CreateProject = ({navigation, route}: Props) => {
               label={'Escribe la descripción'}
               keyboardType="default"
               multiline={true}
-              maxLength={300}
+              maxLength={MAX_CHARACTERS}
               numOfLines={5}
+              onPressIn={() => {
+                if (scrollViewRef.current) {
+                  scrollViewRef.current.scrollTo({
+                    y: heightPercentageToDP(13),
+                    animated: true,
+                  });
+                }
+              }}
+              // style={obtenerEstiloTexto()}
               onChangeText={value => {
                 onChange(value, 'description'), setDescriptionValidate(true);
               }}
               value={form.description}
             />
+            <View
+              style={{
+                // width: '80%',
+                justifyContent: 'flex-end',
+                alignItems: 'flex-end',
+                flexDirection: 'row',
+              }}>
+              <Text
+                style={{
+                  color:
+                    form.description.length <= MAX_CHARACTERS ? 'black' : 'red',
+                  fontSize: FontSize.fontSizeText13,
+                }}>
+                {form.description.length}
+              </Text>
+              <Text style={{fontSize: FontSize.fontSizeText13}}>
+                /{MAX_CHARACTERS}
+              </Text>
+            </View>
           </View>
           {/* add categories */}
           <View
@@ -1536,6 +1635,7 @@ export const CreateProject = ({navigation, route}: Props) => {
             style={{
               width: '100%',
               marginVertical: RFPercentage(1),
+              marginTop: RFPercentage(4)
             }}>
             <Text style={{color: 'black', marginBottom: '2%'}}>
               Añadir organizaciones al proyeto
@@ -1634,7 +1734,13 @@ export const CreateProject = ({navigation, route}: Props) => {
                       </Text>
                     </View>
                     {/* que elimine de la lista */}
-                    <View style={{width: RFPercentage(6), marginLeft: '10%', alignContent:'center', justifyContent: 'center'}}>
+                    <View
+                      style={{
+                        width: RFPercentage(6),
+                        marginLeft: '10%',
+                        alignContent: 'center',
+                        justifyContent: 'center',
+                      }}>
                       <CustomButton
                         onPress={() => moveItemToSuggestions(index)}
                         backgroundColor="transparen"
@@ -1922,25 +2028,31 @@ export const CreateProject = ({navigation, route}: Props) => {
           onPressLeft={() => navigation.goBack()}
           rightIcon={true}
           renderRight={() => {
-            return (
-              <TouchableOpacity activeOpacity={0.5} onPress={() => console.log('borrar')}>
-                <View
-                  style={{
-                    justifyContent: 'center',
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    marginRight: RFPercentage(3),
-                    marginTop: RFPercentage(0.4)
-                  }}>
-                  {/* <IconTemp name="arrow-left" size={Size.iconSizeMedium} /> */}
-                  <Delete
-                    width={RFPercentage(2.5)}
-                    height={RFPercentage(2.5)}
-                    fill={Colors.semanticDangerLight}
-                  />
-                </View>
-              </TouchableOpacity>
-            );
+            if (isEdit) {
+              return (
+                <TouchableOpacity
+                  activeOpacity={0.5}
+                  onPress={() => showModalDelete()}>
+                  <View
+                    style={{
+                      justifyContent: 'center',
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      marginRight: RFPercentage(3),
+                      marginTop: RFPercentage(0.4),
+                    }}>
+                    {/* <IconTemp name="arrow-left" size={Size.iconSizeMedium} /> */}
+                    <Delete
+                      width={RFPercentage(2.5)}
+                      height={RFPercentage(2.5)}
+                      fill={Colors.semanticDangerLight}
+                    />
+                  </View>
+                </TouchableOpacity>
+              );
+            } else {
+              return <></>;
+            }
           }}
         />
         {/* <TouchableWithoutFeedback onPress={handlePressOutside}> */}
@@ -1977,7 +2089,7 @@ export const CreateProject = ({navigation, route}: Props) => {
                 <CustomButton
                   backgroundColor={'white'}
                   outlineColor={'black'}
-                  fontColor='black'
+                  fontColor="black"
                   label={'Volver'}
                   onPress={handlePrevStep}
                 />
@@ -2037,6 +2149,17 @@ export const CreateProject = ({navigation, route}: Props) => {
               solicitud al administrador.
               Una vez el administrador acepte, se agregará la organización al proyecto
               "
+              helper={false}
+            />
+
+            <DeleteModal
+              visible={deleteModal}
+              hideModal={hideModalDelete}
+              onPress={() => {onDeleteProject()}}
+              size={RFPercentage(4)}
+              color={Colors.semanticWarningDark}
+              label="¿Desea borrar el proyecto?"
+              subLabel=' Una vez borrado no podrá recuperarse'
               helper={false}
             />
           </ScrollView>
@@ -2115,6 +2238,29 @@ export const CreateProject = ({navigation, route}: Props) => {
                   ); //aquí poner el plus
                 }}
               />
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  marginTop: '3%',
+                  marginHorizontal: widthPercentageToDP(8),
+                  alignContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <TouchableOpacity
+                  onPress={() => {
+                    setUserCategories([]);
+                  }}>
+                  <Text style={{color: Colors.primaryLigth}}>Limpiar todo</Text>
+                </TouchableOpacity>
+                <View style={{width: widthPercentageToDP(20)}}>
+                  <CustomButton
+                    backgroundColor={Colors.primaryLigth}
+                    label={'Aplicar'}
+                    onPress={() => setShowCategoryList(false)}
+                  />
+                </View>
+              </View>
             </View>
           )}
           {showAnswerTypeList && (

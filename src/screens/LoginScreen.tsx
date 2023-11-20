@@ -38,8 +38,11 @@ import {CustomButtonOutline} from '../components/utility/CustomButtonOutline';
 import {GeometryForms} from '../components/utility/GeometryForms';
 import {ForgotPasswordTemplate} from '../components/screen_components/Authentication/ForgotPasswordTemplate';
 import {Spinner} from '../components/utility/Spinner';
-import { heightPercentageToDP, widthPercentageToDP } from 'react-native-responsive-screen';
-import { SaveProyectModal } from '../components/utility/Modals';
+import {
+  heightPercentageToDP,
+  widthPercentageToDP,
+} from 'react-native-responsive-screen';
+import {SaveProyectModal} from '../components/utility/Modals';
 import Toast from 'react-native-toast-message';
 
 interface Props extends StackScreenProps<any, any> {}
@@ -48,7 +51,8 @@ export const LoginScreen = ({navigation, route}: Props) => {
   //#region VARIABLES
 
   /** COMÚN */
-  const [nameScreen, setNameScreen] = useState('register');
+  const [nameScreen, setNameScreen] = useState('login');
+  const [numberScreen, setNumberScreen] = useState(1);
   const {signIn, signOut, signUp, errorMessage, removeError, recoveryPass} =
     useContext(AuthContext);
 
@@ -166,7 +170,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
   const loggin = async () => {
     setLoading(true);
     Keyboard.dismiss();
-    console.log(JSON.stringify(form, null, 2))
+    // console.log(JSON.stringify(form, null, 2));
     const state = await signIn({
       correo: form.userName,
       password: form.password,
@@ -223,7 +227,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
       setMailRegisterError(true);
     }
 
-    if(!passvalidate.test(formRegister.password1)){
+    if (!passvalidate.test(formRegister.password1)) {
       valid = false;
       setPassword1Error(true);
       setPassword2Error(true);
@@ -235,7 +239,6 @@ export const LoginScreen = ({navigation, route}: Props) => {
       setPassword2Error(true);
     }
 
-
     Keyboard.dismiss();
 
     if (valid) {
@@ -245,8 +248,8 @@ export const LoginScreen = ({navigation, route}: Props) => {
         password1: password1,
         password2: password2,
       });
-    }else{
-      showModalSave()
+    } else {
+      showModalSave();
     }
   };
 
@@ -291,6 +294,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
   //#region METHODS/ANIMATED-TIMMING
   const onTouchForgetPass = () => {
     setOnTouchBorderWidth(1.5);
+    setNumberScreen(3)
     setTimeout(() => {
       // navigation.replace('ForgotPassword');
       setNameScreen('forgot');
@@ -310,6 +314,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
 
   const onTouchRegister = () => {
     setOnTouchBorderWidth2(1.5);
+    setNumberScreen(2)
     setTimeout(() => {
       // navigation.replace('ForgotPassword');
       setNameScreen('register');
@@ -328,6 +333,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
 
   const onTouchLogin = () => {
     setOnTouchBorderWidth3(1.5);
+    setNumberScreen(1)
     setTimeout(() => {
       // setNameScreen('login');
     }, 160);
@@ -349,879 +355,255 @@ export const LoginScreen = ({navigation, route}: Props) => {
     return <LoadingScreen />;
   }
 
-  const screen = () => {
-    switch (nameScreen) {
-      case 'login':
-        return (
-          <>
-            {/* inputs */}
-            <View>
-              {/* email */}
-              <InputText
-                // isInputText={() => setIsInputText(!isInputText)}
-                label={translate.strings.login_screen[0].mail_input}
-                keyboardType="email-address"
-                multiline={false}
-                numOfLines={1}
-                onChangeText={value => onChange(value, 'userName')}
-              />
-              {false ? (
-                <HelperText
-                  type="error"
-                  visible={true}
-                  style={{
-                    fontSize: FontSize.fontSizeText13,
-                    fontFamily: FontFamily.NotoSansDisplayLight,
-                    color: Colors.semanticWarningDark,
-                    right: '3%',
-                    fontWeight: '600',
-                  }}>
-                  {translate.strings.new_project_screen[0].project_name_helper}
-                </HelperText>
-              ) : (
-                <></>
-              )}
-              {/* password */}
-              <InputText
-                // isInputText={() => setIsInputText(!isInputText)}
-                label={translate.strings.login_screen[0].password_input}
-                inputType={true}
-                multiline={false}
-                numOfLines={1}
-                onChangeText={value => onChange(value, 'password')}
-              />
-              {false ? (
-                <HelperText
-                  type="error"
-                  visible={true}
-                  style={{
-                    fontSize: FontSize.fontSizeText13,
-                    fontFamily: FontFamily.NotoSansDisplayLight,
-                    color: Colors.semanticWarningDark,
-                    right: '3%',
-                    fontWeight: '600',
-                  }}>
-                  {translate.strings.new_project_screen[0].project_name_helper}
-                </HelperText>
-              ) : (
-                <></>
-              )}
-            </View>
-
-            <CustomButton
-              backgroundColor={Colors.secondaryDark}
-              label={translate.strings.login_screen[0].login_button}
-              onPress={() => loggin()}
-            />
-
-            <TouchableOpacity
-              activeOpacity={1}
-              style={{
-                alignSelf: 'flex-end',
-                marginTop: '5%',
-                flexDirection: 'row',
-                borderBottomWidth: onTouchBorderWidth,
-                borderBottomColor: Colors.primaryLigth,
-              }}
-              onPress={() => onTouchForgetPass()}
-              onFocus={() => setOnTouchBorderWidth(0)}>
-              <Text
-                style={{
-                  color: 'black',
-                  fontWeight: '400',
-                  fontFamily: FontFamily.NotoSansDisplayRegular,
-                  fontSize: FontSize.fontSizeText13 / fontScale,
-                }}>
-                {translate.strings.login_screen[0].recovery_password}
-              </Text>
-              <Text
-                style={{
-                  color: Colors.primaryLigth,
-                  fontWeight: '600',
-                  fontFamily: FontFamily.NotoSansDisplaySemiBold,
-                  fontSize: FontSize.fontSizeText13 / fontScale,
-                }}>
-                {'contraseña?'}
-              </Text>
-            </TouchableOpacity>
-
-            {/* loggin buttons */}
-            <View style={styles.loginButtonsContainer}>
-              <CustomButtonOutline
-                backgroundColor="white"
-                fontColor="black"
-                iconLeft="google"
-                label={translate.strings.login_screen[0].loggin_google}
-                onPress={() => logginGoogle()}
-              />
-              <CustomButtonOutline
-                backgroundColor="white"
-                fontColor="black"
-                iconLeft="apple"
-                label={translate.strings.login_screen[0].loggin_apple}
-                onPress={() => console.log()}
-              />
-              <CustomButtonOutline
-                backgroundColor="white"
-                fontColor="black"
-                iconLeft="microsoft"
-                label={translate.strings.login_screen[0].loggin_microsoft}
-                onPress={() => console.log()}
-              />
-            </View>
-
-            {/* divider */}
-            <View
-              style={{
-                flexDirection: 'row',
-                width: '100%',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}>
-              <Divider style={{borderWidth: 0.6, width: '45%'}} />
-              <Text
-                style={{
-                  alignItems: 'center',
-                  fontWeight: 'bold',
-                  color: 'black',
-                }}>
-                o
-              </Text>
-              <Divider style={{borderWidth: 0.6, width: '45%'}} />
-            </View>
-            <View
-              style={{
-                marginHorizontal: '26%',
-                marginTop: '14%',
-                marginBottom: '10%',
-              }}>
-              <CustomButton
-                backgroundColor={Colors.primaryDark}
-                fontFamily={FontFamily.NotoSansDisplayRegular}
-                label={translate.strings.login_screen[0].register}
-                onPress={() =>
-                  // navigation.replace('RegisterScreen')
-                  onTouchRegister()
-                }
-              />
-            </View>
-          </>
-        );
-      case 'register':
-        return (
-          <>
-            {/* contenedor de los inputs */}
-            <View
-              style={{
-                width: '100%',
-                height: 'auto',
-                alignSelf: 'center',
-                // backgroundColor: 'green',
-              }}>
-              {/* name */}
-              <View
-                style={{
-                  width: '100%',
-                  height: 'auto',
-                  flexDirection: 'row',
-                }}>
-                <View
-                  style={{
-                    left: '-5%',
-                    top: '50%',
-                    alignSelf: 'center',
-                    justifyContent: 'center',
-                    position: 'absolute',
-                  }}>
-                  {/* primero si se ve o si no ( si el usuario ha pinchado en el input ) y luego si está bien o mal  */}
-                  {false ? (
-                    <GeometryForms
-                      name="circle-fill"
-                      size={Size.iconSizeExtraMin}
-                      color={Colors.semanticSuccessLight}
-                    />
-                  ) : (
-                    <></>
-                  )}
-                </View>
-                <InputText
-                  label={translate.strings.register_screen[0].user_name_input}
-                  keyboardType="email-address"
-                  multiline={false}
-                  numOfLines={1}
-                  onChangeText={value => console.log(value)}
-                />
-              </View>
-              {false ? (
-                <HelperText
-                  type="error"
-                  visible={true}
-                  style={{
-                    fontSize: FontSize.fontSizeText13 / fontScale,
-                    fontFamily: FontFamily.NotoSansDisplayLight,
-                    color: Colors.semanticWarningDark,
-                    right: '3%',
-                    fontWeight: '600',
-                  }}>
-                  {translate.strings.new_project_screen[0].project_name_helper}
-                </HelperText>
-              ) : (
-                <></>
-              )}
-
-              {/* email */}
-              <View
-                style={{
-                  width: '100%',
-                  height: 'auto',
-                  flexDirection: 'row',
-                }}>
-                <View
-                  style={{
-                    left: '-5%',
-                    top: '50%',
-                    alignSelf: 'center',
-                    justifyContent: 'center',
-                    position: 'absolute',
-                  }}>
-                  {false ? (
-                    <GeometryForms
-                      name="circle-fill"
-                      size={Size.iconSizeExtraMin}
-                      color={Colors.semanticSuccessLight}
-                    />
-                  ) : (
-                    <></>
-                  )}
-                </View>
-                <InputText
-                  label={translate.strings.register_screen[0].email_input}
-                  keyboardType="email-address"
-                  multiline={false}
-                  numOfLines={1}
-                  onChangeText={value => console.log(value)}
-                />
-              </View>
-              {false ? (
-                <HelperText
-                  type="error"
-                  visible={true}
-                  style={{
-                    fontSize: FontSize.fontSizeText13 / fontScale,
-                    fontFamily: FontFamily.NotoSansDisplayLight,
-                    color: Colors.semanticWarningDark,
-                    right: '3%',
-                    fontWeight: '600',
-                  }}>
-                  {translate.strings.new_project_screen[0].project_name_helper}
-                </HelperText>
-              ) : (
-                <></>
-              )}
-              {/* password */}
-              <View
-                style={{
-                  width: '100%',
-                  height: 'auto',
-                  flexDirection: 'row',
-                }}>
-                <View
-                  style={{
-                    left: '-5%',
-                    top: '50%',
-                    alignSelf: 'center',
-                    justifyContent: 'center',
-                    position: 'absolute',
-                  }}>
-                  {false ? (
-                    <GeometryForms
-                      name="circle-fill"
-                      size={Size.iconSizeExtraMin}
-                      color={Colors.semanticSuccessLight}
-                    />
-                  ) : (
-                    <></>
-                  )}
-                </View>
-                <InputText
-                  // isInputText={() => setIsInputText(!isInputText)}
-                  label={translate.strings.register_screen[0].password1_input}
-                  inputType={true}
-                  multiline={false}
-                  numOfLines={1}
-                  onChangeText={value => console.log(value)}
-                />
-              </View>
-              {false ? (
-                <HelperText
-                  type="error"
-                  visible={true}
-                  style={{
-                    fontSize: FontSize.fontSizeText13 / fontScale,
-                    fontFamily: FontFamily.NotoSansDisplayLight,
-                    color: Colors.semanticWarningDark,
-                    right: '3%',
-                    fontWeight: '600',
-                  }}>
-                  {translate.strings.new_project_screen[0].project_name_helper}
-                </HelperText>
-              ) : (
-                <></>
-              )}
-              {/*confirm password */}
-              <View
-                style={{
-                  width: '100%',
-                  height: 'auto',
-                  flexDirection: 'row',
-                }}>
-                <View
-                  style={{
-                    left: '-5%',
-                    top: '50%',
-                    alignSelf: 'center',
-                    justifyContent: 'center',
-                    position: 'absolute',
-                  }}>
-                  {false ? (
-                    <GeometryForms
-                      name="circle-fill"
-                      size={Size.iconSizeExtraMin}
-                      color={Colors.semanticSuccessLight}
-                    />
-                  ) : (
-                    <></>
-                  )}
-                </View>
-                <InputText
-                  // isInputText={() => setIsInputText(!isInputText)}
-                  label={translate.strings.register_screen[0].password2_input}
-                  inputType={true}
-                  multiline={false}
-                  numOfLines={1}
-                  onChangeText={value => console.log(value)}
-                />
-              </View>
-              {false ? (
-                <HelperText
-                  type="error"
-                  visible={true}
-                  style={{
-                    fontSize: FontSize.fontSizeText13 / fontScale,
-                    fontFamily: FontFamily.NotoSansDisplayLight,
-                    color: Colors.semanticWarningDark,
-                    right: '3%',
-                    fontWeight: '600',
-                  }}>
-                  {translate.strings.new_project_screen[0].project_name_helper}
-                </HelperText>
-              ) : (
-                <></>
-              )}
-            </View>
-
-            {/* register button */}
-            <CustomButton
-              backgroundColor={Colors.secondaryDark}
-              label={translate.strings.register_screen[0].title}
-              onPress={() => console.log()}
-            />
-            {/* divider */}
-            <View
-              style={{
-                flexDirection: 'row',
-                width: '100%',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginTop: '10%',
-              }}>
-              <Divider style={{borderWidth: 0.6, width: '45%'}} />
-              <Text
-                style={{
-                  alignItems: 'center',
-                  fontWeight: 'bold',
-                  color: 'black',
-                }}>
-                o
-              </Text>
-              <Divider style={{borderWidth: 0.6, width: '45%'}} />
-            </View>
-
-            {/* loggin buttons */}
-            <View style={styles.loginButtonsContainer}>
-              <CustomButtonOutline
-                backgroundColor="white"
-                fontColor="black"
-                iconLeft="google"
-                label={translate.strings.register_screen[0].register_google}
-                onPress={() => console.log()}
-              />
-              <CustomButtonOutline
-                backgroundColor="white"
-                fontColor="black"
-                iconLeft="apple"
-                label={translate.strings.register_screen[0].register_apple}
-                onPress={() => console.log()}
-              />
-              <CustomButtonOutline
-                backgroundColor="white"
-                fontColor="black"
-                iconLeft="microsoft"
-                label={translate.strings.register_screen[0].register_microsoft}
-                onPress={() => console.log()}
-              />
-            </View>
-
-            {/* back */}
-            <View style={{marginHorizontal: '26%', marginTop: '1%'}}>
-              <TouchableOpacity
-                activeOpacity={1}
-                style={{
-                  alignSelf: 'center',
-                  flexDirection: 'row',
-                  borderBottomWidth: onTouchBorderWidth2,
-                  borderBottomColor: Colors.primaryLigth,
-                }}
-                onPress={() => onTouchLogin()}
-                onFocus={() => setOnTouchBorderWidth2(0)}>
-                <Text
-                  style={{
-                    color: 'black',
-                    fontWeight: '400',
-                    fontFamily: FontFamily.NotoSansDisplayRegular,
-                    fontSize: FontSize.fontSizeText13 / fontScale,
-                  }}>
-                  {translate.strings.register_screen[0].have_account}
-                </Text>
-                <Text
-                  style={{
-                    color: Colors.primaryLigth,
-                    fontWeight: '600',
-                    fontFamily: FontFamily.NotoSansDisplaySemiBold,
-                    fontSize: FontSize.fontSizeText13 / fontScale,
-                  }}>
-                  {translate.strings.register_screen[0].enter}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </>
-        );
-      case 'forgot':
-        return (
-          <>
-            {/* info */}
-            <View
-              style={{
-                justifyContent: 'center',
-                alignSelf: 'center',
-                marginTop: '7%',
-                marginBottom: '8%',
-              }}>
-              <Text
-                style={{
-                  fontFamily: FontFamily.NotoSansDisplayMedium,
-                  fontSize: FontSize.fontSizeText18 / fontScale,
-                  color: 'black',
-                  textAlignVertical: 'center',
-                  textAlign: 'center',
-                  marginBottom: '1%',
-                }}>
-                {translate.strings.recovery_screen[0].title_info}
-              </Text>
-              <Text
-                style={{
-                  fontFamily: FontFamily.NotoSansDisplayLight,
-                  fontSize: FontSize.fontSizeText14 / fontScale,
-                  color: 'black',
-                  marginHorizontal: '13%',
-                  marginTop: '7%',
-                  textAlignVertical: 'center',
-                  textAlign: 'center',
-                }}>
-                {translate.strings.recovery_screen[0].content_info}
-              </Text>
-            </View>
-            <View>
-              {/* email */}
-              <InputText
-                // isInputText={() => setIsInputText(!isInputText)}
-                label={translate.strings.login_screen[0].mail_input}
-                keyboardType="email-address"
-                multiline={false}
-                numOfLines={1}
-                onChangeText={value => onChangeEmailForgot(value)}
-              />
-            </View>
-            {true ? (
-              <HelperText
-                type="error"
-                visible={true}
-                style={{
-                  fontSize: FontSize.fontSizeText13,
-                  fontFamily: FontFamily.NotoSansDisplayLight,
-                  color: Colors.semanticWarningDark,
-                  right: '3%',
-                  fontWeight: '600',
-                }}>
-                {translate.strings.new_project_screen[0].project_name_helper}
-              </HelperText>
-            ) : (
-              <></>
-            )}
-            <View
-              style={{
-                marginBottom: '15.5%',
-              }}>
-              <CustomButton
-                backgroundColor={Colors.secondaryDark}
-                label={translate.strings.recovery_screen[0].send_email}
-                onPress={() => console.log()}
-              />
-            </View>
-            {/* divider */}
-            <View
-              style={{
-                flexDirection: 'row',
-                width: '100%',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                // marginTop: '10%',
-              }}>
-              <Divider style={{borderWidth: 0.6, width: '45%'}} />
-              <Text
-                style={{
-                  alignItems: 'center',
-                  fontWeight: 'bold',
-                  color: 'black',
-                }}>
-                o
-              </Text>
-              <Divider style={{borderWidth: 0.6, width: '45%'}} />
-            </View>
-            {/* button create */}
-            <View
-              style={{
-                marginHorizontal: '26%',
-                marginTop: '13%',
-                marginBottom: '10%',
-              }}>
-              <CustomButton
-                backgroundColor={Colors.primaryDark}
-                fontFamily={FontFamily.NotoSansDisplayRegular}
-                label={translate.strings.recovery_screen[0].create_account}
-                onPress={() => navigation.replace('LoginScreen')}
-              />
-            </View>
-
-            {/* back */}
-            <View style={{marginHorizontal: '26%', marginBottom: '10%'}}>
-              <TouchableOpacity
-                activeOpacity={1}
-                style={{
-                  alignSelf: 'center',
-                  flexDirection: 'row',
-                  borderBottomWidth: onTouchBorderWidth3,
-                  borderBottomColor: Colors.primaryLigth,
-                }}
-                onPress={() => onTouchLogin()}
-                onFocus={() => setOnTouchBorderWidth3(0)}>
-                <Text
-                  style={{
-                    color: Colors.primaryLigth,
-                    fontWeight: '600',
-                    fontFamily: FontFamily.NotoSansDisplaySemiBold,
-                    fontSize: FontSize.fontSizeText13,
-                  }}>
-                  {translate.strings.recovery_screen[0].back}
-                </Text>
-                <Text
-                  style={{
-                    color: 'black',
-                    fontWeight: '400',
-                    fontFamily: FontFamily.NotoSansDisplayRegular,
-                    fontSize: FontSize.fontSizeText13,
-                  }}>
-                  {translate.strings.recovery_screen[0].session}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </>
-        );
-
-      default:
-        return <h1>No project match</h1>;
-    }
-  };
-
   const screenHorizontal = () => {
     switch (nameScreen) {
       case 'register':
         return (
           // <ScrollView style={{width: '100%', flexGrow: 1}}>
-            <View style={{marginHorizontal: '9%', left: '0.7%'}}>
-              <View style={{}}>
-                {/* contenedor de los inputs */}
+          <View style={{marginHorizontal: '9%', left: '0.7%'}}>
+            <View style={{}}>
+              {/* contenedor de los inputs */}
+              <View
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                  alignSelf: 'center',
+                  justifyContent: 'center',
+                }}>
+                {/* name */}
                 <View
                   style={{
                     width: '100%',
                     height: 'auto',
-                    alignSelf: 'center',
-                    justifyContent: 'center',
+                    flexDirection: 'row',
+                    // flex: 1
                   }}>
-                  {/* name */}
                   <View
                     style={{
-                      width: '100%',
-                      height: 'auto',
-                      flexDirection: 'row',
-                      // flex: 1
+                      left: '-5%',
+                      top: '50%',
+                      alignSelf: 'center',
+                      justifyContent: 'center',
+                      position: 'absolute',
                     }}>
-                    <View
-                      style={{
-                        left: '-5%',
-                        top: '50%',
-                        alignSelf: 'center',
-                        justifyContent: 'center',
-                        position: 'absolute',
-                      }}>
-                      {/* primero si se ve o si no ( si el usuario ha pinchado en el input ) y luego si está bien o mal  */}
-                      {false ? (
-                        <GeometryForms
-                          name="circle-fill"
-                          size={Size.iconSizeExtraMin}
-                          color={Colors.semanticSuccessLight}
-                        />
-                      ) : (
-                        <></>
-                      )}
-                    </View>
-                    <InputText
-                      label={
-                        translate.strings.register_screen[0].user_name_input
-                      }
-                      keyboardType="email-address"
-                      multiline={false}
-                      numOfLines={1}
-                      onChangeText={value =>
-                        onChangeRegister(value, 'username')
-                      }
-                    />
+                    {/* primero si se ve o si no ( si el usuario ha pinchado en el input ) y luego si está bien o mal  */}
+                    {false ? (
+                      <GeometryForms
+                        name="circle-fill"
+                        size={Size.iconSizeExtraMin}
+                        color={Colors.semanticSuccessLight}
+                      />
+                    ) : (
+                      <></>
+                    )}
                   </View>
-                  {usernameError ? (
-                    <HelperText
-                      type="error"
-                      visible={true}
-                      style={{
-                        fontSize: FontSize.fontSizeText13 / fontScale,
-                        fontFamily: FontFamily.NotoSansDisplayLight,
-                        color: Colors.semanticWarningDark,
-                        right: '3%',
-                        fontWeight: '600',
-                      }}>
-                      {
-                        'Nombre de usuario obligatorio'
-                      }
-                    </HelperText>
-                  ) : (
-                    <></>
-                  )}
-
-                  {/* email */}
-                  <View
-                    style={{
-                      width: '100%',
-                      height: 'auto',
-                      flexDirection: 'row',
-                    }}>
-                    <View
-                      style={{
-                        left: '-5%',
-                        top: '50%',
-                        alignSelf: 'center',
-                        justifyContent: 'center',
-                        position: 'absolute',
-                      }}>
-                      {false ? (
-                        <GeometryForms
-                          name="circle-fill"
-                          size={Size.iconSizeExtraMin}
-                          color={Colors.semanticSuccessLight}
-                        />
-                      ) : (
-                        <></>
-                      )}
-                    </View>
-                    <InputText
-                      label={translate.strings.register_screen[0].email_input}
-                      keyboardType="email-address"
-                      multiline={false}
-                      numOfLines={1}
-                      onChangeText={value => onChangeRegister(value, 'email')}
-                    />
-                  </View>
-                  {mailRegisterError ? (
-                    <HelperText
-                      type="error"
-                      visible={true}
-                      style={{
-                        fontSize: FontSize.fontSizeText13 / fontScale,
-                        fontFamily: FontFamily.NotoSansDisplayLight,
-                        color: Colors.semanticWarningDark,
-                        right: '3%',
-                        fontWeight: '600',
-                      }}>
-                      {
-                        'Correo electrónico invalido'
-                      }
-                    </HelperText>
-                  ) : (
-                    <></>
-                  )}
-                  {/* password */}
-                  <View
-                    style={{
-                      width: '100%',
-                      height: 'auto',
-                      flexDirection: 'row',
-                    }}>
-                    <View
-                      style={{
-                        left: '-5%',
-                        top: '50%',
-                        alignSelf: 'center',
-                        justifyContent: 'center',
-                        position: 'absolute',
-                      }}>
-                      {false ? (
-                        <GeometryForms
-                          name="circle-fill"
-                          size={Size.iconSizeExtraMin}
-                          color={Colors.semanticSuccessLight}
-                        />
-                      ) : (
-                        <></>
-                      )}
-                    </View>
-                    <InputText
-                      // isInputText={() => setIsInputText(!isInputText)}
-                      label={
-                        translate.strings.register_screen[0].password1_input
-                      }
-                      inputType={true}
-                      multiline={false}
-                      numOfLines={1}
-                      isSecureText={true}
-                      onChangeText={value =>
-                        onChangeRegister(value, 'password1')
-                      }
-                    />
-                  </View>
-                  {password1Error ? (
-                    <HelperText
-                      type="error"
-                      visible={true}
-                      style={{
-                        fontSize: FontSize.fontSizeText13 / fontScale,
-                        fontFamily: FontFamily.NotoSansDisplayLight,
-                        color: Colors.semanticWarningDark,
-                        right: '3%',
-                        fontWeight: '600',
-                      }}>
-                      {
-                        'La contraseña ha de tener 8 digitos alfanumericos'
-                      }
-                    </HelperText>
-                  ) : (
-                    <></>
-                  )}
-                  {/*confirm password */}
-                  <View
-                    style={{
-                      width: '100%',
-                      height: 'auto',
-                      flexDirection: 'row',
-                    }}>
-                    <View
-                      style={{
-                        left: '-5%',
-                        top: '50%',
-                        alignSelf: 'center',
-                        justifyContent: 'center',
-                        position: 'absolute',
-                      }}>
-                      {false ? (
-                        <GeometryForms
-                          name="circle-fill"
-                          size={Size.iconSizeExtraMin}
-                          color={Colors.semanticSuccessLight}
-                        />
-                      ) : (
-                        <></>
-                      )}
-                    </View>
-                    <InputText
-                      // isInputText={() => setIsInputText(!isInputText)}
-                      label={
-                        translate.strings.register_screen[0].password2_input
-                      }
-                      inputType={true}
-                      multiline={false}
-                      numOfLines={1}
-                      isSecureText={true}
-                      onChangeText={value =>
-                        onChangeRegister(value, 'password2')
-                      }
-                    />
-                  </View>
-                  {password2Error ? (
-                    <HelperText
-                      type="error"
-                      visible={true}
-                      style={{
-                        fontSize: FontSize.fontSizeText13 / fontScale,
-                        fontFamily: FontFamily.NotoSansDisplayLight,
-                        color: Colors.semanticWarningDark,
-                        right: '3%',
-                        fontWeight: '600',
-                      }}>
-                      {
-                        'Las contraseñas no coinciden'
-                      }
-                    </HelperText>
-                  ) : (
-                    <></>
-                  )}
+                  <InputText
+                    label={translate.strings.register_screen[0].user_name_input}
+                    keyboardType="email-address"
+                    multiline={false}
+                    numOfLines={1}
+                    onChangeText={value => onChangeRegister(value, 'username')}
+                  />
                 </View>
+                {usernameError ? (
+                  <HelperText
+                    type="error"
+                    visible={true}
+                    style={{
+                      fontSize: FontSize.fontSizeText13 / fontScale,
+                      fontFamily: FontFamily.NotoSansDisplayLight,
+                      color: Colors.semanticWarningDark,
+                      right: '3%',
+                      fontWeight: '600',
+                    }}>
+                    {'Nombre de usuario obligatorio'}
+                  </HelperText>
+                ) : (
+                  <></>
+                )}
 
-                {/* register button */}
-                <CustomButton
-                  backgroundColor={Colors.secondaryDark}
-                  label={translate.strings.register_screen[0].title}
-                  onPress={() => onRegister()}
-                />
-                {/* divider */}
+                {/* email */}
                 <View
                   style={{
-                    flexDirection: 'row',
                     width: '100%',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginTop: '10%',
+                    height: 'auto',
+                    flexDirection: 'row',
                   }}>
-                  <Divider style={{borderWidth: 0.6, width: '45%'}} />
-                  <Text
+                  <View
                     style={{
-                      alignItems: 'center',
-                      fontWeight: 'bold',
-                      color: 'black',
+                      left: '-5%',
+                      top: '50%',
+                      alignSelf: 'center',
+                      justifyContent: 'center',
+                      position: 'absolute',
                     }}>
-                    o
-                  </Text>
-                  <Divider style={{borderWidth: 0.6, width: '45%'}} />
+                    {false ? (
+                      <GeometryForms
+                        name="circle-fill"
+                        size={Size.iconSizeExtraMin}
+                        color={Colors.semanticSuccessLight}
+                      />
+                    ) : (
+                      <></>
+                    )}
+                  </View>
+                  <InputText
+                    label={translate.strings.register_screen[0].email_input}
+                    keyboardType="email-address"
+                    multiline={false}
+                    numOfLines={1}
+                    onChangeText={value => onChangeRegister(value, 'email')}
+                  />
                 </View>
+                {mailRegisterError ? (
+                  <HelperText
+                    type="error"
+                    visible={true}
+                    style={{
+                      fontSize: FontSize.fontSizeText13 / fontScale,
+                      fontFamily: FontFamily.NotoSansDisplayLight,
+                      color: Colors.semanticWarningDark,
+                      right: '3%',
+                      fontWeight: '600',
+                    }}>
+                    {'Correo electrónico invalido'}
+                  </HelperText>
+                ) : (
+                  <></>
+                )}
+                {/* password */}
+                <View
+                  style={{
+                    width: '100%',
+                    height: 'auto',
+                    flexDirection: 'row',
+                  }}>
+                  <View
+                    style={{
+                      left: '-5%',
+                      top: '50%',
+                      alignSelf: 'center',
+                      justifyContent: 'center',
+                      position: 'absolute',
+                    }}>
+                    {false ? (
+                      <GeometryForms
+                        name="circle-fill"
+                        size={Size.iconSizeExtraMin}
+                        color={Colors.semanticSuccessLight}
+                      />
+                    ) : (
+                      <></>
+                    )}
+                  </View>
+                  <InputText
+                    // isInputText={() => setIsInputText(!isInputText)}
+                    label={translate.strings.register_screen[0].password1_input}
+                    inputType={true}
+                    multiline={false}
+                    numOfLines={1}
+                    isSecureText={true}
+                    onChangeText={value => onChangeRegister(value, 'password1')}
+                  />
+                </View>
+                {password1Error ? (
+                  <HelperText
+                    type="error"
+                    visible={true}
+                    style={{
+                      fontSize: FontSize.fontSizeText13 / fontScale,
+                      fontFamily: FontFamily.NotoSansDisplayLight,
+                      color: Colors.semanticWarningDark,
+                      right: '3%',
+                      fontWeight: '600',
+                    }}>
+                    {'La contraseña ha de tener 8 digitos alfanumericos'}
+                  </HelperText>
+                ) : (
+                  <></>
+                )}
+                {/*confirm password */}
+                <View
+                  style={{
+                    width: '100%',
+                    height: 'auto',
+                    flexDirection: 'row',
+                  }}>
+                  <View
+                    style={{
+                      left: '-5%',
+                      top: '50%',
+                      alignSelf: 'center',
+                      justifyContent: 'center',
+                      position: 'absolute',
+                    }}>
+                    {false ? (
+                      <GeometryForms
+                        name="circle-fill"
+                        size={Size.iconSizeExtraMin}
+                        color={Colors.semanticSuccessLight}
+                      />
+                    ) : (
+                      <></>
+                    )}
+                  </View>
+                  <InputText
+                    // isInputText={() => setIsInputText(!isInputText)}
+                    label={translate.strings.register_screen[0].password2_input}
+                    inputType={true}
+                    multiline={false}
+                    numOfLines={1}
+                    isSecureText={true}
+                    onChangeText={value => onChangeRegister(value, 'password2')}
+                  />
+                </View>
+                {password2Error ? (
+                  <HelperText
+                    type="error"
+                    visible={true}
+                    style={{
+                      fontSize: FontSize.fontSizeText13 / fontScale,
+                      fontFamily: FontFamily.NotoSansDisplayLight,
+                      color: Colors.semanticWarningDark,
+                      right: '3%',
+                      fontWeight: '600',
+                    }}>
+                    {'Las contraseñas no coinciden'}
+                  </HelperText>
+                ) : (
+                  <></>
+                )}
+              </View>
 
-                {/* loggin buttons */}
-                {/* <View style={styles.loginButtonsContainer}>
+              {/* register button */}
+              <CustomButton
+                backgroundColor={Colors.secondaryDark}
+                label={translate.strings.register_screen[0].register_button}
+                onPress={() => onRegister()}
+              />
+              {/* divider */}
+              <View
+                style={{
+                  flexDirection: 'row',
+                  width: '100%',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginTop: '10%',
+                }}>
+                <Divider style={{borderWidth: 0.6, width: '45%'}} />
+                <Text
+                  style={{
+                    alignItems: 'center',
+                    fontWeight: 'bold',
+                    color: 'black',
+                  }}>
+                  o
+                </Text>
+                <Divider style={{borderWidth: 0.6, width: '45%'}} />
+              </View>
+
+              {/* loggin buttons */}
+              {/* <View style={styles.loginButtonsContainer}>
                   <CustomButtonOutline
                     backgroundColor="white"
                     fontColor="black"
@@ -1247,40 +629,40 @@ export const LoginScreen = ({navigation, route}: Props) => {
                   />
                 </View> */}
 
-                {/* back */}
-                <View style={{marginHorizontal: '26%', marginTop: '1%'}}>
-                  <TouchableOpacity
-                    activeOpacity={1}
+              {/* back */}
+              <View style={{marginHorizontal: '26%', marginTop: '10%'}}>
+                <TouchableOpacity
+                  activeOpacity={1}
+                  style={{
+                    alignSelf: 'center',
+                    flexDirection: 'row',
+                    borderBottomWidth: onTouchBorderWidth2,
+                    borderBottomColor: Colors.primaryLigth,
+                  }}
+                  onPress={() => onTouchLogin()}
+                  onFocus={() => setOnTouchBorderWidth2(0)}>
+                  <Text
                     style={{
-                      alignSelf: 'center',
-                      flexDirection: 'row',
-                      borderBottomWidth: onTouchBorderWidth2,
-                      borderBottomColor: Colors.primaryLigth,
-                    }}
-                    onPress={() => onTouchLogin()}
-                    onFocus={() => setOnTouchBorderWidth2(0)}>
-                    <Text
-                      style={{
-                        color: 'black',
-                        fontWeight: '400',
-                        fontFamily: FontFamily.NotoSansDisplayRegular,
-                        fontSize: FontSize.fontSizeText13 / fontScale,
-                      }}>
-                      {translate.strings.register_screen[0].have_account}
-                    </Text>
-                    <Text
-                      style={{
-                        color: Colors.primaryLigth,
-                        fontWeight: '600',
-                        fontFamily: FontFamily.NotoSansDisplaySemiBold,
-                        fontSize: FontSize.fontSizeText13 / fontScale,
-                      }}>
-                      {translate.strings.register_screen[0].enter}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
+                      color: 'black',
+                      fontWeight: '400',
+                      fontFamily: FontFamily.NotoSansDisplayRegular,
+                      fontSize: FontSize.fontSizeText13 / fontScale,
+                    }}>
+                    {translate.strings.register_screen[0].have_account}
+                  </Text>
+                  <Text
+                    style={{
+                      color: Colors.primaryLigth,
+                      fontWeight: '600',
+                      fontFamily: FontFamily.NotoSansDisplaySemiBold,
+                      fontSize: FontSize.fontSizeText13 / fontScale,
+                    }}>
+                    {translate.strings.register_screen[0].enter}
+                  </Text>
+                </TouchableOpacity>
               </View>
             </View>
+          </View>
           // </ScrollView>
         );
       case 'forgot':
@@ -1380,7 +762,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
               style={{
                 marginHorizontal: '26%',
                 marginTop: '13%',
-                marginBottom: '10%',
+                marginBottom: '14%',
               }}>
               <CustomButton
                 backgroundColor={Colors.primaryDark}
@@ -1426,7 +808,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
         );
 
       default:
-        return <h1>No project match</h1>;
+        return <></>;
     }
   };
 
@@ -1435,185 +817,189 @@ export const LoginScreen = ({navigation, route}: Props) => {
       {/* <ScrollView
         contentContainerStyle={{flexGrow: 1}}
         keyboardShouldPersistTaps="handled"> */}
-        {/* Ocultar la barra de estado */}
-        <StatusBar hidden />
-        <KeyboardAvoidingView style={styles.parent}>
-          {/* contenedor de formas geometricas y titulo */}
-          <SafeAreaView style={styles.child1}>
+      {/* Ocultar la barra de estado */}
+      <StatusBar hidden />
+      <KeyboardAvoidingView style={styles.parent}>
+        {/* contenedor de formas geometricas y titulo */}
+        <SafeAreaView style={styles.child1}>
+          <View
+            style={{
+              position: 'absolute',
+              zIndex: 999,
+              bottom: -5,
+              backgroundColor: 'white',
+            }}>
+            <Image
+              style={styles.titleImage}
+              source={require('../assets/backgrounds/Portada.png')}
+            />
             <View
               style={{
                 position: 'absolute',
-                zIndex: 999,
-                bottom: -5,
-                backgroundColor: 'white',
+                justifyContent: 'center',
+                bottom: '30%',
+                alignSelf: 'center',
               }}>
-              <Image
-                style={styles.titleImage}
-                source={require('../assets/backgrounds/Portada.png')}
-              />
-              <View
+              <Text
                 style={{
-                  position: 'absolute',
-                  justifyContent: 'center',
-                  bottom: '30%',
-                  alignSelf: 'center',
+                  fontFamily: FontFamily.NotoSansDisplayMedium,
+                  fontSize: FontSize.fontSizeText18 / fontScale,
+                  color: 'white',
                 }}>
-                <Text
-                  style={{
-                    fontFamily: FontFamily.NotoSansDisplayMedium,
-                    fontSize: FontSize.fontSizeText18 / fontScale,
-                    color: 'white',
-                  }}>
-                  {translate.strings.login_screen[0].subtitle}
-                </Text>
-              </View>
+                {numberScreen === 2
+                  ? translate.strings.login_screen[0].subtitle_register
+                  : numberScreen === 3
+                  ? translate.strings.login_screen[0].subtitle_problems
+                  : translate.strings.login_screen[0].subtitle}
+              </Text>
+            </View>
+            <Animated.View
+              style={{
+                flex: 1,
+                marginVertical: 0,
+                marginHorizontal: RFPercentage(marginHorizontal), //-88
+                backgroundColor: 'transparent',
+                transform: [
+                  {
+                    translateX: spinValue.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0, widthPercentageToDP(-10.4)],
+                    }),
+                  },
+                ],
+              }}>
+              <Wave
+                style={{flex: 1}}
+                H={RFPercentage(6)}
+                waveParams={[
+                  {A: RFPercentage(9), T: RFPercentage(60), fill: '#FFF'},
+                ]}
+                animated={false}
+              />
+            </Animated.View>
+          </View>
+        </SafeAreaView>
+        <ScrollView
+          scrollEnabled={true}
+          disableScrollViewPanResponder={true}
+          showsVerticalScrollIndicator={false}>
+          {/* contenedor de los elementos  */}
+          <View style={styles.child2}>
+            <View style={styles.inputsContainer}>
+              {/* aquí va el contenido */}
               <Animated.View
                 style={{
-                  flex: 1,
-                  marginVertical: 0,
-                  marginHorizontal: RFPercentage(marginHorizontal), //-88
-                  backgroundColor: 'transparent',
+                  flexDirection: 'row',
                   transform: [
                     {
-                      translateX: spinValue.interpolate({
+                      translateX: transitionSpinValue.interpolate({
                         inputRange: [0, 1],
                         outputRange: [0, widthPercentageToDP(-10.4)],
                       }),
                     },
                   ],
                 }}>
-                <Wave
-                  style={{flex: 1}}
-                  H={RFPercentage(6)}
-                  waveParams={[
-                    {A: RFPercentage(9), T: RFPercentage(60), fill: '#FFF'},
-                  ]}
-                  animated={false}
-                />
-              </Animated.View>
-            </View>
-          </SafeAreaView>
-          <ScrollView
-            scrollEnabled={true}
-            disableScrollViewPanResponder={true}
-            showsVerticalScrollIndicator={false}>
-            {/* contenedor de los elementos  */}
-            <View style={styles.child2}>
-              <View style={styles.inputsContainer}>
-                {/* aquí va el contenido */}
-                <Animated.View
-                  style={{
-                    flexDirection: 'row',
-                    transform: [
-                      {
-                        translateX: transitionSpinValue.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [0, widthPercentageToDP(-10.4)],
-                        }),
-                      },
-                    ],
-                  }}>
-                  <View style={{marginHorizontal: '9%'}}>
-                    {/* inputs */}
-                    <View>
-                      {/* email */}
-                      <InputText
-                        // isInputText={() => setIsInputText(!isInputText)}
-                        label={translate.strings.login_screen[0].mail_input}
-                        keyboardType="email-address"
-                        multiline={false}
-                        numOfLines={1}
-                        onChangeText={value => onChange(value, 'userName')}
-                      />
-                      {false ? (
-                        <HelperText
-                          type="error"
-                          visible={true}
-                          style={{
-                            fontSize: FontSize.fontSizeText13,
-                            fontFamily: FontFamily.NotoSansDisplayLight,
-                            color: Colors.semanticWarningDark,
-                            right: '3%',
-                            fontWeight: '600',
-                          }}>
-                          {
-                            translate.strings.new_project_screen[0]
-                              .project_name_helper
-                          }
-                        </HelperText>
-                      ) : (
-                        <></>
-                      )}
-                      {/* password */}
-                      <InputText
-                        // isInputText={() => setIsInputText(!isInputText)}
-                        label={translate.strings.login_screen[0].password_input}
-                        inputType={true}
-                        multiline={false}
-                        numOfLines={1}
-                        isSecureText={true}
-                        onChangeText={value => onChange(value, 'password')}
-                      />
-                      {false ? (
-                        <HelperText
-                          type="error"
-                          visible={true}
-                          style={{
-                            fontSize: FontSize.fontSizeText13,
-                            fontFamily: FontFamily.NotoSansDisplayLight,
-                            color: Colors.semanticWarningDark,
-                            right: '3%',
-                            fontWeight: '600',
-                          }}>
-                          {
-                            translate.strings.new_project_screen[0]
-                              .project_name_helper
-                          }
-                        </HelperText>
-                      ) : (
-                        <></>
-                      )}
-                    </View>
-
-                    <CustomButton
-                      backgroundColor={Colors.secondaryDark}
-                      label={translate.strings.login_screen[0].login_button}
-                      onPress={() => loggin()}
+                <View style={{marginHorizontal: '9%'}}>
+                  {/* inputs */}
+                  <View>
+                    {/* email */}
+                    <InputText
+                      // isInputText={() => setIsInputText(!isInputText)}
+                      label={translate.strings.login_screen[0].mail_input}
+                      keyboardType="email-address"
+                      multiline={false}
+                      numOfLines={1}
+                      onChangeText={value => onChange(value, 'userName')}
                     />
-
-                    <TouchableOpacity
-                      activeOpacity={1}
-                      style={{
-                        alignSelf: 'flex-end',
-                        marginTop: '5%',
-                        flexDirection: 'row',
-                        borderBottomWidth: onTouchBorderWidth,
-                        borderBottomColor: Colors.primaryLigth,
-                      }}
-                      onPress={() => onTouchForgetPass()}
-                      onFocus={() => setOnTouchBorderWidth(0)}>
-                      <Text
+                    {false ? (
+                      <HelperText
+                        type="error"
+                        visible={true}
                         style={{
-                          color: 'black',
-                          fontWeight: '400',
-                          fontFamily: FontFamily.NotoSansDisplayRegular,
-                          fontSize: FontSize.fontSizeText13 / fontScale,
-                        }}>
-                        {translate.strings.login_screen[0].recovery_password}
-                      </Text>
-                      <Text
-                        style={{
-                          color: Colors.primaryLigth,
+                          fontSize: FontSize.fontSizeText13,
+                          fontFamily: FontFamily.NotoSansDisplayLight,
+                          color: Colors.semanticWarningDark,
+                          right: '3%',
                           fontWeight: '600',
-                          fontFamily: FontFamily.NotoSansDisplaySemiBold,
-                          fontSize: FontSize.fontSizeText13 / fontScale,
                         }}>
-                        {'contraseña?'}
-                      </Text>
-                    </TouchableOpacity>
+                        {
+                          translate.strings.new_project_screen[0]
+                            .project_name_helper
+                        }
+                      </HelperText>
+                    ) : (
+                      <></>
+                    )}
+                    {/* password */}
+                    <InputText
+                      // isInputText={() => setIsInputText(!isInputText)}
+                      label={translate.strings.login_screen[0].password_input}
+                      inputType={true}
+                      multiline={false}
+                      numOfLines={1}
+                      isSecureText={true}
+                      onChangeText={value => onChange(value, 'password')}
+                    />
+                    {false ? (
+                      <HelperText
+                        type="error"
+                        visible={true}
+                        style={{
+                          fontSize: FontSize.fontSizeText13,
+                          fontFamily: FontFamily.NotoSansDisplayLight,
+                          color: Colors.semanticWarningDark,
+                          right: '3%',
+                          fontWeight: '600',
+                        }}>
+                        {
+                          translate.strings.new_project_screen[0]
+                            .project_name_helper
+                        }
+                      </HelperText>
+                    ) : (
+                      <></>
+                    )}
+                  </View>
 
-                    {/* loggin buttons */}
-                    {/* <View style={styles.loginButtonsContainer}>
+                  <CustomButton
+                    backgroundColor={Colors.secondaryDark}
+                    label={translate.strings.login_screen[0].login_button}
+                    onPress={() => loggin()}
+                  />
+
+                  <TouchableOpacity
+                    activeOpacity={1}
+                    style={{
+                      alignSelf: 'flex-end',
+                      marginTop: '5%',
+                      flexDirection: 'row',
+                      borderBottomWidth: onTouchBorderWidth,
+                      borderBottomColor: Colors.primaryLigth,
+                    }}
+                    onPress={() => onTouchForgetPass()}
+                    onFocus={() => setOnTouchBorderWidth(0)}>
+                    <Text
+                      style={{
+                        color: 'black',
+                        fontWeight: '400',
+                        fontFamily: FontFamily.NotoSansDisplayRegular,
+                        fontSize: FontSize.fontSizeText13 / fontScale,
+                      }}>
+                      {translate.strings.login_screen[0].recovery_password}
+                    </Text>
+                    <Text
+                      style={{
+                        color: Colors.primaryLigth,
+                        fontWeight: '600',
+                        fontFamily: FontFamily.NotoSansDisplaySemiBold,
+                        fontSize: FontSize.fontSizeText13 / fontScale,
+                      }}>
+                      {'contraseña?'}
+                    </Text>
+                  </TouchableOpacity>
+
+                  {/* loggin buttons */}
+                  {/* <View style={styles.loginButtonsContainer}>
                       <CustomButtonOutline
                         backgroundColor="white"
                         fontColor="black"
@@ -1639,62 +1025,62 @@ export const LoginScreen = ({navigation, route}: Props) => {
                       />
                     </View> */}
 
-                    {/* divider */}
-                    <View
+                  {/* divider */}
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      width: '100%',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      marginTop: '14%',
+                    }}>
+                    <Divider style={{borderWidth: 0.6, width: '45%'}} />
+                    <Text
                       style={{
-                        flexDirection: 'row',
-                        width: '100%',
-                        justifyContent: 'space-between',
                         alignItems: 'center',
-                        marginTop:'5%'
+                        fontWeight: 'bold',
+                        color: 'black',
                       }}>
-                      <Divider style={{borderWidth: 0.6, width: '45%'}} />
-                      <Text
-                        style={{
-                          alignItems: 'center',
-                          fontWeight: 'bold',
-                          color: 'black',
-                        }}>
-                        o
-                      </Text>
-                      <Divider style={{borderWidth: 0.6, width: '45%'}} />
-                    </View>
-                    <View
-                      style={{
-                        marginHorizontal: '26%',
-                        marginTop: '14%',
-                        marginBottom: '10%',
-                      }}>
-                      <CustomButton
-                        backgroundColor={Colors.primaryDark}
-                        fontFamily={FontFamily.NotoSansDisplayRegular}
-                        label={translate.strings.login_screen[0].register}
-                        onPress={() =>
-                          // navigation.replace('RegisterScreen')
-                          onTouchRegister()
-                        }
-                      />
-                    </View>
+                      o
+                    </Text>
+                    <Divider style={{borderWidth: 0.6, width: '45%'}} />
                   </View>
-                  {/* <View style={{width: '25.4%', backgroundColor: 'blue'}}></View> */}
-                  <SafeAreaView>{screenHorizontal()}</SafeAreaView>
-                </Animated.View>
-              </View>
+                  <View
+                    style={{
+                      marginHorizontal: '26%',
+                      marginTop: '14%',
+                      marginBottom: '10%',
+                    }}>
+                    <CustomButton
+                      backgroundColor={Colors.primaryDark}
+                      fontFamily={FontFamily.NotoSansDisplayRegular}
+                      label={translate.strings.login_screen[0].register}
+                      onPress={() =>
+                        // navigation.replace('RegisterScreen')
+                        onTouchRegister()
+                      }
+                    />
+                  </View>
+                </View>
+                {/* <View style={{width: '25.4%', backgroundColor: 'blue'}}></View> */}
+                <SafeAreaView>{screenHorizontal()}</SafeAreaView>
+              </Animated.View>
             </View>
-            <Spinner visible={loading} />
-            
-            <SaveProyectModal
-                visible={saveModal}
-                hideModal={hideModalSave}
-                onPress={hideModalSave}
-                size={RFPercentage(8)}
-                color={Colors.semanticWarningDark}
-                label="No se pudo registrar, compruebe que el correo exista e intentelo de nuevo"
-                helper={false}
-              />
-          </ScrollView>
-          <Toast position='bottom' />
-        </KeyboardAvoidingView>
+          </View>
+          <Spinner visible={loading} />
+
+          <SaveProyectModal
+            visible={saveModal}
+            hideModal={hideModalSave}
+            onPress={hideModalSave}
+            size={RFPercentage(8)}
+            color={Colors.semanticWarningDark}
+            label="No se pudo registrar, compruebe que el correo exista e intentelo de nuevo"
+            helper={false}
+          />
+        </ScrollView>
+        <Toast position="bottom" />
+      </KeyboardAvoidingView>
       {/* </ScrollView> */}
       {/* <LoginTemplate navigation={navigation} route={route} /> */}
     </>

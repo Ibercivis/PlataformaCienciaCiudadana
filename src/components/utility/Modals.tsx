@@ -778,78 +778,165 @@ export const PassModal = ({
                   // justifyContent: 'center',
                   // paddingHorizontal: '11%',
                 }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    width: '100%',
+                    height: '20%',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                  <View style={{marginRight: '9%'}}>
+                    <Info width={size} height={size} fill={'black'} />
+                  </View>
+                  <View style={{width: '60%'}}>
+                    <Text
+                      style={{
+                        color: Colors.semanticInfoLight,
+                        textAlign: 'left',
+                        fontSize: FontSize.fontSizeText17,
+                      }}>
+                      {label}
+                    </Text>
+                  </View>
+                </View>
+                <View
+                  style={{
+                    flexDirection: 'column',
+                    width: '95%',
+                    height: '100%',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                    marginTop: '10%',
+                  }}>
                   <View
                     style={{
-                      flexDirection: 'row',
                       width: '100%',
-                      height: '20%',
-                      alignItems: 'center',
-                      justifyContent: 'center',
+                      marginVertical: RFPercentage(1),
                     }}>
-                    <View style={{marginRight: '9%'}}>
-                      <Info width={size} height={size} fill={'black'} />
-                    </View>
-                    <View style={{width: '60%'}}>
-                      <Text
-                        style={{
-                          color: Colors.semanticInfoLight,
-                          textAlign: 'left',
-                          fontSize: FontSize.fontSizeText17,
-                        }}>
-                        {label}
-                      </Text>
-                    </View>
+                    <Text style={{color: 'black'}}>Password </Text>
+                    <InputText
+                      // isInputText={() => setIsInputText(!isInputText)}
+                      isValid={helper}
+                      label={'Escriba la contraseña'}
+                      inputType={true}
+                      multiline={false}
+                      numOfLines={1}
+                      isSecureText={true}
+                      onChangeText={value => setPassword(value)}
+                    />
                   </View>
-                  <View
+                  <TouchableOpacity
+                    activeOpacity={0.5}
                     style={{
-                      flexDirection: 'column',
-                      width: '95%',
-                      height: '100%',
-                      alignItems: 'center',
-                      justifyContent: 'flex-start',
-                      marginTop: '10%',
+                      backgroundColor: 'white',
+                      marginTop: '4%',
+                      borderWidth: 1,
+                      borderRadius: 10,
+                      paddingHorizontal: RFPercentage(3),
+                      paddingVertical: RFPercentage(1),
+                    }}
+                    onPress={() => {
+                      setPass!(password);
                     }}>
-                    <View
+                    <Text
                       style={{
-                        width: '100%',
-                        marginVertical: RFPercentage(1),
+                        color: 'black',
+                        fontSize: FontSize.fontSizeText13,
+                        justifyContent: 'center',
+                        fontFamily: FontFamily.NotoSansDisplayRegular,
                       }}>
-                      <Text style={{color: 'black'}}>Password </Text>
-                      <InputText
-                        // isInputText={() => setIsInputText(!isInputText)}
-                        isValid={helper}
-                        label={'Escriba la contraseña'}
-                        inputType={true}
-                        multiline={false}
-                        numOfLines={1}
-                        isSecureText={true}
-                        onChangeText={value => setPassword(value)}
-                      />
-                    </View>
-                    <TouchableOpacity
-                      activeOpacity={0.5}
-                      style={{
-                        backgroundColor: 'white',
-                        marginTop: '4%',
-                        borderWidth: 1,
-                        borderRadius: 10,
-                        paddingHorizontal: RFPercentage(3),
-                        paddingVertical: RFPercentage(1),
-                      }}
-                      onPress={() => {
-                        setPass!(password);
-                      }}>
-                      <Text
-                        style={{
-                          color: 'black',
-                          fontSize: FontSize.fontSizeText13,
-                          justifyContent: 'center',
-                          fontFamily: FontFamily.NotoSansDisplayRegular,
-                        }}>
-                        Aceptar
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
+                      Aceptar
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
+        </Modal>
+      </Portal>
+    </Provider>
+  );
+};
+
+export const DeleteModal = ({
+  onPress,
+  visible,
+  hideModal,
+  label,
+  subLabel,
+  icon,
+  size,
+  color,
+  helper = true,
+}: Props) => {
+  // const { modalVisible, setModalVisible, changeVisibility } = useModal();
+  //TODO pasar esto a una screen y llamarla desde el navigator para hacer como si fuera un modal global en la app
+  return (
+    <Provider>
+      <Portal>
+        <Modal visible={visible} transparent>
+          <TouchableWithoutFeedback onPress={hideModal}>
+            <View style={{...styles.modalContainer}}>
+              <View
+                style={{
+                  ...styles.modalContent,
+                  alignItems: 'center',
+                  height: '35%',
+                  width: '60%',
+                  justifyContent: 'center',
+                  paddingHorizontal: '11%',
+                }}>
+                <Text
+                  style={{
+                    fontSize: FontSize.fontSizeText18,
+                    color: Colors.textColorPrimary,
+                    marginBottom: '10%',
+                    // fontWeight: '600',
+                    textAlign: 'center',
+                    fontFamily: FontFamily.NotoSansDisplaySemiBold,
+                  }}>
+                  {label}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: FontSize.fontSizeText14,
+                    color: Colors.textColorPrimary,
+                    marginBottom: '12%',
+                    fontWeight: '600',
+                    textAlign: 'center',
+                    fontFamily: FontFamily.NotoSansDisplayRegular,
+                  }}>
+                  {subLabel}
+                </Text>
+
+                {/* <View style={{marginTop: RFPercentage(2)}}>
+                  <Xcircle
+                    width={RFPercentage(8)}
+                    height={RFPercentage(8)}
+                    fill={color}
+                  />
+                </View> */}
+                <View
+                  style={{
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    marginTop: '5%',
+                    width:'100%'
+                  }}>
+                  <TouchableOpacity
+                    activeOpacity={0.9}
+                    style={{...styles.button,}}
+                    onPress={onPress}>
+                    <Text style={{...styles.textButton, color: Colors.semanticDangerLight}}>Borrar</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    activeOpacity={0.9}
+                    style={{...styles.button,}}
+                    onPress={() => hideModal()}>
+                    <Text style={styles.textButton}>Cancelar</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
           </TouchableWithoutFeedback>
@@ -889,4 +976,25 @@ const styles = StyleSheet.create({
   buttonLabel: {
     fontWeight: 'bold',
   },
+  button: {
+    minWidth: RFPercentage(8),
+    marginBottom: RFPercentage(2),
+    backgroundColor: 'white',
+    padding: RFPercentage(1),
+    borderRadius:10,
+    paddingVertical: '5%',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 0.1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
+  },
+  textButton:{
+    textAlign:'center',
+    textAlignVertical:'center',
+    alignSelf: 'center'
+  }
 });

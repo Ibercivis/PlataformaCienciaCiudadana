@@ -12,6 +12,7 @@ import {
   Platform,
   StatusBar,
   KeyboardAvoidingView,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import {StackScreenProps} from '@react-navigation/stack';
 import {Size} from '../../../theme/size';
@@ -552,12 +553,12 @@ export const Home = ({navigation}: Props) => {
                   position: 'absolute',
                   justifyContent: 'center',
                   right: widthPercentageToDP(10),
-                  top: heightPercentageToDP(7),
+                  marginTop: heightPercentageToDP(7),
                 }}>
                 {/* <IconBootstrap name={'stars'} size={20} color={'blue'} /> */}
                 <Dots
-                  width={RFPercentage(1.8)}
-                  height={RFPercentage(1.8)}
+                  width={RFPercentage(3)}
+                  height={RFPercentage(3)}
                   fill={'#000000'}
                 />
               </TouchableOpacity>
@@ -737,7 +738,9 @@ export const Home = ({navigation}: Props) => {
                                     type="newProjectsPlus"
                                     categoryImage={index}
                                     onPress={() => {
-                                      navigation.navigate('ProjectList', {title: 'Nuevos proyectos'});
+                                      navigation.navigate('ProjectList', {
+                                        title: 'Nuevos proyectos',
+                                      });
                                     }}
                                   />
                                 </View>
@@ -842,7 +845,9 @@ export const Home = ({navigation}: Props) => {
                                       : ''
                                   }
                                   onPress={() => {
-                                    navigation.navigate('ProjectList', {title: 'Proyectos destacados'});
+                                    navigation.navigate('ProjectList', {
+                                      title: 'Proyectos destacados',
+                                    });
                                   }}
                                 />
                               </View>
@@ -954,7 +959,9 @@ export const Home = ({navigation}: Props) => {
                                   type="interestingPlus"
                                   categoryImage={index}
                                   onPress={() => {
-                                    navigation.navigate('ProjectList', {title: 'Te puede interesar...'});
+                                    navigation.navigate('ProjectList', {
+                                      title: 'Te puede interesar...',
+                                    });
                                   }}
                                 />
                               </View>
@@ -1012,8 +1019,8 @@ export const Home = ({navigation}: Props) => {
                           top: 1,
                         }}>
                         <Boockmark
-                          width={RFPercentage(2.5)}
-                          height={RFPercentage(2.5)}
+                          width={RFPercentage(2.1)}
+                          height={RFPercentage(2.1)}
                           fill={'#2b4ce0'}
                         />
                       </View>
@@ -1299,42 +1306,49 @@ export const Home = ({navigation}: Props) => {
             transparent
             animationType="none"
             onRequestClose={ocultarMenu}>
-            <View
-              style={{
-                position: 'relative',
-                justifyContent: 'center',
-                alignItems: 'center',
-                backgroundColor: 'white',
-                width: widthPercentageToDP(20),
-                left: widthPercentageToDP(70),
-                top:
-                  Platform.OS === 'ios'
-                    ? insets.top + heightPercentageToDP(6)
-                    : heightPercentageToDP(6),
-                // right: RFPercentage(5),
-                // top: RFPercentage(4),
-                borderRadius: 10,
-                borderWidth: 1,
-              }}>
+            <TouchableWithoutFeedback onPressOut={ocultarMenu}>
               <View
                 style={{
+                  position: 'relative',
+                  justifyContent: 'center',
+                  alignItems: 'center',
                   backgroundColor: 'white',
-                  paddingHorizontal: widthPercentageToDP(2),
+                  width: widthPercentageToDP(20),
+                  left: widthPercentageToDP(70),
+                  top:
+                    Platform.OS === 'ios'
+                      ? insets.top + heightPercentageToDP(6)
+                      : heightPercentageToDP(6),
                   borderRadius: 10,
+                  shadowColor: '#000',
+                  shadowOffset: {
+                    width: 0,
+                    height: 0.1,
+                  },
+                  shadowOpacity: 0.2,
+                  shadowRadius: 1.41,
+                  elevation: 5,
                 }}>
-                <TouchableOpacity
-                  style={{marginVertical: heightPercentageToDP(1)}}
-                  onPress={signOut}>
-                  <Text>Logout</Text>
-                </TouchableOpacity>
-                {/* Otras opciones de menú aquí */}
-                <TouchableOpacity
-                  style={{marginVertical: heightPercentageToDP(1)}}
-                  onPress={ocultarMenu}>
-                  <Text>Cancelar</Text>
-                </TouchableOpacity>
+                <View
+                  style={{
+                    backgroundColor: 'white',
+                    paddingHorizontal: widthPercentageToDP(2),
+                    borderRadius: 10,
+                  }}>
+                  <TouchableOpacity
+                    style={{marginVertical: heightPercentageToDP(1)}}
+                    onPress={signOut}>
+                    <Text>Logout</Text>
+                  </TouchableOpacity>
+                  {/* Otras opciones de menú aquí */}
+                  <TouchableOpacity
+                    style={{marginVertical: heightPercentageToDP(1)}}
+                    onPress={ocultarMenu}>
+                    <Text>Cancelar</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
+            </TouchableWithoutFeedback>
           </Modal>
         </SafeAreaView>
       </KeyboardAvoidingView>

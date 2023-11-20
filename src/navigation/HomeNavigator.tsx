@@ -1,6 +1,4 @@
 import {createStackNavigator} from '@react-navigation/stack';
-import {Marcador} from '../components/screen_components/Marcador';
-import {MarcadorExample} from '../components/screen_components/MarcadorExample';
 import {Mark, HasTag, Topic} from '../interfaces/appInterfaces';
 import {HomeScreen} from '../screens/HomeScreen';
 import {NewProjectScreen} from '../screens/NewProjectScreen';

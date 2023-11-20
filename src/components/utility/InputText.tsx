@@ -12,7 +12,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import {Colors} from '../../theme/colors';
-import { FontFamily, FontSize, fonts } from '../../theme/fonts';
+import {FontFamily, FontSize, fonts} from '../../theme/fonts';
 import {useTogglePasswordVisibility} from '../../hooks/useTogglePasswordVisibility';
 import {IconBootstrap} from './IconBootstrap';
 import {TextInput} from 'react-native-paper';
@@ -39,6 +39,7 @@ interface Props {
   keyboardType?: KeyboardTypeOptions;
   fieldButtonLabel?: string;
   fieldButtonFunction?: () => void;
+  onPressIn?: () => void;
   onChangeText: (value: any) => void;
   multiline: boolean;
   numOfLines?: number;
@@ -49,6 +50,8 @@ interface Props {
   isSecureText?: boolean;
   ref?: any;
   isValid?: boolean;
+  style?: StyleProp<TextStyle>;
+  editable?: boolean;
 }
 export const InputText = ({
   label,
@@ -66,6 +69,9 @@ export const InputText = ({
   isSecureText = false,
   ref,
   isValid = true,
+  onPressIn,
+  style,
+  editable= true,
 }: Props) => {
   // variable que establece por defecto el color del input cuando no es presionado y que al ser presionado, cambiará
   const [onBlurInput, setOnBlurInput] = useState('#c9c4c4');
@@ -93,9 +99,12 @@ export const InputText = ({
 
   return (
     // <View style={styles.container}>
-    <View style={{...globalStyles.inputContainer, 
-    borderColor: isValid ? onBlurInput : Colors.semanticWarningDark, width:'100%'
-     }}>
+    <View
+      style={{
+        ...globalStyles.inputContainer,
+        borderColor: isValid ? onBlurInput : Colors.semanticWarningDark,
+        // width: '100%',
+      }}>
       {iconLeft && (
         <View
           style={{
@@ -109,19 +118,22 @@ export const InputText = ({
         </View>
       )}
       <TextInput
-      // theme={{
-      //   fonts: {FontFamily: FontFamily.NotoSansDisplayLight},
-      // }}
-        style={{
-          width: '80%',
-          fontSize: FontSize.fontSizeText13,
-          fontFamily: FontFamily.NotoSansDisplayLight,
-          color: 'black',
-          fontWeight: '300',
-          alignSelf: 'center',
-          backgroundColor: 'transparent',
-          height: multiline ? 0 : window.height * 0.04,
-        }}
+        // theme={{
+        //   fonts: {FontFamily: FontFamily.NotoSansDisplayLight},
+        // }}
+        style={[
+          style,
+          {
+            width: '100%',
+            fontSize: FontSize.fontSizeText13,
+            fontFamily: FontFamily.NotoSansDisplayLight,
+            fontWeight: '300',
+            alignSelf: 'center',
+            backgroundColor: 'transparent',
+            height: multiline ? 0 : window.height * 0.04,
+          },
+        ]}
+        contentStyle={{color:'black'}}
         ref={ref}
         placeholderTextColor={onBlurTextInput}
         mode="flat"
@@ -135,13 +147,14 @@ export const InputText = ({
         keyboardType={keyboardType}
         multiline={multiline}
         numberOfLines={numOfLines}
-        selectionColor={Colors.primary}
-        editable={true}
+        selectionColor={Colors.textColorPrimary}
+        editable={editable}
         value={value}
         maxLength={maxLength}
         onChangeText={(value: any) => onChangeText(value)}
         onBlur={customBlurColor}
         onFocus={customFocus}
+        onPressIn={onPressIn}
       />
       {inputType && !iconRight && (
         <TouchableOpacity
@@ -150,12 +163,12 @@ export const InputText = ({
           style={{
             // ...styles.touchable,
             // maxHeight: 35,
-            marginRight: '1%',
+            // marginRight: '1%',
             flex: 1,
-            alignItems: 'center',
+            alignItems: 'flex-end',
             justifyContent: 'center',
             top: '1%',
-            // backgroundColor: 'red',
+            backgroundColor: 'red',
           }}>
           {/* <MaterialCommunityIcons
               name={rightIcon}

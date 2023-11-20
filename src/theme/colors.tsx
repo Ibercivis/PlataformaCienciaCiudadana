@@ -1,4 +1,7 @@
 export const Colors = {
+
+    textColorPrimary: '#000',
+
     primary: '#021C47',
     secondary: '#219EBC',
     lightblue: '#8ECAE6',

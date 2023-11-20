@@ -7,6 +7,7 @@ import {Size} from '../theme/size';
 import {FontFamily, FontSize} from '../theme/fonts';
 import Back from '../assets/icons/general/chevron-left.svg';
 import {RFPercentage} from 'react-native-responsive-fontsize';
+import { Colors } from '../theme/colors';
 
 interface Props {
   onPressLeft: () => void;
@@ -82,7 +83,7 @@ export const HeaderComponent = ({
           style={{
             alignSelf: 'flex-start',
             // fontWeight: 'bold',
-            color: '#000000',
+            color: Colors.textColorPrimary,
             // top: RFPercentage(0.3),
             width:'100%',
             fontSize: FontSize.fontSizeText18,
