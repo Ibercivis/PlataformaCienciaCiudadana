@@ -168,7 +168,7 @@ export const InputText = ({
             alignItems: 'flex-end',
             justifyContent: 'center',
             top: '1%',
-            backgroundColor: 'red',
+            // backgroundColor: 'red',
           }}>
           {/* <MaterialCommunityIcons
               name={rightIcon}
@@ -183,7 +183,7 @@ export const InputText = ({
           activeOpacity={1}
           onPress={fieldButtonFunction}
           style={{
-            marginRight: '1%',
+            marginRight: '4%',
             flex: 1,
             alignItems: 'center',
             justifyContent: 'center',

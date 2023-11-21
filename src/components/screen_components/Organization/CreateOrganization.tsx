@@ -22,6 +22,7 @@ import {InfoModal, SaveProyectModal} from '../../utility/Modals';
 import PlusImg from '../../../assets/icons/general/Plus-img.svg';
 import Person from '../../../assets/icons/general/person.svg';
 import FrontPage from '../../../assets/icons/project/image.svg';
+import UserMissing from '../../../assets/icons/profile/User-image.svg';
 import {InputText} from '../../utility/InputText';
 import ImagePicker from 'react-native-image-crop-picker';
 import {FontSize} from '../../../theme/fonts';
@@ -762,7 +763,9 @@ export const CreateOrganization = ({navigation, route}: Props) => {
             setSuggestions([]), setInputValueUser('');
           }}>
           <HeaderComponent
-            title={'Crear una nueva organización'}
+            title={
+              isEdit ? 'Editar organización' : 'Crear una nueva organización'
+            }
             onPressLeft={() => navigation.goBack()}
             rightIcon={false}
           />
@@ -1095,18 +1098,19 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                       alignItems: 'flex-end',
                       flexDirection: 'row',
                     }}>
-                    
                     <Text
                       style={{
                         color:
                           form.description.length <= MAX_CHARACTERS
                             ? 'black'
                             : 'red',
-                            fontSize: FontSize.fontSizeText13
+                        fontSize: FontSize.fontSizeText13,
                       }}>
                       {form.description.length}
                     </Text>
-                    <Text style={{fontSize: FontSize.fontSizeText13}}>/{MAX_CHARACTERS}</Text>
+                    <Text style={{fontSize: FontSize.fontSizeText13}}>
+                      /{MAX_CHARACTERS}
+                    </Text>
                   </View>
                 </View>
                 {/* integrantes */}
@@ -1178,7 +1182,6 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                     {suggestionsSelected.length > 0 &&
                       suggestionsSelected.map((item, index) => {
                         const isAdmin = compruebaAdmin(item.id);
-
                         return (
                           <View
                             style={{
@@ -1188,14 +1191,35 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                             }}
                             key={index + 1}>
                             {/* sustituir por avatar */}
-                            <View
-                              style={{
-                                backgroundColor: 'red',
-                                width: '10%',
-                                marginRight: '5%',
-                                borderRadius: 50,
-                              }}></View>
-                            {/* sustituir texto de abajo por el que sea */}
+
+                            {item.profile.cover ? (
+                              <Image
+                                source={{
+                                  uri: item.profile.cover,
+                                }}
+                                style={{
+                                  width: '12%',
+                                  height: '100%',
+                                  borderRadius: 50,
+                                  resizeMode: 'cover',
+                                  backgroundColor: 'blue',
+                                  marginRight: '2%',
+                                }}
+                              />
+                            ) : (
+                              <View
+                                style={{
+                                  width: '12%',
+                                  height: '100%',
+                                  borderRadius: 100,
+                                  marginRight: '2%',
+                                  alignContent:'center',
+                                  alignItems:'center',
+                                  marginTop:'1.3%'
+                                }}>
+                                <UserMissing height={RFPercentage(3.8)} width={RFPercentage(3.8)} />
+                              </View>
+                            )}
                             <View
                               style={{
                                 flexDirection: 'column',
@@ -1223,7 +1247,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                               </TouchableOpacity>
                             </View>
                             {/* que elimine de la lista */}
-                            <View style={{width: '20%', marginLeft: '5%'}}>
+                            <View style={{width: '20%', marginLeft: '2%'}}>
                               <CustomButton
                                 onPress={() => moveItemToSuggestions(index)}
                                 backgroundColor="transparen"
@@ -1243,7 +1267,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                 {isEdit ? (
                   <CustomButton
                     backgroundColor={Colors.primaryLigth}
-                    label={'Editar organizacion'}
+                    label={'Guardar cambios'}
                     onPress={() => onEdit()}
                   />
                 ) : (

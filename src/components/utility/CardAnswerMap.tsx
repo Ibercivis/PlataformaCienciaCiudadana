@@ -61,26 +61,28 @@ export const CardAnswerMap = ({
       maxWidth: 300,
       maxHeight: 300,
       includeBase64: true,
-    }).then(response => {
-      //   console.log(JSON.stringify(response[0].sourceURL));
-      if (response && response.data) {
-        if (response.size < 4 * 1024 * 1024) {
-          const newImage = response;
-          setImages(newImage);
-          const texto: string = getFormattedDateTime();
-          onChangeText({
-            uri: newImage.path, // Debes ajustar esto según la estructura de response
-            type: newImage.mime, // Tipo MIME de la imagen
-            name: texto + 'cover.jpg', // Nombre de archivo de la imagen (puedes cambiarlo)
-          });
-        } else {
-          showModal(true);
-          setImages(undefined);
+    })
+      .then(response => {
+        //   console.log(JSON.stringify(response[0].sourceURL));
+        if (response && response.data) {
+          if (response.size < 4 * 1024 * 1024) {
+            const newImage = response;
+            setImages(newImage);
+            const texto: string = getFormattedDateTime();
+            onChangeText({
+              uri: newImage.path, // Debes ajustar esto según la estructura de response
+              type: newImage.mime, // Tipo MIME de la imagen
+              name: texto + 'cover.jpg', // Nombre de archivo de la imagen (puedes cambiarlo)
+            });
+          } else {
+            showModal(true);
+            setImages(undefined);
+          }
         }
-      }
-    }).catch(err => {
-      showModal(true)
-    });
+      })
+      .catch(err => {
+        showModal(true);
+      });
   };
 
   //#region SECCIÓN RENDERS
@@ -100,18 +102,52 @@ export const CardAnswerMap = ({
             <View style={{flexDirection: 'column'}}>
               <View style={{flexDirection: 'row'}}>
                 <View style={{marginHorizontal: '2%'}}>
-                  <Text style={{color: Colors.textColorPrimary}}>{num}</Text>
+                  <Text>{num}</Text>
                 </View>
-                <View>
-                  <Text style={{color: Colors.textColorPrimary}}>{item.question_text}</Text>
+                <View
+                  style={{
+                    width: '80%',
+                    flexWrap: 'wrap',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                  <Text style={{flexWrap: 'wrap', textAlign: 'justify'}}>
+                    {item.question_text}
+                  </Text>
                 </View>
-                
-              </View>{obligatory && (
-                  <View style={{justifyContent:'flex-end', position:'relative', left:RFPercentage(35), bottom: RFPercentage(2)}}>
-                    <Text style={{fontSize: FontSize.fontSizeText10, color: Colors.textColorPrimary}}>Obligatoria</Text>
+                {obligatory && (
+                  <View
+                    style={{
+                      justifyContent: 'flex-start',
+                      // position: 'relative',
+                      // left: RFPercentage(35),
+                      // bottom: RFPercentage(2),
+                      // backgroundColor:'blue'
+                    }}>
+                    <Text style={{fontSize: FontSize.fontSizeText10}}>
+                      Obligatoria
+                    </Text>
                   </View>
                 )}
-              <View style={{}}>
+              </View>
+              {/* {obligatory && (
+                <View
+                  style={{
+                    justifyContent: 'flex-end',
+                    position: 'relative',
+                    left: RFPercentage(35),
+                    bottom: RFPercentage(2),
+                  }}>
+                  <Text
+                    style={{
+                      fontSize: FontSize.fontSizeText10,
+                      color: Colors.textColorPrimary,
+                    }}>
+                    Obligatoria
+                  </Text>
+                </View>
+              )} */}
+              <View style={{marginTop: '1%'}}>
                 <View
                   style={{
                     width: '100%',
@@ -129,7 +165,13 @@ export const CardAnswerMap = ({
                   <View style={styles.container}>
                     <TextInput
                       disabled={onlyRead}
-                      style={[styles.input, {borderBottomColor: '#bab9b9', color: Colors.textColorPrimary}]}
+                      style={[
+                        styles.input,
+                        {
+                          borderBottomColor: '#bab9b9',
+                          color: Colors.textColorPrimary,
+                        },
+                      ]}
                       placeholder={value || item.question_text}
                       placeholderTextColor={value ? '#000000' : '#bab9b9'}
                       onChangeText={value => onChangeText(value)}
@@ -148,18 +190,52 @@ export const CardAnswerMap = ({
             <View style={{flexDirection: 'column'}}>
               <View style={{flexDirection: 'row'}}>
                 <View style={{marginHorizontal: '2%'}}>
-                  <Text style={{color: Colors.textColorPrimary}}>{num}</Text>
+                  <Text>{num}</Text>
                 </View>
-                <View>
-                  <Text style={{color: Colors.textColorPrimary}}>{item.question_text}</Text>
+                <View
+                  style={{
+                    width: '80%',
+                    flexWrap: 'wrap',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                  <Text style={{flexWrap: 'wrap', textAlign: 'justify'}}>
+                    {item.question_text}
+                  </Text>
                 </View>
-              </View>
-              {obligatory && (
-                  <View style={{justifyContent:'flex-end',position:'relative', left:RFPercentage(35), bottom: RFPercentage(2)}}>
-                    <Text style={{fontSize: FontSize.fontSizeText10, color: Colors.textColorPrimary}}>Obligatoria</Text>
+                {obligatory && (
+                  <View
+                    style={{
+                      justifyContent: 'flex-start',
+                      // position: 'relative',
+                      // left: RFPercentage(35),
+                      // bottom: RFPercentage(2),
+                      // backgroundColor:'blue'
+                    }}>
+                    <Text style={{fontSize: FontSize.fontSizeText10}}>
+                      Obligatoria
+                    </Text>
                   </View>
                 )}
-              <View style={{}}>
+              </View>
+              {/* {obligatory && (
+                <View
+                  style={{
+                    justifyContent: 'flex-end',
+                    position: 'relative',
+                    left: RFPercentage(35),
+                    bottom: RFPercentage(2),
+                  }}>
+                  <Text
+                    style={{
+                      fontSize: FontSize.fontSizeText10,
+                      color: Colors.textColorPrimary,
+                    }}>
+                    Obligatoria
+                  </Text>
+                </View>
+              )} */}
+              <View style={{marginTop: '1%'}}>
                 <View
                   style={{
                     width: '100%',
@@ -168,7 +244,13 @@ export const CardAnswerMap = ({
                   <View style={styles.container}>
                     <TextInput
                       disabled={onlyRead}
-                      style={[styles.input, {borderBottomColor: '#bab9b9', color: Colors.textColorPrimary}]}
+                      style={[
+                        styles.input,
+                        {
+                          borderBottomColor: '#bab9b9',
+                          color: Colors.textColorPrimary,
+                        },
+                      ]}
                       keyboardType="number-pad"
                       placeholder={value || item.question_text}
                       placeholderTextColor={value ? '#000000' : '#bab9b9'}
@@ -190,16 +272,34 @@ export const CardAnswerMap = ({
                 <View style={{marginHorizontal: '2%'}}>
                   <Text>{num}</Text>
                 </View>
-                <View>
-                  <Text>{item.question_text}</Text>
+                <View
+                  style={{
+                    width: '80%',
+                    flexWrap: 'wrap',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                  <Text style={{flexWrap: 'wrap', textAlign: 'justify'}}>
+                    {item.question_text}
+                  </Text>
                 </View>
-              </View>
-              {obligatory && (
-                  <View style={{justifyContent:'flex-end', position:'relative', left:RFPercentage(35), bottom: RFPercentage(2)}}>
-                    <Text style={{fontSize: FontSize.fontSizeText10}}>Obligatoria</Text>
+                {obligatory && (
+                  <View
+                    style={{
+                      justifyContent: 'flex-start',
+                      // position: 'relative',
+                      // left: RFPercentage(35),
+                      // bottom: RFPercentage(2),
+                      // backgroundColor:'blue'
+                    }}>
+                    <Text style={{fontSize: FontSize.fontSizeText10}}>
+                      Obligatoria
+                    </Text>
                   </View>
                 )}
-              <View style={{alignItems: 'center'}}>
+              </View>
+
+              <View style={{alignItems: 'center', marginTop: '1%'}}>
                 <View
                   style={{
                     // marginVertical: RFPercentage(1),
@@ -234,8 +334,9 @@ export const CardAnswerMap = ({
                           position: 'absolute',
                           bottom: RFPercentage(-1),
                           left: RFPercentage(17),
-                          zIndex: 999,backgroundColor: 'white',
-                          borderRadius: 50
+                          zIndex: 999,
+                          backgroundColor: 'white',
+                          borderRadius: 50,
                         }}>
                         <PlusImg
                           width={RFPercentage(4)}
@@ -279,8 +380,9 @@ export const CardAnswerMap = ({
                           position: 'absolute',
                           bottom: RFPercentage(-1),
                           left: RFPercentage(17),
-                          zIndex: 999,backgroundColor: 'white',
-                          borderRadius: 50
+                          zIndex: 999,
+                          backgroundColor: 'white',
+                          borderRadius: 50,
                         }}>
                         <PlusImg
                           width={RFPercentage(4)}
@@ -323,8 +425,9 @@ export const CardAnswerMap = ({
                           position: 'absolute',
                           bottom: RFPercentage(-1),
                           left: RFPercentage(17),
-                          zIndex: 999,backgroundColor: 'white',
-                          borderRadius: 50
+                          zIndex: 999,
+                          backgroundColor: 'white',
+                          borderRadius: 50,
                         }}>
                         <PlusImg
                           width={RFPercentage(4)}
@@ -335,32 +438,33 @@ export const CardAnswerMap = ({
                     </View>
                   )}
                   {value && onlyRead && (
-                    <View  style={{
-                      width: '95%',
-                      height: '110%',
-                      marginTop: '6%',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      borderRadius: 10,
-                      padding: '2%',
-                      backgroundColor: value ? 'transparent' : 'grey',
-                    }}>
-                      <ImageBackground
-                      borderRadius={10}
-                      // source={require(urii)}
-                      source={
-                        value !== ''
-                          ? {uri: value}
-                          : require('../../assets/backgrounds/nuevoproyecto.jpg')
-                      }
+                    <View
                       style={{
-                        width: '100%',
+                        width: '95%',
+                        height: '110%',
+                        marginTop: '6%',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        borderRadius: 10,
+                        padding: '2%',
+                        backgroundColor: value ? 'transparent' : 'grey',
+                      }}>
+                      <ImageBackground
+                        borderRadius={10}
+                        // source={require(urii)}
+                        source={
+                          value !== ''
+                            ? {uri: value}
+                            : require('../../assets/backgrounds/nuevoproyecto.jpg')
+                        }
+                        style={{
+                          width: '100%',
                           height: '100%',
                           borderRadius: 10,
                           // resizeMode: 'cover',
-                      }}/>
+                        }}
+                      />
                     </View>
-                    
                   )}
                 </View>
               </View>

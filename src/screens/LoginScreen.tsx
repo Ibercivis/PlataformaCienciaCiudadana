@@ -160,6 +160,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
       // text2: 'No se han podido obtener los datos, por favor reinicie la app',
       text2: errorMessage,
     });
+    removeError()
   }, [errorMessage]);
 
   //#endregion
@@ -722,7 +723,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                   right: '3%',
                   fontWeight: '600',
                 }}>
-                {translate.strings.new_project_screen[0].project_name_helper}
+                {'El nombre de usuario o correo no existe'}
               </HelperText>
             ) : (
               <></>

@@ -551,7 +551,7 @@ export const Card = ({
                     marginBottom: '7%',
                     marginLeft: '10%',
                     marginRight: '10%',
-                    marginTop: '5%',
+                    marginTop: '10%',
                     alignSelf: 'center',
                     justifyContent: 'center',
                     fontSize: FontSize.fontSizeText15,

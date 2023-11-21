@@ -61,7 +61,10 @@ import NotCreated from '../../../assets/icons/profile/No hay creados.svg';
 import NotLiked from '../../../assets/icons/profile/No hay me gusta.svg';
 import {CommonActions, useNavigation} from '@react-navigation/native';
 import {Country} from '../../../interfaces/interfaces';
-import {heightPercentageToDP, widthPercentageToDP} from 'react-native-responsive-screen';
+import {
+  heightPercentageToDP,
+  widthPercentageToDP,
+} from 'react-native-responsive-screen';
 import {Spinner} from '../../utility/Spinner';
 import Toast from 'react-native-toast-message';
 
@@ -189,41 +192,39 @@ export const Profile = ({navigation}: Props) => {
           renderItem={({item, index}) => {
             return (
               <TouchableOpacity
-              key={index}
-              activeOpacity={0.5}
-              style={style.projectFound}
-              onPress={() =>
-                navigateTo(item.id)
-              }>
-              <View
-                style={
-                  {
-                    // paddingHorizontal: RFPercentage(3),
-                    // width:'100%',
-                    // backgroundColor:'green'
-                  }
-                }>
+                key={index}
+                activeOpacity={0.5}
+                style={style.projectFound}
+                onPress={() => navigateTo(item.id)}>
                 <View
-                  style={{
-                    // marginHorizontal: RFPercentage(2),
-                    paddingHorizontal: RFPercentage(2),
-                    width: '100%',
-                    marginTop: RFPercentage(2),
-                    marginBottom: 6,
-                  }}>
-                  <Text
+                  style={
+                    {
+                      // paddingHorizontal: RFPercentage(3),
+                      // width:'100%',
+                      // backgroundColor:'green'
+                    }
+                  }>
+                  <View
                     style={{
-                      // backgroundColor: 'blue',
-                      fontSize: FontSize.fontSizeText17,
-                      fontWeight: '600',
-                      color: 'black',
-                      fontFamily: FontFamily.NotoSansDisplaySemiBold,
-                      marginBottom: '1%',
-                      alignSelf: 'flex-start',
+                      // marginHorizontal: RFPercentage(2),
+                      paddingHorizontal: RFPercentage(2),
+                      width: '100%',
+                      marginTop: RFPercentage(2),
+                      marginBottom: 6,
                     }}>
-                    {item.name}
-                  </Text>
-                  <View style={{flexDirection: 'row', flexWrap:'wrap'}}>
+                    <Text
+                      style={{
+                        // backgroundColor: 'blue',
+                        fontSize: FontSize.fontSizeText17,
+                        fontWeight: '600',
+                        color: 'black',
+                        fontFamily: FontFamily.NotoSansDisplaySemiBold,
+                        marginBottom: '1%',
+                        alignSelf: 'flex-start',
+                      }}>
+                      {item.name}
+                    </Text>
+                    <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
                       {item.hasTag.map((x, i) => {
                         const matchingHastag = hastags.find(
                           hastag => hastag.id === x,
@@ -244,77 +245,77 @@ export const Profile = ({navigation}: Props) => {
                         }
                       })}
                     </View>
-                  <View style={{flexWrap: 'wrap'}}>
-                    <Text
-                      style={{
-                        alignSelf: 'flex-start',
-                        flexWrap: 'wrap',
-                        marginBottom: '2%',
-                      }}>
-                      {item.description.length > 150
-                    ? item.description.slice(0, 150) + '...'
-                    : item.description}
-                    </Text>
+                    <View style={{flexWrap: 'wrap'}}>
+                      <Text
+                        style={{
+                          alignSelf: 'flex-start',
+                          flexWrap: 'wrap',
+                          marginBottom: '2%',
+                        }}>
+                        {item.description.length > 150
+                          ? item.description.slice(0, 150) + '...'
+                          : item.description}
+                      </Text>
+                    </View>
                   </View>
-                </View>
-                <ImageBackground
-                borderBottomLeftRadius={10}
-                borderBottomRightRadius={10}
-                  source={
-                    item.cover && item.cover[0]
-                      ? {uri: imageUrl + item.cover[0].image}
-                      : require('../../../assets/backgrounds/nuevoproyecto.jpg')
-                  }
-                  style={{
-                    ...style.imageBackground,
-                    width: '100%',
-                    height: RFPercentage(23),
-                    backgroundColor: item.cover ? 'transparent' : 'grey',
-                  }}>
-                  <View
+                  <ImageBackground
+                    borderBottomLeftRadius={10}
+                    borderBottomRightRadius={10}
+                    source={
+                      item.cover && item.cover[0]
+                        ? {uri: imageUrl + item.cover[0].image}
+                        : require('../../../assets/backgrounds/nuevoproyecto.jpg')
+                    }
                     style={{
-                      position: 'absolute',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      alignSelf: 'center',
-                      bottom: 2,
-                      left: 0,
-                      right: 0,
-                      justifyContent: 'space-between',
-                      // marginHorizontal: RFPercentage(1),
+                      ...style.imageBackground,
                       width: '100%',
+                      height: RFPercentage(23),
+                      backgroundColor: item.cover ? 'transparent' : 'grey',
                     }}>
                     <View
                       style={{
+                        position: 'absolute',
                         flexDirection: 'row',
-                        backgroundColor: 'white',
-                        borderRadius: 15,
-                        margin: '2%',
-                        paddingHorizontal: '3%',
-                        paddingVertical: '2%',
+                        alignItems: 'center',
+                        alignSelf: 'center',
+                        bottom: 2,
+                        left: 0,
+                        right: 0,
+                        justifyContent: 'space-between',
+                        // marginHorizontal: RFPercentage(1),
+                        width: '100%',
                       }}>
-                      <People width={16} height={16} color={'#000000'} />
-                      <Text
+                      <View
                         style={{
-                          fontSize: FontSize.fontSizeText13,
-                          marginHorizontal: RFPercentage(1),
+                          flexDirection: 'row',
+                          backgroundColor: 'white',
+                          borderRadius: 15,
+                          margin: '2%',
+                          paddingHorizontal: '3%',
+                          paddingVertical: '2%',
                         }}>
-                        {item.contributions}
-                      </Text>
-                      {item.is_liked_by_user ? (
-                        <HeartFill width={16} height={16} color={'#ff0000'} />
-                      ) : (
-                        <Heart width={16} height={16} color={'#000000'} />
-                      )}
-                      <Text
-                        style={{
-                          fontSize: FontSize.fontSizeText13,
-                          marginHorizontal: RFPercentage(1),
-                        }}>
-                        {item.total_likes}
-                      </Text>
-                    </View>
-                    {/* <View
+                        <People width={16} height={16} color={'#000000'} />
+                        <Text
+                          style={{
+                            fontSize: FontSize.fontSizeText13,
+                            marginHorizontal: RFPercentage(1),
+                          }}>
+                          {item.contributions}
+                        </Text>
+                        {item.is_liked_by_user ? (
+                          <HeartFill width={16} height={16} color={'#ff0000'} />
+                        ) : (
+                          <Heart width={16} height={16} color={'#000000'} />
+                        )}
+                        <Text
+                          style={{
+                            fontSize: FontSize.fontSizeText13,
+                            marginHorizontal: RFPercentage(1),
+                          }}>
+                          {item.total_likes}
+                        </Text>
+                      </View>
+                      {/* <View
                       style={{
                         flexDirection: 'row',
                         backgroundColor: 'white',
@@ -340,10 +341,10 @@ export const Profile = ({navigation}: Props) => {
                         </Text>
                       </TouchableOpacity>
                     </View> */}
-                  </View>
-                </ImageBackground>
-              </View>
-            </TouchableOpacity>
+                    </View>
+                  </ImageBackground>
+                </View>
+              </TouchableOpacity>
             );
           }}
         />
@@ -394,41 +395,39 @@ export const Profile = ({navigation}: Props) => {
           renderItem={({item, index}) => {
             return (
               <TouchableOpacity
-              key={index}
-              activeOpacity={0.5}
-              style={style.projectFound}
-              onPress={() =>
-                navigateTo(item.id)
-              }>
-              <View
-                style={
-                  {
-                    // paddingHorizontal: RFPercentage(3),
-                    // width:'100%',
-                    // backgroundColor:'green'
-                  }
-                }>
+                key={index}
+                activeOpacity={0.5}
+                style={style.projectFound}
+                onPress={() => navigateTo(item.id)}>
                 <View
-                  style={{
-                    // marginHorizontal: RFPercentage(2),
-                    paddingHorizontal: RFPercentage(2),
-                    width: '100%',
-                    marginTop: RFPercentage(2),
-                    marginBottom: 6,
-                  }}>
-                  <Text
+                  style={
+                    {
+                      // paddingHorizontal: RFPercentage(3),
+                      // width:'100%',
+                      // backgroundColor:'green'
+                    }
+                  }>
+                  <View
                     style={{
-                      // backgroundColor: 'blue',
-                      fontSize: FontSize.fontSizeText17,
-                      fontWeight: '600',
-                      color: 'black',
-                      fontFamily: FontFamily.NotoSansDisplaySemiBold,
-                      marginBottom: '1%',
-                      alignSelf: 'flex-start',
+                      // marginHorizontal: RFPercentage(2),
+                      paddingHorizontal: RFPercentage(2),
+                      width: '100%',
+                      marginTop: RFPercentage(2),
+                      marginBottom: 6,
                     }}>
-                    {item.name}
-                  </Text>
-                  <View style={{flexDirection: 'row', flexWrap:'wrap'}}>
+                    <Text
+                      style={{
+                        // backgroundColor: 'blue',
+                        fontSize: FontSize.fontSizeText17,
+                        fontWeight: '600',
+                        color: 'black',
+                        fontFamily: FontFamily.NotoSansDisplaySemiBold,
+                        marginBottom: '1%',
+                        alignSelf: 'flex-start',
+                      }}>
+                      {item.name}
+                    </Text>
+                    <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
                       {item.hasTag.map((x, i) => {
                         const matchingHastag = hastags.find(
                           hastag => hastag.id === x,
@@ -449,77 +448,77 @@ export const Profile = ({navigation}: Props) => {
                         }
                       })}
                     </View>
-                  <View style={{flexWrap: 'wrap'}}>
-                    <Text
-                      style={{
-                        alignSelf: 'flex-start',
-                        flexWrap: 'wrap',
-                        marginBottom: '2%',
-                      }}>
-                      {item.description.length > 150
-                    ? item.description.slice(0, 150) + '...'
-                    : item.description}
-                    </Text>
+                    <View style={{flexWrap: 'wrap'}}>
+                      <Text
+                        style={{
+                          alignSelf: 'flex-start',
+                          flexWrap: 'wrap',
+                          marginBottom: '2%',
+                        }}>
+                        {item.description.length > 150
+                          ? item.description.slice(0, 150) + '...'
+                          : item.description}
+                      </Text>
+                    </View>
                   </View>
-                </View>
-                <ImageBackground
-                borderBottomLeftRadius={10}
-                borderBottomRightRadius={10}
-                  source={
-                    item.cover && item.cover[0]
-                      ? {uri: imageUrl + item.cover[0].image}
-                      : require('../../../assets/backgrounds/nuevoproyecto.jpg')
-                  }
-                  style={{
-                    ...style.imageBackground,
-                    width: '100%',
-                    height: RFPercentage(23),
-                    backgroundColor: item.cover ? 'transparent' : 'grey',
-                  }}>
-                  <View
+                  <ImageBackground
+                    borderBottomLeftRadius={10}
+                    borderBottomRightRadius={10}
+                    source={
+                      item.cover && item.cover[0]
+                        ? {uri: imageUrl + item.cover[0].image}
+                        : require('../../../assets/backgrounds/nuevoproyecto.jpg')
+                    }
                     style={{
-                      position: 'absolute',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      alignSelf: 'center',
-                      bottom: 2,
-                      left: 0,
-                      right: 0,
-                      justifyContent: 'space-between',
-                      // marginHorizontal: RFPercentage(1),
+                      ...style.imageBackground,
                       width: '100%',
+                      height: RFPercentage(23),
+                      backgroundColor: item.cover ? 'transparent' : 'grey',
                     }}>
                     <View
                       style={{
+                        position: 'absolute',
                         flexDirection: 'row',
-                        backgroundColor: 'white',
-                        borderRadius: 15,
-                        margin: '2%',
-                        paddingHorizontal: '3%',
-                        paddingVertical: '2%',
+                        alignItems: 'center',
+                        alignSelf: 'center',
+                        bottom: 2,
+                        left: 0,
+                        right: 0,
+                        justifyContent: 'space-between',
+                        // marginHorizontal: RFPercentage(1),
+                        width: '100%',
                       }}>
-                      <People width={16} height={16} color={'#000000'} />
-                      <Text
+                      <View
                         style={{
-                          fontSize: FontSize.fontSizeText13,
-                          marginHorizontal: RFPercentage(1),
+                          flexDirection: 'row',
+                          backgroundColor: 'white',
+                          borderRadius: 15,
+                          margin: '2%',
+                          paddingHorizontal: '3%',
+                          paddingVertical: '2%',
                         }}>
-                        {item.contributions}
-                      </Text>
-                      {true ? (
-                        <HeartFill width={16} height={16} color={'#ff0000'} />
-                      ) : (
-                        <Heart width={16} height={16} color={'#000000'} />
-                      )}
-                      <Text
-                        style={{
-                          fontSize: FontSize.fontSizeText13,
-                          marginHorizontal: RFPercentage(1),
-                        }}>
-                        {item.total_likes}
-                      </Text>
-                    </View>
-                    {/* <View
+                        <People width={16} height={16} color={'#000000'} />
+                        <Text
+                          style={{
+                            fontSize: FontSize.fontSizeText13,
+                            marginHorizontal: RFPercentage(1),
+                          }}>
+                          {item.contributions}
+                        </Text>
+                        {true ? (
+                          <HeartFill width={16} height={16} color={'#ff0000'} />
+                        ) : (
+                          <Heart width={16} height={16} color={'#000000'} />
+                        )}
+                        <Text
+                          style={{
+                            fontSize: FontSize.fontSizeText13,
+                            marginHorizontal: RFPercentage(1),
+                          }}>
+                          {item.total_likes}
+                        </Text>
+                      </View>
+                      {/* <View
                       style={{
                         flexDirection: 'row',
                         backgroundColor: 'white',
@@ -545,10 +544,10 @@ export const Profile = ({navigation}: Props) => {
                         </Text>
                       </TouchableOpacity>
                     </View> */}
-                  </View>
-                </ImageBackground>
-              </View>
-            </TouchableOpacity>
+                    </View>
+                  </ImageBackground>
+                </View>
+              </TouchableOpacity>
             );
           }}
         />
@@ -598,41 +597,39 @@ export const Profile = ({navigation}: Props) => {
           renderItem={({item, index}) => {
             return (
               <TouchableOpacity
-              key={index}
-              activeOpacity={0.5}
-              style={style.projectFound}
-              onPress={() =>
-                navigateTo(item.id)
-              }>
-              <View
-                style={
-                  {
-                    // paddingHorizontal: RFPercentage(3),
-                    // width:'100%',
-                    // backgroundColor:'green'
-                  }
-                }>
+                key={index}
+                activeOpacity={0.5}
+                style={style.projectFound}
+                onPress={() => navigateTo(item.id)}>
                 <View
-                  style={{
-                    // marginHorizontal: RFPercentage(2),
-                    paddingHorizontal: RFPercentage(2),
-                    width: '100%',
-                    marginTop: RFPercentage(2),
-                    marginBottom: 6,
-                  }}>
-                  <Text
+                  style={
+                    {
+                      // paddingHorizontal: RFPercentage(3),
+                      // width:'100%',
+                      // backgroundColor:'green'
+                    }
+                  }>
+                  <View
                     style={{
-                      // backgroundColor: 'blue',
-                      fontSize: FontSize.fontSizeText17,
-                      fontWeight: '600',
-                      color: 'black',
-                      fontFamily: FontFamily.NotoSansDisplaySemiBold,
-                      marginBottom: '1%',
-                      alignSelf: 'flex-start',
+                      // marginHorizontal: RFPercentage(2),
+                      paddingHorizontal: RFPercentage(2),
+                      width: '100%',
+                      marginTop: RFPercentage(2),
+                      marginBottom: 6,
                     }}>
-                    {item.name}
-                  </Text>
-                  <View style={{flexDirection: 'row', flexWrap:'wrap'}}>
+                    <Text
+                      style={{
+                        // backgroundColor: 'blue',
+                        fontSize: FontSize.fontSizeText17,
+                        fontWeight: '600',
+                        color: 'black',
+                        fontFamily: FontFamily.NotoSansDisplaySemiBold,
+                        marginBottom: '1%',
+                        alignSelf: 'flex-start',
+                      }}>
+                      {item.name}
+                    </Text>
+                    <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
                       {item.hasTag.map((x, i) => {
                         const matchingHastag = hastags.find(
                           hastag => hastag.id === x,
@@ -653,77 +650,77 @@ export const Profile = ({navigation}: Props) => {
                         }
                       })}
                     </View>
-                  <View style={{flexWrap: 'wrap'}}>
-                    <Text
-                      style={{
-                        alignSelf: 'flex-start',
-                        flexWrap: 'wrap',
-                        marginBottom: '2%',
-                      }}>
-                      {item.description.length > 150
-                    ? item.description.slice(0, 150) + '...'
-                    : item.description}
-                    </Text>
+                    <View style={{flexWrap: 'wrap'}}>
+                      <Text
+                        style={{
+                          alignSelf: 'flex-start',
+                          flexWrap: 'wrap',
+                          marginBottom: '2%',
+                        }}>
+                        {item.description.length > 150
+                          ? item.description.slice(0, 150) + '...'
+                          : item.description}
+                      </Text>
+                    </View>
                   </View>
-                </View>
-                <ImageBackground
-                borderBottomLeftRadius={10}
-                borderBottomRightRadius={10}
-                  source={
-                    item.cover && item.cover[0]
-                      ? {uri: imageUrl + item.cover[0].image}
-                      : require('../../../assets/backgrounds/nuevoproyecto.jpg')
-                  }
-                  style={{
-                    ...style.imageBackground,
-                    width: '100%',
-                    height: RFPercentage(23),
-                    backgroundColor: item.cover ? 'transparent' : 'grey',
-                  }}>
-                  <View
+                  <ImageBackground
+                    borderBottomLeftRadius={10}
+                    borderBottomRightRadius={10}
+                    source={
+                      item.cover && item.cover[0]
+                        ? {uri: imageUrl + item.cover[0].image}
+                        : require('../../../assets/backgrounds/nuevoproyecto.jpg')
+                    }
                     style={{
-                      position: 'absolute',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      alignSelf: 'center',
-                      bottom: 2,
-                      left: 0,
-                      right: 0,
-                      justifyContent: 'space-between',
-                      // marginHorizontal: RFPercentage(1),
+                      ...style.imageBackground,
                       width: '100%',
+                      height: RFPercentage(23),
+                      backgroundColor: item.cover ? 'transparent' : 'grey',
                     }}>
                     <View
                       style={{
+                        position: 'absolute',
                         flexDirection: 'row',
-                        backgroundColor: 'white',
-                        borderRadius: 15,
-                        margin: '2%',
-                        paddingHorizontal: '3%',
-                        paddingVertical: '2%',
+                        alignItems: 'center',
+                        alignSelf: 'center',
+                        bottom: 2,
+                        left: 0,
+                        right: 0,
+                        justifyContent: 'space-between',
+                        // marginHorizontal: RFPercentage(1),
+                        width: '100%',
                       }}>
-                      <People width={16} height={16} color={'#000000'} />
-                      <Text
+                      <View
                         style={{
-                          fontSize: FontSize.fontSizeText13,
-                          marginHorizontal: RFPercentage(1),
+                          flexDirection: 'row',
+                          backgroundColor: 'white',
+                          borderRadius: 15,
+                          margin: '2%',
+                          paddingHorizontal: '3%',
+                          paddingVertical: '2%',
                         }}>
-                        {item.contributions}
-                      </Text>
-                      {item.is_liked_by_user ? (
-                        <HeartFill width={16} height={16} color={'#ff0000'} />
-                      ) : (
-                        <Heart width={16} height={16} color={'#000000'} />
-                      )}
-                      <Text
-                        style={{
-                          fontSize: FontSize.fontSizeText13,
-                          marginHorizontal: RFPercentage(1),
-                        }}>
-                        {item.total_likes}
-                      </Text>
-                    </View>
-                    {/* <View
+                        <People width={16} height={16} color={'#000000'} />
+                        <Text
+                          style={{
+                            fontSize: FontSize.fontSizeText13,
+                            marginHorizontal: RFPercentage(1),
+                          }}>
+                          {item.contributions}
+                        </Text>
+                        {item.is_liked_by_user ? (
+                          <HeartFill width={16} height={16} color={'#ff0000'} />
+                        ) : (
+                          <Heart width={16} height={16} color={'#000000'} />
+                        )}
+                        <Text
+                          style={{
+                            fontSize: FontSize.fontSizeText13,
+                            marginHorizontal: RFPercentage(1),
+                          }}>
+                          {item.total_likes}
+                        </Text>
+                      </View>
+                      {/* <View
                       style={{
                         flexDirection: 'row',
                         backgroundColor: 'white',
@@ -749,10 +746,10 @@ export const Profile = ({navigation}: Props) => {
                         </Text>
                       </TouchableOpacity>
                     </View> */}
-                  </View>
-                </ImageBackground>
-              </View>
-            </TouchableOpacity>
+                    </View>
+                  </ImageBackground>
+                </View>
+              </TouchableOpacity>
             );
           }}
         />
@@ -791,10 +788,11 @@ export const Profile = ({navigation}: Props) => {
                   opacity,
                   fontWeight,
                   color: 'black',
-                  fontSize:
-                    route.title.length <= 9
-                      ? FontSize.fontSizeText15
-                      : FontSize.fontSizeText13,
+                  // fontSize:
+                  //   route.title.length <= 9
+                  //     ? FontSize.fontSizeText15
+                  //     : FontSize.fontSizeText13,
+                  fontSize: FontSize.fontSizeText13,
                   fontFamily: FontFamily.NotoSansDisplayMedium,
                 }}
                 numberOfLines={1}
@@ -904,8 +902,7 @@ export const Profile = ({navigation}: Props) => {
         },
       });
       setOrganization(resp.data);
-      if(resp.data){
-
+      if (resp.data) {
       }
     } catch {}
   };
@@ -1349,7 +1346,14 @@ export const Profile = ({navigation}: Props) => {
                     alignItems: 'center',
                     marginVertical: RFPercentage(1),
                   }}>
-                  <Text style={{color: 'black'}}>Visibilidad del perfil</Text>
+                  <Text
+                    style={{
+                      color: 'black',
+                      fontFamily: FontFamily.NotoSansDisplayMedium,
+                      fontSize: FontSize.fontSizeText15,
+                    }}>
+                    Visibilidad del perfil
+                  </Text>
                   <Switch
                     value={isSwitchOn}
                     onValueChange={onToggleSwitch}
@@ -1367,7 +1371,11 @@ export const Profile = ({navigation}: Props) => {
                     alignItems: 'center',
                     marginVertical: RFPercentage(1),
                   }}>
-                  <Text style={{}}>
+                  <Text style={{
+                    color: 'black',
+                    fontFamily: FontFamily.NotoSansDisplayLight,
+                    fontSize: FontSize.fontSizeText13,
+                  }}>
                     Si lo activas tu perfil pasará a estar oculto para los demás
                     usuarios de Geonity, pero podrás seguir creando proyectos y
                     participando en ellos
@@ -1380,7 +1388,9 @@ export const Profile = ({navigation}: Props) => {
                     width: '80%',
                     marginVertical: RFPercentage(1),
                   }}>
-                  <Text style={{color: 'black'}}>Nombre de usuario</Text>
+                  <Text style={{color: 'black',
+                      fontFamily: FontFamily.NotoSansDisplayMedium,
+                      fontSize: FontSize.fontSizeText15,}}>Nombre de usuario</Text>
                   <InputText
                     editable={false}
                     // isInputText={() => setIsInputText(!isInputText)}
@@ -1401,7 +1411,9 @@ export const Profile = ({navigation}: Props) => {
                     marginVertical: RFPercentage(1),
                     marginHorizontal: RFPercentage(5),
                   }}>
-                  <Text style={{color: 'black'}}>Biografía</Text>
+                  <Text style={{color: 'black',
+                      fontFamily: FontFamily.NotoSansDisplayMedium,
+                      fontSize: FontSize.fontSizeText15,}}>Biografía</Text>
                   <InputText
                     // isInputText={() => setIsInputText(!isInputText)}
                     label={'Biografía'}
@@ -1425,11 +1437,13 @@ export const Profile = ({navigation}: Props) => {
                           form.biography.length <= MAX_CHARACTERS
                             ? 'black'
                             : 'red',
-                            fontSize: FontSize.fontSizeText13
+                        fontSize: FontSize.fontSizeText13,
                       }}>
                       {form.biography.length}
                     </Text>
-                    <Text style={{fontSize: FontSize.fontSizeText13}}>/{MAX_CHARACTERS}</Text>
+                    <Text style={{fontSize: FontSize.fontSizeText13}}>
+                      /{MAX_CHARACTERS}
+                    </Text>
                   </View>
                 </View>
 
@@ -1495,7 +1509,9 @@ export const Profile = ({navigation}: Props) => {
                     width: '80%',
                     marginVertical: RFPercentage(1),
                   }}>
-                  <Text style={{color: 'black'}}>Organización</Text>
+                  <Text style={{color: 'black',
+                      fontFamily: FontFamily.NotoSansDisplayMedium,
+                      fontSize: FontSize.fontSizeText15,}}>Organización</Text>
 
                   <TouchableOpacity
                     style={{backgroundColor: 'transparent'}}
@@ -1609,7 +1625,9 @@ export const Profile = ({navigation}: Props) => {
                     width: '80%',
                     marginVertical: RFPercentage(1),
                   }}>
-                  <Text style={{color: 'black'}}>Ubicacion</Text>
+                  <Text style={{color: 'black',
+                      fontFamily: FontFamily.NotoSansDisplayMedium,
+                      fontSize: FontSize.fontSizeText15,}}>Ubicacion</Text>
                   <Picker
                     selectedValue={form.country.code}
                     onValueChange={(itemValue, itemIndex) => {
@@ -1619,7 +1637,9 @@ export const Profile = ({navigation}: Props) => {
                       // onChange(itemValue, 'country')
                       changeCountry(itemValue);
                     }}
-                    style={{width: RFPercentage(41)}}>
+                    style={{width: RFPercentage(41), color: 'black',
+                    fontFamily: FontFamily.NotoSansDisplayMedium,
+                    fontSize: FontSize.fontSizeText15,}}>
                     {countries.map((pais, index) => (
                       <Picker.Item
                         key={index}
@@ -2100,7 +2120,7 @@ const styles = StyleSheet.create({
   tabItem: {
     flex: 1,
     alignItems: 'center',
-    padding: RFPercentage(2),
+    padding: RFPercentage(1),
   },
   tabBarIndicator: {
     position: 'absolute',

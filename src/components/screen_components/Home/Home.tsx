@@ -309,18 +309,8 @@ export const Home = ({navigation}: Props) => {
       });
       //TODO ORDENAR
       setCategoryList(resp.data);
-      // const ob = await citmapApi.get<any>(
-      //   `/organization/${6}`,
-      //   {
-      //     headers: {
-      //       Authorization: token,
-      //     },
-      //   },
-      // );
 
-      // console.log(JSON.stringify(ob, null, 2));
       success = true;
-      // setLoading(false);
       projectListApi();
     } catch (err) {
       console.log(err.response.data);
@@ -330,7 +320,6 @@ export const Home = ({navigation}: Props) => {
     }
 
     if (!success) {
-      // setLoading(false);
       // Si no se pudieron cargar los datos después de los intentos, muestra el Toast
       Toast.show({
         type: 'error',

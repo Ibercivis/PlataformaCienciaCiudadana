@@ -974,7 +974,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
     // return <LoadingScreen />;
     return (
       <View style={{justifyContent: 'center', alignItems: 'center', flex: 1}}>
-        <Text>Habilita el GPS para poder acceder al mapa</Text>
+        <Text style={{color: Colors.textColorPrimary, marginBottom: RFPercentage(3)}}>Habilita el GPS para poder acceder al mapa</Text>
         <Button title="Recargar pantalla" onPress={getCurrentLocation} />
       </View>
     );

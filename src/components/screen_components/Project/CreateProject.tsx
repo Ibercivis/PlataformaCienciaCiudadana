@@ -40,6 +40,7 @@ import {Size} from '../../../theme/size';
 import ImagePicker from 'react-native-image-crop-picker';
 import {GeometryForms} from '../../utility/GeometryForms';
 import PlusSquare from '../../../assets/icons/general/plus-square.svg';
+import FrontPage from '../../../assets/icons/project/image.svg';
 import PlusImg from '../../../assets/icons/general/Plus-img.svg';
 import PlusBlue from '../../../assets/icons/project/plus-circle-blue.svg';
 import Delete from '../../../assets/icons/project/trash.svg';
@@ -1022,15 +1023,12 @@ export const CreateProject = ({navigation, route}: Props) => {
       while (!token) {
         token = await AsyncStorage.getItem('token');
       }
-      const resp = await citmapApi.delete(
-        `/project/${route.params.id}/`,
-        {
-          headers: {
-            Authorization: token,
-          },
+      const resp = await citmapApi.delete(`/project/${route.params.id}/`, {
+        headers: {
+          Authorization: token,
         },
-      );
-      console.log(JSON.stringify(resp.data, null, 2))
+      });
+      console.log(JSON.stringify(resp.data, null, 2));
       Toast.show({
         type: 'success',
         text1: 'Proyecto borrado con éxito.',
@@ -1092,19 +1090,37 @@ export const CreateProject = ({navigation, route}: Props) => {
             }}>
             <Text style={{color: 'black'}}>Imagen del proyecto</Text>
             {images.length <= 0 && imagesCharged.length <= 0 && (
-              <View
+              <TouchableOpacity
                 style={{
-                  width: RFPercentage(41),
+                  width: widthPercentageToDP(82),
                   justifyContent: 'center',
                   alignItems: 'center',
-                }}>
-                <IconButton
+                  marginVertical: '5%',
+                  marginTop: '4%',
+                  // backgroundColor: Colors.secondaryBackground,
+                  borderRadius: 10,
+                  padding: '2%',
+                }}
+                onPress={() => selectImage()}>
+                {/* <IconButton
                   icon="image-album"
                   iconColor="#5F4B66"
                   size={Size.iconSizeLarge}
                   onPress={() => selectImage()}
+                /> */}
+                <View style={{
+                  width:'100%',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                  <FrontPage
+                  fill={Colors.contentSecondaryLigth}
+                  width={RFPercentage(12)}
+                  height={RFPercentage(10)}
                 />
-              </View>
+                </View>
+                
+              </TouchableOpacity>
             )}
             {images.length > 0 && (
               <View
@@ -1635,7 +1651,7 @@ export const CreateProject = ({navigation, route}: Props) => {
             style={{
               width: '100%',
               marginVertical: RFPercentage(1),
-              marginTop: RFPercentage(4)
+              marginTop: RFPercentage(4),
             }}>
             <Text style={{color: 'black', marginBottom: '2%'}}>
               Añadir organizaciones al proyeto
@@ -2155,11 +2171,13 @@ export const CreateProject = ({navigation, route}: Props) => {
             <DeleteModal
               visible={deleteModal}
               hideModal={hideModalDelete}
-              onPress={() => {onDeleteProject()}}
+              onPress={() => {
+                onDeleteProject();
+              }}
               size={RFPercentage(4)}
               color={Colors.semanticWarningDark}
               label="¿Desea borrar el proyecto?"
-              subLabel=' Una vez borrado no podrá recuperarse'
+              subLabel=" Una vez borrado no podrá recuperarse"
               helper={false}
             />
           </ScrollView>

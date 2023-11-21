@@ -787,7 +787,7 @@ export const ProjectPage = (props: Props) => {
                         {creator}
                       </Text>
                     </View>
-                    <Text
+                    {/* <Text
                       style={{
                         // backgroundColor: 'white',
                         marginBottom: '1%',
@@ -796,7 +796,7 @@ export const ProjectPage = (props: Props) => {
                         color: Colors.textColorPrimary
                       }}>
                       {project?.name}
-                    </Text>
+                    </Text> */}
                     <View style={{flexDirection: 'row'}}>
                       <Text
                         style={{
@@ -954,23 +954,27 @@ const styles = StyleSheet.create({
     position: 'absolute',
     // top: heightPercentageToDP(50),
     marginTop: heightPercentageToDP(43),
-    left: RFPercentage(2),
-    right: RFPercentage(5),
+    marginLeft: RFPercentage(2),
+    // left: RFPercentage(2),
+    // right: RFPercentage(5),
     // backgroundColor: 'black',
-    padding: RFPercentage(1),
+    // padding: RFPercentage(1),
     // borderRadius: 10,
     zIndex: 1,
     color: 'black',
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
   },
   title: {
     color: 'white',
     fontSize: RFPercentage(3.5),
     fontWeight: 'bold',
     textAlign: 'left',
-    textShadowColor: 'black', // Color del contorno
-    textShadowOffset: {width: 2, height: 2}, // Ajusta según sea necesario
-    textShadowRadius: 2,
-    // backgroundColor: 'white'
+    marginHorizontal: '2%',
+    marginLeft: '3%'
+    // textShadowColor: 'black', // Color del contorno
+    // textShadowOffset: {width: 2, height: 2}, // Ajusta según sea necesario
+    // textShadowRadius: 2,
+    
   },
   buttonBack: {
     position: 'absolute',

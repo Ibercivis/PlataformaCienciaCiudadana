@@ -30,7 +30,7 @@ import {Colors} from '../../../theme/colors';
 import NotContribution from '../../../assets/icons/profile/No hay contribuciones.svg';
 import PencilSquare from '../../../assets/icons/general/pencil-square.svg';
 import {CommonActions, useFocusEffect} from '@react-navigation/native';
-import { heightPercentageToDP } from 'react-native-responsive-screen';
+import {heightPercentageToDP} from 'react-native-responsive-screen';
 
 interface Props extends StackScreenProps<StackParams, 'OrganizationPage'> {}
 
@@ -320,9 +320,10 @@ export const OrganizationPage = (props: Props) => {
                   alignContent: 'center',
                   alignSelf: 'center',
                   textAlign: 'center',
-                  fontFamily: FontFamily.NotoSansDisplayMedium,
-                    color: 'black',
-                    fontSize: FontSize.fontSizeText13
+                  color: 'black',
+                  fontSize: FontSize.fontSizeText13,
+                  fontFamily: FontFamily.NotoSansDisplayLight,
+                  fontWeight: '300',
                 }}>
                 {organization?.description}
               </Text>
@@ -353,7 +354,7 @@ export const OrganizationPage = (props: Props) => {
         </View>
 
         {/* contenedor proyectos */}
-        <View style={{...style.projectView,  height: 'auto'}}>
+        <View style={{...style.projectView, height: 'auto'}}>
           <Text
             style={{
               fontSize: FontSize.fontSizeText20,
@@ -410,8 +411,11 @@ export const OrganizationPage = (props: Props) => {
                     key={index}
                     type="projectOrganization"
                     categoryImage={index}
+                    totalLikes={item.total_likes}
+                    contribution={item.contributions}
                     title={item.name}
                     description={item.description}
+                    boolHelper={item.is_liked_by_user}
                     cover={
                       item.cover && item.cover[0] ? item.cover[0].image : ''
                     }
@@ -485,7 +489,7 @@ const style = StyleSheet.create({
   },
   organizationContainer: {
     backgroundColor: 'transparent',
-    marginBottom:'5%',
+    marginBottom: '5%',
     // height: RFPercentage(65),
     // borderBottomWidth: 1,
     alignItems: 'center',
@@ -493,7 +497,7 @@ const style = StyleSheet.create({
   },
   organizationInfoContainer: {
     // backgroundColor: 'yellow',
-    
+
     marginTop: RFPercentage(-67),
     alignItems: 'center',
     alignContent: 'center',

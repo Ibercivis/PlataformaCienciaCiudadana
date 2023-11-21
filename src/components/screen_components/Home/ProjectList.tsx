@@ -208,7 +208,7 @@ export const ProjectList = (props: Props) => {
                           fontSize: FontSize.fontSizeText13,
                           marginHorizontal: RFPercentage(1),
                         }}>
-                        1500
+                        {item.contributions}
                       </Text>
                       {true ? (
                         <HeartFill width={16} height={16} color={'#ff0000'} />

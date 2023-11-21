@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect} from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import {PermissionsContext} from '../context/PermissionsContext';
 import {LoginScreen} from '../screens/LoginScreen';
@@ -7,13 +7,20 @@ import {DrawerNavigation} from './DrawerNavigation';
 import {RegisterScreen} from '../screens/RegisterScreen';
 import {ForgotPassword} from '../screens/ForgotPassword';
 import {LoadingScreen} from '../screens/LoadingScreen';
-import { BottomTabNavigation } from './BottomTabNavigation';
-import { BackgroundLayerStyle } from '@rnmapbox/maps';
-import { MultipleNavigator } from './MultipleNavigator';
+import {BottomTabNavigation} from './BottomTabNavigation';
+import {BackgroundLayerStyle} from '@rnmapbox/maps';
+import {MultipleNavigator} from './MultipleNavigator';
+import {StyleSheet} from 'react-native';
+import {PermissionsScreen} from '../screens/PermissionsScreen';
+import SplashScreen from 'react-native-splash-screen';
 
 const Stack = createStackNavigator();
 
 export const Navigator = () => {
+
+  useEffect(() => {
+    SplashScreen.hide();
+  }, []);
   //permite conocer por medio del contexto si se han garantizado los permisos que elijamos
   const {permissions} = useContext(PermissionsContext);
 
@@ -31,93 +38,102 @@ export const Navigator = () => {
         cardStyle: {
           backgroundColor: 'transparent',
         },
-        headerTransparent: true
+        headerTransparent: true,
       }}>
-      {status !== 'authenticated' ? (
+      {permissions.locationStatus === 'granted' ? (
         <>
-          <Stack.Screen
-            name="LoginScreen"
-            component={LoginScreen}
-            options={{
-              // transitionSpec: {
-              //   open: config,
-              //   close: config,
-              // },
-              cardStyleInterpolator: ({ current, next, layouts }) => {
-                return {
-                  cardStyle:{
-                    transform:[
-                      {
-                        translateX: current.progress.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [-layouts.screen.width, 0],
-                        }),
+          {status !== 'authenticated' ? (
+            <>
+              <Stack.Screen
+                name="LoginScreen"
+                component={LoginScreen}
+                options={{
+                  // transitionSpec: {
+                  //   open: config,
+                  //   close: config,
+                  // },
+                  cardStyleInterpolator: ({current, next, layouts}) => {
+                    return {
+                      cardStyle: {
+                        transform: [
+                          {
+                            translateX: current.progress.interpolate({
+                              inputRange: [0, 1],
+                              outputRange: [-layouts.screen.width, 0],
+                            }),
+                          },
+                          {
+                            scale: 1,
+                          },
+                        ],
                       },
-                      {
-                        scale: 1
-                      }
-                    ]
-                  }
-                }
-              }
-            }}
-          />
-          <Stack.Screen
-            name="RegisterScreen"
-            component={RegisterScreen}
-            options={{
-              // transitionSpec: {
-              //   open: config,
-              //   close: config,
-              // },
-              cardStyleInterpolator: ({ current, next, layouts }) => {
-                return {
-                  cardStyle:{
-                    transform:[
-                      {
-                        translateX: current.progress.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [layouts.screen.width, 0],
-                        }),
+                    };
+                  },
+                }}
+              />
+              <Stack.Screen
+                name="RegisterScreen"
+                component={RegisterScreen}
+                options={{
+                  // transitionSpec: {
+                  //   open: config,
+                  //   close: config,
+                  // },
+                  cardStyleInterpolator: ({current, next, layouts}) => {
+                    return {
+                      cardStyle: {
+                        transform: [
+                          {
+                            translateX: current.progress.interpolate({
+                              inputRange: [0, 1],
+                              outputRange: [layouts.screen.width, 0],
+                            }),
+                          },
+                          {
+                            scale: 1,
+                          },
+                        ],
                       },
-                      {
-                        scale: 1
-                      }
-                    ]
-                  }
-                }
-              }
-            }}
-          />
-          <Stack.Screen
-            name="ForgotPassword"
-            component={ForgotPassword}
-            options={{
-              // transitionSpec: {
-              //   open: config,
-              //   close: config,
-              // },
-              cardStyleInterpolator: ({ current, next, layouts }) => {
-                return {
-                  cardStyle:{
-                    transform:[
-                      {
-                        translateX: current.progress.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [layouts.screen.width, 0],
-                        }),
-                      }
-                    ]
-                  }
-                }
-              }
-            }}
-          />
+                    };
+                  },
+                }}
+              />
+              <Stack.Screen
+                name="ForgotPassword"
+                component={ForgotPassword}
+                options={{
+                  // transitionSpec: {
+                  //   open: config,
+                  //   close: config,
+                  // },
+                  cardStyleInterpolator: ({current, next, layouts}) => {
+                    return {
+                      cardStyle: {
+                        transform: [
+                          {
+                            translateX: current.progress.interpolate({
+                              inputRange: [0, 1],
+                              outputRange: [layouts.screen.width, 0],
+                            }),
+                          },
+                        ],
+                      },
+                    };
+                  },
+                }}
+              />
+            </>
+          ) : (
+            // <Stack.Screen name="DrawerNavigation" component={DrawerNavigation} />
+            // <Stack.Screen name="BottomTabNavigation" component={BottomTabNavigation} />
+            <Stack.Screen
+              name="MultipleNavigator"
+              component={MultipleNavigator}
+            />
+          )}
         </>
       ) : (
-        // <Stack.Screen name="DrawerNavigation" component={DrawerNavigation} />
-        // <Stack.Screen name="BottomTabNavigation" component={BottomTabNavigation} />
-        <Stack.Screen name="MultipleNavigator" component={MultipleNavigator} />
+        <Stack.Screen name="PermissionsScreen" component={PermissionsScreen} />
       )}
 
       {/* {permissions.locationStatus === 'granted' ? (
@@ -138,6 +154,26 @@ const config = {
     overshootClamping: true,
     restDisplacementThreshold: 1.01,
     restSpeedThreshold: 1.01,
-    
   },
 };
+
+const stylesPermission = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  touchable: {
+    borderWidth: 1,
+    borderRadius: 25,
+    borderColor: 'grey',
+    margin: 5,
+    padding: 10,
+    backgroundColor: 'white',
+  },
+  touchableText: {
+    fontWeight: 'bold',
+    fontSize: 20,
+    color: 'black',
+  },
+});
