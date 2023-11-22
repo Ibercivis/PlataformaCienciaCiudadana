@@ -5,6 +5,7 @@ import {
   FlatList,
   Image,
   ImageBackground,
+  Platform,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -821,9 +822,9 @@ export const Profile = ({navigation}: Props) => {
     // projectListApi(); //este habrá que moverlo a dentro del userDataApi para que cargue en el futuro los proyectos que el tiene favs y demás
   }, []);
 
-  // useEffect(() => {
-  //   setObject(profile);
-  // }, [userProfile]);
+  useEffect(() => {
+    userDataApi()
+  }, [userEdit]);
 
   useEffect(() => {
     getHastagApi();
@@ -846,7 +847,10 @@ export const Profile = ({navigation}: Props) => {
         },
       });
       setLikedProject(resp.data.filter(x => x.is_liked_by_user === true));
-      setContributionProject(resp.data.filter(x => x.contributions));
+      //convierte la lista de de participated a una de valores id solo
+      const idsListParticipated = userProfile.participated_projects.map(obj => obj.id)
+      setContributionProject(resp.data.filter(x => idsListParticipated.includes(x.id)));
+      console.log(idsListParticipated)
       setCreatedProject(resp.data.filter(x => x.creator === user.pk));
     } catch {}
   };
@@ -1511,7 +1515,7 @@ export const Profile = ({navigation}: Props) => {
                   }}>
                   <Text style={{color: 'black',
                       fontFamily: FontFamily.NotoSansDisplayMedium,
-                      fontSize: FontSize.fontSizeText15,}}>Organización</Text>
+                      fontSize: FontSize.fontSizeText15}}>Organización</Text>
 
                   <TouchableOpacity
                     style={{backgroundColor: 'transparent'}}
@@ -1567,10 +1571,10 @@ export const Profile = ({navigation}: Props) => {
                           alignItems: 'center',
                           alignContent: 'center',
                           textAlign: 'center',
-                          // backgroundColor: 'blue',
                           height: Size.window.height * 0.04,
+                          paddingTop: Platform.OS === 'ios' ? RFPercentage(0.9) : 0
                         }}>
-                        ¿Perteneces a una organización?
+                        {organization ? 'organization name' : '¿Perteneces a una organización?'}
                       </Text>
                       {organization && (
                         <View

@@ -862,6 +862,7 @@ export const Home = ({navigation}: Props) => {
                                   onPress={() => {
                                     onProjectPress(item.id);
                                   }}
+                                  contribution={item.contributions}
                                   title={item.name}
                                   boolHelper={item.is_liked_by_user}
                                   description={
@@ -1072,7 +1073,7 @@ export const Home = ({navigation}: Props) => {
                                   key={index}
                                   type="organization"
                                   categoryImage={index}
-                                  cover={x.cover ? x.cover : ''}
+                                  cover={x.logo ? x.logo : ''}
                                   title={x.principalName}
                                   description={x.description}
                                   onPress={() =>
@@ -1174,6 +1175,7 @@ export const Home = ({navigation}: Props) => {
                           totalLikes={x.total_likes ? x.total_likes : 0}
                           boolHelper={x.is_liked_by_user}
                           description={x.description}
+                          contribution={x.contributions}
                           list={returnTopics(x.topic)}
                           onPress={() => {
                             onProjectPress(x.id);

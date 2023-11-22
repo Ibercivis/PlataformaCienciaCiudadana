@@ -3,11 +3,10 @@ import {useLocation} from '../../../hooks/useLocation';
 import {LoadingScreen} from '../../../screens/LoadingScreen';
 import Mapbox from '@rnmapbox/maps';
 import {useForm} from '../../../hooks/useForm';
-import {Button, Image, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {Button, Image, ScrollView, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import {InfoModal, InfoModalMap, SaveProyectModal} from '../../utility/Modals';
 import {RFPercentage} from 'react-native-responsive-fontsize';
 import {Colors} from '../../../theme/colors';
-import {TouchableOpacity} from 'react-native';
 import Plus from '../../../assets/icons/map/plus-map.svg';
 import Compass from '../../../assets/icons/map/Compass.svg';
 import CardMap from '../../../assets/icons/map/card-map.svg';
@@ -1030,6 +1029,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                                 onPress={() => {
                                   setSelectedObservation(x);
                                   setShowSelectedObservation(x);
+                                  console.log('aprieta la marca')
                                 }}>
                                 <View
                                   style={{
@@ -1064,7 +1064,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                             // coordinate={[-6.300905, 36.53777]}
                             coordinate={parsePoint(x.geoposition)}>
                             <TouchableOpacity
-                              onPress={() => console.log(x.geoposition)}>
+                              onPress={() => console.log('touchable tochable')}>
                               <View
                                 style={{
                                   alignItems: 'center',
