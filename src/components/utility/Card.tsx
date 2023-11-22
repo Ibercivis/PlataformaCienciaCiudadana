@@ -680,7 +680,15 @@ export const Card = ({
                       {contribution}
                     </Text>
                     {/* <IconBootstrap name={'plus'} size={20} color={'black'} /> */}
-                    <Heart width={16} height={16} color={'#000000'} />
+                    {boolHelper ? (
+                      <View style={{top: 1}}>
+                        <HeartFill width={16} height={16} color={'#ff0000'} />
+                      </View>
+                    ) : (
+                      <View style={{top: 1}}>
+                        <Heart width={16} height={16} color={'#000000'} />
+                      </View>
+                    )}
                     <Text
                       style={{
                         fontSize: FontSize.fontSizeText13,
@@ -759,8 +767,8 @@ export const Card = ({
                   <Image
                     source={
                       cover !== ''
-                        ? {uri: cover}
-                        : require('../../assets/backgrounds/nuevaorganizacion.jpg')
+                      ? {uri: cover}
+                      : require('../../assets/backgrounds/nuevoproyecto.jpg')
                     }
                     style={{
                       width: '100%',
@@ -798,8 +806,8 @@ export const Card = ({
                     marginBottom: '4%',
                     fontSize: FontSize.fontSizeText13,
                   }}>
-                  {description.length > 150
-                    ? description.slice(0, 150) + '...'
+                  {description.length > 120
+                    ? description.slice(0, 120) + '...'
                     : description}
 
                     
