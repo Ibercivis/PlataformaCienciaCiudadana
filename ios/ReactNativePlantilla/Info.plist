@@ -48,6 +48,8 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We need access to your photo library to pick images.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Necesito saber tu ubicación para mostrar el mapa</string>
 	<key>NSLocationAlwaysUsageDescription</key>
