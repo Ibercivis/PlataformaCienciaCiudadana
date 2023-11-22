@@ -23,7 +23,7 @@ target 'ReactNativePlantilla' do
   # pod 'Permission-Microphone', :path => "#{permissions_path}/Microphone/Permission-Microphone.podspec"
   # pod 'Permission-Motion', :path => "#{permissions_path}/Motion/Permission-Motion.podspec"
   # pod 'Permission-Notifications', :path => "#{permissions_path}/Notifications/Permission-Notifications.podspec"
-  # pod 'Permission-PhotoLibrary', :path => "#{permissions_path}/PhotoLibrary/Permission-PhotoLibrary.podspec"
+  pod 'Permission-PhotoLibrary', :path => "#{permissions_path}/PhotoLibrary/Permission-PhotoLibrary.podspec"
   # pod 'Permission-Reminders', :path => "#{permissions_path}/Reminders/Permission-Reminders.podspec"
   # pod 'Permission-Siri', :path => "#{permissions_path}/Siri/Permission-Siri.podspec"
   # pod 'Permission-SpeechRecognition', :path => "#{permissions_path}/SpeechRecognition/Permission-SpeechRecognition.podspec"
