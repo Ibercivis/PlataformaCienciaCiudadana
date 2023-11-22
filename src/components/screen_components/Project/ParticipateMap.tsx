@@ -1019,6 +1019,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                           <View key={index}>
                             <MarkerView
                               // coordinate={[-6.300905, 36.53777]}
+                              onTouchStart={() => console.log('aprieta la marca')}
                               coordinate={[
                                 x.geoposition.point.latitude,
                                 x.geoposition.point.longitude,
@@ -1029,7 +1030,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                                 onPress={() => {
                                   setSelectedObservation(x);
                                   setShowSelectedObservation(x);
-                                  console.log('aprieta la marca')
+                                  // console.log('aprieta la marca')
                                 }}>
                                 <View
                                   style={{
@@ -1057,6 +1058,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                   })}
                 {observationListCreator.length > 0 &&
                   observationListCreator.map((x, index) => {
+                    console.log(x.geoposition)
                     if (x.geoposition) {
                       return (
                         <View key={index}>
