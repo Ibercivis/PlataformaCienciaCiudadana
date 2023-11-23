@@ -11,10 +11,12 @@ import {
 // aquí se pondría el permiso
 export interface PermissionsState {
   locationStatus: PermissionStatus;
+  camera: PermissionStatus;
 }
 
 export const permissionInitState: PermissionsState = {
   locationStatus: 'unavailable',
+  camera: 'unavailable',
 };
 
 type PermissionsContextProps = {
@@ -39,9 +41,11 @@ export const PermissionsProvider = ({children}: any) => {
 
   const askLocationPermission = async () => {
     let permissionStatus: PermissionStatus;
+    let permissionStatusCamera: PermissionStatus;
 
     if (Platform.OS === 'ios') {
       permissionStatus = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+      permissionStatusCamera = await request(PERMISSIONS.IOS.CAMERA);
     } else {
       permissionStatus = await request(
         PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
@@ -53,25 +57,56 @@ export const PermissionsProvider = ({children}: any) => {
           buttonPositive: 'OK',
         },
       );
-      console.log(permissionStatus)
+      permissionStatusCamera = await request(PERMISSIONS.ANDROID.CAMERA, {
+        title: 'Camera Permission',
+        // message: 'Get your location to post request',
+        buttonNeutral: 'Ask Me Later',
+        buttonNegative: 'Cancel',
+        buttonPositive: 'OK',
+      });
     }
 
     if (permissionStatus === 'blocked') {
       openSettings();
     }
-    setPermissions({...permissions, locationStatus: permissionStatus});
+    if (permissionStatusCamera === 'blocked') {
+      openSettings();
+    }
+    setPermissions({
+      ...permissions,
+      locationStatus: permissionStatus,
+      camera: permissionStatusCamera,
+    });
   };
 
   const checkLocationPErmission = async () => {
     let permissionStatus: PermissionStatus;
+    let permissionStatusCamera: PermissionStatus;
 
     if (Platform.OS === 'ios') {
       permissionStatus = await check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+      permissionStatusCamera = await check(PERMISSIONS.IOS.CAMERA);
     } else {
       permissionStatus = await check(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
+      permissionStatusCamera = await check(PERMISSIONS.ANDROID.CAMERA);
     }
-    console.log(permissionStatus)
-    setPermissions({...permissions, locationStatus: permissionStatus});
+    setPermissions({
+      ...permissions,
+      locationStatus: permissionStatus,
+      camera: permissionStatusCamera,
+    });
+  };
+
+  const checkCameraPermission = async () => {
+    let permissionStatus: PermissionStatus;
+
+    if (Platform.OS === 'ios') {
+      permissionStatus = await check(PERMISSIONS.IOS.CAMERA);
+    } else {
+      permissionStatus = await check(PERMISSIONS.ANDROID.CAMERA);
+    }
+    console.log('camera permission ' + permissionStatus);
+    setPermissions({...permissions, camera: permissionStatus});
   };
 
   return (

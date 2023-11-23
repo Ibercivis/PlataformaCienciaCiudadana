@@ -3,7 +3,15 @@ import {useLocation} from '../../../hooks/useLocation';
 import {LoadingScreen} from '../../../screens/LoadingScreen';
 import Mapbox from '@rnmapbox/maps';
 import {useForm} from '../../../hooks/useForm';
-import {Button, Image, ScrollView, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import {
+  Button,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+} from 'react-native';
 import {InfoModal, InfoModalMap, SaveProyectModal} from '../../utility/Modals';
 import {RFPercentage} from 'react-native-responsive-fontsize';
 import {Colors} from '../../../theme/colors';
@@ -38,7 +46,7 @@ import {FontSize} from '../../../theme/fonts';
 import {useDateTime} from '../../../hooks/useDateTime';
 import Toast from 'react-native-toast-message';
 import {project} from '../../../../react-native.config';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 
 Mapbox.setWellKnownTileServer('mapbox');
 Mapbox.setAccessToken(
@@ -86,14 +94,14 @@ export const ParticipateMap = ({navigation, route}: Props) => {
     nav.getParent()?.setOptions({
       tabBarStyle: {
         // display: "none",
-        opacity: 0
-      }
+        opacity: 0,
+      },
     });
-    return () => nav.getParent()?.setOptions({
-      tabBarStyle: undefined
-    });
-  }, [nav])
-  
+    return () =>
+      nav.getParent()?.setOptions({
+        tabBarStyle: undefined,
+      });
+  }, [nav]);
 
   //#region VARIABLES
   // map refs
@@ -755,7 +763,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
         if (image.key !== undefined)
           formData.append(image.key.toString(), image.value);
       });
-    } 
+    }
     // if (showSelectedObservation.images && showSelectedObservation.images.length> 0) {
     //   console.log('entra en images')
     //   showSelectedObservation.images.forEach(image => {
@@ -973,8 +981,34 @@ export const ParticipateMap = ({navigation, route}: Props) => {
     // return <LoadingScreen />;
     return (
       <View style={{justifyContent: 'center', alignItems: 'center', flex: 1}}>
-        <Text style={{color: Colors.textColorPrimary, marginBottom: RFPercentage(3)}}>Habilita el GPS para poder acceder al mapa</Text>
-        <Button title="Recargar pantalla" onPress={getCurrentLocation} />
+        <Text
+          style={{
+            color: Colors.textColorPrimary,
+            marginBottom: RFPercentage(3),
+          }}>
+          Habilita el GPS para poder acceder al mapa
+        </Text>
+        <TouchableOpacity
+          style={{
+            minWidth: RFPercentage(8),
+            marginBottom: RFPercentage(2),
+            marginTop: RFPercentage(2),
+            backgroundColor: 'white',
+            padding: RFPercentage(1),
+            borderRadius: 10,
+            paddingVertical: '5%',
+            shadowColor: '#000',
+            shadowOffset: {
+              width: 0,
+              height: 0.1,
+            },
+            shadowOpacity: 0.2,
+            shadowRadius: 1.41,
+            elevation: 5,
+          }}
+          onPress={getCurrentLocation}>
+          <Text>Recargar la pantalla</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -1019,7 +1053,9 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                           <View key={index}>
                             <MarkerView
                               // coordinate={[-6.300905, 36.53777]}
-                              onTouchStart={() => console.log('aprieta la marca')}
+                              onTouchStart={() =>
+                                console.log('aprieta la marca')
+                              }
                               coordinate={[
                                 x.geoposition.point.latitude,
                                 x.geoposition.point.longitude,
@@ -1058,7 +1094,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                   })}
                 {observationListCreator.length > 0 &&
                   observationListCreator.map((x, index) => {
-                    console.log(x.geoposition)
+                    console.log(x.geoposition);
                     if (x.geoposition) {
                       return (
                         <View key={index}>

@@ -17,15 +17,14 @@ import SplashScreen from 'react-native-splash-screen';
 const Stack = createStackNavigator();
 
 export const Navigator = () => {
-
-  useEffect(() => {
-    SplashScreen.hide();
-  }, []);
   //permite conocer por medio del contexto si se han garantizado los permisos que elijamos
   const {permissions} = useContext(PermissionsContext);
 
   //si no está logged, se le redirigirá hasta la pantalla de login
   const {status} = useContext(AuthContext);
+  useEffect(() => {
+    SplashScreen.hide();
+  }, []);
 
   if (status === 'checking') {
     return <LoadingScreen />;
@@ -40,7 +39,8 @@ export const Navigator = () => {
         },
         headerTransparent: true,
       }}>
-      {permissions.locationStatus === 'granted' ? (
+      {permissions.locationStatus === 'granted' &&
+      permissions.camera === 'granted' ? (
         <>
           {status !== 'authenticated' ? (
             <>

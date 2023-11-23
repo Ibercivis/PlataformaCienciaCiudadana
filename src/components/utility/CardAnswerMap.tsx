@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -6,11 +6,13 @@ import {
   TouchableOpacity,
   Image,
   ImageBackground,
+  TouchableWithoutFeedback,
+  Modal,
 } from 'react-native';
 import {RFPercentage} from 'react-native-responsive-fontsize';
 import {Question} from '../../interfaces/interfaces';
 import {InputText} from './InputText';
-import {IconButton, TextInput} from 'react-native-paper';
+import {IconButton, Portal, Provider, TextInput} from 'react-native-paper';
 import {FontSize, FontFamily} from '../../theme/fonts';
 import ImagePicker from 'react-native-image-crop-picker';
 import PlusImg from '../../assets/icons/general/Plus-img.svg';
@@ -19,6 +21,8 @@ import FrontPage from '../../assets/icons/project/image.svg';
 import {Size} from '../../theme/size';
 import {Colors} from '../../theme/colors';
 import {useDateTime} from '../../hooks/useDateTime';
+import { PermissionsContext } from '../../context/PermissionsContext';
+import Toast from 'react-native-toast-message';
 
 interface Props {
   //   onChangeText?: (fieldName: string, value: any) => void;
@@ -49,40 +53,97 @@ export const CardAnswerMap = ({
   const [images, setImages] = useState<any>();
   const [imageBlob, setImageBlob] = useState<any>();
 
+  const [imageType, setImageType] = useState(false);
+  const showModalImageType = () => setImageType(true);
+  const hideModalImageType = () => setImageType(false);
+
   const {getFormattedDateTime} = useDateTime();
 
-  const selectImage = () => {
+  const {permissions} =
+    useContext(PermissionsContext);
+
+  const selectImage = (type: number) => {
     setImageBlob({});
     setImages({});
-    ImagePicker.openPicker({
-      mediaType: 'photo',
-      multiple: false,
-      quality: 1,
-      maxWidth: 300,
-      maxHeight: 300,
-      includeBase64: true,
-    })
-      .then(response => {
-        //   console.log(JSON.stringify(response[0].sourceURL));
-        if (response && response.data) {
-          if (response.size < 4 * 1024 * 1024) {
-            const newImage = response;
-            setImages(newImage);
-            const texto: string = getFormattedDateTime();
-            onChangeText({
-              uri: newImage.path, // Debes ajustar esto según la estructura de response
-              type: newImage.mime, // Tipo MIME de la imagen
-              name: texto + 'cover.jpg', // Nombre de archivo de la imagen (puedes cambiarlo)
-            });
-          } else {
-            showModal(true);
-            setImages(undefined);
-          }
-        }
-      })
-      .catch(err => {
-        showModal(true);
+    if (permissions.camera !== 'granted') {
+      Toast.show({
+        type: 'error',
+        text1: 'Sin permisos',
+        text2: 'No se concedieron los permisos para acceder a la camara',
       });
+      return;
+    }
+    switch (type) {
+      case 1: //openPicker
+        ImagePicker.openPicker({
+          mediaType: 'photo',
+          multiple: false,
+          quality: 1,
+          maxWidth: 300,
+          maxHeight: 300,
+          includeBase64: true,
+        })
+          .then(response => {
+            //   console.log(JSON.stringify(response[0].sourceURL));
+            if (response && response.data) {
+              if (response.size < 4 * 1024 * 1024) {
+                const newImage = response;
+                setImages(newImage);
+                const texto: string = getFormattedDateTime();
+                onChangeText({
+                  uri: newImage.path, // Debes ajustar esto según la estructura de response
+                  type: newImage.mime, // Tipo MIME de la imagen
+                  name: texto + 'cover.jpg', // Nombre de archivo de la imagen (puedes cambiarlo)
+                });
+              } else {
+                showModal(true);
+                setImages(undefined);
+              }
+            }
+          })
+          .catch(err => {
+            setImageBlob({});
+            setImages({});
+            showModal(true);
+          });
+        break;
+
+      case 2: //openCamera
+        ImagePicker.openCamera({
+          mediaType: 'photo',
+          multiple: false,
+          quality: 1,
+          maxWidth: 300,
+          maxHeight: 300,
+          includeBase64: true,
+        })
+          .then(response => {
+            //   console.log(JSON.stringify(response[0].sourceURL));
+            if (response && response.data) {
+              if (response.size < 4 * 1024 * 1024) {
+                const newImage = response;
+                setImages(newImage);
+                const texto: string = getFormattedDateTime();
+                onChangeText({
+                  uri: newImage.path, // Debes ajustar esto según la estructura de response
+                  type: newImage.mime, // Tipo MIME de la imagen
+                  name: texto + 'cover.jpg', // Nombre de archivo de la imagen (puedes cambiarlo)
+                });
+              } else {
+                showModal(true);
+                setImages(undefined);
+              }
+            }
+          })
+          .catch(err => {
+            setImageBlob({});
+            setImages({});
+            showModal(true);
+          });
+        break;
+    }
+
+    hideModalImageType();
   };
 
   //#region SECCIÓN RENDERS
@@ -321,7 +382,7 @@ export const CardAnswerMap = ({
                         padding: '2%',
                         //   paddingBottom: '2%'
                       }}>
-                      <TouchableOpacity onPress={() => selectImage()}>
+                      <TouchableOpacity onPress={() => showModalImageType()}>
                         <FrontPage
                           fill={'#000'}
                           width={RFPercentage(7)}
@@ -374,7 +435,7 @@ export const CardAnswerMap = ({
                       />
 
                       <TouchableOpacity
-                        onPress={selectImage}
+                        onPress={showModalImageType}
                         style={{
                           width: RFPercentage(4),
                           position: 'absolute',
@@ -419,7 +480,7 @@ export const CardAnswerMap = ({
                       />
 
                       <TouchableOpacity
-                        onPress={selectImage}
+                        onPress={showModalImageType}
                         style={{
                           width: RFPercentage(4),
                           position: 'absolute',
@@ -477,7 +538,57 @@ export const CardAnswerMap = ({
   };
   //#endregion
 
-  return <View style={styles.card}>{card(question, index)}</View>;
+  return (
+    <View style={styles.card}>
+      {card(question, index)}
+      <Provider>
+        <Portal>
+          <Modal visible={imageType} transparent>
+            <TouchableWithoutFeedback onPress={hideModalImageType}>
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <View
+                  style={{
+                    ...stylesModal.container,
+                  }}>
+                  <View
+                    style={{
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      marginTop: '5%',
+                      width: '100%',
+                    }}>
+                    <TouchableOpacity
+                      activeOpacity={0.9}
+                      style={{...stylesModal.button}}
+                      onPress={() => selectImage(1)}>
+                      <Text
+                        style={{
+                          ...stylesModal.textButton,
+                        }}>
+                        Galería
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      activeOpacity={0.9}
+                      style={{...stylesModal.button}}
+                      onPress={() => selectImage(2)}>
+                      <Text style={stylesModal.textButton}>Camara</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
+          </Modal>
+        </Portal>
+      </Provider>
+      <Toast position='bottom' />
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
@@ -498,7 +609,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 6.2,
     shadowRadius: 4.41,
-    elevation: 4,
+    elevation: 1,
   },
   container: {
     marginBottom: 8, // Ajusta el margen inferior según tus preferencias
@@ -511,5 +622,71 @@ const styles = StyleSheet.create({
     fontWeight: '300',
     alignSelf: 'center',
     backgroundColor: 'transparent',
+  },
+});
+
+const stylesModal = StyleSheet.create({
+  container: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    width: '70%',
+    alignItems: 'center',
+    height: '20%',
+    justifyContent: 'center',
+    paddingHorizontal: '11%',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 4.41,
+    elevation: 4,
+  },
+  openButton: {
+    marginBottom: 20,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    width: '70%',
+  },
+  acceptButton: {
+    marginTop: '18%',
+    borderRadius: 10,
+    width: '50%',
+    alignSelf: 'center',
+  },
+  buttonLabel: {
+    fontWeight: 'bold',
+  },
+  button: {
+    minWidth: RFPercentage(8),
+    marginBottom: RFPercentage(2),
+    backgroundColor: 'white',
+    padding: RFPercentage(1),
+    borderRadius: 10,
+    paddingVertical: '5%',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 0.1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
+  },
+  textButton: {
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    alignSelf: 'center',
   },
 });
