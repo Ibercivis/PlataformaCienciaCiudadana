@@ -2,7 +2,7 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:/Users/ibercivis-development/Desktop/Trabajo/Geonity/PlataformaCienciaCiudadana/ios/Geonity.xcodeproj">
+      location = "group:/Users/ibercivis-development/Desktop/Trabajo/Geonity/PlataformaCienciaCiudadana/ios/ReactNativePlantilla.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:Pods/Pods.xcodeproj">
