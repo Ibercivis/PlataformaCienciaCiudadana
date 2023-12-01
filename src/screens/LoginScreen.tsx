@@ -42,7 +42,7 @@ import {
   heightPercentageToDP,
   widthPercentageToDP,
 } from 'react-native-responsive-screen';
-import {SaveProyectModal} from '../components/utility/Modals';
+import {PoliciesModal, SaveProyectModal} from '../components/utility/Modals';
 import Toast from 'react-native-toast-message';
 
 interface Props extends StackScreenProps<any, any> {}
@@ -109,6 +109,10 @@ export const LoginScreen = ({navigation, route}: Props) => {
   const showModalSave = () => setSaveModal(true);
   const hideModalSave = () => setSaveModal(false);
 
+  const [policiesModal, setPoliciesModal] = useState(false);
+  const showModalPolicies = () => setPoliciesModal(true);
+  const hideModalPolicies = () => setPoliciesModal(false);
+
   //#endregion
 
   //#region FORGET PASS
@@ -160,7 +164,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
       // text2: 'No se han podido obtener los datos, por favor reinicie la app',
       text2: errorMessage,
     });
-    removeError()
+    removeError();
   }, [errorMessage]);
 
   //#endregion
@@ -295,7 +299,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
   //#region METHODS/ANIMATED-TIMMING
   const onTouchForgetPass = () => {
     setOnTouchBorderWidth(1.5);
-    setNumberScreen(3)
+    setNumberScreen(3);
     setTimeout(() => {
       // navigation.replace('ForgotPassword');
       setNameScreen('forgot');
@@ -303,51 +307,63 @@ export const LoginScreen = ({navigation, route}: Props) => {
     // setIsAnimated(true);
     Animated.timing(spinValue, {
       toValue: 10,
-      duration: 850,
+      duration: 450,
       useNativeDriver: true,
     }).start();
     Animated.timing(transitionSpinValue, {
       toValue: 10,
-      duration: 1200,
+      duration: 800,
       useNativeDriver: true,
     }).start();
+    clearErrors();
   };
 
   const onTouchRegister = () => {
     setOnTouchBorderWidth2(1.5);
-    setNumberScreen(2)
+    setNumberScreen(2);
     setTimeout(() => {
       // navigation.replace('ForgotPassword');
       setNameScreen('register');
     }, 160);
     Animated.timing(spinValue, {
       toValue: 10,
-      duration: 850,
+      duration: 650,
       useNativeDriver: true,
     }).start();
     Animated.timing(transitionSpinValue, {
       toValue: 10,
-      duration: 1200,
+      duration: 800,
       useNativeDriver: true,
     }).start();
+    clearErrors();
   };
 
   const onTouchLogin = () => {
     setOnTouchBorderWidth3(1.5);
-    setNumberScreen(1)
+    setNumberScreen(1);
     setTimeout(() => {
       // setNameScreen('login');
     }, 160);
     Animated.timing(spinValue, {
       toValue: 0,
-      duration: 850,
+      duration: 650,
       useNativeDriver: true,
     }).start();
     Animated.timing(transitionSpinValue, {
       toValue: 0,
-      duration: 1200,
+      duration: 800,
       useNativeDriver: true,
     }).start();
+    clearErrors();
+  };
+
+  const clearErrors = () => {
+    setPassError(false);
+    setUserError(false);
+    setUsernameError(false);
+    setPassword1Error(false);
+    setPassword2Error(false);
+    setMailRegisterError(false);
   };
 
   //#endregion
@@ -403,7 +419,13 @@ export const LoginScreen = ({navigation, route}: Props) => {
                     keyboardType="email-address"
                     multiline={false}
                     numOfLines={1}
-                    onChangeText={value => onChangeRegister(value, 'username')}
+                    isValid={!usernameError}
+                    onChangeText={value => {
+                      onChangeRegister(value, 'username');
+                      if (usernameError) {
+                        setUsernameError(false);
+                      }
+                    }}
                   />
                 </View>
                 {usernameError ? (
@@ -453,7 +475,13 @@ export const LoginScreen = ({navigation, route}: Props) => {
                     keyboardType="email-address"
                     multiline={false}
                     numOfLines={1}
-                    onChangeText={value => onChangeRegister(value, 'email')}
+                    isValid={!mailRegisterError}
+                    onChangeText={value => {
+                      onChangeRegister(value, 'email');
+                      if (mailRegisterError) {
+                        setMailRegisterError(false);
+                      }
+                    }}
                   />
                 </View>
                 {mailRegisterError ? (
@@ -504,7 +532,13 @@ export const LoginScreen = ({navigation, route}: Props) => {
                     multiline={false}
                     numOfLines={1}
                     isSecureText={true}
-                    onChangeText={value => onChangeRegister(value, 'password1')}
+                    isValid={!password1Error}
+                    onChangeText={value => {
+                      onChangeRegister(value, 'password1');
+                      if (password1Error) {
+                        setPassword1Error(false);
+                      }
+                    }}
                   />
                 </View>
                 {password1Error ? (
@@ -555,7 +589,13 @@ export const LoginScreen = ({navigation, route}: Props) => {
                     multiline={false}
                     numOfLines={1}
                     isSecureText={true}
-                    onChangeText={value => onChangeRegister(value, 'password2')}
+                    isValid={!password2Error}
+                    onChangeText={value => {
+                      onChangeRegister(value, 'password2');
+                      if (password2Error) {
+                        setPassword2Error(false);
+                      }
+                    }}
                   />
                 </View>
                 {password2Error ? (
@@ -580,7 +620,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
               <CustomButton
                 backgroundColor={Colors.secondaryDark}
                 label={translate.strings.register_screen[0].register_button}
-                onPress={() => onRegister()}
+                onPress={() => showModalPolicies()}
               />
               {/* divider */}
               <View
@@ -819,7 +859,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
         contentContainerStyle={{flexGrow: 1}}
         keyboardShouldPersistTaps="handled"> */}
       {/* Ocultar la barra de estado */}
-      <StatusBar hidden />
+      {/* <StatusBar hidden /> */}
       <KeyboardAvoidingView style={styles.parent}>
         {/* contenedor de formas geometricas y titulo */}
         <SafeAreaView style={styles.child1}>
@@ -1076,7 +1116,19 @@ export const LoginScreen = ({navigation, route}: Props) => {
             onPress={hideModalSave}
             size={RFPercentage(8)}
             color={Colors.semanticWarningDark}
-            label="No se pudo registrar, compruebe que el correo exista e intentelo de nuevo"
+            label="No pudo registrarse. Compruebe que los datos son correctos e intentelo de nuevo"
+            helper={false}
+          />
+
+          <PoliciesModal
+            visible={policiesModal}
+            hideModal={hideModalPolicies}
+            onPress={() => {
+              onRegister(), hideModalPolicies();
+            }}
+            size={RFPercentage(8)}
+            color={Colors.semanticWarningDark}
+            label=""
             helper={false}
           />
         </ScrollView>

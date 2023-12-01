@@ -75,7 +75,7 @@ const CenterButtonTab = () => {
       {/* <Text style={{color: 'white'}}>Botón</Text> */}
 
       <Modal
-        animationType="slide"
+        animationType="fade"
         transparent={true}
         visible={modalVisible}
         onRequestClose={closeCategoryModal}>

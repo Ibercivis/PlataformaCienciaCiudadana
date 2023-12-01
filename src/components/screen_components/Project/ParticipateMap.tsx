@@ -79,6 +79,30 @@ export const ParticipateMap = ({navigation, route}: Props) => {
   const {currentISODateTime} = useDateTime();
   const nav = useNavigation();
 
+  // useLayoutEffect(() => {
+  //   navigation.getParent()?.setOptions({
+  //     tabBarStyle: {
+  //       display: "none",
+  //     }
+  //   });
+  //   return () => navigation.getParent()?.setOptions({
+  //     tabBarStyle: undefined
+  //   });
+  // }, [navigation]);
+
+  useEffect(() => {
+    nav.getParent()?.setOptions({
+      tabBarStyle: {
+        // display: "none",
+        opacity: 0,
+      },
+    });
+    return () =>
+      nav.getParent()?.setOptions({
+        tabBarStyle: undefined,
+      });
+  }, [nav]);
+
   //#region VARIABLES
   // map refs
   const mapViewRef = useRef<Mapbox.MapView>();
@@ -1027,24 +1051,24 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                       if (selectedObservation.id !== x.id) {
                         return (
                           <View key={index}>
-                            <TouchableOpacity
-                              disabled={isCreatingObservation}
-                              onPress={() => {
-                                setSelectedObservation(x);
-                                setShowSelectedObservation(x);
-                                // console.log('aprieta la marca')
-                              }}>
-                              <MarkerView
-                                // coordinate={[-6.300905, 36.53777]}
-                                onTouchStart={() =>
-                                  console.log('aprieta la marca')
-                                }
-                                coordinate={[
-                                  x.geoposition.point.latitude,
-                                  x.geoposition.point.longitude,
-                                ]}>
-                                {/* sustituir esto por una imagen */}
-
+                            <MarkerView
+                              // coordinate={[-6.300905, 36.53777]}
+                              onTouchStart={() =>
+                                console.log('aprieta la marca')
+                              }
+                              coordinate={[
+                                x.geoposition.point.latitude,
+                                x.geoposition.point.longitude,
+                              ]}>
+                              {/* sustituir esto por una imagen */}
+                              <TouchableOpacity
+                                // style={{backgroundColor: 'cyan'}}
+                                disabled={isCreatingObservation}
+                                onPress={() => {
+                                  setSelectedObservation(x);
+                                  setShowSelectedObservation(x);
+                                  // console.log('aprieta la marca')
+                                }}>
                                 <View
                                   style={{
                                     alignItems: 'center',
@@ -1058,8 +1082,8 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                                     fill={colorMark}
                                   />
                                 </View>
-                              </MarkerView>
-                            </TouchableOpacity>
+                              </TouchableOpacity>
+                            </MarkerView>
                           </View>
                         );
                       } else {

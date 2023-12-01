@@ -7,8 +7,16 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   ScrollView,
+  Linking,
 } from 'react-native';
-import {Button, Divider, List, Portal, Provider} from 'react-native-paper';
+import {
+  Button,
+  Checkbox,
+  Divider,
+  List,
+  Portal,
+  Provider,
+} from 'react-native-paper';
 import Animales from '../../assets/icons/category/Animales.svg';
 import CheckCircle from '../../assets/icons/general/check-circle-fill.svg';
 import Xcircle from '../../assets/icons/general/x-circle.svg';
@@ -22,12 +30,17 @@ import {FontSize, FontWeight, FontFamily} from '../../theme/fonts';
 import {RFPercentage} from 'react-native-responsive-fontsize';
 import {Colors} from '../../theme/colors';
 import {InputText} from './InputText';
+import {
+  heightPercentageToDP,
+  widthPercentageToDP,
+} from 'react-native-responsive-screen';
 
 interface Props {
   label?: string;
   subLabel?: string;
   subLabel2?: string;
   onPress?: () => void;
+  onPress2?: () => void;
   visible: boolean;
   helper?: boolean;
   hideModal: () => void;
@@ -484,9 +497,9 @@ export const SaveProyectModal = ({
                   ...styles.modalContent,
                   alignItems: 'center',
                   height: '35%',
-                  width: '60%',
+                  width: '65%',
                   justifyContent: 'center',
-                  paddingHorizontal: '11%',
+                  paddingHorizontal: '7%',
                 }}>
                 {helper === true ? (
                   <>
@@ -514,25 +527,27 @@ export const SaveProyectModal = ({
                   </>
                 ) : (
                   <>
-                    <Text
-                      style={{
-                        fontSize: FontSize.fontSizeText18,
-                        color: 'black',
-                        marginVertical: '4%',
-                        fontWeight: '600',
-                        textAlign: 'center',
-                        fontFamily: FontFamily.NotoSansDisplayRegular,
-                      }}>
-                      {label}
-                    </Text>
-
-                    <View style={{marginTop: RFPercentage(4)}}>
+                  <View style={{marginTop: RFPercentage(4)}}>
                       <Xcircle
                         width={RFPercentage(8)}
                         height={RFPercentage(8)}
                         fill={color}
                       />
                     </View>
+                    <Text
+                      style={{
+                        fontSize: FontSize.fontSizeText18,
+                        color: 'black',
+                        marginVertical: '8%',
+                        fontWeight: '600',
+                        textAlign: 'center',
+                        fontFamily: FontFamily.NotoSansDisplayRegular,
+                        marginBottom: RFPercentage(4),
+                      }}>
+                      {label}
+                    </Text>
+
+                    
                   </>
                 )}
 
@@ -922,19 +937,230 @@ export const DeleteModal = ({
                     flexDirection: 'column',
                     justifyContent: 'space-between',
                     marginTop: '5%',
-                    width:'100%'
+                    width: '100%',
                   }}>
                   <TouchableOpacity
                     activeOpacity={0.9}
-                    style={{...styles.button,}}
+                    style={{...styles.button}}
                     onPress={onPress}>
-                    <Text style={{...styles.textButton, color: Colors.semanticDangerLight}}>Borrar</Text>
+                    <Text
+                      style={{
+                        ...styles.textButton,
+                        color: Colors.semanticDangerLight,
+                      }}>
+                      Borrar
+                    </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     activeOpacity={0.9}
-                    style={{...styles.button,}}
+                    style={{...styles.button}}
                     onPress={() => hideModal()}>
                     <Text style={styles.textButton}>Cancelar</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
+        </Modal>
+      </Portal>
+    </Provider>
+  );
+};
+
+export const PoliciesModal = ({
+  onPress,
+  onPress2,
+  visible,
+  hideModal,
+  label,
+  subLabel,
+  icon,
+  size,
+  color,
+  helper = true,
+}: Props) => {
+  const handleLinkPress = () => {
+    const url = 'https://ibercivis.es/politica-de-privacidad/'; // Reemplaza con tu URL real
+    Linking.openURL(url);
+  };
+  return (
+    <Provider>
+      <Portal>
+        <Modal visible={visible} transparent>
+          <TouchableWithoutFeedback>
+            <View style={{...styles.modalContainer}}>
+              <View
+                style={{
+                  ...styles.modalContent,
+                  // alignItems: 'center',
+                  // height: '80%',
+                  width: '90%',
+                  justifyContent: 'center',
+                  paddingHorizontal: '7%',
+                }}>
+                <Text
+                  style={{
+                    textAlign: 'left',
+                    fontSize: FontSize.fontSizeText18,
+                    color: Colors.textColorPrimary,
+                    fontFamily: FontFamily.NotoSansDisplaySemiBold,
+                  }}>
+                  {'Política de Privacidad'}
+                </Text>
+
+                <ScrollView
+                  style={{
+                    marginTop: '5%',
+                    marginBottom: '1%',
+                    // backgroundColor: 'green',
+                    // height: 'auto',
+                  }}
+                  showsVerticalScrollIndicator={false}>
+                  <Text
+                    style={{
+                      fontSize: FontSize.fontSizeText15,
+                      color: Colors.textColorPrimary,
+                      fontFamily: FontFamily.NotoSansDisplayRegular,
+                      marginBottom: '1%',
+                      marginTop: '2%',
+                      // fontWeight: '600',
+                      textAlign: 'left',
+                    }}>
+                    {
+                      'Al registrarse en Geonity, usted acepta que la Fundación Ibercivis recopile y procese su información personal de acuerdo con nuestra Política de Privacidad.'
+                    }
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: FontSize.fontSizeText15,
+                      color: Colors.textColorPrimary,
+                      fontFamily: FontFamily.NotoSansDisplayRegular,
+                      marginBottom: '1%',
+                      marginTop: '1%',
+                      // fontWeight: '600',
+                      textAlign: 'left',
+                    }}>
+                    {
+                      'Nos comprometemos a proteger su privacidad y a usar su información exclusivamente para mejorar su experiencia con la aplicación y para proporcionarle los servicios solicitados.'
+                    }
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: FontSize.fontSizeText15,
+                      color: Colors.textColorPrimary,
+                      fontFamily: FontFamily.NotoSansDisplayRegular,
+                      marginBottom: '1%',
+                      marginTop: '1%',
+                      // fontWeight: '600',
+                      textAlign: 'left',
+                    }}>
+                    {
+                      'No compartiremos su información personal con terceros sin su consentimiento explícito, excepto cuando sea requerido por ley.'
+                    }
+                  </Text>
+                  <View>
+                    <Text
+                      style={{
+                        fontSize: FontSize.fontSizeText15,
+                        color: Colors.textColorPrimary,
+                        fontFamily: FontFamily.NotoSansDisplayRegular,
+                        marginBottom: '1%',
+                        marginTop: '1%',
+                        // fontWeight: '600',
+                        textAlign: 'left',
+                      }}>
+                      {
+                        'Para más información sobre cómo recopilamos, usamos y protegemos su información, por favor, consulte nuestra Política de Privacidad completa en '
+                      }
+                      <Text
+                        onPress={handleLinkPress}
+                        style={{
+                          textDecorationLine: 'underline',
+                          color: Colors.semanticInfoLight,
+                        }}>
+                        {'https://ibercivis.es/politica-de-privacidad/'}
+                      </Text>
+                      .
+                    </Text>
+                    {/* <TouchableOpacity onPress={handleLinkPress}>
+                      <Text
+                        style={{
+                          fontSize: FontSize.fontSizeText15,
+                          color: Colors.semanticInfoLight,
+                          fontFamily: FontFamily.NotoSansDisplayRegular,
+                          marginBottom: '1%',
+                          marginTop: '1%',
+                          // fontWeight: '600',
+                          textAlign: 'left',
+                          textDecorationLine: 'underline',
+                        }}>
+                        {'https://ibercivis.es/politica-de-privacidad/'}
+                      </Text>
+                    </TouchableOpacity> */}
+                  </View>
+                </ScrollView>
+
+                <View
+                  style={{
+                    // width: RFPercentage(42),
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginTop: '7%',
+                    // backgroundColor: 'red',
+                    // justifyContent: 'space-between',
+                  }}>
+                  {/* <Checkbox
+                    uncheckedColor={'#838383'}
+                    color={Colors.primaryLigth}
+                    status={helper ? 'checked' : 'unchecked'}
+                    onPress={onPress2}
+                  /> */}
+                  <Text
+                    style={{
+                      color: Colors.semanticInfoLight,
+                      fontSize: FontSize.fontSizeText14,
+                      fontFamily: FontFamily.NotoSansDisplayLight,
+                    }}>
+                    {
+                      'Al pulsar el botón de “Aceptar”, usted confirma que ha leído y entendido nuestra Política de Privacidad y da su consentimiento para el tratamiento de sus datos personales según se describe.'
+                    }
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    marginTop: '10%',
+                    // width: '100%',
+                  }}>
+                  <TouchableOpacity
+                    activeOpacity={0.9}
+                    style={{
+                      ...styles.button,
+                      minWidth: widthPercentageToDP(10),
+                      width: widthPercentageToDP(25),
+                      marginHorizontal: '4%',
+                    }}
+                    onPress={() => hideModal()}>
+                    <Text style={styles.textButton}>Cancelar</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    activeOpacity={0.9}
+                    style={{
+                      ...styles.button,
+                      minWidth: widthPercentageToDP(10),
+                      width: widthPercentageToDP(25),
+                      marginHorizontal: '4%',
+                      backgroundColor: Colors.primaryLigth,
+                    }}
+                    onPress={onPress}>
+                    <Text
+                      style={{
+                        ...styles.textButton,
+                        color: 'white',
+                      }}>
+                      Aceptar
+                    </Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -981,7 +1207,7 @@ const styles = StyleSheet.create({
     marginBottom: RFPercentage(2),
     backgroundColor: 'white',
     padding: RFPercentage(1),
-    borderRadius:10,
+    borderRadius: 10,
     paddingVertical: '5%',
     shadowColor: '#000',
     shadowOffset: {
@@ -992,9 +1218,9 @@ const styles = StyleSheet.create({
     shadowRadius: 1.41,
     elevation: 2,
   },
-  textButton:{
-    textAlign:'center',
-    textAlignVertical:'center',
-    alignSelf: 'center'
-  }
+  textButton: {
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    alignSelf: 'center',
+  },
 });

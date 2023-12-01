@@ -447,7 +447,7 @@ export const Home = ({navigation}: Props) => {
   const returnRenderNoProyects = () => {
     return (
       <>
-        <View style={{alignItems: 'center', marginTop: '1%'}}>
+        <View style={{alignItems: 'center', marginTop: '1%', opacity: 0.5}}>
           <Text
             style={{
               width: '40%',
@@ -481,7 +481,7 @@ export const Home = ({navigation}: Props) => {
   const returnRenderNoOrganizations = () => {
     return (
       <>
-        <View style={{alignItems: 'center', marginTop: '1%'}}>
+        <View style={{alignItems: 'center', marginTop: '1%', opacity: 0.5}}>
           <Text
             style={{
               width: '40%',
