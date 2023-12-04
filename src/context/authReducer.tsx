@@ -5,7 +5,7 @@ import {AuthState} from './AuthContext';
 type AuthAction =
   | {
       type: 'signIn';
-      payload: {token: string};
+      payload: {token: string, isGuest?: boolean};
     }
   | {
       type: 'signUp';
@@ -18,7 +18,8 @@ type AuthAction =
   | {type: 'removeError'}
   | {type: 'notAuthenticated'}
   | {type: 'recoveryPass'; payload: string}
-  | {type: 'changePass'; payload: string};
+  | {type: 'changePass'; payload: string}
+  | {type: 'setGuest'; payload: {isGuest: boolean}};
 
 //genera estado
 export const authReducer = (
@@ -32,7 +33,6 @@ export const authReducer = (
         errorMessage: '',
         status: 'authenticated',
         token: action.payload.token,
-        // user: action.payload.user,
       };
 
     case 'signIn':
@@ -41,6 +41,7 @@ export const authReducer = (
         errorMessage: '',
         status: 'authenticated',
         token: action.payload.token,
+        isGuest: action.payload.isGuest || false,
         // user: action.payload.user,
       };
 
@@ -50,6 +51,7 @@ export const authReducer = (
         status: 'not-authenticated',
         token: null,
         user: null,
+        isGuest: false,
       };
 
     case 'addError':
@@ -86,6 +88,12 @@ export const authReducer = (
         ...state,
         message: action.payload,
       };
+
+      case 'setGuest':
+        return {
+          ...state,
+          isGuest: action.payload.isGuest,
+        };
     default:
       return state;
   }

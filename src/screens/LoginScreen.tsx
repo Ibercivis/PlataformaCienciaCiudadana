@@ -1,7 +1,6 @@
 import {StackScreenProps} from '@react-navigation/stack';
-import {LoginComponent} from '../components/screen_components/LoginComponent';
-import {LoginTemplate} from '../components/screen_components/Authentication/LoginTemplate';
 import {
+  TouchableOpacity,
   Animated,
   Image,
   Keyboard,
@@ -11,7 +10,6 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
   useWindowDimensions,
 } from 'react-native';
@@ -34,9 +32,7 @@ import {InputText} from '../components/utility/InputText';
 import {Divider, HelperText} from 'react-native-paper';
 import {Colors} from '../theme/colors';
 import {CustomButton} from '../components/utility/CustomButton';
-import {CustomButtonOutline} from '../components/utility/CustomButtonOutline';
 import {GeometryForms} from '../components/utility/GeometryForms';
-import {ForgotPasswordTemplate} from '../components/screen_components/Authentication/ForgotPasswordTemplate';
 import {Spinner} from '../components/utility/Spinner';
 import {
   heightPercentageToDP,
@@ -53,8 +49,16 @@ export const LoginScreen = ({navigation, route}: Props) => {
   /** COMÚN */
   const [nameScreen, setNameScreen] = useState('login');
   const [numberScreen, setNumberScreen] = useState(1);
-  const {signIn, signOut, signUp, errorMessage, removeError, recoveryPass} =
-    useContext(AuthContext);
+  const {
+    isGuest,
+    signIn,
+    signOut,
+    signUp,
+    errorMessage,
+    removeError,
+    recoveryPass,
+    setIsGuest,
+  } = useContext(AuthContext);
 
   //#region LOGIN VARIABLES
   const {fontScale} = useWindowDimensions();
@@ -141,6 +145,8 @@ export const LoginScreen = ({navigation, route}: Props) => {
   }, [onTouchBorderWidth, onTouchBorderWidth2, onTouchBorderWidth3]);
 
   useEffect(() => {
+    setIsGuest(false);
+    console.log(isGuest)
     GoogleSignin.configure({
       offlineAccess: true,
       iosClientId:
@@ -160,7 +166,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
       // text2: 'No se han podido obtener los datos, por favor reinicie la app',
       text2: errorMessage,
     });
-    removeError()
+    removeError();
   }, [errorMessage]);
 
   //#endregion
@@ -172,10 +178,22 @@ export const LoginScreen = ({navigation, route}: Props) => {
     setLoading(true);
     Keyboard.dismiss();
     // console.log(JSON.stringify(form, null, 2));
-    const state = await signIn({
-      correo: form.userName,
-      password: form.password,
-    });
+    const state = await signIn(
+      {
+        correo: form.userName,
+        password: form.password,
+      },
+      false,
+    );
+    setLoading(false);
+  };
+
+  const onGuest = async () => {
+    setLoading(true);
+    console.log('isGuest en login');
+    const state = await setIsGuest(true);
+    // console.log(state)
+    console.log(isGuest)
     setLoading(false);
   };
 
@@ -295,7 +313,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
   //#region METHODS/ANIMATED-TIMMING
   const onTouchForgetPass = () => {
     setOnTouchBorderWidth(1.5);
-    setNumberScreen(3)
+    setNumberScreen(3);
     setTimeout(() => {
       // navigation.replace('ForgotPassword');
       setNameScreen('forgot');
@@ -315,7 +333,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
 
   const onTouchRegister = () => {
     setOnTouchBorderWidth2(1.5);
-    setNumberScreen(2)
+    setNumberScreen(2);
     setTimeout(() => {
       // navigation.replace('ForgotPassword');
       setNameScreen('register');
@@ -334,7 +352,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
 
   const onTouchLogin = () => {
     setOnTouchBorderWidth3(1.5);
-    setNumberScreen(1)
+    setNumberScreen(1);
     setTimeout(() => {
       // setNameScreen('login');
     }, 160);
@@ -900,7 +918,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                     },
                   ],
                 }}>
-                <View style={{marginHorizontal: '9%'}}>
+                <View style={{marginHorizontal: '9%', zIndex: 1}}>
                   {/* inputs */}
                   <View>
                     {/* email */}
@@ -961,13 +979,13 @@ export const LoginScreen = ({navigation, route}: Props) => {
                       <></>
                     )}
                   </View>
-
+                  {/* login button */}
                   <CustomButton
                     backgroundColor={Colors.secondaryDark}
                     label={translate.strings.login_screen[0].login_button}
                     onPress={() => loggin()}
                   />
-
+                  {/* olvidar pass */}
                   <TouchableOpacity
                     activeOpacity={1}
                     style={{
@@ -1027,41 +1045,81 @@ export const LoginScreen = ({navigation, route}: Props) => {
                     </View> */}
 
                   {/* divider */}
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      width: '100%',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginTop: '14%',
-                    }}>
-                    <Divider style={{borderWidth: 0.6, width: '45%'}} />
-                    <Text
+                  <View>
+                    <View
                       style={{
+                        flexDirection: 'row',
+                        width: '100%',
+                        justifyContent: 'space-between',
                         alignItems: 'center',
-                        fontWeight: 'bold',
-                        color: 'black',
+                        marginTop: '14%',
                       }}>
-                      o
-                    </Text>
-                    <Divider style={{borderWidth: 0.6, width: '45%'}} />
+                      <Divider style={{borderWidth: 0.6, width: '45%'}} />
+                      <Text
+                        style={{
+                          alignItems: 'center',
+                          fontWeight: 'bold',
+                          color: 'black',
+                        }}>
+                        o
+                      </Text>
+                      <Divider style={{borderWidth: 0.6, width: '45%'}} />
+                    </View>
+                    <View
+                      style={{
+                        marginHorizontal: '26%',
+                        marginTop: '14%',
+                        marginBottom: '10%',
+                      }}>
+                      <CustomButton
+                        backgroundColor={Colors.primaryDark}
+                        fontFamily={FontFamily.NotoSansDisplayRegular}
+                        label={translate.strings.login_screen[0].register}
+                        onPress={() =>
+                          // navigation.replace('RegisterScreen')
+                          onTouchRegister()
+                        }
+                      />
+                    </View>
                   </View>
-                  <View
+                  {/* invitado */}
+                  
+                  <TouchableOpacity
+                    activeOpacity={1}
                     style={{
-                      marginHorizontal: '26%',
-                      marginTop: '14%',
-                      marginBottom: '10%',
-                    }}>
-                    <CustomButton
-                      backgroundColor={Colors.primaryDark}
-                      fontFamily={FontFamily.NotoSansDisplayRegular}
-                      label={translate.strings.login_screen[0].register}
-                      onPress={() =>
-                        // navigation.replace('RegisterScreen')
-                        onTouchRegister()
-                      }
-                    />
-                  </View>
+                      alignSelf: 'center',
+                      marginTop: '25%',
+                      marginBottom: '20%',
+                      flexDirection: 'row',
+                      zIndex: 2,
+                      borderRadius: 10,
+                      backgroundColor: 'white',
+                      shadowColor: '#000',
+                      shadowOffset: {
+                        width: 0,
+                        height: 1,
+                      },
+                      shadowOpacity: 0.2,
+                      shadowRadius: 1.41,
+                      // width: '100%',
+                      // elevation: 1,
+    
+                    }}
+                    onPress={() => onGuest()}>
+                    
+                      <Text
+                        style={{
+                          color: 'black',
+                          fontWeight: '400',
+                          fontFamily: FontFamily.NotoSansDisplayRegular,
+                          fontSize: FontSize.fontSizeText15,
+                          marginHorizontal: '3%',
+                          marginVertical: ' 1%',
+                        }}>
+                        {'Entrar como invitado'}
+                      </Text>
+                  </TouchableOpacity>
+                  <View  style={{marginTop:'20%'}}></View>
                 </View>
                 {/* <View style={{width: '25.4%', backgroundColor: 'blue'}}></View> */}
                 <SafeAreaView>{screenHorizontal()}</SafeAreaView>
@@ -1094,7 +1152,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   inputsContainer: {
-    height: '100%',
+    height: 'auto',
     backgroundColor: 'white',
     // marginHorizontal: '9%',
     marginTop: '5%',
