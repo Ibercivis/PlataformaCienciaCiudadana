@@ -525,7 +525,11 @@ export const Home = ({navigation}: Props) => {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Ajusta la vista por encima del teclado
       >
         <SafeAreaView style={{flexGrow: 1, backgroundColor: 'white'}}>
-          <View style={{flex: 1}} onTouchEnd={onClickExit}>
+          <View
+            style={{flex: 1}}
+            onTouchEnd={() => {
+              onClickExit();
+            }}>
             {/* titulo */}
             <View style={{...HomeStyles.titleView}}>
               {/* <Text style={HomeStyles.title}>Geonity</Text> */}
@@ -569,7 +573,9 @@ export const Home = ({navigation}: Props) => {
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
               }
               style={HomeStyles.scrollParent}
-              onTouchEnd={onClickExit}
+              onTouchEnd={() => {
+                onClickExit();
+              }}
               nestedScrollEnabled={true}
               // contentContainerStyle={{flexGrow: 1}}
               contentContainerStyle={{paddingBottom: '20%'}}
@@ -1295,49 +1301,59 @@ export const Home = ({navigation}: Props) => {
           <Modal
             visible={menuVisible}
             transparent
-            animationType="none"
+            animationType="fade"
             onRequestClose={ocultarMenu}>
             <TouchableWithoutFeedback onPressOut={ocultarMenu}>
               <View
                 style={{
-                  position: 'relative',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  backgroundColor: 'white',
-                  width: widthPercentageToDP(20),
-                  left: widthPercentageToDP(70),
-                  top:
+                  flex: 1,
+                  backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                  justifyContent: 'flex-start', // Alinear en la parte superior
+                  alignItems: 'flex-end', // Alinear a la derecha
+                  paddingTop:
                     Platform.OS === 'ios'
                       ? insets.top + heightPercentageToDP(6)
                       : heightPercentageToDP(6),
-                  borderRadius: 10,
-                  shadowColor: '#000',
-                  shadowOffset: {
-                    width: 0,
-                    height: 0.1,
-                  },
-                  shadowOpacity: 0.2,
-                  shadowRadius: 1.41,
-                  elevation: 5,
+                  paddingRight: widthPercentageToDP(5), // Ajustar según sea necesario
                 }}>
-                <View
-                  style={{
-                    backgroundColor: 'white',
-                    paddingHorizontal: widthPercentageToDP(2),
-                    borderRadius: 10,
-                  }}>
-                  <TouchableOpacity
-                    style={{marginVertical: heightPercentageToDP(1)}}
-                    onPress={signOut}>
-                    <Text>Logout</Text>
-                  </TouchableOpacity>
-                  {/* Otras opciones de menú aquí */}
-                  <TouchableOpacity
-                    style={{marginVertical: heightPercentageToDP(1)}}
-                    onPress={ocultarMenu}>
-                    <Text>Cancelar</Text>
-                  </TouchableOpacity>
-                </View>
+                <TouchableWithoutFeedback>
+                    <View
+                      style={{
+                        position: 'relative',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        backgroundColor: 'white',
+                        width: widthPercentageToDP(20),
+                        borderRadius: 10,
+                        shadowColor: '#000',
+                        shadowOffset: {
+                          width: 0,
+                          height: 0.1,
+                        },
+                        shadowOpacity: 0.2,
+                        shadowRadius: 1.41,
+                        elevation: 5,
+                      }}>
+                      <View
+                        style={{
+                          backgroundColor: 'white',
+                          paddingHorizontal: widthPercentageToDP(2),
+                          borderRadius: 10,
+                        }}>
+                        <TouchableOpacity
+                          style={{marginVertical: heightPercentageToDP(1)}}
+                          onPress={signOut}>
+                          <Text>Logout</Text>
+                        </TouchableOpacity>
+                        {/* Otras opciones de menú aquí */}
+                        <TouchableOpacity
+                          style={{marginVertical: heightPercentageToDP(1)}}
+                          onPress={ocultarMenu}>
+                          <Text>Cancelar</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                </TouchableWithoutFeedback>
               </View>
             </TouchableWithoutFeedback>
           </Modal>

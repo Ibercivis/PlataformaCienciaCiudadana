@@ -185,8 +185,8 @@ export const CardAnswerMap = ({
                       // bottom: RFPercentage(2),
                       // backgroundColor:'blue'
                     }}>
-                    <Text style={{fontSize: FontSize.fontSizeText10}}>
-                      Obligatoria
+                    <Text style={{fontSize: FontSize.fontSizeText17, color:'red'}}>
+                      *
                     </Text>
                   </View>
                 )}
@@ -273,8 +273,8 @@ export const CardAnswerMap = ({
                       // bottom: RFPercentage(2),
                       // backgroundColor:'blue'
                     }}>
-                    <Text style={{fontSize: FontSize.fontSizeText10}}>
-                      Obligatoria
+                    <Text style={{fontSize: FontSize.fontSizeText17, color:'red'}}>
+                      *
                     </Text>
                   </View>
                 )}
@@ -353,8 +353,8 @@ export const CardAnswerMap = ({
                       // bottom: RFPercentage(2),
                       // backgroundColor:'blue'
                     }}>
-                    <Text style={{fontSize: FontSize.fontSizeText10}}>
-                      Obligatoria
+                    <Text style={{fontSize: FontSize.fontSizeText17, color:'red'}}>
+                      *
                     </Text>
                   </View>
                 )}

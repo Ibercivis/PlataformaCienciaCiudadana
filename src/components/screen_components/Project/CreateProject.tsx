@@ -43,6 +43,7 @@ import PlusSquare from '../../../assets/icons/general/plus-square.svg';
 import FrontPage from '../../../assets/icons/project/image.svg';
 import PlusImg from '../../../assets/icons/general/Plus-img.svg';
 import PlusBlue from '../../../assets/icons/project/plus-circle-blue.svg';
+import UserMissing from '../../../assets/icons/profile/User-image.svg';
 import Delete from '../../../assets/icons/project/trash.svg';
 import {QuestionCard} from '../../utility/QuestionCard';
 import {IconTemp} from '../../IconTemp';
@@ -1720,13 +1721,34 @@ export const CreateProject = ({navigation, route}: Props) => {
                     }}
                     key={index + 1}>
                     {/* sustituir por avatar */}
-                    <View
-                      style={{
-                        backgroundColor: 'red',
-                        width: '10%',
-                        marginRight: '5%',
-                        borderRadius: 50,
-                      }}></View>
+                    {item.logo ? (
+                              <Image
+                                source={{
+                                  uri: item.logo,
+                                }}
+                                style={{
+                                  width: '12%',
+                                  height: '100%',
+                                  borderRadius: 50,
+                                  resizeMode: 'cover',
+                                  backgroundColor: 'blue',
+                                  marginRight: '2%',
+                                }}
+                              />
+                            ) : (
+                              <View
+                                style={{
+                                  width: '12%',
+                                  height: '100%',
+                                  borderRadius: 100,
+                                  marginRight: '2%',
+                                  alignContent:'center',
+                                  alignItems:'center',
+                                  marginTop:'1.3%'
+                                }}>
+                                <UserMissing height={RFPercentage(3.8)} width={RFPercentage(3.8)} />
+                              </View>
+                            )}
                     {/* sustituir texto de abajo por el que sea */}
                     <View
                       style={{

@@ -18,11 +18,12 @@ import {RFPercentage} from 'react-native-responsive-fontsize';
 import {HeaderComponent} from '../../HeaderComponent';
 import {CustomButton} from '../../utility/CustomButton';
 import {Colors} from '../../../theme/colors';
-import {InfoModal, SaveProyectModal} from '../../utility/Modals';
+import {DeleteModal, InfoModal, SaveProyectModal} from '../../utility/Modals';
 import PlusImg from '../../../assets/icons/general/Plus-img.svg';
 import Person from '../../../assets/icons/general/person.svg';
 import FrontPage from '../../../assets/icons/project/image.svg';
 import UserMissing from '../../../assets/icons/profile/User-image.svg';
+import Delete from '../../../assets/icons/project/trash.svg';
 import {InputText} from '../../utility/InputText';
 import ImagePicker from 'react-native-image-crop-picker';
 import {FontSize} from '../../../theme/fonts';
@@ -158,6 +159,10 @@ export const CreateOrganization = ({navigation, route}: Props) => {
   const [controlSizeImage, setControlSizeImage] = useState(false);
   const showModalControlSizeImage = () => setControlSizeImage(true);
   const hideModalControlSizeImage = () => setControlSizeImage(false);
+
+  const [deleteModal, setDelete] = useState(false);
+  const showModalDelete = () => setDelete(true);
+  const hideModalDelete = () => setDelete(false);
 
   /**
    * Llama para saber los usuarios que hay para añadir a integrantes
@@ -481,7 +486,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
     else return true;
   };
 
-  //#region CREATE / EDIT
+  //#region CREATE / EDIT / DELETE
   const onCreate = async () => {
     setWaitingData(true);
     let valid = true;
@@ -747,7 +752,40 @@ export const CreateOrganization = ({navigation, route}: Props) => {
       }
     }
   };
-
+  const onDelete = async () => {
+    try {
+      let token;
+      while (!token) {
+        token = await AsyncStorage.getItem('token');
+      }
+      const resp = await citmapApi.delete(`/organization/${route.params.id}/`, {
+        headers: {
+          Authorization: token,
+        },
+      });
+      console.log(JSON.stringify(resp.data, null, 2));
+      Toast.show({
+        type: 'success',
+        text1: 'Proyecto borrado con éxito.',
+      });
+      hideModalDelete();
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [
+            {
+              name: 'MultipleNavigator',
+            },
+          ],
+        }),
+      );
+    } catch (err) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error en el borrado.',
+      });
+    }
+  };
   //#endregion
 
   return (
@@ -767,7 +805,34 @@ export const CreateOrganization = ({navigation, route}: Props) => {
               isEdit ? 'Editar organización' : 'Crear una nueva organización'
             }
             onPressLeft={() => navigation.goBack()}
-            rightIcon={false}
+            rightIcon={true}
+            renderRight={() => {
+              if (isEdit) {
+                return (
+                  <TouchableOpacity
+                    activeOpacity={0.5}
+                    onPress={() => showModalDelete()}>
+                    <View
+                      style={{
+                        justifyContent: 'center',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        marginRight: RFPercentage(3),
+                        marginTop: RFPercentage(0.4),
+                      }}>
+                      {/* <IconTemp name="arrow-left" size={Size.iconSizeMedium} /> */}
+                      <Delete
+                        width={RFPercentage(2.5)}
+                        height={RFPercentage(2.5)}
+                        fill={Colors.semanticDangerLight}
+                      />
+                    </View>
+                  </TouchableOpacity>
+                );
+              } else {
+                return <></>;
+              }
+            }}
           />
           <View style={styles.container}>
             <ScrollView
@@ -1310,6 +1375,18 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                 Una vez el usuario la acepte, pasará a ser integrante de la organización."
                 helper={false}
               />
+               <DeleteModal
+              visible={deleteModal}
+              hideModal={hideModalDelete}
+              onPress={() => {
+                onDelete();
+              }}
+              size={RFPercentage(4)}
+              color={Colors.semanticWarningDark}
+              label="¿Desea borrar la organización?"
+              subLabel=" Una vez borrada no podrá recuperarse"
+              helper={false}
+            />
             </ScrollView>
           </View>
           <Spinner visible={waitingData} />

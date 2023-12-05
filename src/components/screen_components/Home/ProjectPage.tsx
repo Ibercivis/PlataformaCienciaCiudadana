@@ -35,7 +35,7 @@ import {
   UserInfo,
 } from '../../../interfaces/interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import citmapApi from '../../../api/citmapApi';
+import citmapApi, { imageUrl } from '../../../api/citmapApi';
 import {HasTag, Topic} from '../../../interfaces/appInterfaces';
 import {LoadingScreen} from '../../../screens/LoadingScreen';
 import {PassModal, SaveProyectModal} from '../../utility/Modals';
@@ -585,7 +585,7 @@ export const ProjectPage = (props: Props) => {
                             <Image
                               source={{
                                 uri:
-                                  'http://dev.ibercivis.es:10001' +
+                                imageUrl +
                                   imagesCharged[x.index].image,
                               }}
                               style={{
