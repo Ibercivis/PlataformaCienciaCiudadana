@@ -1,6 +1,4 @@
 import {StackScreenProps} from '@react-navigation/stack';
-import {LoginComponent} from '../components/screen_components/LoginComponent';
-import {LoginTemplate} from '../components/screen_components/Authentication/LoginTemplate';
 import {
   Animated,
   Image,

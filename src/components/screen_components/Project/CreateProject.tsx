@@ -1584,7 +1584,7 @@ export const CreateProject = ({navigation, route}: Props) => {
               marginVertical: RFPercentage(1),
             }}>
             <Text style={{color: 'black'}}>Añadir categorías al proyecto</Text>
-            <View style={{width: RFPercentage(41)}}>
+            <View style={{width: widthPercentageToDP(85)}}>
               <CustomButton
                 backgroundColor={Colors.secondaryDark}
                 label={'Seleccionar categorías'}
@@ -1659,11 +1659,11 @@ export const CreateProject = ({navigation, route}: Props) => {
             </Text>
             <View
               style={{
-                width: RFPercentage(41),
+                width: '100%',
                 marginBottom: RFPercentage(4),
               }}>
               <TextInput
-                placeholder="Search..."
+                placeholder="Buscar organizaciones..."
                 value={inputValueOrganization}
                 onChangeText={value => handleInputChangeOrganization(value)}
                 style={styles.input}
@@ -1715,7 +1715,7 @@ export const CreateProject = ({navigation, route}: Props) => {
                 suggestionsSelected.map((item, index) => (
                   <View
                     style={{
-                      width: RFPercentage(41),
+                      width: '100%',
                       marginVertical: '4%',
                       flexDirection: 'row',
                     }}
@@ -2544,8 +2544,8 @@ const styles = StyleSheet.create({
   input: {
     fontSize: FontSize.fontSizeText13,
     // marginBottom: 10,
-    width: RFPercentage(41),
-    height: RFPercentage(4.5),
+    width: widthPercentageToDP(85),
+    height: widthPercentageToDP(9),
     borderColor: 'grey',
     borderWidth: 1,
     borderRadius: 10,

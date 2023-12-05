@@ -1307,14 +1307,14 @@ export const Home = ({navigation}: Props) => {
               <View
                 style={{
                   flex: 1,
-                  backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                  backgroundColor: 'rgba(0, 0, 0, 0.1)',
                   justifyContent: 'flex-start', // Alinear en la parte superior
                   alignItems: 'flex-end', // Alinear a la derecha
                   paddingTop:
                     Platform.OS === 'ios'
                       ? insets.top + heightPercentageToDP(6)
                       : heightPercentageToDP(6),
-                  paddingRight: widthPercentageToDP(5), // Ajustar según sea necesario
+                  paddingRight: widthPercentageToDP(11), // Ajustar según sea necesario
                 }}>
                 <TouchableWithoutFeedback>
                     <View
@@ -1323,7 +1323,7 @@ export const Home = ({navigation}: Props) => {
                         justifyContent: 'center',
                         alignItems: 'center',
                         backgroundColor: 'white',
-                        width: widthPercentageToDP(20),
+                        width: widthPercentageToDP(27),
                         borderRadius: 10,
                         shadowColor: '#000',
                         shadowOffset: {
@@ -1341,13 +1341,13 @@ export const Home = ({navigation}: Props) => {
                           borderRadius: 10,
                         }}>
                         <TouchableOpacity
-                          style={{marginVertical: heightPercentageToDP(1)}}
+                          style={{marginTop: heightPercentageToDP(1), marginBottom: heightPercentageToDP(0.7)}}
                           onPress={signOut}>
-                          <Text>Logout</Text>
+                          <Text>Cerrar sesión</Text>
                         </TouchableOpacity>
                         {/* Otras opciones de menú aquí */}
                         <TouchableOpacity
-                          style={{marginVertical: heightPercentageToDP(1)}}
+                          style={{marginBottom: heightPercentageToDP(1),marginTop: heightPercentageToDP(0.7)}}
                           onPress={ocultarMenu}>
                           <Text>Cancelar</Text>
                         </TouchableOpacity>

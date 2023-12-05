@@ -39,6 +39,7 @@ import {useForm} from '../../../hooks/useForm';
 import {CommonActions} from '@react-navigation/native';
 import {Spinner} from '../../utility/Spinner';
 import Toast from 'react-native-toast-message';
+import { widthPercentageToDP } from 'react-native-responsive-screen';
 
 interface Props extends StackScreenProps<StackParams, 'CreateOrganization'> {}
 
@@ -802,7 +803,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
           }}>
           <HeaderComponent
             title={
-              isEdit ? 'Editar organización' : 'Crear una nueva organización'
+              isEdit ? 'Editar organización' : 'Crear organización'
             }
             onPressLeft={() => navigation.goBack()}
             rightIcon={true}
@@ -1189,7 +1190,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                   </Text>
                   <View
                     style={{
-                      width: RFPercentage(41),
+                      width: '100%',
                       marginBottom: RFPercentage(4),
                     }}>
                     <TextInput
@@ -1250,7 +1251,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                         return (
                           <View
                             style={{
-                              width: RFPercentage(41),
+                              width: '100%',
                               marginVertical: '4%',
                               flexDirection: 'row',
                             }}
@@ -1405,15 +1406,15 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'column',
     justifyContent: 'space-between',
-    width: RFPercentage(41),
+    width: widthPercentageToDP(41),
     marginVertical: '5%',
     alignSelf: 'center',
   },
   input: {
     fontSize: FontSize.fontSizeText13,
     // marginBottom: 10,
-    width: RFPercentage(41),
-    height: RFPercentage(5),
+    width: widthPercentageToDP(85),
+    height: widthPercentageToDP(9),
     borderColor: 'grey',
     borderWidth: 1,
     borderRadius: 10,
@@ -1434,7 +1435,7 @@ const styles = StyleSheet.create({
   },
   suggestionItem: {
     padding: 10,
-    height: RFPercentage(6),
+    height: RFPercentage(5),
     textAlignVertical: 'center',
     color: 'black',
   },
