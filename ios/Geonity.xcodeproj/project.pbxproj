@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		00E356F31AD99517003FC87E /* ReactNativePlantillaTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* ReactNativePlantillaTests.m */; };
+		00E356F31AD99517003FC87E /* GeonityTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* GeonityTests.m */; };
 		02BCF79D06874416BF027F76 /* NotoSansDisplay_ExtraCondensed-ExtraLightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4D4CE0FA5BA94C2FB8511451 /* NotoSansDisplay_ExtraCondensed-ExtraLightItalic.ttf */; };
 		0801E4CC48CD4D48A0BBC9A7 /* NotoSansDisplay_SemiCondensed-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AF0DE4D897664574AF1AF6B4 /* NotoSansDisplay_SemiCondensed-Thin.ttf */; };
 		102F311702BF49619C56B57A /* NotoSansDisplay_SemiCondensed-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B58EB3D09B844BC1832AEE20 /* NotoSansDisplay_SemiCondensed-ExtraLight.ttf */; };
@@ -56,7 +56,7 @@
 		A0AC2635911D4A328927C33F /* NotoSansDisplay_Condensed-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4A9B5634400041F88E8D4333 /* NotoSansDisplay_Condensed-Regular.ttf */; };
 		A1B3D591494B4BB486947FA1 /* NotoSansDisplay_ExtraCondensed-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9F6D56122D29473AA67E5FFD /* NotoSansDisplay_ExtraCondensed-BoldItalic.ttf */; };
 		A45FD54952AC4962B5FDF856 /* NotoSansDisplay_SemiCondensed-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AF45CBAE9099497DB464B849 /* NotoSansDisplay_SemiCondensed-MediumItalic.ttf */; };
-		A4B7B033B18BC33F5E4FD4B8 /* libPods-ReactNativePlantilla.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C357D9FDAF3563FFB411396C /* libPods-ReactNativePlantilla.a */; };
+		A4B7B033B18BC33F5E4FD4B8 /* libPods-Geonity.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C357D9FDAF3563FFB411396C /* libPods-Geonity.a */; };
 		A592E7BC92844097A1492B42 /* NotoSansDisplay-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 807FF5B72046471287C0978C /* NotoSansDisplay-BoldItalic.ttf */; };
 		A9B26E73CCEC48BC871DCEA1 /* NotoSansDisplay-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 32B74A5CCC734FF5B8F7FA4B /* NotoSansDisplay-Regular.ttf */; };
 		AB4A8E4AF9F447409B854B0C /* NotoSansDisplay_ExtraCondensed-BlackItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2F7E0FC98EC44F70BF9BCB71 /* NotoSansDisplay_ExtraCondensed-BlackItalic.ttf */; };
@@ -88,7 +88,7 @@
 		F565EAB292614298A9446D24 /* NotoSansDisplay_ExtraCondensed-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8515D2AC9B46407BA3F8E702 /* NotoSansDisplay_ExtraCondensed-LightItalic.ttf */; };
 		F5EFC8DA9682448FA20E6719 /* NotoSansDisplay_Condensed-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B07D000503F24EA582096737 /* NotoSansDisplay_Condensed-SemiBold.ttf */; };
 		F72CACD5553045AA9770F999 /* NotoSansDisplay_SemiCondensed-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6B247DC2002A423392130DC5 /* NotoSansDisplay_SemiCondensed-Italic.ttf */; };
-		FB3EE48C3C2D1435DFDA36E5 /* libPods-ReactNativePlantilla-ReactNativePlantillaTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 492BA972005C07E5DA8B675E /* libPods-ReactNativePlantilla-ReactNativePlantillaTests.a */; };
+		FB3EE48C3C2D1435DFDA36E5 /* libPods-Geonity-GeonityTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 492BA972005C07E5DA8B675E /* libPods-Geonity-GeonityTests.a */; };
 		FE150010194E43BEA16CDB45 /* NotoSansDisplay_ExtraCondensed-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 99E3F8D2C5B7413CB6A1A205 /* NotoSansDisplay_ExtraCondensed-Italic.ttf */; };
 /* End PBXBuildFile section */
 
@@ -98,26 +98,26 @@
 			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 13B07F861A680F5B00A75B9A;
-			remoteInfo = ReactNativePlantilla;
+			remoteInfo = "Geonity";
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		00BF7417637E4B1F80487BCC /* NotoSansDisplay_SemiCondensed-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansDisplay_SemiCondensed-ExtraBold.ttf"; path = "../src/assets/fonts/static/NotoSansDisplay_SemiCondensed-ExtraBold.ttf"; sourceTree = "<group>"; };
-		00E356EE1AD99517003FC87E /* ReactNativePlantillaTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ReactNativePlantillaTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		00E356EE1AD99517003FC87E /* GeonityTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "GeonityTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		00E356F21AD99517003FC87E /* ReactNativePlantillaTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ReactNativePlantillaTests.m; sourceTree = "<group>"; };
+		00E356F21AD99517003FC87E /* GeonityTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "GeonityTests.m"; sourceTree = "<group>"; };
 		031B8E5BAC2847D287B36544 /* NotoSansDisplay-SemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansDisplay-SemiBoldItalic.ttf"; path = "../src/assets/fonts/static/NotoSansDisplay-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
 		0A1CCA4902E2407B9F68FF0A /* NotoSansDisplay-ExtraLightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansDisplay-ExtraLightItalic.ttf"; path = "../src/assets/fonts/static/NotoSansDisplay-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
 		0E0936285DF543A2AD108635 /* NotoSansDisplay_Condensed-SemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansDisplay_Condensed-SemiBoldItalic.ttf"; path = "../src/assets/fonts/static/NotoSansDisplay_Condensed-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
 		0E99EEFC8EB4409BB8813A66 /* NotoSansDisplay_SemiCondensed-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansDisplay_SemiCondensed-Black.ttf"; path = "../src/assets/fonts/static/NotoSansDisplay_SemiCondensed-Black.ttf"; sourceTree = "<group>"; };
 		10091B3E2404491AAEC8F20C /* NotoSansDisplay_Condensed-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansDisplay_Condensed-ExtraBold.ttf"; path = "../src/assets/fonts/static/NotoSansDisplay_Condensed-ExtraBold.ttf"; sourceTree = "<group>"; };
-		13B07F961A680F5B00A75B9A /* ReactNativePlantilla.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ReactNativePlantilla.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = ReactNativePlantilla/AppDelegate.h; sourceTree = "<group>"; };
-		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = ReactNativePlantilla/AppDelegate.mm; sourceTree = "<group>"; };
-		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = ReactNativePlantilla/Images.xcassets; sourceTree = "<group>"; };
-		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ReactNativePlantilla/Info.plist; sourceTree = "<group>"; };
-		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = ReactNativePlantilla/main.m; sourceTree = "<group>"; };
+		13B07F961A680F5B00A75B9A /* Geonity.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Geonity.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = "Geonity/AppDelegate.h"; sourceTree = "<group>"; };
+		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = "Geonity/AppDelegate.mm"; sourceTree = "<group>"; };
+		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = "Geonity/Images.xcassets"; sourceTree = "<group>"; };
+		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = "Geonity/Info.plist"; sourceTree = "<group>"; };
+		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = "Geonity/main.m"; sourceTree = "<group>"; };
 		13CFDBC246FD46E39F566F3E /* NotoSansDisplay_Condensed-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansDisplay_Condensed-Italic.ttf"; path = "../src/assets/fonts/static/NotoSansDisplay_Condensed-Italic.ttf"; sourceTree = "<group>"; };
 		17F8E793FE3140D0838FEB38 /* NotoSansDisplay_SemiCondensed-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansDisplay_SemiCondensed-Regular.ttf"; path = "../src/assets/fonts/static/NotoSansDisplay_SemiCondensed-Regular.ttf"; sourceTree = "<group>"; };
 		1978F4A0E4634A91B7759F22 /* NotoSansDisplay_SemiCondensed-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansDisplay_SemiCondensed-LightItalic.ttf"; path = "../src/assets/fonts/static/NotoSansDisplay_SemiCondensed-LightItalic.ttf"; sourceTree = "<group>"; };
@@ -132,9 +132,9 @@
 		3C7AA9850D444C519A4D20C2 /* NotoSansDisplay-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansDisplay-MediumItalic.ttf"; path = "../src/assets/fonts/static/NotoSansDisplay-MediumItalic.ttf"; sourceTree = "<group>"; };
 		4124913C6C134BB687039B65 /* NotoSansDisplay_ExtraCondensed-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansDisplay_ExtraCondensed-ExtraBold.ttf"; path = "../src/assets/fonts/static/NotoSansDisplay_ExtraCondensed-ExtraBold.ttf"; sourceTree = "<group>"; };
 		41969FD003D9458CA633BFF3 /* NotoSansDisplay_SemiCondensed-ExtraLightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansDisplay_SemiCondensed-ExtraLightItalic.ttf"; path = "../src/assets/fonts/static/NotoSansDisplay_SemiCondensed-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
-		492BA972005C07E5DA8B675E /* libPods-ReactNativePlantilla-ReactNativePlantillaTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ReactNativePlantilla-ReactNativePlantillaTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		49469A7208237CCF60D7314F /* Pods-ReactNativePlantilla.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ReactNativePlantilla.debug.xcconfig"; path = "Target Support Files/Pods-ReactNativePlantilla/Pods-ReactNativePlantilla.debug.xcconfig"; sourceTree = "<group>"; };
-		496F6A723E4BAFD358E3C2F9 /* Pods-ReactNativePlantilla-ReactNativePlantillaTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ReactNativePlantilla-ReactNativePlantillaTests.release.xcconfig"; path = "Target Support Files/Pods-ReactNativePlantilla-ReactNativePlantillaTests/Pods-ReactNativePlantilla-ReactNativePlantillaTests.release.xcconfig"; sourceTree = "<group>"; };
+		492BA972005C07E5DA8B675E /* libPods-Geonity-GeonityTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Geonity-GeonityTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		49469A7208237CCF60D7314F /* Pods-Geonity.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Geonity.debug.xcconfig"; path = "Target Support Files/Pods-Geonity/Pods-Geonity.debug.xcconfig"; sourceTree = "<group>"; };
+		496F6A723E4BAFD358E3C2F9 /* Pods-Geonity-GeonityTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Geonity-GeonityTests.release.xcconfig"; path = "Target Support Files/Pods-Geonity-GeonityTests/Pods-Geonity-GeonityTests.release.xcconfig"; sourceTree = "<group>"; };
 		4A9B5634400041F88E8D4333 /* NotoSansDisplay_Condensed-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansDisplay_Condensed-Regular.ttf"; path = "../src/assets/fonts/static/NotoSansDisplay_Condensed-Regular.ttf"; sourceTree = "<group>"; };
 		4D4CE0FA5BA94C2FB8511451 /* NotoSansDisplay_ExtraCondensed-ExtraLightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansDisplay_ExtraCondensed-ExtraLightItalic.ttf"; path = "../src/assets/fonts/static/NotoSansDisplay_ExtraCondensed-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
 		50B103BBD72444E9994AF057 /* NotoSansDisplay_ExtraCondensed-ThinItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansDisplay_ExtraCondensed-ThinItalic.ttf"; path = "../src/assets/fonts/static/NotoSansDisplay_ExtraCondensed-ThinItalic.ttf"; sourceTree = "<group>"; };
@@ -154,7 +154,7 @@
 		77583B61546B4A23A8921D6E /* NotoSansDisplay-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansDisplay-Bold.ttf"; path = "../src/assets/fonts/static/NotoSansDisplay-Bold.ttf"; sourceTree = "<group>"; };
 		7D364F23B11E4319802B0562 /* NotoSansDisplay_Condensed-ExtraLightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansDisplay_Condensed-ExtraLightItalic.ttf"; path = "../src/assets/fonts/static/NotoSansDisplay_Condensed-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
 		807FF5B72046471287C0978C /* NotoSansDisplay-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansDisplay-BoldItalic.ttf"; path = "../src/assets/fonts/static/NotoSansDisplay-BoldItalic.ttf"; sourceTree = "<group>"; };
-		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = ReactNativePlantilla/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = "Geonity/LaunchScreen.storyboard"; sourceTree = "<group>"; };
 		8515D2AC9B46407BA3F8E702 /* NotoSansDisplay_ExtraCondensed-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansDisplay_ExtraCondensed-LightItalic.ttf"; path = "../src/assets/fonts/static/NotoSansDisplay_ExtraCondensed-LightItalic.ttf"; sourceTree = "<group>"; };
 		8B76D2D50E9A4BA2B196E099 /* NotoSansDisplay_ExtraCondensed-SemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansDisplay_ExtraCondensed-SemiBoldItalic.ttf"; path = "../src/assets/fonts/static/NotoSansDisplay_ExtraCondensed-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
 		8D283761B81C480CB8A3CE4A /* NotoSansDisplay_SemiCondensed-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansDisplay_SemiCondensed-ExtraBoldItalic.ttf"; path = "../src/assets/fonts/static/NotoSansDisplay_SemiCondensed-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
@@ -171,15 +171,15 @@
 		B58EB3D09B844BC1832AEE20 /* NotoSansDisplay_SemiCondensed-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansDisplay_SemiCondensed-ExtraLight.ttf"; path = "../src/assets/fonts/static/NotoSansDisplay_SemiCondensed-ExtraLight.ttf"; sourceTree = "<group>"; };
 		B6C3DA9C49DD4DDB92E11F66 /* NotoSansDisplay_ExtraCondensed-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansDisplay_ExtraCondensed-ExtraLight.ttf"; path = "../src/assets/fonts/static/NotoSansDisplay_ExtraCondensed-ExtraLight.ttf"; sourceTree = "<group>"; };
 		BC9BFD6AD9164F6E97B6D3E2 /* NotoSansDisplay_Condensed-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansDisplay_Condensed-Bold.ttf"; path = "../src/assets/fonts/static/NotoSansDisplay_Condensed-Bold.ttf"; sourceTree = "<group>"; };
-		C357D9FDAF3563FFB411396C /* libPods-ReactNativePlantilla.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ReactNativePlantilla.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C357D9FDAF3563FFB411396C /* libPods-Geonity.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Geonity.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C55F197988734BE9AA31E249 /* NotoSansDisplay_Condensed-ThinItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansDisplay_Condensed-ThinItalic.ttf"; path = "../src/assets/fonts/static/NotoSansDisplay_Condensed-ThinItalic.ttf"; sourceTree = "<group>"; };
-		CA66044EADBC49C3157BD79C /* Pods-ReactNativePlantilla-ReactNativePlantillaTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ReactNativePlantilla-ReactNativePlantillaTests.debug.xcconfig"; path = "Target Support Files/Pods-ReactNativePlantilla-ReactNativePlantillaTests/Pods-ReactNativePlantilla-ReactNativePlantillaTests.debug.xcconfig"; sourceTree = "<group>"; };
+		CA66044EADBC49C3157BD79C /* Pods-Geonity-GeonityTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Geonity-GeonityTests.debug.xcconfig"; path = "Target Support Files/Pods-Geonity-GeonityTests/Pods-Geonity-GeonityTests.debug.xcconfig"; sourceTree = "<group>"; };
 		CB04311F75F240A79943C493 /* NotoSansDisplay_SemiCondensed-ThinItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansDisplay_SemiCondensed-ThinItalic.ttf"; path = "../src/assets/fonts/static/NotoSansDisplay_SemiCondensed-ThinItalic.ttf"; sourceTree = "<group>"; };
 		CE351AD1BA154C48A24E7E5B /* NotoSansDisplay-ThinItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansDisplay-ThinItalic.ttf"; path = "../src/assets/fonts/static/NotoSansDisplay-ThinItalic.ttf"; sourceTree = "<group>"; };
 		D217FC4AFE6B4636B2B89947 /* NotoSansDisplay_SemiCondensed-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansDisplay_SemiCondensed-SemiBold.ttf"; path = "../src/assets/fonts/static/NotoSansDisplay_SemiCondensed-SemiBold.ttf"; sourceTree = "<group>"; };
 		D4862EA9F2174CD599345F65 /* NotoSansDisplay-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansDisplay-SemiBold.ttf"; path = "../src/assets/fonts/static/NotoSansDisplay-SemiBold.ttf"; sourceTree = "<group>"; };
 		D6D2025171E34E30AB0320DE /* NotoSansDisplay_Condensed-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansDisplay_Condensed-Black.ttf"; path = "../src/assets/fonts/static/NotoSansDisplay_Condensed-Black.ttf"; sourceTree = "<group>"; };
-		DA6A8E0880FC1D6B9F34DAD8 /* Pods-ReactNativePlantilla.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ReactNativePlantilla.release.xcconfig"; path = "Target Support Files/Pods-ReactNativePlantilla/Pods-ReactNativePlantilla.release.xcconfig"; sourceTree = "<group>"; };
+		DA6A8E0880FC1D6B9F34DAD8 /* Pods-Geonity.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Geonity.release.xcconfig"; path = "Target Support Files/Pods-Geonity/Pods-Geonity.release.xcconfig"; sourceTree = "<group>"; };
 		DB19EE46897D417996CEABE2 /* NotoSansDisplay_Condensed-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansDisplay_Condensed-Medium.ttf"; path = "../src/assets/fonts/static/NotoSansDisplay_Condensed-Medium.ttf"; sourceTree = "<group>"; };
 		DD970D8B72E646319097E50B /* NotoSansDisplay-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansDisplay-Italic.ttf"; path = "../src/assets/fonts/static/NotoSansDisplay-Italic.ttf"; sourceTree = "<group>"; };
 		DFF133F5BA4B4080A2C6510A /* NotoSansDisplay_ExtraCondensed-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansDisplay_ExtraCondensed-Regular.ttf"; path = "../src/assets/fonts/static/NotoSansDisplay_ExtraCondensed-Regular.ttf"; sourceTree = "<group>"; };
@@ -202,7 +202,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B87DFA4E29D1B029002FCAD9 /* Mapbox in Frameworks */,
-				FB3EE48C3C2D1435DFDA36E5 /* libPods-ReactNativePlantilla-ReactNativePlantillaTests.a in Frameworks */,
+				FB3EE48C3C2D1435DFDA36E5 /* libPods-Geonity-GeonityTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -211,20 +211,20 @@
 			buildActionMask = 2147483647;
 			files = (
 				B87DFA4D29D1B029002FCAD9 /* Mapbox in Frameworks */,
-				A4B7B033B18BC33F5E4FD4B8 /* libPods-ReactNativePlantilla.a in Frameworks */,
+				A4B7B033B18BC33F5E4FD4B8 /* libPods-Geonity.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		00E356EF1AD99517003FC87E /* ReactNativePlantillaTests */ = {
+		00E356EF1AD99517003FC87E /* GeonityTests */ = {
 			isa = PBXGroup;
 			children = (
-				00E356F21AD99517003FC87E /* ReactNativePlantillaTests.m */,
+				00E356F21AD99517003FC87E /* GeonityTests.m */,
 				00E356F01AD99517003FC87E /* Supporting Files */,
 			);
-			path = ReactNativePlantillaTests;
+			path = "GeonityTests";
 			sourceTree = "<group>";
 		};
 		00E356F01AD99517003FC87E /* Supporting Files */ = {
@@ -235,7 +235,7 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		13B07FAE1A68108700A75B9A /* ReactNativePlantilla */ = {
+		13B07FAE1A68108700A75B9A /* Geonity */ = {
 			isa = PBXGroup;
 			children = (
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
@@ -245,15 +245,15 @@
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
 			);
-			name = ReactNativePlantilla;
+			name = "Geonity";
 			sourceTree = "<group>";
 		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				C357D9FDAF3563FFB411396C /* libPods-ReactNativePlantilla.a */,
-				492BA972005C07E5DA8B675E /* libPods-ReactNativePlantilla-ReactNativePlantillaTests.a */,
+				C357D9FDAF3563FFB411396C /* libPods-Geonity.a */,
+				492BA972005C07E5DA8B675E /* libPods-Geonity-GeonityTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -349,9 +349,9 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				13B07FAE1A68108700A75B9A /* ReactNativePlantilla */,
+				13B07FAE1A68108700A75B9A /* Geonity */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
-				00E356EF1AD99517003FC87E /* ReactNativePlantillaTests */,
+				00E356EF1AD99517003FC87E /* GeonityTests */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
@@ -365,8 +365,8 @@
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				13B07F961A680F5B00A75B9A /* ReactNativePlantilla.app */,
-				00E356EE1AD99517003FC87E /* ReactNativePlantillaTests.xctest */,
+				13B07F961A680F5B00A75B9A /* Geonity.app */,
+				00E356EE1AD99517003FC87E /* GeonityTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -374,10 +374,10 @@
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				49469A7208237CCF60D7314F /* Pods-ReactNativePlantilla.debug.xcconfig */,
-				DA6A8E0880FC1D6B9F34DAD8 /* Pods-ReactNativePlantilla.release.xcconfig */,
-				CA66044EADBC49C3157BD79C /* Pods-ReactNativePlantilla-ReactNativePlantillaTests.debug.xcconfig */,
-				496F6A723E4BAFD358E3C2F9 /* Pods-ReactNativePlantilla-ReactNativePlantillaTests.release.xcconfig */,
+				49469A7208237CCF60D7314F /* Pods-Geonity.debug.xcconfig */,
+				DA6A8E0880FC1D6B9F34DAD8 /* Pods-Geonity.release.xcconfig */,
+				CA66044EADBC49C3157BD79C /* Pods-Geonity-GeonityTests.debug.xcconfig */,
+				496F6A723E4BAFD358E3C2F9 /* Pods-Geonity-GeonityTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -385,9 +385,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		00E356ED1AD99517003FC87E /* ReactNativePlantillaTests */ = {
+		00E356ED1AD99517003FC87E /* GeonityTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "ReactNativePlantillaTests" */;
+			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "GeonityTests" */;
 			buildPhases = (
 				7B2DD597B32DDA0FEAECEF8E /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
@@ -401,17 +401,17 @@
 			dependencies = (
 				00E356F51AD99517003FC87E /* PBXTargetDependency */,
 			);
-			name = ReactNativePlantillaTests;
+			name = "GeonityTests";
 			packageProductDependencies = (
 				DF2010541428DE567518B85B /* Mapbox */,
 			);
-			productName = ReactNativePlantillaTests;
-			productReference = 00E356EE1AD99517003FC87E /* ReactNativePlantillaTests.xctest */;
+			productname = "GeonityTests";
+			productReference = 00E356EE1AD99517003FC87E /* GeonityTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		13B07F861A680F5B00A75B9A /* ReactNativePlantilla */ = {
+		13B07F861A680F5B00A75B9A /* Geonity */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "ReactNativePlantilla" */;
+			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Geonity" */;
 			buildPhases = (
 				6B16C453D2592D3F43B3E280 /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
@@ -426,12 +426,12 @@
 			);
 			dependencies = (
 			);
-			name = ReactNativePlantilla;
+			name = "Geonity";
 			packageProductDependencies = (
 				DE4A4FC23593B6E045175C30 /* Mapbox */,
 			);
-			productName = ReactNativePlantilla;
-			productReference = 13B07F961A680F5B00A75B9A /* ReactNativePlantilla.app */;
+			productName = "Geonity";
+			productReference = 13B07F961A680F5B00A75B9A /* Geonity.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -451,7 +451,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "ReactNativePlantilla" */;
+			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "Geonity" */;
 			compatibilityVersion = "Xcode 12.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -467,8 +467,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				13B07F861A680F5B00A75B9A /* ReactNativePlantilla */,
-				00E356ED1AD99517003FC87E /* ReactNativePlantillaTests */,
+				13B07F861A680F5B00A75B9A /* Geonity */,
+				00E356ED1AD99517003FC87E /* GeonityTests */,
 			);
 		};
 /* End PBXProject section */
@@ -589,15 +589,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-ReactNativePlantilla-ReactNativePlantillaTests/Pods-ReactNativePlantilla-ReactNativePlantillaTests-resources-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-Geonity-GeonityTests/Pods-Geonity-GeonityTests-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-ReactNativePlantilla-ReactNativePlantillaTests/Pods-ReactNativePlantilla-ReactNativePlantillaTests-resources-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-Geonity-GeonityTests/Pods-Geonity-GeonityTests-resources-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ReactNativePlantilla-ReactNativePlantillaTests/Pods-ReactNativePlantilla-ReactNativePlantillaTests-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Geonity-GeonityTests/Pods-Geonity-GeonityTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		379410D5E791B51B4A2514A3 /* [CP] Copy Pods Resources */ = {
@@ -606,15 +606,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-ReactNativePlantilla/Pods-ReactNativePlantilla-resources-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-Geonity/Pods-Geonity-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-ReactNativePlantilla/Pods-ReactNativePlantilla-resources-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-Geonity/Pods-Geonity-resources-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ReactNativePlantilla/Pods-ReactNativePlantilla-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Geonity/Pods-Geonity-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		6B16C453D2592D3F43B3E280 /* [CP] Check Pods Manifest.lock */ = {
@@ -632,7 +632,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-ReactNativePlantilla-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-Geonity-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -645,15 +645,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-ReactNativePlantilla-ReactNativePlantillaTests/Pods-ReactNativePlantilla-ReactNativePlantillaTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-Geonity-GeonityTests/Pods-Geonity-GeonityTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-ReactNativePlantilla-ReactNativePlantillaTests/Pods-ReactNativePlantilla-ReactNativePlantillaTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-Geonity-GeonityTests/Pods-Geonity-GeonityTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ReactNativePlantilla-ReactNativePlantillaTests/Pods-ReactNativePlantilla-ReactNativePlantillaTests-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Geonity-GeonityTests/Pods-Geonity-GeonityTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		7B2DD597B32DDA0FEAECEF8E /* [CP] Check Pods Manifest.lock */ = {
@@ -671,7 +671,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-ReactNativePlantilla-ReactNativePlantillaTests-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-Geonity-GeonityTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -684,15 +684,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-ReactNativePlantilla/Pods-ReactNativePlantilla-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-Geonity/Pods-Geonity-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-ReactNativePlantilla/Pods-ReactNativePlantilla-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-Geonity/Pods-Geonity-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ReactNativePlantilla/Pods-ReactNativePlantilla-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Geonity/Pods-Geonity-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
@@ -721,7 +721,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				00E356F31AD99517003FC87E /* ReactNativePlantillaTests.m in Sources */,
+				00E356F31AD99517003FC87E /* GeonityTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -739,7 +739,7 @@
 /* Begin PBXTargetDependency section */
 		00E356F51AD99517003FC87E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 13B07F861A680F5B00A75B9A /* ReactNativePlantilla */;
+			target = 13B07F861A680F5B00A75B9A /* Geonity */;
 			targetProxy = 00E356F41AD99517003FC87E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -747,14 +747,14 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CA66044EADBC49C3157BD79C /* Pods-ReactNativePlantilla-ReactNativePlantillaTests.debug.xcconfig */;
+			baseConfigurationReference = CA66044EADBC49C3157BD79C /* Pods-Geonity-GeonityTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = ReactNativePlantillaTests/Info.plist;
+				INFOPLIST_FILE = "GeonityTests/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -768,17 +768,17 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ReactNativePlantilla.app/ReactNativePlantilla";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Geonity.app/Geonity";
 			};
 			name = Debug;
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 496F6A723E4BAFD358E3C2F9 /* Pods-ReactNativePlantilla-ReactNativePlantillaTests.release.xcconfig */;
+			baseConfigurationReference = 496F6A723E4BAFD358E3C2F9 /* Pods-Geonity-GeonityTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				INFOPLIST_FILE = ReactNativePlantillaTests/Info.plist;
+				INFOPLIST_FILE = "GeonityTests/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -792,13 +792,13 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ReactNativePlantilla.app/ReactNativePlantilla";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Geonity.app/Geonity";
 			};
 			name = Release;
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 49469A7208237CCF60D7314F /* Pods-ReactNativePlantilla.debug.xcconfig */;
+			baseConfigurationReference = 49469A7208237CCF60D7314F /* Pods-Geonity.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -807,7 +807,8 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 6RWV382T9P;
 				ENABLE_BITCODE = NO;
-				INFOPLIST_FILE = ReactNativePlantilla/Info.plist;
+				INFOPLIST_FILE = "Geonity/Info.plist";
+             INFOPLIST_KEY_CFBundleDisplayName = "Geonity";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -818,7 +819,7 @@
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = ReactNativePlantilla;
+				PRODUCT_NAME = "Geonity";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -828,7 +829,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = DA6A8E0880FC1D6B9F34DAD8 /* Pods-ReactNativePlantilla.release.xcconfig */;
+			baseConfigurationReference = DA6A8E0880FC1D6B9F34DAD8 /* Pods-Geonity.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -836,7 +837,8 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 6RWV382T9P;
-				INFOPLIST_FILE = ReactNativePlantilla/Info.plist;
+				INFOPLIST_FILE = "Geonity/Info.plist";
+             INFOPLIST_KEY_CFBundleDisplayName = "Geonity";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -847,7 +849,7 @@
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = ReactNativePlantilla;
+				PRODUCT_NAME = "Geonity";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -994,7 +996,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "ReactNativePlantillaTests" */ = {
+		00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "GeonityTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				00E356F61AD99517003FC87E /* Debug */,
@@ -1003,7 +1005,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "ReactNativePlantilla" */ = {
+		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Geonity" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				13B07F941A680F5B00A75B9A /* Debug */,
@@ -1012,7 +1014,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "ReactNativePlantilla" */ = {
+		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "Geonity" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,

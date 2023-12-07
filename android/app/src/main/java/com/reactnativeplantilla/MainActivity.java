@@ -18,7 +18,7 @@ public class MainActivity extends ReactActivity {
    */
   @Override
   protected String getMainComponentName() {
-    return "ReactNativePlantilla";
+    return "Geonity";
   }
 
   //configuración adicional para hacer funcionar stack navigator en dispositivos android

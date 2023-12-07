@@ -4,8 +4,8 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 platform :ios, '12.4'
 install! 'cocoapods', :deterministic_uuids => false
 $RNMapboxMapsImpl = 'mapbox'
-#ReactNativePlantilla
-target 'ReactNativePlantilla' do
+#Geonity
+target 'Geonity' do
   config = use_native_modules!
   # react-native-permissions permission handlers
   permissions_path = '../node_modules/react-native-permissions/ios'
@@ -48,7 +48,7 @@ target 'ReactNativePlantilla' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  target 'ReactNativePlantillaTests' do
+  target 'GeonityTests' do
     inherit! :complete
     # Pods for testing
   end

@@ -7,11 +7,11 @@
 #define TIMEOUT_SECONDS 600
 #define TEXT_TO_LOOK_FOR @"Welcome to React"
 
-@interface ReactNativePlantillaTests : XCTestCase
+@interface GeonityTests : XCTestCase
 
 @end
 
-@implementation ReactNativePlantillaTests
+@implementation GeonityTests
 
 - (BOOL)findSubviewInView:(UIView *)view matching:(BOOL (^)(UIView *view))test
 {
