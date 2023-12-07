@@ -1,4 +1,4 @@
-package com.reactnativeplantilla;
+package com.ibercivis.geonity;
 
 import android.os.Bundle;
 import com.facebook.react.ReactActivity;

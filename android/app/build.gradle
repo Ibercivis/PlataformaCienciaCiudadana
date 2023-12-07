@@ -141,7 +141,7 @@ android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        applicationId "com.reactnativeplantilla"
+        applicationId "com.ibercivis.geonity"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -224,7 +224,7 @@ android {
             keyPassword 'android'
         }
     }
-    namespace 'com.reactnativeplantilla'
+    namespace 'com.ibercivis.geonity'
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
