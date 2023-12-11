@@ -16,7 +16,7 @@
       android:allowBackup="false"
       android:theme="@style/AppTheme">
 
-      <!-- el movil tiene que tener google play instalado  android:windowSoftInputMode adjustPan/adjustResize-->
+      <!-- el movil tiene que tener google play instalado  android:windowSoftInputMode adjustPan/adjustResize -->
       <meta-data
         android:name="com.google.android.geo.API_KEY"
         android:value="AIzaSyCHQdasBHe_S8_yBGz_3i9SIHMEqWbYYsI"/>

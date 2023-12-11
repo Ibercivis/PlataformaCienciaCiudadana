@@ -117,6 +117,7 @@ export const AuthProvider = ({children}: any) => {
           payload:
             'No se pudo iniciar sesión debido a un problema en el servidor',
         });
+        return false;
       }
       return true;
     } catch (err) {

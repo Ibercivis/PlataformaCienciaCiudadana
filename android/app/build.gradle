@@ -137,7 +137,7 @@ def reactNativeArchitectures() {
 
 android {
     ndkVersion rootProject.ext.ndkVersion
-
+    namespace 'com.reactnativeplantilla'
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
