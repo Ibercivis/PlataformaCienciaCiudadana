@@ -3,7 +3,6 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {PermissionsContext} from '../context/PermissionsContext';
 import {LoginScreen} from '../screens/LoginScreen';
 import {AuthContext} from '../context/AuthContext';
-import {DrawerNavigation} from './DrawerNavigation';
 import {RegisterScreen} from '../screens/RegisterScreen';
 import {ForgotPassword} from '../screens/ForgotPassword';
 import {LoadingScreen} from '../screens/LoadingScreen';
@@ -21,7 +20,7 @@ export const Navigator = () => {
   const {permissions} = useContext(PermissionsContext);
 
   //si no está logged, se le redirigirá hasta la pantalla de login
-  const {status} = useContext(AuthContext);
+  const {status, isGuest} = useContext(AuthContext);
   useEffect(() => {
     SplashScreen.hide();
   }, []);
@@ -42,7 +41,7 @@ export const Navigator = () => {
       {permissions.locationStatus === 'granted' &&
       permissions.camera === 'granted' ? (
         <>
-          {status !== 'authenticated' ? (
+          {status !== 'authenticated' && !isGuest ? (
             <>
               <Stack.Screen
                 name="LoginScreen"

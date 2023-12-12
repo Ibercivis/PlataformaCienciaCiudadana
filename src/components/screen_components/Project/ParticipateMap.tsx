@@ -1,11 +1,8 @@
-import React, {useEffect, useLayoutEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useLocation} from '../../../hooks/useLocation';
-import {LoadingScreen} from '../../../screens/LoadingScreen';
 import Mapbox from '@rnmapbox/maps';
 import {useForm} from '../../../hooks/useForm';
 import {
-  Button,
-  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -20,7 +17,6 @@ import Compass from '../../../assets/icons/map/Compass.svg';
 import CardMap from '../../../assets/icons/map/card-map.svg';
 import Back from '../../../assets/icons/map/chevron-left-map.svg';
 import MarkEnabled from '../../../assets/icons/map/mark-asset.svg';
-import MarkDisabled from '../../../assets/icons/map/mark-disabled.svg';
 import Target from '../../../assets/icons/map/target-map.svg';
 import {StackParams} from '../../../navigation/HomeNavigator';
 import {StackScreenProps} from '@react-navigation/stack';
@@ -47,6 +43,7 @@ import {useDateTime} from '../../../hooks/useDateTime';
 import Toast from 'react-native-toast-message';
 import {project} from '../../../../react-native.config';
 import {useNavigation} from '@react-navigation/native';
+// import { StackParams } from '../../../navigation/MultipleNavigator';
 
 Mapbox.setWellKnownTileServer('mapbox');
 Mapbox.setAccessToken(
@@ -72,8 +69,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
     followUserLocation,
     userLocation,
     stopFollowUserLocation,
-    initialPositionArray,
-    loading,
+    initialPositionArray
   } = useLocation();
 
   const {currentISODateTime} = useDateTime();
@@ -90,18 +86,18 @@ export const ParticipateMap = ({navigation, route}: Props) => {
   //   });
   // }, [navigation]);
 
-  useEffect(() => {
-    nav.getParent()?.setOptions({
-      tabBarStyle: {
-        // display: "none",
-        opacity: 0,
-      },
-    });
-    return () =>
-      nav.getParent()?.setOptions({
-        tabBarStyle: undefined,
-      });
-  }, [nav]);
+  // useEffect(() => {
+  //   nav.getParent()?.setOptions({
+  //     tabBarStyle: {
+  //       // display: "none",
+  //       opacity: 0,
+  //     },
+  //   });
+  //   return () =>
+  //     nav.getParent()?.setOptions({
+  //       tabBarStyle: undefined,
+  //     });
+  // }, [nav]);
 
   //#region VARIABLES
   // map refs
@@ -975,7 +971,50 @@ export const ParticipateMap = ({navigation, route}: Props) => {
       zoomLevel: 16,
     });
   };
+
+  const onBackButton = () =>{
+
+    navigation.replace('ProjectPage', {id: route.params.id});
+
+   }
   //#endregion
+
+  const mark = (x: any) => {
+    return (
+      // <View></View>
+      <MarkerView
+        // coordinate={[-6.300905, 36.53777]}
+        onTouchStart={() => console.log('aprieta la marca')}
+        coordinate={[
+          x.geoposition.point.latitude,
+          x.geoposition.point.longitude,
+        ]}>
+        {/* sustituir esto por una imagen */}
+        <TouchableOpacity
+          // style={{position:'relative'}}
+          disabled={isCreatingObservation}
+          onPress={() => {
+            setSelectedObservation(x);
+            setShowSelectedObservation(x);
+            // console.log('aprieta la marca')
+          }}>
+          <View
+            style={{
+              alignItems: 'center',
+              width: RFPercentage(5),
+              backgroundColor: 'transparent',
+              height: RFPercentage(6),
+            }}>
+            <MarkEnabled
+              height={RFPercentage(5)}
+              width={RFPercentage(5)}
+              fill={colorMark}
+            />
+          </View>
+        </TouchableOpacity>
+      </MarkerView>
+    );
+  };
 
   if (!hasLocation) {
     // return <LoadingScreen />;
@@ -1045,52 +1084,14 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                   allowUpdates={true}
                 />
                 <Mapbox.UserLocation visible animated />
+                <View style={{marginTop:'20%'}}></View>
                 {observationList.length > 0 &&
                   observationList.map((x, index) => {
                     if (x.geoposition.point) {
                       if (selectedObservation.id !== x.id) {
-                        return (
-                          <View key={index}>
-                            <MarkerView
-                              // coordinate={[-6.300905, 36.53777]}
-                              onTouchStart={() =>
-                                console.log('aprieta la marca')
-                              }
-                              coordinate={[
-                                x.geoposition.point.latitude,
-                                x.geoposition.point.longitude,
-                              ]}>
-                              {/* sustituir esto por una imagen */}
-                              <TouchableOpacity
-                                disabled={isCreatingObservation}
-                                onPress={() => {
-                                  setSelectedObservation(x);
-                                  setShowSelectedObservation(x);
-                                  // console.log('aprieta la marca')
-                                }}>
-                                <View
-                                  style={{
-                                    alignItems: 'center',
-                                    width: RFPercentage(5),
-                                    backgroundColor: 'transparent',
-                                    height: RFPercentage(6),
-                                  }}>
-                                  <MarkEnabled
-                                    height={RFPercentage(5)}
-                                    width={RFPercentage(5)}
-                                    fill={colorMark}
-                                  />
-                                </View>
-                              </TouchableOpacity>
-                            </MarkerView>
-                          </View>
-                        );
-                      } else {
-                        return <View key={index}></View>;
+                        return <View key={index}>{mark(x)}</View>;
                       }
-                    } else {
-                      return <View key={index}></View>;
-                    }
+                    } 
                   })}
                 {observationListCreator.length > 0 &&
                   observationListCreator.map((x, index) => {
@@ -1270,7 +1271,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                   top: '5%',
                 }}
                 onPress={() => {
-                  navigation.replace('ProjectPage', {id: route.params.id});
+                  onBackButton()
                 }}>
                 <Back height={RFPercentage(6)} />
               </TouchableOpacity>
@@ -1569,7 +1570,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     height: RFPercentage(20),
     width: '100%',
-    zIndex: 200,
+    zIndex: 99,
     bottom: 0,
     alignSelf: 'center',
     // borderTopWidth: 1,

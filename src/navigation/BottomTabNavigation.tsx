@@ -201,18 +201,18 @@ export const BottomTabNavigation = () => {
           headerShown: false,
           tabBarShowLabel: false,
           tabBarStyle: {backgroundColor: 'transparent'},
-          tabBarBackground() {
-            return (
-              <View style={{flex: 1, backgroundColor: 'white'}}>
-                <LinearGradient
-                  colors={['transparent', '#fff']}
-                  style={{flex: 1}}
-                  start={{x: 0, y: 0}}
-                  end={{x: 0, y: 1}}
-                />
-              </View>
-            );
-          },
+          // tabBarBackground() {
+          //   return (
+          //     <View style={{flex: 1, backgroundColor: 'white'}}>
+          //       <LinearGradient
+          //         colors={['transparent', '#fff']}
+          //         style={{flex: 1}}
+          //         start={{x: 0, y: 0}}
+          //         end={{x: 0, y: 1}}
+          //       />
+          //     </View>
+          //   );
+          // },
         }}
         tabBar={({state, descriptors, navigation}) => (
           <View style={styles.tabBarContainer}>

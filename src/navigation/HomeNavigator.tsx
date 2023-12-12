@@ -1,8 +1,6 @@
 import {createStackNavigator} from '@react-navigation/stack';
 import {Mark, HasTag, Topic} from '../interfaces/appInterfaces';
 import {HomeScreen} from '../screens/HomeScreen';
-import {NewProjectScreen} from '../screens/NewProjectScreen';
-import {OrganisationScreen} from '../screens/OrganisationScreen';
 import {ProjectList} from '../components/screen_components/Home/ProjectList';
 import {ProjectPage} from '../components/screen_components/Home/ProjectPage';
 import {OrganizationList} from '../components/screen_components/Home/OrganizationList';
@@ -13,7 +11,6 @@ import {PermissionsContext} from '../context/PermissionsContext';
 import {LoadingScreen} from '../screens/LoadingScreen';
 import {ParticipateMap} from '../components/screen_components/Project/ParticipateMap';
 import {PermissionsScreen} from '../screens/PermissionsScreen';
-import {NavigatorMapBox} from './NavigatorMapBox';
 
 export type StackParams = {
   HomeScreen: {
@@ -21,7 +18,7 @@ export type StackParams = {
   };
   ProjectList: {
     id?: number;
-    title?: string
+    title?: string;
   };
   OrganizationList: {
     id?: number;
@@ -89,7 +86,7 @@ export function HomeNavigator() {
         headerShown: false,
         headerStyle: {
           // backgroundColor: 'transparent',
-          zIndex: -999,
+          // zIndex: 0,
         },
       }}>
       <Stack.Screen
@@ -101,13 +98,7 @@ export function HomeNavigator() {
       <Stack.Screen name="OrganizationList" component={OrganizationList} />
       <Stack.Screen name="ProjectPage" component={ProjectPage} />
       <Stack.Screen name="OrganizationPage" component={OrganizationPage} />
-      <Stack.Screen
-        name="ParticipateMap"
-        component={ParticipateMap}
-        options={({navigation}) => ({
-         
-        })}
-      />
+      <Stack.Screen name="ParticipateMap" component={ParticipateMap} />
       <Stack.Screen name="PermissionsScreen" component={PermissionsScreen} />
 
       {/* {permissions.locationStatus === 'granted' ? (

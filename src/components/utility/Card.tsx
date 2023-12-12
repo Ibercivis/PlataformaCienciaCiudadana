@@ -795,6 +795,7 @@ export const Card = ({
                     alignSelf: 'flex-start',
                     fontWeight: 'bold',
                     fontSize: FontSize.fontSizeText15,
+                    color:'black'
                   }}>
                   {title}
                 </Text>
@@ -805,6 +806,7 @@ export const Card = ({
                     alignSelf: 'flex-start',
                     marginBottom: '4%',
                     fontSize: FontSize.fontSizeText13,
+                    color:'black'
                   }}>
                   {description.length > 120
                     ? description.slice(0, 120) + '...'
@@ -852,7 +854,8 @@ export const Card = ({
                         top: RFPercentage(13),
                         backgroundColor: 'white',
                         alignSelf: 'flex-start',
-                        paddingHorizontal: RFPercentage(0.5)
+                        paddingHorizontal: RFPercentage(0.5),
+                        color:'black'
                       }}>
                       {/* {title} */}
                       {title.length > 20 ? title.slice(0, 20) + '...' : title}
@@ -877,7 +880,8 @@ export const Card = ({
                     marginHorizontal: RFPercentage(2),
                     fontSize: FontSize.fontSizeText13,
                     height: '60%',
-                    width:'60%'
+                    width:'60%',
+                    color:'black'
                   }}>
                   {description.length > 120
                     ? description.slice(0, 120) + '...'
@@ -911,6 +915,7 @@ export const Card = ({
                         fontSize: FontSize.fontSizeText13,
                         marginHorizontal: RFPercentage(1),
                         alignSelf: 'center',
+                        color:'black'
                       }}>
                       {contribution}
                     </Text>
@@ -930,6 +935,7 @@ export const Card = ({
                       style={{
                         fontSize: FontSize.fontSizeText13,
                         marginHorizontal: RFPercentage(1),
+                        color:'black'
                       }}>
                       {totalLikes}
                     </Text>

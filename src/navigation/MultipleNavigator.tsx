@@ -19,6 +19,9 @@ export type StackParams = {
   CreateOrganization: {
     id?: number;
   };
+  // ParticipateMap: {
+  //     id: number;
+  //   };
   
 };
 const Stack = createStackNavigator<StackParams>();
@@ -39,6 +42,7 @@ export function MultipleNavigator() {
       />
       <Stack.Screen name="CreateProject" component={CreateProject} />
       <Stack.Screen name="CreateOrganization" component={CreateOrganization} />
+      {/* <Stack.Screen name="ParticipateMap" component={ParticipateMap} /> */}
 
       
     </Stack.Navigator>

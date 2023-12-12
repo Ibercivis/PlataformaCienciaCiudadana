@@ -17,6 +17,7 @@ export interface AuthState {
   errorMessage: string;
   message: string;
   user: User | null;
+  isGuest: boolean;
 }
 
 //estado inicial
@@ -26,7 +27,7 @@ const authInitialState: AuthState = {
   errorMessage: '',
   message: '',
   status: 'checking',
-  // status: 'authenticated',
+  isGuest: false,
 };
 
 //definir todo lo que el contexto va a pasarle a los hijos. Le dice a react como luce y que expone el context
@@ -35,13 +36,15 @@ type AuthContextProps = {
   message: string;
   token: string | null;
   user: User | null;
-  signIn: (loginData: LoginData) => Promise<boolean>;
+  signIn: (loginData: LoginData, isGuest: boolean) => Promise<boolean>;
   signUp: (data: RegisterData) => void;
   signOut: () => void;
+  setIsGuest: (setGuest: boolean) => void;
   status: 'checking' | 'authenticated' | 'not-authenticated';
   removeError: () => void;
   recoveryPass: (email: string) => void;
   changePass: (pass1: string, pass2: string) => void;
+  isGuest: boolean;
   // setUsername: (userName: string) => void;
   // setPassword: (password: string) => void;
 };
@@ -80,6 +83,8 @@ export const AuthProvider = ({children}: any) => {
           type: 'signIn',
           payload: {
             token: token,
+            isGuest: false,
+
             // user: resp.data.usuario,
           },
         });
@@ -103,6 +108,7 @@ export const AuthProvider = ({children}: any) => {
           type: 'signIn',
           payload: {
             token: resp.data.key,
+            isGuest: false,
           },
         });
 
@@ -140,15 +146,18 @@ export const AuthProvider = ({children}: any) => {
 
   const signUp = async (data: RegisterData) => {
     try {
-      const resp = await citmapApi.post<RegisterResponse>('/users/registration/', {
-        username: data.username,
-        email: data.email,
-        password1: data.password1,
-        password2: data.password2,
-      });
+      const resp = await citmapApi.post<RegisterResponse>(
+        '/users/registration/',
+        {
+          username: data.username,
+          email: data.email,
+          password1: data.password1,
+          password2: data.password2,
+        },
+      );
       if (resp.data) {
         let key = 'Token ' + resp.data.key;
-        console.log(key) // Accede a la clave "key" del objeto
+        console.log(key); // Accede a la clave "key" del objeto
         await AsyncStorage.setItem('token', key);
         action({
           type: 'signUp',
@@ -227,6 +236,14 @@ export const AuthProvider = ({children}: any) => {
     }
   };
 
+  const setIsGuest = async (setGuest: boolean) => {
+    action({
+      type: 'setGuest',
+      payload: {isGuest: setGuest},
+    });
+    return true;
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -237,6 +254,7 @@ export const AuthProvider = ({children}: any) => {
         removeError,
         recoveryPass,
         changePass,
+        setIsGuest,
       }}>
       {children}
     </AuthContext.Provider>

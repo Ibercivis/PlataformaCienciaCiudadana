@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // const baseURL = 'http://fran.ibercivis.es:10000/api';
 // const baseURL = 'http://jorge.ibercivis.es:10000/api';
 export const baseURL = 'http://dev.ibercivis.es:10001/api';
+// export const baseURL = 'https://geonity.ibercivis.es/api';
 export const imageUrl = 'http://dev.ibercivis.es:10001';
 
 const citmapApi = axios.create({baseURL});
