@@ -1035,7 +1035,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                 <Camera
                   ref={reference => (cameraRef.current = reference!)}
                   zoomLevel={15}
-                  maxZoomLevel={200}
+                  maxZoomLevel={1000}
                   centerCoordinate={initialPositionArray}
                   followUserLocation={followView.current}
                   followUserMode={UserTrackingMode.FollowWithHeading}
@@ -1402,7 +1402,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                         </View>
                       );
                     } else {
-                      let image;
+                      let image = [];
                       let selectedElement;
                       if (showSelectedObservation.images) {
                         image = showSelectedObservation.images.find(
@@ -1414,12 +1414,15 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                           item => item.key === x.id!.toString(),
                         );
                       }
+                      
 
                       const valueToUse = image
                         ? image.image
                         : selectedElement
                         ? selectedElement.value
                         : '';
+
+                        
                       return (
                         <View
                           style={{

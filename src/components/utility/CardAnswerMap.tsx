@@ -103,7 +103,7 @@ export const CardAnswerMap = ({
           })
           .catch(err => {
             setImageBlob({});
-            setImages({});
+            setImages(null);
             showModal(true);
           });
         break;
@@ -137,7 +137,7 @@ export const CardAnswerMap = ({
           })
           .catch(err => {
             setImageBlob({});
-            setImages({});
+            setImages(null);
             showModal(true);
           });
         break;
@@ -172,7 +172,7 @@ export const CardAnswerMap = ({
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}>
-                  <Text style={{flexWrap: 'wrap', textAlign: 'justify'}}>
+                  <Text style={{flexWrap: 'wrap', }}>
                     {item.question_text}
                   </Text>
                 </View>
@@ -260,7 +260,7 @@ export const CardAnswerMap = ({
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}>
-                  <Text style={{flexWrap: 'wrap', textAlign: 'justify'}}>
+                  <Text style={{flexWrap: 'wrap',}}>
                     {item.question_text}
                   </Text>
                 </View>
@@ -340,7 +340,7 @@ export const CardAnswerMap = ({
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}>
-                  <Text style={{flexWrap: 'wrap', textAlign: 'justify'}}>
+                  <Text style={{flexWrap: 'wrap',}}>
                     {item.question_text}
                   </Text>
                 </View>
@@ -390,6 +390,7 @@ export const CardAnswerMap = ({
                         />
                       </TouchableOpacity>
                       <TouchableOpacity
+                        onPress={() => showModalImageType()}
                         style={{
                           width: RFPercentage(4),
                           position: 'absolute',
@@ -508,7 +509,36 @@ export const CardAnswerMap = ({
                         alignItems: 'center',
                         borderRadius: 10,
                         padding: '2%',
-                        backgroundColor: value ? 'transparent' : 'grey',
+                        backgroundColor: value ? 'black' : 'grey',
+                      }}>
+                      <ImageBackground
+                        borderRadius={10}
+                        // source={require(urii)}
+                        source={
+                          value !== ''
+                            ? {uri: value}
+                            : require('../../assets/backgrounds/nuevoproyecto.jpg')
+                        }
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          borderRadius: 10,
+                          // resizeMode: 'cover',
+                        }}
+                      />
+                    </View>
+                  )}
+                  {!value && onlyRead && (
+                    <View
+                      style={{
+                        width: '95%',
+                        // height: '110%',
+                        marginTop: '6%',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        borderRadius: 10,
+                        padding: '2%',
+                        backgroundColor: 'white',
                       }}>
                       <ImageBackground
                         borderRadius={10}

@@ -745,7 +745,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
               {/* email */}
               <InputText
                 // isInputText={() => setIsInputText(!isInputText)}
-                label={translate.strings.login_screen[0].mail_input}
+                label={translate.strings.login_screen[0].mail_input_recover}
                 keyboardType="email-address"
                 multiline={false}
                 numOfLines={1}
@@ -922,7 +922,8 @@ export const LoginScreen = ({navigation, route}: Props) => {
         </SafeAreaView>
         <ScrollView
           scrollEnabled={true}
-          disableScrollViewPanResponder={true}
+          keyboardShouldPersistTaps="handled"
+          // disableScrollViewPanResponder={true}
           showsVerticalScrollIndicator={false}>
           {/* contenedor de los elementos  */}
           <View style={styles.child2}>

@@ -32,7 +32,7 @@ import {
   ShowProject,
 } from '../../../interfaces/interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import citmapApi from '../../../api/citmapApi';
+import citmapApi, { imageUrl } from '../../../api/citmapApi';
 import {Checkbox, IconButton, Switch} from 'react-native-paper';
 import Hashtag from '../../../assets/icons/general/Hashtag.svg';
 import {FontFamily, FontSize} from '../../../theme/fonts';
@@ -204,14 +204,15 @@ export const CreateProject = ({navigation, route}: Props) => {
    * está puesto aquí para que entre solo cuando la organizationList haya cargado
    */
   useEffect(() => {
-    if (organizationList.length > 0) {
+    console.log('entra para decir que está editando')
       if (route.params) {
         if (route.params.id) {
+          
           setIsEdit(true);
           getProjectApi();
         }
       } else setWaitingData(false);
-    }
+    
   }, [organizationList]);
 
   useEffect(() => {
@@ -1138,7 +1139,7 @@ export const CreateProject = ({navigation, route}: Props) => {
                 {images[0] ? (
                   <Image
                     source={{
-                      uri: 'data:image/jpeg;base64,' + images[0].data,
+                      uri:'data:image/jpeg;base64,' + images[0].data,
                     }}
                     style={{
                       position: 'absolute',
@@ -1323,7 +1324,7 @@ export const CreateProject = ({navigation, route}: Props) => {
                     <Image
                       source={{
                         uri:
-                          'http://dev.ibercivis.es:10001' +
+                          imageUrl+
                           imagesCharged[0].image,
                       }}
                       style={{

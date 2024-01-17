@@ -145,6 +145,22 @@ anterior version de react native reanimated = 2.14.4, modificada para que pueda 
 
 - react-native-settings
     https://www.npmjs.com/package/react-native-settings?activeTab=readme
+
+//ESTO ES IMPORTANTE
+- react-native-toast-message
+- react-native-image-crop-picker
+- react-native-responsive-screen
+- react-native-async-storage
+- react-native-responsive-fontsize
+- react-native-svg-transformer
+- react-native-modal
+- react-native-linear-gradient
+- date-fns
+- react-native-axios
+- react-native-bootstrap-icons
+- react-native-tab-view
+- react-native-picker
+
     
 Abre el archivo MainApplication.java en android/app/src/main/java/[...]/MainApplication.java.
 
