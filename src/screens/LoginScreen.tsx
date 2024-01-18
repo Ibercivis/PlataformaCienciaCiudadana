@@ -230,17 +230,21 @@ export const LoginScreen = ({navigation, route}: Props) => {
       valid = false;
       setMailRegisterError(true);
     }
-
+// console.log(JSON.stringify(formRegister, null, 2))
     if (!passvalidate.test(formRegister.password1)) {
       valid = false;
       setPassword1Error(true);
-      setPassword2Error(true);
+      // setPassword2Error(true);
+    }else{
+      setPassword1Error(false);
     }
 
     if (!validatePassword(formRegister.password2)) {
       valid = false;
-      setPassword1Error(true);
+      // setPassword1Error(true);
       setPassword2Error(true);
+    }else{
+      setPassword2Error(false);
     }
 
     Keyboard.dismiss();

@@ -164,9 +164,9 @@ export const ProjectPage = (props: Props) => {
     try {
       const result = await Share.share({
         message:
-          'https://play.google.com/store/apps/details?id=nic.goi.aarogyasetu&hl=en',
+          'https://play.google.com/store/apps/details?id=com.reactnativeplantilla',
         title: 'Compartir el proyecto con:',
-        url: 'www.google.es',
+        url: 'https://play.google.com/store/apps/details?id=com.reactnativeplantilla',
       });
       console.log(result);
       if (result.action === Share.sharedAction) {
