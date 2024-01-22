@@ -102,6 +102,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
   const [mailRegisterError, setMailRegisterError] = useState(false);
   const [password1Error, setPassword1Error] = useState(false);
   const [password2Error, setPassword2Error] = useState(false);
+  const [password2ErrorMessage, setPassword2ErrorMessage] = useState('Las contraseñas no coinciden');
 
   const [saveModal, setSaveModal] = useState(false);
   const showModalSave = () => setSaveModal(true);
@@ -238,14 +239,26 @@ export const LoginScreen = ({navigation, route}: Props) => {
     }else{
       setPassword1Error(false);
     }
-
-    if (!validatePassword(formRegister.password2)) {
+    // primero se valida si está bien escrita la segunda pass
+    if (!passvalidate.test(formRegister.password2)) {
       valid = false;
-      // setPassword1Error(true);
+      setPassword2ErrorMessage('La contraseña ha de tener 8 digitos alfanumericos')
       setPassword2Error(true);
     }else{
-      setPassword2Error(false);
+      // si entra aquí significa que está bien escrita la pass2
+      //ahora se mira si coincide con la 1
+      if (!validatePassword(formRegister.password2)) {
+        //si no coincide
+        valid = false;
+        // setPassword1Error(true);
+        setPassword2ErrorMessage('Las contraseñas no coinciden')
+        setPassword2Error(true);
+      }else{
+        setPassword2Error(false);
+      }
     }
+
+    
 
     Keyboard.dismiss();
 
@@ -613,7 +626,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                       right: '3%',
                       fontWeight: '600',
                     }}>
-                    {'Las contraseñas no coinciden'}
+                    {password2ErrorMessage}
                   </HelperText>
                 ) : (
                   <></>

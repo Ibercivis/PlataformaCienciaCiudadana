@@ -1035,7 +1035,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                 <Camera
                   ref={reference => (cameraRef.current = reference!)}
                   zoomLevel={15}
-                  maxZoomLevel={1000}
+                  maxZoomLevel={500}
                   centerCoordinate={initialPositionArray}
                   followUserLocation={followView.current}
                   followUserMode={UserTrackingMode.FollowWithHeading}

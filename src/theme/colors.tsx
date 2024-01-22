@@ -15,7 +15,7 @@ export const Colors = {
     primaryLigth:'#3451C5',
     primaryPressedLigth:'#7187D6',
     primaryDark:'#3454C5',
-    primaryPressedDark:'#',
+    primaryPressedDark:'#92A2D9',
 
     secondaryLigth:'#000000',
     secondaryPressedLigth:'#4C4C4C',
@@ -29,7 +29,7 @@ export const Colors = {
     contentQuaternaryLight:'#294BC2', 
     contentPrimaryDark:'#FFFFFF',
     contentSecondaryDark:'#C5C5C5',
-    contentTertiaryDark:'#757474',
+    contentTertiaryDark:'#717171',
     contentQuaternaryDark:'#4366E1', 
 
     semanticWarningLight:'#FFBA00', 

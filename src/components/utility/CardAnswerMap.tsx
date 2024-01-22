@@ -21,8 +21,9 @@ import FrontPage from '../../assets/icons/project/image.svg';
 import {Size} from '../../theme/size';
 import {Colors} from '../../theme/colors';
 import {useDateTime} from '../../hooks/useDateTime';
-import { PermissionsContext } from '../../context/PermissionsContext';
+import {PermissionsContext} from '../../context/PermissionsContext';
 import Toast from 'react-native-toast-message';
+import {heightPercentageToDP, widthPercentageToDP} from 'react-native-responsive-screen';
 
 interface Props {
   //   onChangeText?: (fieldName: string, value: any) => void;
@@ -59,8 +60,7 @@ export const CardAnswerMap = ({
 
   const {getFormattedDateTime} = useDateTime();
 
-  const {permissions} =
-    useContext(PermissionsContext);
+  const {permissions} = useContext(PermissionsContext);
 
   const selectImage = (type: number) => {
     setImageBlob({});
@@ -161,31 +161,43 @@ export const CardAnswerMap = ({
         return (
           <>
             <View style={{flexDirection: 'column'}}>
-              <View style={{flexDirection: 'row'}}>
-                <View style={{marginHorizontal: '2%'}}>
-                  <Text>{num}</Text>
+              <View style={{flexDirection: 'row',}}>
+                <View style={{marginHorizontal: '2%', marginRight: '5%'}}>
+                  <Text
+                    style={{
+                      fontSize: FontSize.fontSizeText36,
+                      color: Colors.contentTertiaryDark,
+                    }}>
+                    {num}.
+                  </Text>
                 </View>
                 <View
                   style={{
-                    width: '80%',
+                    width: '75%',
                     flexWrap: 'wrap',
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}>
-                  <Text style={{flexWrap: 'wrap', }}>
+                  <Text
+                    style={{
+                      flexWrap: 'wrap',
+                      fontFamily: FontFamily.NotoSansDisplayMedium,
+                      fontSize: FontSize.fontSizeText14,
+                    }}>
                     {item.question_text}
                   </Text>
                 </View>
                 {obligatory && (
                   <View
                     style={{
-                      justifyContent: 'flex-start',
+                      justifyContent: 'center',
                       // position: 'relative',
                       // left: RFPercentage(35),
                       // bottom: RFPercentage(2),
                       // backgroundColor:'blue'
                     }}>
-                    <Text style={{fontSize: FontSize.fontSizeText17, color:'red'}}>
+                    <Text
+                      style={{fontSize: FontSize.fontSizeText18, color: 'red'}}>
                       *
                     </Text>
                   </View>
@@ -208,7 +220,7 @@ export const CardAnswerMap = ({
                   </Text>
                 </View>
               )} */}
-              <View style={{marginTop: '1%'}}>
+              <View style={{marginTop: '0%',}}>
                 <View
                   style={{
                     width: '100%',
@@ -229,12 +241,17 @@ export const CardAnswerMap = ({
                       style={[
                         styles.input,
                         {
-                          borderBottomColor: '#bab9b9',
+                          borderBottomColor: '#949494',
                           color: Colors.textColorPrimary,
+                          fontFamily: value
+                            ? FontFamily.NotoSansDisplayLight
+                            : FontFamily.NotoSansDisplayRegular,
                         },
                       ]}
-                      placeholder={value || item.question_text}
-                      placeholderTextColor={value ? '#000000' : '#bab9b9'}
+                      multiline={true}
+                      contentStyle={{bottom: heightPercentageToDP(-0.4)}}
+                      placeholder={value || 'Pregunta de texto'}
+                      placeholderTextColor={value ? '#000000' : '#949494'}
                       onChangeText={value => onChangeText(value)}
                       underlineColorAndroid="transparent"
                       // value={value}
@@ -250,30 +267,42 @@ export const CardAnswerMap = ({
           <>
             <View style={{flexDirection: 'column'}}>
               <View style={{flexDirection: 'row'}}>
-                <View style={{marginHorizontal: '2%'}}>
-                  <Text>{num}</Text>
+                <View style={{marginHorizontal: '2%', marginRight: '5%'}}>
+                  <Text
+                    style={{
+                      fontSize: FontSize.fontSizeText36,
+                      color: Colors.contentTertiaryDark,
+                    }}>
+                    {num}.
+                  </Text>
                 </View>
                 <View
                   style={{
-                    width: '80%',
+                    width: '75%',
                     flexWrap: 'wrap',
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}>
-                  <Text style={{flexWrap: 'wrap',}}>
+                  <Text
+                    style={{
+                      flexWrap: 'wrap',
+                      fontFamily: FontFamily.NotoSansDisplayMedium,
+                      fontSize: FontSize.fontSizeText14,
+                    }}>
                     {item.question_text}
                   </Text>
                 </View>
                 {obligatory && (
                   <View
                     style={{
-                      justifyContent: 'flex-start',
+                      justifyContent: 'center',
                       // position: 'relative',
                       // left: RFPercentage(35),
                       // bottom: RFPercentage(2),
                       // backgroundColor:'blue'
                     }}>
-                    <Text style={{fontSize: FontSize.fontSizeText17, color:'red'}}>
+                    <Text
+                      style={{fontSize: FontSize.fontSizeText18, color: 'red'}}>
                       *
                     </Text>
                   </View>
@@ -308,12 +337,17 @@ export const CardAnswerMap = ({
                       style={[
                         styles.input,
                         {
-                          borderBottomColor: '#bab9b9',
+                          borderBottomColor: '#949494',
                           color: Colors.textColorPrimary,
+                          fontFamily: value
+                            ? FontFamily.NotoSansDisplayLight
+                            : FontFamily.NotoSansDisplayRegular,
                         },
                       ]}
+                      multiline={true}
+                      contentStyle={{bottom: heightPercentageToDP(-0.4)}}
                       keyboardType="number-pad"
-                      placeholder={value || item.question_text}
+                      placeholder={value || 'Pregunta numérica'}
                       placeholderTextColor={value ? '#000000' : '#bab9b9'}
                       onChangeText={value => onChangeText(value)}
                       underlineColorAndroid="transparent"
@@ -328,19 +362,34 @@ export const CardAnswerMap = ({
       case 'IMG':
         return (
           <>
-            <View style={{flexDirection: 'column', height: RFPercentage(20)}}>
+            <View
+              style={{
+                flexDirection: 'column',
+                height: heightPercentageToDP(22),
+              }}>
               <View style={{flexDirection: 'row'}}>
-                <View style={{marginHorizontal: '2%'}}>
-                  <Text>{num}</Text>
+                <View style={{marginHorizontal: '2%', marginRight: '5%'}}>
+                  <Text
+                    style={{
+                      fontSize: FontSize.fontSizeText36,
+                      color: Colors.contentTertiaryDark,
+                    }}>
+                    {num}.
+                  </Text>
                 </View>
                 <View
                   style={{
-                    width: '80%',
+                    width: '75%',
                     flexWrap: 'wrap',
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}>
-                  <Text style={{flexWrap: 'wrap',}}>
+                  <Text
+                    style={{
+                      flexWrap: 'wrap',
+                      fontFamily: FontFamily.NotoSansDisplayMedium,
+                      fontSize: FontSize.fontSizeText14,
+                    }}>
                     {item.question_text}
                   </Text>
                 </View>
@@ -353,14 +402,15 @@ export const CardAnswerMap = ({
                       // bottom: RFPercentage(2),
                       // backgroundColor:'blue'
                     }}>
-                    <Text style={{fontSize: FontSize.fontSizeText17, color:'red'}}>
+                    <Text
+                      style={{fontSize: FontSize.fontSizeText17, color: 'red'}}>
                       *
                     </Text>
                   </View>
                 )}
               </View>
 
-              <View style={{alignItems: 'center', marginTop: '1%'}}>
+              <View style={{alignItems: 'center', marginTop: '2%'}}>
                 <View
                   style={{
                     // marginVertical: RFPercentage(1),
@@ -373,7 +423,7 @@ export const CardAnswerMap = ({
                     <View
                       style={{
                         width: '80%',
-                        height: '100%',
+                        height: heightPercentageToDP(13),
                         // marginTop: '4%',
                         justifyContent: 'center',
                         alignItems: 'center',
@@ -412,7 +462,7 @@ export const CardAnswerMap = ({
                     <View
                       style={{
                         width: '80%',
-                        height: '100%',
+                        height: heightPercentageToDP(13),
                         // marginTop: '3.5%',
                         justifyContent: 'center',
                         alignItems: 'center',
@@ -458,7 +508,7 @@ export const CardAnswerMap = ({
                     <View
                       style={{
                         width: '80%',
-                        height: '100%',
+                        height: heightPercentageToDP(13),
                         // marginTop: '3.5%',
                         justifyContent: 'center',
                         alignItems: 'center',
@@ -503,7 +553,7 @@ export const CardAnswerMap = ({
                     <View
                       style={{
                         width: '95%',
-                        height: '110%',
+                        height: heightPercentageToDP(13),
                         marginTop: '6%',
                         justifyContent: 'center',
                         alignItems: 'center',
@@ -543,10 +593,11 @@ export const CardAnswerMap = ({
                       <ImageBackground
                         borderRadius={10}
                         // source={require(urii)}
+                        resizeMode="cover"
                         source={
                           value !== ''
                             ? {uri: value}
-                            : require('../../assets/backgrounds/nuevoproyecto.jpg')
+                            : require('../../assets/backgrounds/noimage.jpg')
                         }
                         style={{
                           width: '100%',
@@ -616,7 +667,7 @@ export const CardAnswerMap = ({
           </Modal>
         </Portal>
       </Provider>
-      <Toast position='bottom' />
+      <Toast position="bottom" />
     </View>
   );
 };
@@ -646,9 +697,9 @@ const styles = StyleSheet.create({
     width: '100%', // Opcional: establece el ancho completo
   },
   input: {
-    width: '90%',
+    width: widthPercentageToDP(74),
     fontSize: FontSize.fontSizeText13,
-    fontFamily: FontFamily.NotoSansDisplayLight,
+    height: heightPercentageToDP(5),
     fontWeight: '300',
     alignSelf: 'center',
     backgroundColor: 'transparent',
