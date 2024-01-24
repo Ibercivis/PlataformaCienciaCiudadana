@@ -23,7 +23,12 @@ import {Colors} from '../../theme/colors';
 import {useDateTime} from '../../hooks/useDateTime';
 import {PermissionsContext} from '../../context/PermissionsContext';
 import Toast from 'react-native-toast-message';
-import {heightPercentageToDP, widthPercentageToDP} from 'react-native-responsive-screen';
+import {
+  heightPercentageToDP,
+  widthPercentageToDP,
+} from 'react-native-responsive-screen';
+import {launchCamera} from 'react-native-image-picker';
+import {baseURL} from '../../api/citmapApi';
 
 interface Props {
   //   onChangeText?: (fieldName: string, value: any) => void;
@@ -54,6 +59,7 @@ export const CardAnswerMap = ({
   const [images, setImages] = useState<any>();
   const [imageBlob, setImageBlob] = useState<any>();
 
+  const [imageTypeNumber, setImageTypeNumber] = useState(0);
   const [imageType, setImageType] = useState(false);
   const showModalImageType = () => setImageType(true);
   const hideModalImageType = () => setImageType(false);
@@ -64,7 +70,7 @@ export const CardAnswerMap = ({
 
   const selectImage = (type: number) => {
     setImageBlob({});
-    setImages({});
+    setImages(undefined);
     if (permissions.camera !== 'granted') {
       Toast.show({
         type: 'error',
@@ -75,6 +81,7 @@ export const CardAnswerMap = ({
     }
     switch (type) {
       case 1: //openPicker
+      setImageTypeNumber(1)
         ImagePicker.openPicker({
           mediaType: 'photo',
           multiple: false,
@@ -84,12 +91,14 @@ export const CardAnswerMap = ({
           includeBase64: true,
         })
           .then(response => {
-            //   console.log(JSON.stringify(response[0].sourceURL));
             if (response && response.data) {
               if (response.size < 4 * 1024 * 1024) {
                 const newImage = response;
+                // console.log(JSON.stringify(newImage, null, 2));
                 setImages(newImage);
                 const texto: string = getFormattedDateTime();
+                console.log(JSON.stringify(newImage.path, null, 2));
+                console.log(JSON.stringify(newImage.mime, null, 2));
                 onChangeText({
                   uri: newImage.path, // Debes ajustar esto según la estructura de response
                   type: newImage.mime, // Tipo MIME de la imagen
@@ -107,8 +116,57 @@ export const CardAnswerMap = ({
             showModal(true);
           });
         break;
+      case 2:
+        setImageTypeNumber(2)
+        const options = {
+          mediaType: 'photo',
+          includeBase64: false,
+          maxHeight: 2000,
+          maxWidth: 2000,
+        };
 
-      case 2: //openCamera
+        launchCamera(
+          {
+            mediaType: 'photo',
+            includeBase64: true,
+            maxWidth: 300,
+            maxHeight: 300,
+          },
+          response => {
+            if (response.didCancel) {
+              console.log('User cancelled camera');
+              hideModalImageType();
+            } else if (response.errorCode) {
+              console.log('Camera Error: ', response.errorMessage);
+              hideModalImageType();
+            } else {
+              if (response && response.assets) {
+                if (
+                  response.assets[0].fileSize &&
+                  response.assets[0].fileSize < 4 * 1024 * 1024
+                ) {
+                  const newImage = response.assets;
+                  console.log(JSON.stringify(newImage, null, 2));
+                  setImages(newImage);
+                  console.log(JSON.stringify(newImage[0].uri, null, 2));
+                  console.log(JSON.stringify(newImage[0].type, null, 2));
+                  const texto: string = getFormattedDateTime();
+                  onChangeText({
+                    uri: newImage[0].uri, // Debes ajustar esto según la estructura de response
+                    type: newImage[0].type, // Tipo MIME de la imagen
+                    name: texto + 'cover.jpg', // Nombre de archivo de la imagen (puedes cambiarlo)
+                  });
+                } else {
+                  showModal(true);
+                  setImages(undefined);
+                }
+                hideModalImageType();
+              }
+            }
+          },
+        );
+        break;
+      case 3: //openCamera
         ImagePicker.openCamera({
           mediaType: 'photo',
           multiple: false,
@@ -124,6 +182,8 @@ export const CardAnswerMap = ({
                 const newImage = response;
                 setImages(newImage);
                 const texto: string = getFormattedDateTime();
+                console.log(JSON.stringify(newImage.path, null, 2));
+                console.log(JSON.stringify(newImage.mime, null, 2));
                 onChangeText({
                   uri: newImage.path, // Debes ajustar esto según la estructura de response
                   type: newImage.mime, // Tipo MIME de la imagen
@@ -161,7 +221,7 @@ export const CardAnswerMap = ({
         return (
           <>
             <View style={{flexDirection: 'column'}}>
-              <View style={{flexDirection: 'row',}}>
+              <View style={{flexDirection: 'row'}}>
                 <View style={{marginHorizontal: '2%', marginRight: '5%'}}>
                   <Text
                     style={{
@@ -220,7 +280,7 @@ export const CardAnswerMap = ({
                   </Text>
                 </View>
               )} */}
-              <View style={{marginTop: '0%',}}>
+              <View style={{marginTop: '0%'}}>
                 <View
                   style={{
                     width: '100%',
@@ -504,7 +564,8 @@ export const CardAnswerMap = ({
                       </TouchableOpacity>
                     </View>
                   )}
-                  {images && !onlyRead && (
+                  {/* este entra en galería */}
+                  {imageTypeNumber === 1 && images && !onlyRead && (
                     <View
                       style={{
                         width: '80%',
@@ -521,6 +582,52 @@ export const CardAnswerMap = ({
                       <Image
                         source={{
                           uri: 'data:image/jpeg;base64,' + images.data,
+                        }}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          borderRadius: 10,
+                          resizeMode: 'cover',
+                        }}
+                      />
+
+                      <TouchableOpacity
+                        onPress={showModalImageType}
+                        style={{
+                          width: RFPercentage(4),
+                          position: 'absolute',
+                          bottom: RFPercentage(-1),
+                          left: RFPercentage(17),
+                          zIndex: 999,
+                          backgroundColor: 'white',
+                          borderRadius: 50,
+                        }}>
+                        <PlusImg
+                          width={RFPercentage(4)}
+                          height={RFPercentage(4)}
+                          fill={'#0059ff'}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                  {/* este entra en camera */}
+                  {imageTypeNumber === 2 && images && images[0] && images[0].base64 && !onlyRead && (
+                    <View
+                      style={{
+                        width: '80%',
+                        height: heightPercentageToDP(13),
+                        // marginTop: '3.5%',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        backgroundColor: images
+                          ? 'transparent'
+                          : Colors.secondaryBackground,
+                        borderRadius: 10,
+                        padding: '2%',
+                      }}>
+                      <Image
+                        source={{
+                          uri: 'data:image/jpeg;base64,' + images[0].base64,
                         }}
                         style={{
                           width: '100%',

@@ -38,7 +38,7 @@
     "react-native-geolocation-service": "^5.3.1",
     "react-native-gesture-handler": "^2.9.0",
     "react-native-image-crop-picker": "^0.38.1",
-    "react-native-image-picker": "^4.10.1",
+    "react-native-image-picker": "^4.10.3",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-linear-gradient": "^2.7.3",
     "react-native-maps": "^1.3.2",
@@ -79,21 +79,19 @@
     "react-test-renderer": "18.1.0",
     "typescript": "^4.8.3"
   },
-  
-    "resolutions": {
-      "@react-native-community/cli": "VERSION",
-      "@react-native-community/cli-clean": "VERSION",
-      "@react-native-community/cli-config": "VERSION",
-      "@react-native-community/cli-debugger-ui": "VERSION",
-      "@react-native-community/cli-doctor": "VERSION",
-      "@react-native-community/cli-hermes": "VERSION",
-      "@react-native-community/cli-platform-android": "VERSION",
-      "@react-native-community/cli-platform-ios": "VERSION",
-      "@react-native-community/cli-server-api": "VERSION",
-      "@react-native-community/cli-tools": "VERSION",
-      "@react-native-community/cli-types": "VERSION"
-    },
-  
+  "resolutions": {
+    "@react-native-community/cli": "VERSION",
+    "@react-native-community/cli-clean": "VERSION",
+    "@react-native-community/cli-config": "VERSION",
+    "@react-native-community/cli-debugger-ui": "VERSION",
+    "@react-native-community/cli-doctor": "VERSION",
+    "@react-native-community/cli-hermes": "VERSION",
+    "@react-native-community/cli-platform-android": "VERSION",
+    "@react-native-community/cli-platform-ios": "VERSION",
+    "@react-native-community/cli-server-api": "VERSION",
+    "@react-native-community/cli-tools": "VERSION",
+    "@react-native-community/cli-types": "VERSION"
+  },
   "jest": {
     "preset": "react-native",
     "moduleFileExtensions": [
