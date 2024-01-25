@@ -12,7 +12,12 @@ import {
   View,
   TouchableOpacity,
 } from 'react-native';
-import {InfoModal, InfoModalMap, SaveProyectModal} from '../../utility/Modals';
+import {
+  DeleteModal,
+  InfoModal,
+  InfoModalMap,
+  SaveProyectModal,
+} from '../../utility/Modals';
 import {RFPercentage} from 'react-native-responsive-fontsize';
 import {Colors} from '../../../theme/colors';
 import Plus from '../../../assets/icons/map/plus-map.svg';
@@ -118,6 +123,10 @@ export const ParticipateMap = ({navigation, route}: Props) => {
   const [errorValidate, setErrorValidate] = useState(false);
   const showModalValidate = () => setErrorValidate(true);
   const hideModalCValidate = () => setErrorValidate(false);
+
+  const [wantDelete, setWantDelete] = useState(false);
+  const showModalDelete = () => setWantDelete(true);
+  const hideModalDelete = () => setWantDelete(false);
 
   // form variables
   const {form, onChange, clear} = useForm<CreateObservation>({
@@ -1414,7 +1423,6 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                           item => item.key === x.id!.toString(),
                         );
                       }
-                      
 
                       const valueToUse = image
                         ? image.image
@@ -1422,7 +1430,6 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                         ? selectedElement.value
                         : '';
 
-                        
                       return (
                         <View
                           style={{
@@ -1476,7 +1483,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                         }}>
                         <CustomButton
                           disabled={onlyRead}
-                          onPress={() => onDeleteObservation()}
+                          onPress={() => showModalDelete()}
                           label="Borrar marca"
                           backgroundColor={Colors.semanticDangerLight}
                         />
@@ -1542,6 +1549,15 @@ export const ParticipateMap = ({navigation, route}: Props) => {
               "
               subLabel2="Una vez hayas aceptado la solicitud, podrás añadir la organzación a tu biografía."
               helper={false}
+            />
+            <DeleteModal
+              visible={wantDelete}
+              hideModal={hideModalDelete}
+              onPress={() => {
+                onDeleteObservation()
+                hideModalDelete()
+              }}
+              label="¿Desea borrar la observación?"
             />
           </View>
           {/* <View>

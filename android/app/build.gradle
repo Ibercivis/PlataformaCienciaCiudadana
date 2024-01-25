@@ -144,8 +144,8 @@ android {
         applicationId "com.reactnativeplantilla"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 2
-        versionName "1.1"
+        versionCode 3
+        versionName "1.2"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
         vectorDrawables.useSupportLibrary = true // esta linea es añadida por la librería  de react native image crop picker
         if (isNewArchitectureEnabled()) {
