@@ -700,7 +700,7 @@ export const CardAnswerMap = ({
                       <ImageBackground
                         borderRadius={10}
                         // source={require(urii)}
-                        resizeMode="cover"
+                        resizeMode="contain"
                         source={
                           value !== ''
                             ? {uri: value}

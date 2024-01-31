@@ -14,6 +14,7 @@
         "title": "Inicio de sesión",
         "mail_input": "Nombre de usuario",
         "mail_input_recover": "Correo electrónico",
+        "mail_input_recover_err": "El nombre de usuario o correo no existe",
         "password_input": "Contraseña",
         "recovery_password": "¿Has olvidado la ",
         "or_login": "O logear con...",
@@ -33,9 +34,14 @@
         "title": "Registrar",
         "subtitle": "¡Vamos a empezar!",
         "user_name_input": "Nombre de usuario",
+        "user_name_input_err": "Nombre de usuario obligatorio",
         "email_input": "Correo electrónico",
+        "email_input_err": "Correo electrónico invalido",
         "password1_input": "Contraseña",
         "password2_input": "Confirmar contraseña",
+        "password1_input_err": "La contraseña ha de tener 8 digitos alfanumericos",
+        "password2_input_err1": "Las contraseñas no coinciden",
+        "password2_input_err2": "La contraseña ha de tener 8 digitos alfanumericos",
         "have_account": "¿Ya tienes una cuenta?",
         "enter": " Entrar",
         "register_button": "Crear cuenta",
@@ -44,22 +50,6 @@
         "register_microsoft": "Continuar con Microsoft"
       }
     ],
-    "recovery_screen": [
-      {
-        "title": "Registrar",
-        "subtitle": "¡Vamos a empezar!",
-        "title_info": "¿Problemas para iniciar sesión?",
-        "content_info": "Introduzca su correo electrónico y le enviaremos un enlace para que pueda volver a entrar en su cuenta.",
-        "email_input": "Correo electrónico",
-        "email_input_err": "Correo electrónico incorrecto",
-        "session": " al inicio de sesión",
-        "back": "Volver",
-        "send_email": "Enviar enlace",
-        "send_email_try_again": "Intentar de nuevo",
-        "create_account": "Crear cuenta"
-      }
-    ],
-    "home_screen": [],
     "new_project_screen": [
       {
         "title": "NUEVO PROYECTO",
@@ -78,105 +68,158 @@
         ]
       }
     ],
-    "new_project_mark_screen": [
+    "recovery_screen": [
       {
-        "title": "MARCADOR",
-        "none_mark": "Seleccione el tipo de respuesta del usuario",
-        "new_mark": [
-          {
-            "ask_input": "Pregunta",
-            "description_input": "Descripción de la pregunta",
-            "ask_input_err": "Debes indicar una pregunta",
-            "description_input_err": "Debes incluir una descripción",
-            "title": "Marca",
-            "save_button": "Guardar",
-            "close_button": "Cancelar"
-          }
-        ],
-        "modal_error": [
-          {
-            "title": "Error de creación",
-            "body": "Se requiere añadir al menos una pregunta.",
-            "close_button": "Cerrar"
-          }
-        ]
+        "title": "Registrar",
+        "subtitle": "¡Vamos a empezar!",
+        "title_info": "¿Problemas para iniciar sesión?",
+        "content_info": "Introduzca su correo electrónico y le enviaremos un enlace para que pueda volver a entrar en su cuenta.",
+        "email_input": "Correo electrónico",
+        "email_input_err": "Correo electrónico incorrecto",
+        "session": " al inicio de sesión",
+        "back": "Volver",
+        "send_email": "Enviar enlace",
+        "send_email_try_again": "Intentar de nuevo",
+        "create_account": "Crear cuenta"
       }
     ],
-    "new_project_mark_example_screen": [
+    "Home": [
       {
-        "title": "PRUEBA TU MARCADOR",
-        "response_input": "Respuesta",
-        "save_project": [
-          {
-            "title": "Finalizar",
-            "body": "¿ Desea guardar el proyecto ?",
-            "save_button": "Guardar",
-            "close_button": "Cancelar"
-          }
-        ],
-        "more_information": [
-          {
-            "title": "Más información",
-            "close_button": "Cerrar"
-          }
-        ]
+        "title": "Inicio de sesión",
+        "mail_input": "Nombre de usuario",
+        "mail_input_recover": "Correo electrónico",
+        "password_input": "Contraseña",
+        "recovery_password": "¿Has olvidado la ",
+        "or_login": "O logear con...",
+        "new_in_app": "¿Nuevo en la App?",
+        "register": "Crear cuenta",
+        "login_button": "Continuar",
+        "loggin_google": "Continuar con Google",
+        "loggin_apple": "Continuar con Apple",
+        "loggin_microsoft": "Continuar con Microsoft",
+        "subtitle": "¡Bienvenid@!",
+        "subtitle_register": "¡Vamos a empezar!",
+        "subtitle_problems": ""
       }
     ],
-    "new_organisation_screen": [
+    "organization": [
       {
-        "title": "NUEVA ORGANIZACIÓN",
-        "title_edit": "EDICIÓN",
-        "principal_information": [
-          {
-            "principal_title": "Información principal",
-            "principal_name_input": "Nombre",
-            "principal_enlace_input": "Enlace",
-            "principal_description_input": "Descripción",
-            "principal_type_input": "Tipo",
-            "principal_name_placeholder": "Por favor, escribe el nombre de la organización.",
-            "principal_enlace_placeholder": "Por favor, añade el enlace a la página web de la organización.",
-            "principal_description_placeholder": "Por favor, describe brevemente a la organización (máximo 300 caracteres).",
-            "principal_type_placeholder": "Por favor, seleccione uno."
-          }
-        ],
-        "contact_information": [
-          {
-            "contact_title": "Información de contacto",
-            "contact_name_input": "Nombre de la persona",
-            "contact_mail_input": "Email de contacto",
-            "contact_name_placeholder": "Por favor, indica la persona o punto de contacto de la organización.",
-            "contact_mail_placeholder": "Por favor, indica la dirección de correo electrónico del contacto de la organización. Ten en cuenta que deberá tener permiso para ello."
-          }
-        ],
-        "logo": [
-          {
-            "logo_title": "Logotipo de la organización",
-            "logo_placeholder": "Por favor, añade el logotipo de su organización (en .jpg o .png)",
-            "logo_credit_input": "Créditos del logotipo, si procede"
-          }
-        ],
-        "dialog": [
-          {
-            "title": "Error de creación",
-            "body": "Es oblicatorio rellenar todos los campos con *"
-          }
-        ]
+        "title": "Inicio de sesión",
+        "mail_input": "Nombre de usuario",
+        "mail_input_recover": "Correo electrónico",
+        "password_input": "Contraseña",
+        "recovery_password": "¿Has olvidado la ",
+        "or_login": "O logear con...",
+        "new_in_app": "¿Nuevo en la App?",
+        "register": "Crear cuenta",
+        "login_button": "Continuar",
+        "loggin_google": "Continuar con Google",
+        "loggin_apple": "Continuar con Apple",
+        "loggin_microsoft": "Continuar con Microsoft",
+        "subtitle": "¡Bienvenid@!",
+        "subtitle_register": "¡Vamos a empezar!",
+        "subtitle_problems": ""
       }
     ],
-    "map_box_screen": [],
-    "settings_screen": [
+    "project": [
       {
-        "title": "Ajustes",
-        "change_password_screen":[
-          {
-            "title": "Cambio de contraseña",
-            "new_pass_1": "Nueva contraseña",
-            "new_pass_1_helper": "Introduzca la nueva contraseña",
-            "new_pass_2": "Repetir contraseña",
-            "new_pass_2_helper": "Repita la misma contraseña",
-            "modal_message": "Contraseña cambiada"
-          }
-        ]
+        "title": "Inicio de sesión",
+        "mail_input": "Nombre de usuario",
+        "mail_input_recover": "Correo electrónico",
+        "password_input": "Contraseña",
+        "recovery_password": "¿Has olvidado la ",
+        "or_login": "O logear con...",
+        "new_in_app": "¿Nuevo en la App?",
+        "register": "Crear cuenta",
+        "login_button": "Continuar",
+        "loggin_google": "Continuar con Google",
+        "loggin_apple": "Continuar con Apple",
+        "loggin_microsoft": "Continuar con Microsoft",
+        "subtitle": "¡Bienvenid@!",
+        "subtitle_register": "¡Vamos a empezar!",
+        "subtitle_problems": ""
+      }
+    ],
+    "map": [
+      {
+        "title": "Inicio de sesión",
+        "mail_input": "Nombre de usuario",
+        "mail_input_recover": "Correo electrónico",
+        "password_input": "Contraseña",
+        "recovery_password": "¿Has olvidado la ",
+        "or_login": "O logear con...",
+        "new_in_app": "¿Nuevo en la App?",
+        "register": "Crear cuenta",
+        "login_button": "Continuar",
+        "loggin_google": "Continuar con Google",
+        "loggin_apple": "Continuar con Apple",
+        "loggin_microsoft": "Continuar con Microsoft",
+        "subtitle": "¡Bienvenid@!",
+        "subtitle_register": "¡Vamos a empezar!",
+        "subtitle_problems": ""
+      }
+    ],
+    "profile": [
+      {
+        "title": "Inicio de sesión",
+        "mail_input": "Nombre de usuario",
+        "mail_input_recover": "Correo electrónico",
+        "password_input": "Contraseña",
+        "recovery_password": "¿Has olvidado la ",
+        "or_login": "O logear con...",
+        "new_in_app": "¿Nuevo en la App?",
+        "register": "Crear cuenta",
+        "login_button": "Continuar",
+        "loggin_google": "Continuar con Google",
+        "loggin_apple": "Continuar con Apple",
+        "loggin_microsoft": "Continuar con Microsoft",
+        "subtitle": "¡Bienvenid@!",
+        "subtitle_register": "¡Vamos a empezar!",
+        "subtitle_problems": ""
+      }
+    ],
+    "modals": [
+      {
+        "accept_button_text": "Aceptar",
+        "cancel_button_text": "Cancelar",
+        "delete_button_text": "Borrar",
+        "password_text": "Contraseña",
+        "save_project_login_err": "No pudo registrarse. Compruebe que los datos son correctos e intentelo de nuevo",
+        "policies": {
+          "title": "Política de Privacidad",
+          "text_1": "Al registrarse en Geonity, usted acepta que la Fundación Ibercivis recopile y procese su información personal de acuerdo con nuestra Política de Privacidad.",
+          "text_2": "Nos comprometemos a proteger su privacidad y a usar su información exclusivamente para mejorar su experiencia con la aplicación y para proporcionarle los servicios solicitados.",
+          "text_3": "No compartiremos su información personal con terceros sin su consentimiento explícito, excepto cuando sea requerido por ley.",
+          "text_4": "Para más información sobre cómo recopilamos, usamos y protegemos su información, por favor, consulte nuestra Política de Privacidad completa en",
+          "accept_text": "Al pulsar el botón de “Aceptar”, usted confirma que ha leído y entendido nuestra Política de Privacidad y da su consentimiento para el tratamiento de sus datos personales según se describe."       
+        },
+        "map": {
+          "text_1": "Tienes dos opciones:",
+          "text_2": "Mantener presionada",
+          "text_3": "la pantalla en el punto exacto del mapa donde se quiera colocar el marcador",
+          "text_4": "Presiona el botón '+' ",
+          "text_5": "se añadirá automáticamente un marcador vinculado a tu posición actual. (El botón está situado en la parte inferior derecha del mapa).",
+          "accept_text": ""       
+        }
+      }
+    ],
+    "utility": [
+      {
+        "title": "Inicio de sesión",
+        "mail_input": "Nombre de usuario",
+        "mail_input_recover": "Correo electrónico",
+        "password_input": "Contraseña",
+        "recovery_password": "¿Has olvidado la ",
+        "or_login": "O logear con...",
+        "new_in_app": "¿Nuevo en la App?",
+        "register": "Crear cuenta",
+        "login_button": "Continuar",
+        "loggin_google": "Continuar con Google",
+        "loggin_apple": "Continuar con Apple",
+        "loggin_microsoft": "Continuar con Microsoft",
+        "subtitle": "¡Bienvenid@!",
+        "subtitle_register": "¡Vamos a empezar!",
+        "subtitle_problems": ""
       }
     ]
   }

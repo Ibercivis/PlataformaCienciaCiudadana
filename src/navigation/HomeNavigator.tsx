@@ -1,19 +1,14 @@
 import {createStackNavigator} from '@react-navigation/stack';
 import {Mark, HasTag, Topic} from '../interfaces/appInterfaces';
 import {HomeScreen} from '../screens/HomeScreen';
-import {NewProjectScreen} from '../screens/NewProjectScreen';
-import {OrganisationScreen} from '../screens/OrganisationScreen';
 import {ProjectList} from '../components/screen_components/Home/ProjectList';
 import {ProjectPage} from '../components/screen_components/Home/ProjectPage';
 import {OrganizationList} from '../components/screen_components/Home/OrganizationList';
 import {OrganizationPage} from '../components/screen_components/Home/OrganizationPage';
-import {CreateProject} from '../components/screen_components/Project/CreateProject';
 import {useContext, useEffect} from 'react';
 import {PermissionsContext} from '../context/PermissionsContext';
-import {LoadingScreen} from '../screens/LoadingScreen';
 import {ParticipateMap} from '../components/screen_components/Project/ParticipateMap';
 import {PermissionsScreen} from '../screens/PermissionsScreen';
-import {NavigatorMapBox} from './NavigatorMapBox';
 
 export type StackParams = {
   HomeScreen: {

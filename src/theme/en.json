@@ -1,0 +1,216 @@
+{
+  "strings": {
+    "global": [
+      {
+        "next_button": "Siguiente",
+        "back_button": "Volver",
+        "close_button": "Cerrar",
+        "save_button": "Guardar",
+        "cancel_button": "Cancelar"
+      }
+    ],
+    "login_screen": [
+      {
+        "title": "Inicio de sesión",
+        "mail_input": "Nombre de usuario",
+        "mail_input_recover": "Correo electrónico",
+        "mail_input_recover_err": "El nombre de usuario o correo no existe",
+        "password_input": "Contraseña",
+        "recovery_password": "¿Has olvidado la ",
+        "or_login": "O logear con...",
+        "new_in_app": "¿Nuevo en la App?",
+        "register": "Crear cuenta",
+        "login_button": "Continuar",
+        "loggin_google": "Continuar con Google",
+        "loggin_apple": "Continuar con Apple",
+        "loggin_microsoft": "Continuar con Microsoft",
+        "subtitle": "¡Bienvenid@!",
+        "subtitle_register": "¡Vamos a empezar!",
+        "subtitle_problems": ""
+      }
+    ],
+    "register_screen": [
+      {
+        "title": "Registrar",
+        "subtitle": "¡Vamos a empezar!",
+        "user_name_input": "Nombre de usuario",
+        "user_name_input_err": "Nombre de usuario obligatorio",
+        "email_input": "Correo electrónico",
+        "email_input_err": "Correo electrónico invalido",
+        "password1_input": "Contraseña",
+        "password2_input": "Confirmar contraseña",
+        "password1_input_err": "La contraseña ha de tener 8 digitos alfanumericos",
+        "password2_input_err1": "Las contraseñas no coinciden",
+        "password2_input_err2": "La contraseña ha de tener 8 digitos alfanumericos",
+        "have_account": "¿Ya tienes una cuenta?",
+        "enter": " Entrar",
+        "register_button": "Crear cuenta",
+        "register_google": "Continuar con Google",
+        "register_apple": "Continuar con Apple",
+        "register_microsoft": "Continuar con Microsoft"
+      }
+    ],
+    "new_project_screen": [
+      {
+        "title": "NUEVO PROYECTO",
+        "title_edit": "EDICIÓN",
+        "title_section": "Datos principales",
+        "project_name_input": "Nombre",
+        "project_name_helper": "Nombre del proyecto",
+        "description_input": "Descripción",
+        "description_helper": "Descripción de qué va a tratar el proyecto",
+        "image_title": "Imagen del proyecto",
+        "dialog": [
+          {
+            "title": "Error de creación",
+            "body": "Es necesario establecer un nombre y una descripción válidos."
+          }
+        ]
+      }
+    ],
+    "recovery_screen": [
+      {
+        "title": "Registrar",
+        "subtitle": "¡Vamos a empezar!",
+        "title_info": "¿Problemas para iniciar sesión?",
+        "content_info": "Introduzca su correo electrónico y le enviaremos un enlace para que pueda volver a entrar en su cuenta.",
+        "email_input": "Correo electrónico",
+        "email_input_err": "Correo electrónico incorrecto",
+        "session": " al inicio de sesión",
+        "back": "Volver",
+        "send_email": "Enviar enlace",
+        "send_email_try_again": "Intentar de nuevo",
+        "create_account": "Crear cuenta"
+      }
+    ],
+    "Home": [
+      {
+        "title": "Inicio de sesión",
+        "mail_input": "Nombre de usuario",
+        "mail_input_recover": "Correo electrónico",
+        "password_input": "Contraseña",
+        "recovery_password": "¿Has olvidado la ",
+        "or_login": "O logear con...",
+        "new_in_app": "¿Nuevo en la App?",
+        "register": "Crear cuenta",
+        "login_button": "Continuar",
+        "loggin_google": "Continuar con Google",
+        "loggin_apple": "Continuar con Apple",
+        "loggin_microsoft": "Continuar con Microsoft",
+        "subtitle": "¡Bienvenid@!",
+        "subtitle_register": "¡Vamos a empezar!",
+        "subtitle_problems": ""
+      }
+    ],
+    "organization": [
+      {
+        "title": "Inicio de sesión",
+        "mail_input": "Nombre de usuario",
+        "mail_input_recover": "Correo electrónico",
+        "password_input": "Contraseña",
+        "recovery_password": "¿Has olvidado la ",
+        "or_login": "O logear con...",
+        "new_in_app": "¿Nuevo en la App?",
+        "register": "Crear cuenta",
+        "login_button": "Continuar",
+        "loggin_google": "Continuar con Google",
+        "loggin_apple": "Continuar con Apple",
+        "loggin_microsoft": "Continuar con Microsoft",
+        "subtitle": "¡Bienvenid@!",
+        "subtitle_register": "¡Vamos a empezar!",
+        "subtitle_problems": ""
+      }
+    ],
+    "project": [
+      {
+        "title": "Inicio de sesión",
+        "mail_input": "Nombre de usuario",
+        "mail_input_recover": "Correo electrónico",
+        "password_input": "Contraseña",
+        "recovery_password": "¿Has olvidado la ",
+        "or_login": "O logear con...",
+        "new_in_app": "¿Nuevo en la App?",
+        "register": "Crear cuenta",
+        "login_button": "Continuar",
+        "loggin_google": "Continuar con Google",
+        "loggin_apple": "Continuar con Apple",
+        "loggin_microsoft": "Continuar con Microsoft",
+        "subtitle": "¡Bienvenid@!",
+        "subtitle_register": "¡Vamos a empezar!",
+        "subtitle_problems": ""
+      }
+    ],
+    "map": [
+      {
+        "title": "Inicio de sesión",
+        "mail_input": "Nombre de usuario",
+        "mail_input_recover": "Correo electrónico",
+        "password_input": "Contraseña",
+        "recovery_password": "¿Has olvidado la ",
+        "or_login": "O logear con...",
+        "new_in_app": "¿Nuevo en la App?",
+        "register": "Crear cuenta",
+        "login_button": "Continuar",
+        "loggin_google": "Continuar con Google",
+        "loggin_apple": "Continuar con Apple",
+        "loggin_microsoft": "Continuar con Microsoft",
+        "subtitle": "¡Bienvenid@!",
+        "subtitle_register": "¡Vamos a empezar!",
+        "subtitle_problems": ""
+      }
+    ],
+    "profile": [
+      {
+        "title": "Inicio de sesión",
+        "mail_input": "Nombre de usuario",
+        "mail_input_recover": "Correo electrónico",
+        "password_input": "Contraseña",
+        "recovery_password": "¿Has olvidado la ",
+        "or_login": "O logear con...",
+        "new_in_app": "¿Nuevo en la App?",
+        "register": "Crear cuenta",
+        "login_button": "Continuar",
+        "loggin_google": "Continuar con Google",
+        "loggin_apple": "Continuar con Apple",
+        "loggin_microsoft": "Continuar con Microsoft",
+        "subtitle": "¡Bienvenid@!",
+        "subtitle_register": "¡Vamos a empezar!",
+        "subtitle_problems": ""
+      }
+    ],
+    "modals": [
+      {
+        "accept_button_text": "Aceptar",
+        "cancel_button_text": "Cancelar",
+        "save_project_login_err": "No pudo registrarse. Compruebe que los datos son correctos e intentelo de nuevo",
+        "policies": {
+          "title": "Política de Privacidad",
+          "text_1": "Al registrarse en Geonity, usted acepta que la Fundación Ibercivis recopile y procese su información personal de acuerdo con nuestra Política de Privacidad.",
+          "text_2": "Nos comprometemos a proteger su privacidad y a usar su información exclusivamente para mejorar su experiencia con la aplicación y para proporcionarle los servicios solicitados.",
+          "text_3": "No compartiremos su información personal con terceros sin su consentimiento explícito, excepto cuando sea requerido por ley.",
+          "text_4": "Para más información sobre cómo recopilamos, usamos y protegemos su información, por favor, consulte nuestra Política de Privacidad completa en",
+          "accept_text": "Al pulsar el botón de “Aceptar”, usted confirma que ha leído y entendido nuestra Política de Privacidad y da su consentimiento para el tratamiento de sus datos personales según se describe."       
+        }
+      }
+    ],
+    "utility": [
+      {
+        "title": "Inicio de sesión",
+        "mail_input": "Nombre de usuario",
+        "mail_input_recover": "Correo electrónico",
+        "password_input": "Contraseña",
+        "recovery_password": "¿Has olvidado la ",
+        "or_login": "O logear con...",
+        "new_in_app": "¿Nuevo en la App?",
+        "register": "Crear cuenta",
+        "login_button": "Continuar",
+        "loggin_google": "Continuar con Google",
+        "loggin_apple": "Continuar con Apple",
+        "loggin_microsoft": "Continuar con Microsoft",
+        "subtitle": "¡Bienvenid@!",
+        "subtitle_register": "¡Vamos a empezar!",
+        "subtitle_problems": ""
+      }
+    ]
+  }
+}

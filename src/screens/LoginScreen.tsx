@@ -42,10 +42,13 @@ import {
 } from 'react-native-responsive-screen';
 import {PoliciesModal, SaveProyectModal} from '../components/utility/Modals';
 import Toast from 'react-native-toast-message';
+import {useLanguage} from '../hooks/useLanguage';
 
 interface Props extends StackScreenProps<any, any> {}
 
 export const LoginScreen = ({navigation, route}: Props) => {
+  const {deviceLanguage, fontLanguage} = useLanguage();
+
   //#region VARIABLES
 
   /** COMÚN */
@@ -102,7 +105,9 @@ export const LoginScreen = ({navigation, route}: Props) => {
   const [mailRegisterError, setMailRegisterError] = useState(false);
   const [password1Error, setPassword1Error] = useState(false);
   const [password2Error, setPassword2Error] = useState(false);
-  const [password2ErrorMessage, setPassword2ErrorMessage] = useState('Las contraseñas no coinciden');
+  const [password2ErrorMessage, setPassword2ErrorMessage] = useState(
+    translate.strings.register_screen[0].password2_input_err1,
+  );
 
   const [saveModal, setSaveModal] = useState(false);
   const showModalSave = () => setSaveModal(true);
@@ -188,6 +193,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
       setIsLoading(true);
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
+      console.log(JSON.stringify(userInfo, null, 2));
       setIsLoading(false);
       // signIn();
     } catch (error) {
@@ -231,34 +237,36 @@ export const LoginScreen = ({navigation, route}: Props) => {
       valid = false;
       setMailRegisterError(true);
     }
-// console.log(JSON.stringify(formRegister, null, 2))
+    // console.log(JSON.stringify(formRegister, null, 2))
     if (!passvalidate.test(formRegister.password1)) {
       valid = false;
       setPassword1Error(true);
       // setPassword2Error(true);
-    }else{
+    } else {
       setPassword1Error(false);
     }
     // primero se valida si está bien escrita la segunda pass
     if (!passvalidate.test(formRegister.password2)) {
       valid = false;
-      setPassword2ErrorMessage('La contraseña ha de tener 8 digitos alfanumericos')
+      setPassword2ErrorMessage(
+        translate.strings.register_screen[0].password2_input_err2,
+      );
       setPassword2Error(true);
-    }else{
+    } else {
       // si entra aquí significa que está bien escrita la pass2
       //ahora se mira si coincide con la 1
       if (!validatePassword(formRegister.password2)) {
         //si no coincide
         valid = false;
         // setPassword1Error(true);
-        setPassword2ErrorMessage('Las contraseñas no coinciden')
+        setPassword2ErrorMessage(
+          translate.strings.register_screen[0].password2_input_err1,
+        );
         setPassword2Error(true);
-      }else{
+      } else {
         setPassword2Error(false);
       }
     }
-
-    
 
     Keyboard.dismiss();
 
@@ -456,7 +464,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                       right: '3%',
                       fontWeight: '600',
                     }}>
-                    {'Nombre de usuario obligatorio'}
+                    {translate.strings.register_screen[0].user_name_input_err}
                   </HelperText>
                 ) : (
                   <></>
@@ -512,7 +520,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                       right: '3%',
                       fontWeight: '600',
                     }}>
-                    {'Correo electrónico invalido'}
+                    {translate.strings.register_screen[0].email_input_err}
                   </HelperText>
                 ) : (
                   <></>
@@ -569,7 +577,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                       right: '3%',
                       fontWeight: '600',
                     }}>
-                    {'La contraseña ha de tener 8 digitos alfanumericos'}
+                    {translate.strings.register_screen[0].password1_input_err}
                   </HelperText>
                 ) : (
                   <></>
@@ -780,7 +788,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                   right: '3%',
                   fontWeight: '600',
                 }}>
-                {'El nombre de usuario o correo no existe'}
+                {translate.strings.login_screen[0].mail_input_recover_err}
               </HelperText>
             ) : (
               <></>
@@ -1058,15 +1066,15 @@ export const LoginScreen = ({navigation, route}: Props) => {
                   </TouchableOpacity>
 
                   {/* loggin buttons */}
-                  {/* <View style={styles.loginButtonsContainer}>
-                      <CustomButtonOutline
-                        backgroundColor="white"
-                        fontColor="black"
-                        iconLeft="google"
-                        label={translate.strings.login_screen[0].loggin_google}
-                        onPress={() => logginGoogle()}
-                      />
-                      <CustomButtonOutline
+                  <View style={styles.loginButtonsContainer}>
+                    <CustomButtonOutline
+                      backgroundColor="white"
+                      fontColor="black"
+                      iconLeft="google"
+                      label={translate.strings.login_screen[0].loggin_google}
+                      onPress={() => logginGoogle()}
+                    />
+                    {/* <CustomButtonOutline
                         backgroundColor="white"
                         fontColor="black"
                         iconLeft="apple"
@@ -1081,8 +1089,8 @@ export const LoginScreen = ({navigation, route}: Props) => {
                           translate.strings.login_screen[0].loggin_microsoft
                         }
                         onPress={() => console.log()}
-                      />
-                    </View> */}
+                      /> */}
+                  </View>
 
                   {/* divider */}
                   <View
@@ -1134,7 +1142,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
             onPress={hideModalSave}
             size={RFPercentage(8)}
             color={Colors.semanticWarningDark}
-            label="No pudo registrarse. Compruebe que los datos son correctos e intentelo de nuevo"
+            label={fontLanguage.modals[0].save_project_login_err}
             helper={false}
           />
 

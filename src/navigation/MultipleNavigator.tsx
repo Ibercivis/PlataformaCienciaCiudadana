@@ -2,14 +2,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import React, {useContext, useEffect} from 'react';
 import {BottomTabNavigation} from './BottomTabNavigation';
 import {CreateProject} from '../components/screen_components/Project/CreateProject';
-import {NavigationContainer} from '@react-navigation/native';
-import {ModalScreen} from '../screens/ModalScreen';
 import {CreateOrganization} from '../components/screen_components/Organization/CreateOrganization';
-import {ParticipateMap} from '../components/screen_components/Project/ParticipateMap';
-import {LoadingScreen} from '../screens/LoadingScreen';
-import {PermissionsContext} from '../context/PermissionsContext';
-import {PermissionsScreen} from '../screens/PermissionsScreen';
-
 export type StackParams = {
   BottomTabNavigation: undefined;
   ModalScreen: undefined;

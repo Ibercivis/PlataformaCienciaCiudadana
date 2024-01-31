@@ -3,9 +3,6 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {PermissionsContext} from '../context/PermissionsContext';
 import {LoginScreen} from '../screens/LoginScreen';
 import {AuthContext} from '../context/AuthContext';
-import {DrawerNavigation} from './DrawerNavigation';
-import {RegisterScreen} from '../screens/RegisterScreen';
-import {ForgotPassword} from '../screens/ForgotPassword';
 import {LoadingScreen} from '../screens/LoadingScreen';
 import {BottomTabNavigation} from './BottomTabNavigation';
 import {BackgroundLayerStyle} from '@rnmapbox/maps';
@@ -71,7 +68,7 @@ export const Navigator = () => {
                   },
                 }}
               />
-              <Stack.Screen
+              {/* <Stack.Screen
                 name="RegisterScreen"
                 component={RegisterScreen}
                 options={{
@@ -121,7 +118,7 @@ export const Navigator = () => {
                     };
                   },
                 }}
-              />
+              /> */}
             </>
           ) : (
             // <Stack.Screen name="DrawerNavigation" component={DrawerNavigation} />
