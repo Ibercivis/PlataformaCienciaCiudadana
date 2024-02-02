@@ -22,8 +22,10 @@ import {RFPercentage} from 'react-native-responsive-fontsize';
 import {Colors} from '../theme/colors';
 import {FontSize} from '../theme/fonts';
 import PlusSquare from '../assets/icons/general/plus-square.svg';
+import { useLanguage } from '../hooks/useLanguage';
 
 const Tab = createBottomTabNavigator<StackParams>();
+const {fontLanguage} = useLanguage();
 
 export type StackParams = {
   // NavigatorMap: undefined;
@@ -99,11 +101,11 @@ const CenterButtonTab = () => {
                     textAlignVertical:'center',
                     marginLeft: '2%'
                   }}>
-                  ¿Qué desea hacer?
+                  {fontLanguage.modals[0].bottom_tab_nav.title}
                 </Text>
               </View>
               <TouchableOpacity onPress={closeCategoryModal}>
-                <Text style={{color: 'blue'}}>Cerrar</Text>
+                <Text style={{color: 'blue'}}>{fontLanguage.global[0].close_button}</Text>
               </TouchableOpacity>
             </View>
             <View
@@ -141,7 +143,7 @@ const CenterButtonTab = () => {
                           borderRadius: 7,
                           color:'black'
                         }}>
-                        Crear un nuevo proyecto
+                        {fontLanguage.modals[0].bottom_tab_nav.project}
                       </Text>
                     </View>
                   </ImageBackground>
@@ -168,7 +170,7 @@ const CenterButtonTab = () => {
                           borderRadius: 7,
                           color:'black'
                         }}>
-                        Crear una nueva organización
+                        {fontLanguage.modals[0].bottom_tab_nav.organization}
                       </Text>
                     </View>
                   </ImageBackground>
@@ -224,13 +226,13 @@ export const BottomTabNavigation = () => {
               }
 
               const label =
-                route.name === 'HomeNavigator' ? 'Home' : 'Perfil';
+                route.name === 'HomeNavigator' ? 'Home' : fontLanguage.modals[0].bottom_tab_nav.profile;
 
               return (
                 <CustomTab
                   key={route.key}
                   label={label.toString()}
-                  icon={route.name === 'HomeNavigator' ? 'home' : 'Ajustes'}
+                  icon={route.name === 'HomeNavigator' ? 'home' : fontLanguage.modals[0].bottom_tab_nav.settings}
                   route={route.name}
                   focused={state.index === index}
                   onPress={() => {
@@ -274,7 +276,7 @@ export const BottomTabNavigation = () => {
           options={{
             tabBarIcon: ({focused}) => (
               <CustomTab
-                label="Perfil"
+                label={fontLanguage.modals[0].bottom_tab_nav.profile}
                 route="ProfileScreen"
                 focused={focused}
                 onPress={() => {}}

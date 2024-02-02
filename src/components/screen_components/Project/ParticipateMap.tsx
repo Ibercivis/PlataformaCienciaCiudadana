@@ -52,6 +52,7 @@ import {useDateTime} from '../../../hooks/useDateTime';
 import Toast from 'react-native-toast-message';
 import {project} from '../../../../react-native.config';
 import {useNavigation} from '@react-navigation/native';
+import { useLanguage } from '../../../hooks/useLanguage';
 
 Mapbox.setWellKnownTileServer('mapbox');
 Mapbox.setAccessToken(
@@ -80,7 +81,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
     initialPositionArray,
     loading,
   } = useLocation();
-
+  const {fontLanguage} = useLanguage();
   const {currentISODateTime} = useDateTime();
   const nav = useNavigation();
 
@@ -361,7 +362,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
         type: 'error',
         text1: 'Error',
         // text2: 'No se han podido obtener los datos, por favor reinicie la app',
-        text2: 'No se han podido obtener pas questiones',
+        text2: fontLanguage.map[0].toast_err_question,
       });
     }
   };
@@ -646,12 +647,9 @@ export const ParticipateMap = ({navigation, route}: Props) => {
           return;
         }
         if (question.mandatory) {
-          console.log('es true el mandatory');
           form.data.map(x => {
             if (x.key === question.id?.toString()) {
-              console.log('tienen mismo id');
               if (x.value === '' || x.value === undefined) {
-                console.log('está vacío');
                 validate = false;
               }
             }
@@ -696,7 +694,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
             type: 'error',
             text1: 'Error',
             // text2: 'No se han podido obtener los datos, por favor reinicie la app',
-            text2: 'Los campos obligatorios tienen que ser rellenados',
+            text2: fontLanguage.map[0].toast_err_obligatory_fields,
           });
         }
 
@@ -706,7 +704,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
           type: 'error',
           text1: 'Error',
           // text2: 'No se han podido obtener los datos, por favor reinicie la app',
-          text2: 'Los campos obligatorios tienen que ser rellenados',
+          text2: fontLanguage.map[0].toast_err_obligatory_fields,
         });
         setWaitingData(false);
         if (error.response) {
@@ -766,7 +764,6 @@ export const ParticipateMap = ({navigation, route}: Props) => {
     if (form.data) {
       formData.append('data', JSON.stringify(form.data));
     }
-    console.log(JSON.stringify(showSelectedObservation, null, 2));
     if (form.images) {
       form.images.forEach(image => {
         if (image.key !== undefined)
@@ -780,7 +777,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
     //       formData.append(image.id.toString(), image.image);
     //   });
     // }
-    console.log(JSON.stringify(formData, null, 2));
+    // console.log(JSON.stringify(formData, null, 2));
     try {
       const marca = await citmapApi.patch(
         `/observations/${showSelectedObservation.id}/`,
@@ -805,7 +802,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
         type: 'error',
         text1: 'Error',
         // text2: 'No se han podido obtener los datos, por favor reinicie la app',
-        text2: 'Los campos obligatorios tienen que ser rellenados',
+        text2: fontLanguage.map[0].toast_err_obligatory_fields,
       });
       setWaitingData(false);
       if (error.response) {
@@ -864,7 +861,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
         type: 'success',
         text1: 'Borrado',
         // text2: 'No se han podido obtener los datos, por favor reinicie la app',
-        text2: 'Marca borrada con éxito',
+        text2: fontLanguage.map[0].delete_observation,
       });
       setIsCreatingObservation(false);
       setShowSelectedObservation(clearSelectedObservation());
@@ -878,7 +875,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
         type: 'error',
         text1: 'Error',
         // text2: 'No se han podido obtener los datos, por favor reinicie la app',
-        text2: 'No se pudo borrar la marca',
+        text2: fontLanguage.map[0].not_delete_observation,
       });
       setWaitingData(false);
       if (error.response) {
@@ -939,7 +936,6 @@ export const ParticipateMap = ({navigation, route}: Props) => {
     //TODO añadir a una nueva lista
     createNewObservation(coords);
     setShowConfirmMark(true);
-    console.log(onlyRead);
   };
 
   /**
@@ -995,7 +991,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
             color: Colors.textColorPrimary,
             marginBottom: RFPercentage(3),
           }}>
-          Habilita el GPS para poder acceder al mapa
+          {fontLanguage.map[0].enable_gps}
         </Text>
         <TouchableOpacity
           style={{
@@ -1016,7 +1012,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
             elevation: 5,
           }}
           onPress={getCurrentLocation}>
-          <Text>Recargar la pantalla</Text>
+          <Text>{fontLanguage.map[0].recharge_screen}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -1035,6 +1031,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                 scaleBarEnabled={false}
                 compassEnabled={false}
                 collapsable={true}
+                zoomEnabled={true}
                 onTouchStart={() =>
                   setSelectedObservation(clearSelectedObservation())
                 }
@@ -1044,11 +1041,12 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                 <Camera
                   ref={reference => (cameraRef.current = reference!)}
                   zoomLevel={15}
-                  maxZoomLevel={500}
+                  maxZoomLevel={2000}
+                  followZoomLevel={2000}
                   centerCoordinate={initialPositionArray}
                   followUserLocation={followView.current}
                   followUserMode={UserTrackingMode.FollowWithHeading}
-                  minZoomLevel={8}
+                  minZoomLevel={4}
                   animationMode="flyTo"
                   animationDuration={1000}
                   allowUpdates={true}
@@ -1175,7 +1173,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                               color: Colors.textColorPrimary,
                               fontSize: FontSize.fontSizeText13,
                             }}>
-                            Marcador Nº {selectedObservation.id}
+                            {fontLanguage.map[0].number_mark} {selectedObservation.id}
                           </Text>
                         </View>
                         <View
@@ -1193,7 +1191,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                             onPress={() => {
                               setShowMap(false);
                             }}
-                            label="Ver más"
+                            label={fontLanguage.map[0].show_more} 
                             backgroundColor={Colors.primaryLigth}
                           />
                         </View>
@@ -1217,7 +1215,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                           color: Colors.textColorPrimary,
                           fontSize: FontSize.fontSizeText17,
                         }}>
-                        ¿Quieres confirmar el marcador?
+                        {fontLanguage.map[0].want_to_confirm} 
                       </Text>
                     </View>
                   </View>
@@ -1239,7 +1237,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                           setShowMap(false), setShowConfirmMark(false);
                           setSelectedObservation(clearSelectedObservation());
                         }}
-                        label="Confirmar"
+                        label={fontLanguage.global[0].confirm_button} 
                         backgroundColor={Colors.primaryLigth}
                       />
                     </View>
@@ -1251,7 +1249,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                       }}>
                       <CustomButton
                         onPress={() => cancelCreationObservation()}
-                        label="Cancelar"
+                        label={fontLanguage.global[0].cancel_button} 
                         fontColor="black"
                         outlineColor="black"
                         backgroundColor={'white'}
@@ -1353,7 +1351,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                                   text1: 'Image',
                                   // text2: 'No se han podido obtener los datos, por favor reinicie la app',
                                   text2:
-                                    'La imagen pesa demasiado. Peso máximo, 4MB',
+                                    fontLanguage.map[0].mark.image_weight
                                 });
                               }
                             }}
@@ -1471,7 +1469,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                         <CustomButton
                           disabled={onlyRead}
                           onPress={() => onEditObservation()}
-                          label="Guardar"
+                          label={fontLanguage.map[0].mark.save}
                           backgroundColor={Colors.primaryLigth}
                         />
                       </View>
@@ -1484,7 +1482,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                         <CustomButton
                           disabled={onlyRead}
                           onPress={() => showModalDelete()}
-                          label="Borrar marca"
+                          label={fontLanguage.map[0].mark.delete}
                           backgroundColor={Colors.semanticDangerLight}
                         />
                       </View>
@@ -1504,7 +1502,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                           //   onSaveObservation()
                           // }
                         }}
-                        label="Finalizar"
+                        label={fontLanguage.map[0].mark.finish}
                         backgroundColor={
                           showSelectedObservation.id <= 0
                             ? Colors.primaryLigth
@@ -1522,7 +1520,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                       <CustomButton
                         disabled={false}
                         onPress={() => onSaveObservation()}
-                        label="Finalizar"
+                        label={fontLanguage.map[0].mark.finish}
                         backgroundColor={
                           showSelectedObservation.id <= 0
                             ? Colors.primaryLigth
@@ -1543,11 +1541,9 @@ export const ParticipateMap = ({navigation, route}: Props) => {
               onPress={hideModalInfo}
               size={RFPercentage(4)}
               color={Colors.primaryLigth}
-              label="¿Como participar y añadir un marcador?"
-              subLabel="Si perteneces a una organización existente en Geonity, 
-              ponte en contacto con el admin de la organización para que te invite o te añada como integrante.
-              "
-              subLabel2="Una vez hayas aceptado la solicitud, podrás añadir la organzación a tu biografía."
+              label={fontLanguage.map[0].modal.info_label} 
+              subLabel={fontLanguage.map[0].modal.info_sublabel}
+              subLabel2={fontLanguage.map[0].modal.info_sublabel2}
               helper={false}
             />
             <DeleteModal
@@ -1557,7 +1553,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                 onDeleteObservation()
                 hideModalDelete()
               }}
-              label="¿Desea borrar la observación?"
+              label={fontLanguage.map[0].modal.delete_label}
             />
           </View>
           {/* <View>

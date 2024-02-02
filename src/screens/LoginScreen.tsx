@@ -47,7 +47,7 @@ import {useLanguage} from '../hooks/useLanguage';
 interface Props extends StackScreenProps<any, any> {}
 
 export const LoginScreen = ({navigation, route}: Props) => {
-  const {deviceLanguage, fontLanguage} = useLanguage();
+  const {fontLanguage} = useLanguage();
 
   //#region VARIABLES
 
@@ -106,7 +106,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
   const [password1Error, setPassword1Error] = useState(false);
   const [password2Error, setPassword2Error] = useState(false);
   const [password2ErrorMessage, setPassword2ErrorMessage] = useState(
-    translate.strings.register_screen[0].password2_input_err1,
+    fontLanguage.register_screen[0].password2_input_err1,
   );
 
   const [saveModal, setSaveModal] = useState(false);
@@ -249,7 +249,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
     if (!passvalidate.test(formRegister.password2)) {
       valid = false;
       setPassword2ErrorMessage(
-        translate.strings.register_screen[0].password2_input_err2,
+        fontLanguage.register_screen[0].password2_input_err2,
       );
       setPassword2Error(true);
     } else {
@@ -260,7 +260,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
         valid = false;
         // setPassword1Error(true);
         setPassword2ErrorMessage(
-          translate.strings.register_screen[0].password2_input_err1,
+          fontLanguage.register_screen[0].password2_input_err1,
         );
         setPassword2Error(true);
       } else {
@@ -440,7 +440,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                     )}
                   </View>
                   <InputText
-                    label={translate.strings.register_screen[0].user_name_input}
+                    label={fontLanguage.register_screen[0].user_name_input}
                     keyboardType="email-address"
                     multiline={false}
                     numOfLines={1}
@@ -464,7 +464,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                       right: '3%',
                       fontWeight: '600',
                     }}>
-                    {translate.strings.register_screen[0].user_name_input_err}
+                    {fontLanguage.register_screen[0].user_name_input_err}
                   </HelperText>
                 ) : (
                   <></>
@@ -496,7 +496,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                     )}
                   </View>
                   <InputText
-                    label={translate.strings.register_screen[0].email_input}
+                    label={fontLanguage.register_screen[0].email_input}
                     keyboardType="email-address"
                     multiline={false}
                     numOfLines={1}
@@ -520,7 +520,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                       right: '3%',
                       fontWeight: '600',
                     }}>
-                    {translate.strings.register_screen[0].email_input_err}
+                    {fontLanguage.register_screen[0].email_input_err}
                   </HelperText>
                 ) : (
                   <></>
@@ -552,7 +552,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                   </View>
                   <InputText
                     // isInputText={() => setIsInputText(!isInputText)}
-                    label={translate.strings.register_screen[0].password1_input}
+                    label={fontLanguage.register_screen[0].password1_input}
                     inputType={true}
                     multiline={false}
                     numOfLines={1}
@@ -577,7 +577,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                       right: '3%',
                       fontWeight: '600',
                     }}>
-                    {translate.strings.register_screen[0].password1_input_err}
+                    {fontLanguage.register_screen[0].password1_input_err}
                   </HelperText>
                 ) : (
                   <></>
@@ -609,7 +609,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                   </View>
                   <InputText
                     // isInputText={() => setIsInputText(!isInputText)}
-                    label={translate.strings.register_screen[0].password2_input}
+                    label={fontLanguage.register_screen[0].password2_input}
                     inputType={true}
                     multiline={false}
                     numOfLines={1}
@@ -644,7 +644,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
               {/* register button */}
               <CustomButton
                 backgroundColor={Colors.secondaryDark}
-                label={translate.strings.register_screen[0].register_button}
+                label={fontLanguage.register_screen[0].register_button}
                 onPress={() => showModalPolicies()}
               />
               {/* divider */}
@@ -674,14 +674,14 @@ export const LoginScreen = ({navigation, route}: Props) => {
                     backgroundColor="white"
                     fontColor="black"
                     iconLeft="google"
-                    label={translate.strings.register_screen[0].register_google}
+                    label={fontLanguage.register_screen[0].register_google}
                     onPress={() => console.log()}
                   />
                   <CustomButtonOutline
                     backgroundColor="white"
                     fontColor="black"
                     iconLeft="apple"
-                    label={translate.strings.register_screen[0].register_apple}
+                    label={fontLanguage.register_screen[0].register_apple}
                     onPress={() => console.log()}
                   />
                   <CustomButtonOutline
@@ -689,7 +689,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                     fontColor="black"
                     iconLeft="microsoft"
                     label={
-                      translate.strings.register_screen[0].register_microsoft
+                      fontLanguage.register_screen[0].register_microsoft
                     }
                     onPress={() => console.log()}
                   />
@@ -714,7 +714,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                       fontFamily: FontFamily.NotoSansDisplayRegular,
                       fontSize: FontSize.fontSizeText13 / fontScale,
                     }}>
-                    {translate.strings.register_screen[0].have_account}
+                    {fontLanguage.register_screen[0].have_account}
                   </Text>
                   <Text
                     style={{
@@ -723,7 +723,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                       fontFamily: FontFamily.NotoSansDisplaySemiBold,
                       fontSize: FontSize.fontSizeText13 / fontScale,
                     }}>
-                    {translate.strings.register_screen[0].enter}
+                    {fontLanguage.register_screen[0].enter}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -751,7 +751,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                   textAlign: 'center',
                   marginBottom: '1%',
                 }}>
-                {translate.strings.recovery_screen[0].title_info}
+                {fontLanguage.recovery_screen[0].title_info}
               </Text>
               <Text
                 style={{
@@ -763,14 +763,14 @@ export const LoginScreen = ({navigation, route}: Props) => {
                   textAlignVertical: 'center',
                   textAlign: 'center',
                 }}>
-                {translate.strings.recovery_screen[0].content_info}
+                {fontLanguage.recovery_screen[0].content_info}
               </Text>
             </View>
             <View>
               {/* email */}
               <InputText
                 // isInputText={() => setIsInputText(!isInputText)}
-                label={translate.strings.login_screen[0].mail_input_recover}
+                label={fontLanguage.login_screen[0].mail_input_recover}
                 keyboardType="email-address"
                 multiline={false}
                 numOfLines={1}
@@ -788,7 +788,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                   right: '3%',
                   fontWeight: '600',
                 }}>
-                {translate.strings.login_screen[0].mail_input_recover_err}
+                {fontLanguage.login_screen[0].mail_input_recover_err}
               </HelperText>
             ) : (
               <></>
@@ -799,7 +799,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
               }}>
               <CustomButton
                 backgroundColor={Colors.secondaryDark}
-                label={translate.strings.recovery_screen[0].send_email}
+                label={fontLanguage.recovery_screen[0].send_email}
                 onPress={() => sendForgotenMail()}
               />
             </View>
@@ -833,7 +833,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
               <CustomButton
                 backgroundColor={Colors.primaryDark}
                 fontFamily={FontFamily.NotoSansDisplayRegular}
-                label={translate.strings.recovery_screen[0].create_account}
+                label={fontLanguage.recovery_screen[0].create_account}
                 onPress={() => navigation.replace('LoginScreen')}
               />
             </View>
@@ -857,7 +857,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                     fontFamily: FontFamily.NotoSansDisplaySemiBold,
                     fontSize: FontSize.fontSizeText13,
                   }}>
-                  {translate.strings.recovery_screen[0].back}
+                  {fontLanguage.recovery_screen[0].back}
                 </Text>
                 <Text
                   style={{
@@ -866,7 +866,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                     fontFamily: FontFamily.NotoSansDisplayRegular,
                     fontSize: FontSize.fontSizeText13,
                   }}>
-                  {translate.strings.recovery_screen[0].session}
+                  {fontLanguage.recovery_screen[0].session}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -913,10 +913,10 @@ export const LoginScreen = ({navigation, route}: Props) => {
                   color: 'white',
                 }}>
                 {numberScreen === 2
-                  ? translate.strings.login_screen[0].subtitle_register
+                  ? fontLanguage.login_screen[0].subtitle_register
                   : numberScreen === 3
-                  ? translate.strings.login_screen[0].subtitle_problems
-                  : translate.strings.login_screen[0].subtitle}
+                  ? fontLanguage.login_screen[0].subtitle_problems
+                  : fontLanguage.login_screen[0].subtitle}
               </Text>
             </View>
             <Animated.View
@@ -972,7 +972,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                     {/* email */}
                     <InputText
                       // isInputText={() => setIsInputText(!isInputText)}
-                      label={translate.strings.login_screen[0].mail_input}
+                      label={fontLanguage.login_screen[0].mail_input}
                       keyboardType="email-address"
                       multiline={false}
                       numOfLines={1}
@@ -990,7 +990,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                           fontWeight: '600',
                         }}>
                         {
-                          translate.strings.new_project_screen[0]
+                          fontLanguage.new_project_screen[0]
                             .project_name_helper
                         }
                       </HelperText>
@@ -1000,7 +1000,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                     {/* password */}
                     <InputText
                       // isInputText={() => setIsInputText(!isInputText)}
-                      label={translate.strings.login_screen[0].password_input}
+                      label={fontLanguage.login_screen[0].password_input}
                       inputType={true}
                       multiline={false}
                       numOfLines={1}
@@ -1019,7 +1019,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                           fontWeight: '600',
                         }}>
                         {
-                          translate.strings.new_project_screen[0]
+                          fontLanguage.new_project_screen[0]
                             .project_name_helper
                         }
                       </HelperText>
@@ -1030,7 +1030,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
 
                   <CustomButton
                     backgroundColor={Colors.secondaryDark}
-                    label={translate.strings.login_screen[0].login_button}
+                    label={fontLanguage.login_screen[0].login_button}
                     onPress={() => loggin()}
                   />
 
@@ -1052,7 +1052,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                         fontFamily: FontFamily.NotoSansDisplayRegular,
                         fontSize: FontSize.fontSizeText13 / fontScale,
                       }}>
-                      {translate.strings.login_screen[0].recovery_password}
+                      {fontLanguage.login_screen[0].recovery_password}
                     </Text>
                     <Text
                       style={{
@@ -1071,14 +1071,14 @@ export const LoginScreen = ({navigation, route}: Props) => {
                       backgroundColor="white"
                       fontColor="black"
                       iconLeft="google"
-                      label={translate.strings.login_screen[0].loggin_google}
+                      label={fontLanguage.login_screen[0].loggin_google}
                       onPress={() => logginGoogle()}
                     />
                     {/* <CustomButtonOutline
                         backgroundColor="white"
                         fontColor="black"
                         iconLeft="apple"
-                        label={translate.strings.login_screen[0].loggin_apple}
+                        label={fontLanguage.login_screen[0].loggin_apple}
                         onPress={() => console.log()}
                       />
                       <CustomButtonOutline
@@ -1086,7 +1086,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                         fontColor="black"
                         iconLeft="microsoft"
                         label={
-                          translate.strings.login_screen[0].loggin_microsoft
+                          fontLanguage.login_screen[0].loggin_microsoft
                         }
                         onPress={() => console.log()}
                       /> */}
@@ -1121,7 +1121,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                     <CustomButton
                       backgroundColor={Colors.primaryDark}
                       fontFamily={FontFamily.NotoSansDisplayRegular}
-                      label={translate.strings.login_screen[0].register}
+                      label={fontLanguage.login_screen[0].register}
                       onPress={() =>
                         // navigation.replace('RegisterScreen')
                         onTouchRegister()

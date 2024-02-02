@@ -29,6 +29,7 @@ import {
 } from 'react-native-responsive-screen';
 import {launchCamera} from 'react-native-image-picker';
 import {baseURL} from '../../api/citmapApi';
+import { useLanguage } from '../../hooks/useLanguage';
 
 interface Props {
   //   onChangeText?: (fieldName: string, value: any) => void;
@@ -55,7 +56,7 @@ export const CardAnswerMap = ({
   // useEffect(() => {
   //     card(question, index)
   //   }, []);
-
+  const {fontLanguage} = useLanguage();
   const [images, setImages] = useState<any>();
   const [imageBlob, setImageBlob] = useState<any>();
 
@@ -74,8 +75,8 @@ export const CardAnswerMap = ({
     if (permissions.camera !== 'granted') {
       Toast.show({
         type: 'error',
-        text1: 'Sin permisos',
-        text2: 'No se concedieron los permisos para acceder a la camara',
+        text1: fontLanguage.map[0].cards.permission_text1,
+        text2: fontLanguage.map[0].cards.permission_text2,
       });
       return;
     }
@@ -310,7 +311,7 @@ export const CardAnswerMap = ({
                       ]}
                       multiline={true}
                       contentStyle={{bottom: heightPercentageToDP(-0.4)}}
-                      placeholder={value || 'Pregunta de texto'}
+                      placeholder={value || fontLanguage.map[0].cards.text_answer}
                       placeholderTextColor={value ? '#000000' : '#949494'}
                       onChangeText={value => onChangeText(value)}
                       underlineColorAndroid="transparent"
@@ -407,7 +408,7 @@ export const CardAnswerMap = ({
                       multiline={true}
                       contentStyle={{bottom: heightPercentageToDP(-0.4)}}
                       keyboardType="number-pad"
-                      placeholder={value || 'Pregunta numérica'}
+                      placeholder={value || fontLanguage.map[0].cards.number_answer}
                       placeholderTextColor={value ? '#000000' : '#bab9b9'}
                       onChangeText={value => onChangeText(value)}
                       underlineColorAndroid="transparent"
@@ -758,14 +759,14 @@ export const CardAnswerMap = ({
                         style={{
                           ...stylesModal.textButton,
                         }}>
-                        Galería
+                        {fontLanguage.map[0].cards.galery}
                       </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       activeOpacity={0.9}
                       style={{...stylesModal.button}}
                       onPress={() => selectImage(2)}>
-                      <Text style={stylesModal.textButton}>Cámara</Text>
+                      <Text style={stylesModal.textButton}>{fontLanguage.map[0].cards.camera}</Text>
                     </TouchableOpacity>
                   </View>
                 </View>

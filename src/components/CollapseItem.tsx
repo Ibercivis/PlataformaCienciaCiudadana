@@ -3,6 +3,7 @@ import {TouchableOpacity, View} from 'react-native';
 import {Paragraph, Title} from 'react-native-paper';
 import {Size} from '../theme/size';
 import {IconTemp} from './IconTemp';
+import { useLanguage } from '../hooks/useLanguage';
 
 type AccordionItemPros = PropsWithChildren<{
   title: string;
@@ -10,7 +11,7 @@ type AccordionItemPros = PropsWithChildren<{
 
 export const CollapseItem = ({children, title}: AccordionItemPros) => {
   const [expanded, setExpanded] = useState(false);
-
+  const {fontLanguage} = useLanguage();
   const toggleItem = () => {
     setExpanded(!expanded);
   };
@@ -24,7 +25,7 @@ export const CollapseItem = ({children, title}: AccordionItemPros) => {
           flexDirection: 'row',
           justifyContent: 'space-between',
         }}>
-        <Title>Descripcion</Title>
+        <Title>{fontLanguage.utility[0].description}</Title>
         <TouchableOpacity
           onPress={() => {
             toggleItem();

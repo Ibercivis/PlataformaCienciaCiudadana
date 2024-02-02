@@ -647,7 +647,7 @@ export const InfoModal = ({
                         justifyContent: 'center',
                         fontFamily: FontFamily.NotoSansDisplayRegular,
                       }}>
-                      Aceptar
+                      {fontLanguage.modals[0].accept_button_text}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -831,7 +831,7 @@ export const PassModal = ({
                     <InputText
                       // isInputText={() => setIsInputText(!isInputText)}
                       isValid={helper}
-                      label={'Escriba la contraseña'}
+                      label={fontLanguage.modals[0].password_text_label}
                       inputType={true}
                       multiline={false}
                       numOfLines={1}
@@ -946,7 +946,7 @@ export const DeleteModal = ({
                         ...styles.textButton,
                         color: Colors.semanticDangerLight,
                       }}>
-                      {fontLanguage.modals[0].cancel_button_text}
+                      {fontLanguage.modals[0].delete_button_text}
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity

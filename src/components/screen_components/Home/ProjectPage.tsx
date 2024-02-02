@@ -49,6 +49,7 @@ import {PermissionsContext} from '../../../context/PermissionsContext';
 import Toast from 'react-native-toast-message';
 import RNFS from 'react-native-fs';
 import {heightPercentageToDP} from 'react-native-responsive-screen';
+import { useLanguage } from '../../../hooks/useLanguage';
 
 const data = [
   require('../../../assets/backgrounds/login-background.jpg'),
@@ -71,6 +72,7 @@ interface PassValidate {
 }
 
 export const ProjectPage = (props: Props) => {
+  const {fontLanguage} = useLanguage();
   //#region estados y referencias
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [isAllCharged, setIsAllCharged] = useState(false);
@@ -308,11 +310,10 @@ export const ProjectPage = (props: Props) => {
 
       const hasPermission = await requestStoragePermission();
       if (!hasPermission) {
-        console.log('No se concedieron los permisos de almacenamiento');
         Toast.show({
           type: 'error',
-          text1: 'Sin permisos',
-          text2: 'No se concedieron los permisos de almacenamiento',
+          text1: fontLanguage.project[0].toast_no_permission_text1,
+          text2: fontLanguage.project[0].toast_no_permission_text2,
         });
         return;
       }
@@ -325,7 +326,7 @@ export const ProjectPage = (props: Props) => {
       Toast.show({
         type: 'error',
         text1: 'Error',
-        text2: 'Error en la descarga del servidor',
+        text2: fontLanguage.project[0].toast_err_download_text1,
       });
     }
   };
@@ -344,8 +345,8 @@ export const ProjectPage = (props: Props) => {
           console.log(`Archivo guardado en: ${path}`);
           Toast.show({
             type: 'info',
-            text1: 'Descarga completada',
-            text2: `Archivo guardado en: ${path}`,
+            text1: fontLanguage.project[0].toast_download_completed_text1,
+            text2: `${fontLanguage.project[0].toast_download_completed_text2} ${path}`,
           });
         })
         .catch(error => {
@@ -362,12 +363,11 @@ export const ProjectPage = (props: Props) => {
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
           {
-            title: 'Permiso de Almacenamiento',
-            message:
-              'La app necesita acceso al almacenamiento para descargar archivos.',
-            buttonNeutral: 'Preguntar Luego',
-            buttonNegative: 'Cancelar',
-            buttonPositive: 'Aceptar',
+            title: fontLanguage.project[0].title_permission,
+            message:fontLanguage.project[0].menssage,
+            buttonNeutral: fontLanguage.project[0].neutral_button,
+            buttonNegative: fontLanguage.global[0].cancel_button,
+            buttonPositive: fontLanguage.global[0].acept_button,
           },
         );
         return granted === PermissionsAndroid.RESULTS.GRANTED;
@@ -542,12 +542,14 @@ export const ProjectPage = (props: Props) => {
     <>
       {!hasPermission && wantParticipate ? (
         <View style={stylesPermission.container}>
-          <Text>Permiso de ubicación requerido</Text>
+          <Text>{fontLanguage.project[0].location_permission}</Text>
           <TouchableOpacity
             style={stylesPermission.touchable}
             onPress={checkLocationPermission}
             activeOpacity={0.6}>
-            <Text style={stylesPermission.touchableText}>Dar permisos</Text>
+            <Text style={stylesPermission.touchableText}>
+            {fontLanguage.project[0].give_permissions}
+            </Text>
           </TouchableOpacity>
         </View>
       ) : (
@@ -752,7 +754,7 @@ export const ProjectPage = (props: Props) => {
                     onPress={() => {
                       navigateToMap();
                     }}
-                    label="¡Ver mapa!"
+                    label={fontLanguage.project[0].show_map}
                     backgroundColor={Colors.primaryLigth}
                   />
                 </View>
@@ -774,7 +776,7 @@ export const ProjectPage = (props: Props) => {
                           alignSelf: 'flex-start',
                           color: Colors.textColorPrimary
                         }}>
-                        Creado por:{' '}
+                        {fontLanguage.project[0].created_by}{' '}
                       </Text>
                       <Text
                         style={{
@@ -805,7 +807,7 @@ export const ProjectPage = (props: Props) => {
                           alignSelf: 'flex-start',
                           color: Colors.textColorPrimary
                         }}>
-                        Organización:{' '}
+                        {fontLanguage.project[0].organization}{' '}
                       </Text>
                       {project?.organizations &&
                       project?.organizations.length > 0 ? (
@@ -835,7 +837,7 @@ export const ProjectPage = (props: Props) => {
                             fontWeight: 'bold',
                             color: Colors.textColorPrimary
                           }}>
-                          No hay una organización vinculada
+                          {fontLanguage.project[0].no_organization}
                         </Text>
                       )}
                     </View>
@@ -913,9 +915,8 @@ export const ProjectPage = (props: Props) => {
               onPress={hideModalSave}
               size={RFPercentage(6)}
               color={Colors.semanticSuccessLight}
-              label="¡Proyecto creado!"
-              subLabel="No olvides compartir tu proyecto para obtener una mayor
-          participación"
+              label={fontLanguage.project[0].modal_save_label}
+              subLabel={fontLanguage.project[0].modal_save_sublabel}
             />
             <PassModal
               visible={passModal}
@@ -924,7 +925,7 @@ export const ProjectPage = (props: Props) => {
               size={RFPercentage(6)}
               helper={isValidPass}
               color={Colors.semanticSuccessLight}
-              label="Escribe la contraseña del proyecto"
+              label={fontLanguage.project[0].modal_pass_label}
               setPass={value => navigateToMapPass(value)}
             />
             <Spinner visible={waitingData} />

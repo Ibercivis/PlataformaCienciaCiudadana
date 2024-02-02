@@ -55,12 +55,14 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import NotCreated from '../../../assets/icons/profile/No hay creados.svg';
 import Geonity from '../../../assets/icons/general/Geonity-Tittle.svg';
 import {CustomButton} from '../../utility/CustomButton';
+import { useLanguage } from '../../../hooks/useLanguage';
 
 interface Props extends StackScreenProps<any, any> {}
 
 export const Home = ({navigation}: Props) => {
   //#region Variables/const
   let notchHeight = 0;
+  const {fontLanguage} = useLanguage();
   const insets = useSafeAreaInsets();
 
   const NUM_SLICE_NEW_PROJECT_LIST = 10;
@@ -157,7 +159,6 @@ export const Home = ({navigation}: Props) => {
 
   useEffect(() => {
     if (errorMessage.length === 0) return;
-    console.log('eh, ha saltado el error en home ' + errorMessage);
   }, [errorMessage]);
 
   //#endregion
@@ -457,7 +458,7 @@ export const Home = ({navigation}: Props) => {
               fontFamily: FontFamily.NotoSansDisplayRegular,
               fontWeight: '700',
             }}>
-            Aún no se han creado proyectos...
+            {fontLanguage.Home[0].no_projects_text_1}
           </Text>
           <Text
             style={{
@@ -469,7 +470,7 @@ export const Home = ({navigation}: Props) => {
               fontWeight: '600',
               marginTop: '3%',
             }}>
-            Puedes crear tus propios proyectos
+            {fontLanguage.Home[0].no_projects_text_2}
           </Text>
           <View style={{alignItems: 'center'}}>
             <NotCreated width={RFPercentage(20)} height={RFPercentage(20)} />
@@ -491,7 +492,7 @@ export const Home = ({navigation}: Props) => {
               fontFamily: FontFamily.NotoSansDisplayRegular,
               fontWeight: '700',
             }}>
-            Aún no se han creado organizaciones...
+           {fontLanguage.Home[0].no_observations_text_1}
           </Text>
           <Text
             style={{
@@ -503,7 +504,7 @@ export const Home = ({navigation}: Props) => {
               fontWeight: '600',
               marginTop: '3%',
             }}>
-            Puedes crear tu propia organización
+            {fontLanguage.Home[0].no_observations_text_2}
           </Text>
           <View style={{alignItems: 'center'}}>
             <NotCreated width={RFPercentage(20)} height={RFPercentage(20)} />
@@ -560,7 +561,7 @@ export const Home = ({navigation}: Props) => {
             <View style={HomeStyles.searchView}>
               <InputText
                 iconLeft="search"
-                label={'Buscar proyectos'}
+                label={fontLanguage.Home[0].search}
                 keyboardType="email-address"
                 multiline={false}
                 numOfLines={1}
@@ -600,7 +601,7 @@ export const Home = ({navigation}: Props) => {
                     fontSize: FontSize.fontSizeText18,
                     color: 'black',
                   }}>
-                  Categorías
+                  {fontLanguage.Home[0].category}
                 </Text>
                 <ScrollView
                   style={HomeStyles.categoryScrollView}
@@ -693,7 +694,7 @@ export const Home = ({navigation}: Props) => {
                           alignSelf: 'center',
                           color: 'black',
                         }}>
-                        Nuevos proyectos
+                        {fontLanguage.Home[0].new_project}
                       </Text>
                     </View>
                     {newProjectList.length <= 0 ? (
@@ -734,7 +735,7 @@ export const Home = ({navigation}: Props) => {
                                     categoryImage={index}
                                     onPress={() => {
                                       navigation.navigate('ProjectList', {
-                                        title: 'Nuevos proyectos',
+                                        title: fontLanguage.Home[0].new_project,
                                       });
                                     }}
                                   />
@@ -802,7 +803,7 @@ export const Home = ({navigation}: Props) => {
                           alignSelf: 'center',
                           color: 'black',
                         }}>
-                        Proyectos destacados
+                        {fontLanguage.Home[0].important_projects}
                       </Text>
                     </View>
 
@@ -841,7 +842,7 @@ export const Home = ({navigation}: Props) => {
                                   }
                                   onPress={() => {
                                     navigation.navigate('ProjectList', {
-                                      title: 'Proyectos destacados',
+                                      title: fontLanguage.Home[0].important_projects,
                                     });
                                   }}
                                 />
@@ -874,7 +875,7 @@ export const Home = ({navigation}: Props) => {
                                   description={
                                     item.organizations.length > 0
                                       ? item.organizations[0].principalName
-                                      : 'Sin organización'
+                                      : fontLanguage.Home[0].no_organization
                                   }
                                   totalLikes={
                                     item.total_likes ? item.total_likes : 0
@@ -922,7 +923,7 @@ export const Home = ({navigation}: Props) => {
                           alignSelf: 'center',
                           color: 'black',
                         }}>
-                        Te puede interesar...
+                        {fontLanguage.Home[0].interesting}
                       </Text>
                     </View>
 
@@ -956,7 +957,7 @@ export const Home = ({navigation}: Props) => {
                                   categoryImage={index}
                                   onPress={() => {
                                     navigation.navigate('ProjectList', {
-                                      title: 'Te puede interesar...',
+                                      title: fontLanguage.Home[0].interesting,
                                     });
                                   }}
                                 />
@@ -987,7 +988,7 @@ export const Home = ({navigation}: Props) => {
                                   description={
                                     x.organizations.length > 0
                                       ? x.organizations[0].principalName
-                                      : 'Sin organización'
+                                      : fontLanguage.Home[0].no_organization
                                   }
                                 />
                               </View>
@@ -1029,7 +1030,7 @@ export const Home = ({navigation}: Props) => {
                           alignSelf: 'center',
                           color: 'black',
                         }}>
-                        Organizaciones destacadas
+                        {fontLanguage.Home[0].important_organizations}
                       </Text>
                     </View>
                     {organizationList.length <= 0 ? (
@@ -1134,7 +1135,7 @@ export const Home = ({navigation}: Props) => {
                         alignSelf: 'center',
                         color: 'black',
                       }}>
-                      PROYECTOS ENCONTRADOS
+                      {fontLanguage.Home[0].project_found}
                     </Text>
                   </View>
                   <View
@@ -1227,12 +1228,12 @@ export const Home = ({navigation}: Props) => {
                       fontFamily: FontFamily.NotoSansDisplaySemiBold,
                       color: 'black',
                     }}>
-                    Todas las categorías
+                    {fontLanguage.Home[0].all_categories}
                   </Text>
                 </View>
                 <View>
                   <TouchableOpacity onPress={() => setShowCategoryList(false)}>
-                    <Text style={{color: Colors.primaryLigth}}>Cerrar</Text>
+                    <Text style={{color: Colors.primaryLigth}}>{fontLanguage.global[0].close_button}</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -1284,7 +1285,7 @@ export const Home = ({navigation}: Props) => {
                     setCategorySelectedId([]);
                     setCategoriesSelected([]);
                   }}>
-                  <Text style={{color: Colors.primaryLigth}}>Limpiar todo</Text>
+                  <Text style={{color: Colors.primaryLigth}}>{fontLanguage.global[0].clean_all_button}</Text>
                 </TouchableOpacity>
                 <View style={{width: widthPercentageToDP(20)}}>
                   <CustomButton
@@ -1343,13 +1344,13 @@ export const Home = ({navigation}: Props) => {
                         <TouchableOpacity
                           style={{marginTop: heightPercentageToDP(1), marginBottom: heightPercentageToDP(0.7)}}
                           onPress={signOut}>
-                          <Text>Cerrar sesión</Text>
+                          <Text>{fontLanguage.Home[0].logout}</Text>
                         </TouchableOpacity>
                         {/* Otras opciones de menú aquí */}
                         <TouchableOpacity
                           style={{marginBottom: heightPercentageToDP(1),marginTop: heightPercentageToDP(0.7)}}
                           onPress={ocultarMenu}>
-                          <Text>Cancelar</Text>
+                          <Text>{fontLanguage.global[0].cancel_button}</Text>
                         </TouchableOpacity>
                       </View>
                     </View>
