@@ -1290,7 +1290,7 @@ export const Home = ({navigation}: Props) => {
                 <View style={{width: widthPercentageToDP(20)}}>
                   <CustomButton
                     backgroundColor={Colors.primaryLigth}
-                    label={'Aplicar'}
+                    label={fontLanguage.global[0].apply}
                     onPress={() => setShowCategoryList(false)}
                   />
                 </View>

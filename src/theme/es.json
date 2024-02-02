@@ -11,7 +11,8 @@
         "acept_button": "Aceptar",
         "delete_button": "Eliminar",
         "continue_button": "Continuar",
-        "confirm_button": "Confirmar"
+        "confirm_button": "Confirmar",
+        "apply":"Aplicar"
       }
     ],
     "login_screen": [
