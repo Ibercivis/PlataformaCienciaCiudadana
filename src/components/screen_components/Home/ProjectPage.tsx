@@ -10,6 +10,7 @@ import {
   StatusBar,
   Platform,
   PermissionsAndroid,
+  Alert,
 } from 'react-native';
 import {Text} from 'react-native-paper';
 import {RFPercentage} from 'react-native-responsive-fontsize';
@@ -35,7 +36,7 @@ import {
   UserInfo,
 } from '../../../interfaces/interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import citmapApi, { imageUrl } from '../../../api/citmapApi';
+import citmapApi, {imageUrl} from '../../../api/citmapApi';
 import {HasTag, Topic} from '../../../interfaces/appInterfaces';
 import {LoadingScreen} from '../../../screens/LoadingScreen';
 import {PassModal, SaveProyectModal} from '../../utility/Modals';
@@ -46,10 +47,17 @@ import {
 } from '@react-navigation/native';
 import {Spinner} from '../../utility/Spinner';
 import {PermissionsContext} from '../../../context/PermissionsContext';
+import {
+  PERMISSIONS,
+  PermissionStatus,
+  request,
+  check,
+  openSettings,
+} from 'react-native-permissions';
 import Toast from 'react-native-toast-message';
 import RNFS from 'react-native-fs';
 import {heightPercentageToDP} from 'react-native-responsive-screen';
-import { useLanguage } from '../../../hooks/useLanguage';
+import {useLanguage} from '../../../hooks/useLanguage';
 
 const data = [
   require('../../../assets/backgrounds/login-background.jpg'),
@@ -309,7 +317,18 @@ export const ProjectPage = (props: Props) => {
       );
 
       const hasPermission = await requestStoragePermission();
-      if (!hasPermission) {
+      if (hasPermission !== 'granted') {
+        Alert.alert(
+          'Permission Denied',
+          'You need to grant storage permissions to use this feature.',
+          [
+            {
+              text: 'OK',
+              onPress: () => console.log('OK Pressed'),
+            },
+          ],
+          {cancelable: false},
+        );
         Toast.show({
           type: 'error',
           text1: fontLanguage.project[0].toast_no_permission_text1,
@@ -358,26 +377,55 @@ export const ProjectPage = (props: Props) => {
   };
 
   const requestStoragePermission = async () => {
-    if (Platform.OS === 'android') {
-      try {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-          {
-            title: fontLanguage.project[0].title_permission,
-            message:fontLanguage.project[0].menssage,
-            buttonNeutral: fontLanguage.project[0].neutral_button,
-            buttonNegative: fontLanguage.global[0].cancel_button,
-            buttonPositive: fontLanguage.global[0].acept_button,
-          },
-        );
-        return granted === PermissionsAndroid.RESULTS.GRANTED;
-      } catch (err) {
-        console.warn(err);
-        return false;
-      }
+    // if (Platform.OS === 'android') {
+    //   try {
+    //     console.log('pide el permiso')
+    //     const granted = await PermissionsAndroid.request(
+    //       PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+    //       {
+    //         title: fontLanguage.project[0].title_permission,
+    //         message:fontLanguage.project[0].menssage,
+    //         buttonNeutral: fontLanguage.project[0].neutral_button,
+    //         buttonNegative: fontLanguage.global[0].cancel_button,
+    //         buttonPositive: fontLanguage.global[0].acept_button,
+    //       },
+    //     );
+
+    //     return granted === PermissionsAndroid.RESULTS.GRANTED;
+    //   } catch (err) {
+    //     console.warn(err);
+    //     return false;
+    //   }
+    // }
+    let permissionStatus: PermissionStatus;
+
+    if (Platform.OS === 'ios') {
+      permissionStatus = await request(PERMISSIONS.IOS.MEDIA_LIBRARY);
+    } else {
+      permissionStatus = await request(
+        PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE,
+      );
     }
 
-    return true;
+    if (permissionStatus === 'blocked') {
+      Alert.alert(
+        'Permission Blocked',
+        'Please enable storage permissions in your device settings to proceed.',
+        [
+          {
+            text: 'Go to Settings',
+            onPress: () => openSettings(),
+          },
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+        ],
+        {cancelable: false},
+      );
+    }
+
+    return permissionStatus;
   };
 
   const getProjectApi = async () => {
@@ -422,10 +470,11 @@ export const ProjectPage = (props: Props) => {
       });
 
       setCreator(creatoruser.data.username);
-
+      // recorrer resp.administrator.map y comparar si coincide el id con el user
+      let isAdmin = resp.data.administrators.find(x => x === userInfo.data.pk)
       if (
         userInfo.data != undefined &&
-        userInfo.data.pk === resp.data.creator
+        userInfo.data.pk === resp.data.creator || isAdmin !== undefined
       ) {
         setCanEdit(true);
       } else {
@@ -517,12 +566,12 @@ export const ProjectPage = (props: Props) => {
       //   updatedProject.is_liked_by_user = !updatedProject.is_liked_by_user;
       //   setProject(updatedProject);
       // }
-      if(like){
-        setNumlike(numlike-1)
-      }else{
-        setNumlike(numlike+1)
+      if (like) {
+        setNumlike(numlike - 1);
+      } else {
+        setNumlike(numlike + 1);
       }
-      setLike(!like)
+      setLike(!like);
       Toast.show({
         type: 'success',
         text1: 'Like',
@@ -548,7 +597,7 @@ export const ProjectPage = (props: Props) => {
             onPress={checkLocationPermission}
             activeOpacity={0.6}>
             <Text style={stylesPermission.touchableText}>
-            {fontLanguage.project[0].give_permissions}
+              {fontLanguage.project[0].give_permissions}
             </Text>
           </TouchableOpacity>
         </View>
@@ -586,9 +635,7 @@ export const ProjectPage = (props: Props) => {
                           <>
                             <Image
                               source={{
-                                uri:
-                                imageUrl +
-                                  imagesCharged[x.index].image,
+                                uri: imageUrl + imagesCharged[x.index].image,
                               }}
                               style={{
                                 width: '100%',
@@ -684,7 +731,7 @@ export const ProjectPage = (props: Props) => {
                         fontSize: FontSize.fontSizeText13,
                         marginHorizontal: RFPercentage(1),
                         alignSelf: 'center',
-                        color: Colors.textColorPrimary
+                        color: Colors.textColorPrimary,
                       }}>
                       {project?.contributions}
                     </Text>
@@ -720,7 +767,7 @@ export const ProjectPage = (props: Props) => {
                         fontSize: FontSize.fontSizeText13,
                         marginHorizontal: RFPercentage(1),
                         alignSelf: 'center',
-                        color: Colors.textColorPrimary
+                        color: Colors.textColorPrimary,
                       }}>
                       {numlike}
                     </Text>
@@ -774,7 +821,7 @@ export const ProjectPage = (props: Props) => {
                           // backgroundColor: 'white',
                           marginBottom: '1%',
                           alignSelf: 'flex-start',
-                          color: Colors.textColorPrimary
+                          color: Colors.textColorPrimary,
                         }}>
                         {fontLanguage.project[0].created_by}{' '}
                       </Text>
@@ -805,7 +852,7 @@ export const ProjectPage = (props: Props) => {
                           // backgroundColor: 'white',
                           marginBottom: '1%',
                           alignSelf: 'flex-start',
-                          color: Colors.textColorPrimary
+                          color: Colors.textColorPrimary,
                         }}>
                         {fontLanguage.project[0].organization}{' '}
                       </Text>
@@ -821,7 +868,7 @@ export const ProjectPage = (props: Props) => {
                                   marginBottom: '1%',
                                   alignSelf: 'flex-start',
                                   fontWeight: 'bold',
-                                  color: Colors.textColorPrimary
+                                  color: Colors.textColorPrimary,
                                 }}>
                                 {x.principalName}{' '}
                               </Text>
@@ -835,7 +882,7 @@ export const ProjectPage = (props: Props) => {
                             marginBottom: '1%',
                             // alignSelf: 'flex-start',
                             fontWeight: 'bold',
-                            color: Colors.textColorPrimary
+                            color: Colors.textColorPrimary,
                           }}>
                           {fontLanguage.project[0].no_organization}
                         </Text>
@@ -963,7 +1010,7 @@ const styles = StyleSheet.create({
     // borderRadius: 10,
     zIndex: 1,
     color: 'black',
-    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
   },
   title: {
     color: 'white',
@@ -971,11 +1018,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'left',
     marginHorizontal: '2%',
-    marginLeft: '3%'
+    marginLeft: '3%',
     // textShadowColor: 'black', // Color del contorno
     // textShadowOffset: {width: 2, height: 2}, // Ajusta según sea necesario
     // textShadowRadius: 2,
-    
   },
   buttonBack: {
     position: 'absolute',

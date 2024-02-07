@@ -12,11 +12,13 @@ import {
 export interface PermissionsState {
   locationStatus: PermissionStatus;
   camera: PermissionStatus;
+  storage: PermissionStatus;
 }
 
 export const permissionInitState: PermissionsState = {
   locationStatus: 'unavailable',
   camera: 'unavailable',
+  storage: 'unavailable',
 };
 
 type PermissionsContextProps = {
@@ -42,10 +44,12 @@ export const PermissionsProvider = ({children}: any) => {
   const askLocationPermission = async () => {
     let permissionStatus: PermissionStatus;
     let permissionStatusCamera: PermissionStatus;
+    let permissionStatusStorage: PermissionStatus = 'unavailable';
 
     if (Platform.OS === 'ios') {
       permissionStatus = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
       permissionStatusCamera = await request(PERMISSIONS.IOS.CAMERA);
+      permissionStatusStorage = await request(PERMISSIONS.IOS.STOREKIT);
     } else {
       permissionStatus = await request(
         PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
@@ -64,6 +68,22 @@ export const PermissionsProvider = ({children}: any) => {
         buttonNegative: 'Cancel',
         buttonPositive: 'OK',
       });
+      const temp = await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
+      console.log(temp)
+      if (temp === 'granted') {
+        permissionStatusStorage = await request(
+          PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE,
+          {
+            title: 'Storage Permission',
+            // message: 'Get your location to post request',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          },
+        );
+      } else {
+        openSettings();
+      }
     }
 
     if (permissionStatus === 'blocked') {
@@ -72,28 +92,40 @@ export const PermissionsProvider = ({children}: any) => {
     if (permissionStatusCamera === 'blocked') {
       openSettings();
     }
+    if (permissionStatusStorage === 'blocked') {
+      openSettings();
+    }
+    console.log(permissionStatus);
+    console.log(permissionStatusStorage);
     setPermissions({
       ...permissions,
       locationStatus: permissionStatus,
       camera: permissionStatusCamera,
+      storage: permissionStatusStorage,
     });
   };
 
   const checkLocationPErmission = async () => {
     let permissionStatus: PermissionStatus;
     let permissionStatusCamera: PermissionStatus;
+    let permissionStatusStorage: PermissionStatus;
 
     if (Platform.OS === 'ios') {
       permissionStatus = await check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
       permissionStatusCamera = await check(PERMISSIONS.IOS.CAMERA);
+      permissionStatusStorage = await check(PERMISSIONS.IOS.STOREKIT);
     } else {
       permissionStatus = await check(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
       permissionStatusCamera = await check(PERMISSIONS.ANDROID.CAMERA);
+      permissionStatusStorage = await check(
+        PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE,
+      );
     }
     setPermissions({
       ...permissions,
       locationStatus: permissionStatus,
       camera: permissionStatusCamera,
+      storage: permissionStatusStorage,
     });
   };
 

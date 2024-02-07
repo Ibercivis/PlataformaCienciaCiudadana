@@ -36,7 +36,7 @@ export const Navigator = () => {
         },
         headerTransparent: true,
       }}>
-      {permissions.locationStatus === 'granted' &&
+      {permissions.locationStatus === 'granted' && permissions.storage === 'granted' &&
       permissions.camera === 'granted' ? (
         <>
           {status !== 'authenticated' ? (
