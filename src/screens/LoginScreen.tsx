@@ -1061,7 +1061,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                         fontFamily: FontFamily.NotoSansDisplaySemiBold,
                         fontSize: FontSize.fontSizeText13 / fontScale,
                       }}>
-                      {'contraseña?'}
+                      {fontLanguage.login_screen[0].recovery_password_2}
                     </Text>
                   </TouchableOpacity>
 

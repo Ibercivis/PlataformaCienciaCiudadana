@@ -23,6 +23,7 @@
         "mail_input_recover_err": "El nombre de usuario o correo no existe",
         "password_input": "Contraseña",
         "recovery_password": "¿Has olvidado la ",
+        "recovery_password_2": "contraseña?",
         "or_login": "O logear con...",
         "new_in_app": "¿Nuevo en la App?",
         "register": "Crear cuenta",

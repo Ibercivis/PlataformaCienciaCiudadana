@@ -30,6 +30,7 @@ import {
   User,
   CreateFieldForm,
   ShowProject,
+  UserInfo,
 } from '../../../interfaces/interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import citmapApi, {imageUrl} from '../../../api/citmapApi';
@@ -64,6 +65,7 @@ export const CreateProject = ({navigation, route}: Props) => {
   const {fontLanguage} = useLanguage();
   const [currentStep, setCurrentStep] = useState(1);
   const [isEdit, setIsEdit] = useState(false);
+  const [canDelete, setCanDelete] = useState(false);
   const totalSteps = 3;
   const MAX_CHARACTERS = 1000;
   const {fontScale} = useWindowDimensions();
@@ -353,7 +355,11 @@ export const CreateProject = ({navigation, route}: Props) => {
     setWaitingData(true);
     setQuestions([]);
     setImagesCharged([]);
-    const token = await AsyncStorage.getItem('token');
+    let token;
+
+    while (!token) {
+      token = await AsyncStorage.getItem('token');
+    }
     try {
       const resp = await citmapApi.get<ShowProject>(
         `/project/${route.params.id}`,
@@ -428,6 +434,37 @@ export const CreateProject = ({navigation, route}: Props) => {
       if (resp.data.cover != undefined) {
         setImagesCharged(resp.data.cover);
       }
+
+      const userInfo = await citmapApi.get<User>(
+        '/users/authentication/user/',
+        {
+          headers: {
+            Authorization: token,
+          },
+        },
+      );
+      const creatoruser = await citmapApi.get<UserInfo>(
+        `/users/${resp.data.creator}/`,
+        {
+          headers: {
+            Authorization: token,
+          },
+        },
+      );
+      //pequeña comprobación de si está editando el admin o el creator
+      let isAdmin = resp.data.administrators.find(x => x === userInfo.data.pk)
+      //si es creator, puede borrar
+      if (
+        userInfo.data != undefined &&
+        userInfo.data.pk === resp.data.creator
+      ) {
+        setCanDelete(true);
+      }
+      // si es admin puede editar pero no borrar
+      if(isAdmin !== undefined){
+        setCanDelete(false);
+      }
+
       setWaitingData(false);
     } catch (err) {
       console.log('hay un error: ' + err);
@@ -2065,7 +2102,7 @@ export const CreateProject = ({navigation, route}: Props) => {
           onPressLeft={() => navigation.goBack()}
           rightIcon={true}
           renderRight={() => {
-            if (isEdit) {
+            if (isEdit && canDelete) {
               return (
                 <TouchableOpacity
                   activeOpacity={0.5}

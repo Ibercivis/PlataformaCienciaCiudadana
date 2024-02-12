@@ -23,6 +23,7 @@
         "mail_input_recover_err": "Username or email does not exist",
         "password_input": "Password",
         "recovery_password": "Forgot ",
+        "recovery_password_2": "password?",
         "or_login": "Or log in with...",
         "new_in_app": "New to the App?",
         "register": "Create account",
