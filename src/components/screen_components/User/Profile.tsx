@@ -1,5 +1,5 @@
 import {StackScreenProps} from '@react-navigation/stack';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   Animated,
   FlatList,
@@ -147,6 +147,7 @@ export const Profile = ({navigation}: Props) => {
   const hideModalInfo = () => setInfoModal(false);
 
   const [selectedCountry, setSelectedCountry] = useState([]);
+  const scrollViewRef = useRef<ScrollView | null>(null);
 
   //#endregion
 
@@ -1020,28 +1021,29 @@ export const Profile = ({navigation}: Props) => {
 
   //metodo para poder navegar entre
   const navigateTo = (projectId: number) => {
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [
-          {
-            name: 'HomeNavigator',
-            state: {
-              routes: [
-                {
-                  name: 'ProjectPage',
-                  params: {
-                    id: projectId,
-                    isNew: false,
-                    fromProfile: true,
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      }),
-    );
+    // navigation.dispatch(
+    //   CommonActions.reset({
+    //     index: 0,
+    //     routes: [
+    //       {
+    //         name: 'HomeNavigator',
+    //         state: {
+    //           routes: [
+    //             {
+    //               name: 'ProjectPage',
+    //               params: {
+    //                 id: projectId,
+    //                 isNew: false,
+    //                 fromProfile: true,
+    //               },
+    //             },
+    //           ],
+    //         },
+    //       },
+    //     ],
+    //   }),
+    // );
+    navigation.navigate('ProjectPage', {id: projectId, isNew: false, fromProfile: true})
   };
 
   const openProfilePhoto = () => {
@@ -1261,6 +1263,7 @@ export const Profile = ({navigation}: Props) => {
               style={styles.scrollParent}
               nestedScrollEnabled={true}
               contentContainerStyle={{flexGrow: 1}}
+              ref={scrollViewRef}
               keyboardShouldPersistTaps="handled">
               {/* imagen de perfil */}
               <View
@@ -1345,6 +1348,7 @@ export const Profile = ({navigation}: Props) => {
                 style={{
                   flex: 1,
                   alignItems: 'center',
+                  marginBottom:heightPercentageToDP(8)
                 }}>
                 {/* visibilidad */}
                 <View
@@ -1423,6 +1427,7 @@ export const Profile = ({navigation}: Props) => {
                     // height: 200,
                     marginVertical: RFPercentage(1),
                     marginHorizontal: RFPercentage(5),
+                    
                   }}>
                   <Text
                     style={{
@@ -1441,6 +1446,14 @@ export const Profile = ({navigation}: Props) => {
                     numOfLines={5}
                     onChangeText={value => onChange(value, 'biography')}
                     value={form.biography}
+                    onPressIn={() => {
+                      if (scrollViewRef.current) {
+                        scrollViewRef.current.scrollTo({
+                          y: heightPercentageToDP(40),
+                          animated: true,
+                        });
+                      }
+                    }}
                   />
                   <View
                     style={{

@@ -9,7 +9,6 @@ import {
   TouchableOpacity,
   StatusBar,
   Platform,
-  PermissionsAndroid,
   Alert,
 } from 'react-native';
 import {Text} from 'react-native-paper';
@@ -211,16 +210,23 @@ export const ProjectPage = (props: Props) => {
     //     }),
     //   );
     // }
-    props.navigation.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [
-          {
-            name: 'HomeNavigator',
-          },
-        ],
-      }),
-    );
+
+
+    // props.navigation.dispatch(
+    //   CommonActions.reset({
+    //     index: 0,
+    //     routes: [
+    //       {
+    //         name: 'HomeNavigator',
+    //       },
+    //     ],
+    //   }),
+    // );
+    if(props.route.params.isNew){
+      props.navigation.navigate('HomeScreen' as never)
+    }else{
+      props.navigation.goBack();
+    }
   };
 
   /**
@@ -317,6 +323,7 @@ export const ProjectPage = (props: Props) => {
       );
 
       const hasPermission = await requestStoragePermission();
+      console.log(hasPermission);
       if (hasPermission !== 'granted') {
         Alert.alert(
           'Permission Denied',
@@ -324,7 +331,7 @@ export const ProjectPage = (props: Props) => {
           [
             {
               text: 'OK',
-              onPress: () => console.log('OK Pressed'),
+              onPress: () => openSettings(),
             },
           ],
           {cancelable: false},
@@ -338,8 +345,9 @@ export const ProjectPage = (props: Props) => {
       }
 
       // console.log(JSON.stringify(download.data, null, 2));
-
-      await saveFile(download.data, `observations${Date.now()}.csv`);
+      if (hasPermission === 'granted') {
+        await saveFile(download.data, `observations${Date.now()}.csv`);
+      }
     } catch (error) {
       console.log(error);
       Toast.show({
@@ -351,13 +359,19 @@ export const ProjectPage = (props: Props) => {
   };
 
   const saveFile = async (fileBlob: any, filename: any) => {
-    const path = `${RNFS.DownloadDirectoryPath}/${filename}`;
-
+    let path: any;
+    if (Platform.OS === 'ios') {
+      path = `${RNFS.MainBundlePath}/${filename}`;
+    } else {
+      path = `${RNFS.DownloadDirectoryPath}/${filename}`;
+    }
     const file = new Blob([fileBlob], {
       type: 'text/csv',
       lastModified: Date.now(),
     });
     const reader = new FileReader();
+
+    console.log(JSON.stringify(file, null, 2));
     reader.onload = () => {
       RNFS.writeFile(path, reader.result as string, 'utf8')
         .then(() => {
@@ -377,55 +391,56 @@ export const ProjectPage = (props: Props) => {
   };
 
   const requestStoragePermission = async () => {
-    // if (Platform.OS === 'android') {
-    //   try {
-    //     console.log('pide el permiso')
-    //     const granted = await PermissionsAndroid.request(
-    //       PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-    //       {
-    //         title: fontLanguage.project[0].title_permission,
-    //         message:fontLanguage.project[0].menssage,
-    //         buttonNeutral: fontLanguage.project[0].neutral_button,
-    //         buttonNegative: fontLanguage.global[0].cancel_button,
-    //         buttonPositive: fontLanguage.global[0].acept_button,
-    //       },
-    //     );
+    let granted: PermissionStatus;
+    if (Platform.OS === 'android') {
+      try {
+        console.log('pide el permiso');
+        const temp = await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
+        if (temp === 'granted') {
+          granted = await request(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE, {
+            title: fontLanguage.project[0].title_permission,
+            message: fontLanguage.project[0].menssage,
+            buttonNeutral: fontLanguage.project[0].neutral_button,
+            buttonNegative: fontLanguage.global[0].cancel_button,
+            buttonPositive: fontLanguage.global[0].acept_button,
+          });
+          return granted;
+        }
+      } catch (err) {
+        console.warn(err);
+        return (granted = 'denied');
+      }
+    }
+    return (granted = 'unavailable');
+    // let permissionStatus: PermissionStatus;
 
-    //     return granted === PermissionsAndroid.RESULTS.GRANTED;
-    //   } catch (err) {
-    //     console.warn(err);
-    //     return false;
-    //   }
+    // if (Platform.OS === 'ios') {
+    //   permissionStatus = await request(PERMISSIONS.IOS.MEDIA_LIBRARY);
+    // } else {
+    //   permissionStatus = await request(
+    //     PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE,
+    //   );
     // }
-    let permissionStatus: PermissionStatus;
 
-    if (Platform.OS === 'ios') {
-      permissionStatus = await request(PERMISSIONS.IOS.MEDIA_LIBRARY);
-    } else {
-      permissionStatus = await request(
-        PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE,
-      );
-    }
+    // if (permissionStatus === 'blocked') {
+    //   Alert.alert(
+    //     'Permission Blocked',
+    //     'Please enable storage permissions in your device settings to proceed.',
+    //     [
+    //       {
+    //         text: 'Go to Settings',
+    //         onPress: () => openSettings(),
+    //       },
+    //       {
+    //         text: 'Cancel',
+    //         style: 'cancel',
+    //       },
+    //     ],
+    //     {cancelable: false},
+    //   );
+    // }
 
-    if (permissionStatus === 'blocked') {
-      Alert.alert(
-        'Permission Blocked',
-        'Please enable storage permissions in your device settings to proceed.',
-        [
-          {
-            text: 'Go to Settings',
-            onPress: () => openSettings(),
-          },
-          {
-            text: 'Cancel',
-            style: 'cancel',
-          },
-        ],
-        {cancelable: false},
-      );
-    }
-
-    return permissionStatus;
+    // return permissionStatus;
   };
 
   const getProjectApi = async () => {
@@ -471,10 +486,11 @@ export const ProjectPage = (props: Props) => {
 
       setCreator(creatoruser.data.username);
       // recorrer resp.administrator.map y comparar si coincide el id con el user
-      let isAdmin = resp.data.administrators.find(x => x === userInfo.data.pk)
+      let isAdmin = resp.data.administrators.find(x => x === userInfo.data.pk);
       if (
-        userInfo.data != undefined &&
-        userInfo.data.pk === resp.data.creator || isAdmin !== undefined
+        (userInfo.data != undefined &&
+          userInfo.data.pk === resp.data.creator) ||
+        isAdmin !== undefined
       ) {
         setCanEdit(true);
       } else {
@@ -979,7 +995,7 @@ export const ProjectPage = (props: Props) => {
           </ScrollView>
         </SafeAreaView>
       )}
-      <Toast position="bottom" />
+      <Toast position="top" />
     </>
   );
 };
@@ -1001,7 +1017,7 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
     position: 'absolute',
     // top: heightPercentageToDP(50),
-    marginTop: heightPercentageToDP(43),
+    top: heightPercentageToDP(40),
     marginLeft: RFPercentage(2),
     // left: RFPercentage(2),
     // right: RFPercentage(5),

@@ -12,7 +12,9 @@
         "delete_button": "Eliminar",
         "continue_button": "Continuar",
         "confirm_button": "Confirmar",
-        "apply":"Aplicar"
+        "apply":"Aplicar",
+        "home":"Inicio"
+
       }
     ],
     "login_screen": [

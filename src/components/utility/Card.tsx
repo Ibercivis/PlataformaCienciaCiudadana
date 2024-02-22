@@ -193,7 +193,7 @@ export const Card = ({
                       color: 'black',
                       fontFamily: FontFamily.NotoSansDisplayMedium,
                     }}>
-                    {title.length > 20 ? title.slice(0, 20) + '...' : title}
+                    {title.length > 35 ? title.slice(0, 35) + '...' : title}
                   </Text>
                 </View>
               </ImageBackground>
@@ -283,7 +283,7 @@ export const Card = ({
                     color: 'black',
                     fontFamily: FontFamily.NotoSansDisplayMedium,
                   }}>
-                  {title.length > 25 ? title.slice(0, 25) + '...' : title}
+                  {title.length > 20 ? title.slice(0, 20) + '...' : title}
                 </Text>
                 <Text
                   style={{
@@ -1038,7 +1038,7 @@ const style = StyleSheet.create({
     elevation: 2,
   },
   imageBackgroundImportants: {
-    height: '68%',
+    height: heightPercentageToDP(25),
     // borderRadius: 10,
   },
 

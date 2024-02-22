@@ -1265,7 +1265,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                 style={{
                   position: 'absolute',
                   right: '2%',
-                  bottom: '2%',
+                  bottom: '10%',
                 }}
                 onPress={() => addMarkPlus()}>
                 <Plus height={RFPercentage(10)} />
@@ -1278,7 +1278,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                   top: '5%',
                 }}
                 onPress={() => {
-                  navigation.replace('ProjectPage', {id: route.params.id});
+                  navigation.navigate('ProjectPage', {id: route.params.id});
                 }}>
                 <Back height={RFPercentage(6)} />
               </TouchableOpacity>

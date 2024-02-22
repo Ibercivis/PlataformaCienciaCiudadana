@@ -92,17 +92,17 @@ export function HomeNavigator() {
         component={HomeScreen}
         initialParams={{dashboard: true}}
       />
-      <Stack.Screen name="ProjectList" component={ProjectList} />
-      <Stack.Screen name="OrganizationList" component={OrganizationList} />
-      <Stack.Screen name="ProjectPage" component={ProjectPage} />
-      <Stack.Screen name="OrganizationPage" component={OrganizationPage} />
+      {/* <Stack.Screen name="ProjectList" component={ProjectList} />
+      <Stack.Screen name="OrganizationList" component={OrganizationList} /> */}
+      {/* <Stack.Screen name="ProjectPage" component={ProjectPage} /> */}
+      {/* <Stack.Screen name="OrganizationPage" component={OrganizationPage} />
       <Stack.Screen
         name="ParticipateMap"
         component={ParticipateMap}
         options={({navigation}) => ({
          
         })}
-      />
+      /> */}
       <Stack.Screen name="PermissionsScreen" component={PermissionsScreen} />
 
       {/* {permissions.locationStatus === 'granted' ? (
