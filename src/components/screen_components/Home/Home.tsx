@@ -55,7 +55,7 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import NotCreated from '../../../assets/icons/profile/No hay creados.svg';
 import Geonity from '../../../assets/icons/general/Geonity-Tittle.svg';
 import {CustomButton} from '../../utility/CustomButton';
-import { useLanguage } from '../../../hooks/useLanguage';
+import {useLanguage} from '../../../hooks/useLanguage';
 
 interface Props extends StackScreenProps<any, any> {}
 
@@ -492,7 +492,7 @@ export const Home = ({navigation}: Props) => {
               fontFamily: FontFamily.NotoSansDisplayRegular,
               fontWeight: '700',
             }}>
-           {fontLanguage.Home[0].no_observations_text_1}
+            {fontLanguage.Home[0].no_observations_text_1}
           </Text>
           <Text
             style={{
@@ -842,7 +842,8 @@ export const Home = ({navigation}: Props) => {
                                   }
                                   onPress={() => {
                                     navigation.navigate('ProjectList', {
-                                      title: fontLanguage.Home[0].important_projects,
+                                      title:
+                                        fontLanguage.Home[0].important_projects,
                                     });
                                   }}
                                 />
@@ -1233,7 +1234,9 @@ export const Home = ({navigation}: Props) => {
                 </View>
                 <View>
                   <TouchableOpacity onPress={() => setShowCategoryList(false)}>
-                    <Text style={{color: Colors.primaryLigth}}>{fontLanguage.global[0].close_button}</Text>
+                    <Text style={{color: Colors.primaryLigth}}>
+                      {fontLanguage.global[0].close_button}
+                    </Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -1251,7 +1254,10 @@ export const Home = ({navigation}: Props) => {
                 renderItem={({item, index}) => {
                   const isChecked = categoriesSelected.includes(item);
                   return (
-                    <View
+                    <TouchableOpacity
+                      onPress={() => {
+                        setCheckCategories(item);
+                      }}
                       style={{
                         width: RFPercentage(42),
                         flexDirection: 'row',
@@ -1267,7 +1273,7 @@ export const Home = ({navigation}: Props) => {
                         }}
                       />
                       <Text style={{color: 'black'}}>{item.topic}</Text>
-                    </View>
+                    </TouchableOpacity>
                   ); //aquí poner el plus
                 }}
               />
@@ -1285,7 +1291,9 @@ export const Home = ({navigation}: Props) => {
                     setCategorySelectedId([]);
                     setCategoriesSelected([]);
                   }}>
-                  <Text style={{color: Colors.primaryLigth}}>{fontLanguage.global[0].clean_all_button}</Text>
+                  <Text style={{color: Colors.primaryLigth}}>
+                    {fontLanguage.global[0].clean_all_button}
+                  </Text>
                 </TouchableOpacity>
                 <View style={{width: widthPercentageToDP(20)}}>
                   <CustomButton
@@ -1318,42 +1326,48 @@ export const Home = ({navigation}: Props) => {
                   paddingRight: widthPercentageToDP(11), // Ajustar según sea necesario
                 }}>
                 <TouchableWithoutFeedback>
+                  <View
+                    style={{
+                      position: 'relative',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      backgroundColor: 'white',
+                      width: widthPercentageToDP(27),
+                      borderRadius: 10,
+                      shadowColor: '#000',
+                      shadowOffset: {
+                        width: 0,
+                        height: 0.1,
+                      },
+                      shadowOpacity: 0.2,
+                      shadowRadius: 1.41,
+                      elevation: 5,
+                    }}>
                     <View
                       style={{
-                        position: 'relative',
-                        justifyContent: 'center',
-                        alignItems: 'center',
                         backgroundColor: 'white',
-                        width: widthPercentageToDP(27),
+                        paddingHorizontal: widthPercentageToDP(2),
                         borderRadius: 10,
-                        shadowColor: '#000',
-                        shadowOffset: {
-                          width: 0,
-                          height: 0.1,
-                        },
-                        shadowOpacity: 0.2,
-                        shadowRadius: 1.41,
-                        elevation: 5,
                       }}>
-                      <View
+                      <TouchableOpacity
                         style={{
-                          backgroundColor: 'white',
-                          paddingHorizontal: widthPercentageToDP(2),
-                          borderRadius: 10,
-                        }}>
-                        <TouchableOpacity
-                          style={{marginTop: heightPercentageToDP(1), marginBottom: heightPercentageToDP(0.7)}}
-                          onPress={signOut}>
-                          <Text>{fontLanguage.Home[0].logout}</Text>
-                        </TouchableOpacity>
-                        {/* Otras opciones de menú aquí */}
-                        <TouchableOpacity
-                          style={{marginBottom: heightPercentageToDP(1),marginTop: heightPercentageToDP(0.7)}}
-                          onPress={ocultarMenu}>
-                          <Text>{fontLanguage.global[0].cancel_button}</Text>
-                        </TouchableOpacity>
-                      </View>
+                          marginTop: heightPercentageToDP(1),
+                          marginBottom: heightPercentageToDP(0.7),
+                        }}
+                        onPress={signOut}>
+                        <Text>{fontLanguage.Home[0].logout}</Text>
+                      </TouchableOpacity>
+                      {/* Otras opciones de menú aquí */}
+                      <TouchableOpacity
+                        style={{
+                          marginBottom: heightPercentageToDP(1),
+                          marginTop: heightPercentageToDP(0.7),
+                        }}
+                        onPress={ocultarMenu}>
+                        <Text>{fontLanguage.global[0].cancel_button}</Text>
+                      </TouchableOpacity>
                     </View>
+                  </View>
                 </TouchableWithoutFeedback>
               </View>
             </TouchableWithoutFeedback>
