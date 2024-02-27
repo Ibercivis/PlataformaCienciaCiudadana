@@ -11,6 +11,7 @@ import {AuthProvider} from './src/context/AuthContext';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {ModalProvider} from './src/context/ModalContext';
 import { PaperProvider } from 'react-native-paper';
+import { SplashNavigator } from './src/navigation/SplashNavigator';
 
 const App = () => {
   const tema = DefaultTheme;
@@ -23,7 +24,8 @@ const App = () => {
           <PaperProvider>
             <ModalProvider>
               <NavigationContainer theme={tema}>
-                <Navigator />
+                {/* <Navigator /> */}
+                <SplashNavigator/>
               </NavigationContainer>
             </ModalProvider>
           </PaperProvider>

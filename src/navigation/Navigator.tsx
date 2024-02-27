@@ -36,7 +36,8 @@ export const Navigator = () => {
         },
         headerTransparent: true,
       }}>
-      {permissions.locationStatus === 'granted' && permissions.storage === 'granted' &&
+      {permissions.locationStatus === 'granted' &&
+      permissions.storage === 'granted' &&
       permissions.camera === 'granted' ? (
         <>
           {status !== 'authenticated' ? (
@@ -68,61 +69,8 @@ export const Navigator = () => {
                   },
                 }}
               />
-              {/* <Stack.Screen
-                name="RegisterScreen"
-                component={RegisterScreen}
-                options={{
-                  // transitionSpec: {
-                  //   open: config,
-                  //   close: config,
-                  // },
-                  cardStyleInterpolator: ({current, next, layouts}) => {
-                    return {
-                      cardStyle: {
-                        transform: [
-                          {
-                            translateX: current.progress.interpolate({
-                              inputRange: [0, 1],
-                              outputRange: [layouts.screen.width, 0],
-                            }),
-                          },
-                          {
-                            scale: 1,
-                          },
-                        ],
-                      },
-                    };
-                  },
-                }}
-              />
-              <Stack.Screen
-                name="ForgotPassword"
-                component={ForgotPassword}
-                options={{
-                  // transitionSpec: {
-                  //   open: config,
-                  //   close: config,
-                  // },
-                  cardStyleInterpolator: ({current, next, layouts}) => {
-                    return {
-                      cardStyle: {
-                        transform: [
-                          {
-                            translateX: current.progress.interpolate({
-                              inputRange: [0, 1],
-                              outputRange: [layouts.screen.width, 0],
-                            }),
-                          },
-                        ],
-                      },
-                    };
-                  },
-                }}
-              /> */}
             </>
           ) : (
-            // <Stack.Screen name="DrawerNavigation" component={DrawerNavigation} />
-            // <Stack.Screen name="BottomTabNavigation" component={BottomTabNavigation} />
             <Stack.Screen
               name="MultipleNavigator"
               component={MultipleNavigator}
@@ -132,12 +80,6 @@ export const Navigator = () => {
       ) : (
         <Stack.Screen name="PermissionsScreen" component={PermissionsScreen} />
       )}
-
-      {/* {permissions.locationStatus === 'granted' ? (
-        <Stack.Screen name="MapScreen" component={MapScreen} />
-      ) : (
-        <Stack.Screen name="PermissionsScreen" component={PermissionsScreen} />
-      )} */}
     </Stack.Navigator>
   );
 };
