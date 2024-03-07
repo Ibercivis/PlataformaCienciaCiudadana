@@ -1066,7 +1066,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                   </TouchableOpacity>
 
                   {/* loggin buttons */}
-                  <View style={styles.loginButtonsContainer}>
+                  {/* <View style={styles.loginButtonsContainer}>
                     <CustomButtonOutline
                       backgroundColor="white"
                       fontColor="black"
@@ -1090,7 +1090,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                         }
                         onPress={() => console.log()}
                       />
-                  </View>
+                  </View> */}
 
                   {/* divider */}
                   <View

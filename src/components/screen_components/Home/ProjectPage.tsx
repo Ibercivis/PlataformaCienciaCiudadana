@@ -270,7 +270,6 @@ export const ProjectPage = (props: Props) => {
   const navigateToMapPass = async (value1?: string) => {
     if (project?.is_private) {
       if (value1) {
-        console.log(value1);
         try {
           const token = await AsyncStorage.getItem('token');
           const isValid = await citmapApi.post(
@@ -446,10 +445,10 @@ export const ProjectPage = (props: Props) => {
   const getProjectApi = async () => {
     setWaitingData(true);
     let token;
-
     while (!token) {
       token = await AsyncStorage.getItem('token');
     }
+    // console.log(token)
     try {
       const userInfo = await citmapApi.get<User>(
         '/users/authentication/user/',
@@ -461,14 +460,17 @@ export const ProjectPage = (props: Props) => {
       );
 
       const resp = await citmapApi.get<ShowProject>(
-        `/project/${props.route.params.id}`,
+        `/project/${props.route.params.id}/`,
         {
           headers: {
             Authorization: token,
           },
         },
       );
+      // const sentToken = await resp.headers.get('Authorization');
 
+      
+      console.log(JSON.stringify(resp, null, 2));
       const creatoruser = await citmapApi.get<UserInfo>(
         `/users/${resp.data.creator}/`,
         {
